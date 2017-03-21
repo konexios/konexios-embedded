@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<synergyModuleDescription>
+    <config id="config.el.nx" path="ssp_cfg/framework/el/nx_user.h" version="0">
+        <content>
+#if (${interface.el.nx_src})
+#include "nx_src_user.h"
+#endif
+        </content>
+    </config>
+	<module config="config.el.nx" display="Framework|Networking|${module.el.nx.name} NetX on nx" id="module.el.nx" common="100" version="1">
+        <constraint display="Module instances must have unique names">
+            "${interface.el.nx.${module.el.nx.name}}" === "1"
+        </constraint>
+        <requires interface="_rtos" />
+        <requires id="module.el.nx.requires.sf_el_nx" interface="interface.framework.sf_el_nx" display="Add NetX Network Driver" />        
+		<provides interface="interface.el.nx" />
+        <provides interface="interface.el.nx.${module.el.nx.name}" />
+        <property default="g_nx${_instance}" display="Name" id="module.el.nx.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.nx.name}")</constraint>
+        </property>
+	</module>
+</synergyModuleDescription>

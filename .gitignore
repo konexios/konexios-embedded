@@ -1,0 +1,3 @@
+*.qbs.user
+build-*
+.metadata

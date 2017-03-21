@@ -1,0 +1,3 @@
+[submodule "acn-sdk-c"]
+	path = acn-sdk-c
+	url = git@github.com:arrow-acs/acn-sdk-c.git

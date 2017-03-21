@@ -1,0 +1,302 @@
+/***********************************************************************************************************************
+ * Copyright [2015] Renesas Electronics Corporation and/or its licensors. All Rights Reserved.
+ *
+ * The contents of this file (the "contents") are proprietary and confidential to Renesas Electronics Corporation
+ * and/or its licensors ("Renesas") and subject to statutory and contractual protections.
+ *
+ * Unless otherwise expressly agreed in writing between Renesas and you: 1) you may not use, copy, modify, distribute,
+ * display, or perform the contents; 2) you may not use any name or mark of Renesas for advertising or publicity
+ * purposes or in connection with your use of the contents; 3) RENESAS MAKES NO WARRANTY OR REPRESENTATIONS ABOUT THE
+ * SUITABILITY OF THE CONTENTS FOR ANY PURPOSE; THE CONTENTS ARE PROVIDED "AS IS" WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTY, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+ * NON-INFRINGEMENT; AND 4) RENESAS SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, OR CONSEQUENTIAL DAMAGES,
+ * INCLUDING DAMAGES RESULTING FROM LOSS OF USE, DATA, OR PROJECTS, WHETHER IN AN ACTION OF CONTRACT OR TORT, ARISING
+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE CONTENTS. Third-party contents included in this file may
+ * be subject to different terms.
+ **********************************************************************************************************************/
+/**********************************************************************************************************************
+* File Name    : r_ioport.dox
+* Description  : Extra documentation for IOPort module
+***********************************************************************************************************************
+* History : DD.MM.YYYY Version  Description
+*           19.12.2014 0.60     Initial Release.
+***********************************************************************************************************************/
+
+/***********************************************************************************************************************
+Functions
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_Init(const ioport_cfg_t * p_cfg)
+ * 
+ * @code
+	// Example code
+	
+	ssp_err_t err;
+	
+	// Declare the configuration structures
+	const ioport_pin_cfg_t pin_cfg_data[] =
+    {
+        {
+            /* Port 1 */
+            .pin = IOPORT_PORT_01_PIN_08,
+            .pin_cfg = IOPORT_CFG_IRQ_ENABLE,       /* PFS configuration */
+        },
+        {
+            .pin = IOPORT_PORT_01_PIN_09,
+            .pin_cfg = IOPORT_CFG_PERIPHERAL_PIN | IOPORT_PORT_FUNC_SEL(SCI1),
+        },
+        {
+            .pin = IOPORT_PORT_01_PIN_10,
+            .pin_cfg = IOPORT_CFG_IRQ_ENABLE,        /* PFS configuration */
+        },
+        {
+            .pin = IOPORT_PORT_01_PIN_11,
+            .pin_cfg = IOPORT_CFG_PULLUP_ENABLE,     /* PFS configuration */
+        },
+        {
+            .pin = IOPORT_PORT_01_PIN_12,
+            .pin_cfg = IOPORT_CFG_PULLUP_ENABLE,        /* PFS configuration */
+        },
+    };
+
+    const ioport_cfg_t pin_cfg =
+    {
+        .number_of_pins = (sizeof(pin_cfg_data))/(sizeof(ioport_pin_cfg_t)),
+        .pin_cfg_data = &pin_cfg_data[0]
+    };
+	
+	// Initialise the pin PFS registers
+	err = R_IOPORT_Init(&pin_cfg);
+	    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PinCfg(ioport_port_pin_t pin, uint32_t cfg)
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t err;
+    
+    err = R_IOPORT_PinCfg(IOPORT_PORT_01_PIN_00, IOPORT_CFG_PORT_DIRECTION_OUTPUT);
+    /* Set port 1 pin 1 as a peripheral pin with the peripheral function KEY */
+    err = R_IOPORT_PinCfg(IOPORT_PORT_01_PIN_01, IOPORT_CFG_PERIPHERAL_PIN | IOPORT_PERIPHERAL_KEY);
+    err = R_IOPORT_PinCfg(IOPORT_PORT_01_PIN_02, IOPORT_CFG_EVENT_RISING_EDGE);
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PinWrite(ioport_port_pin_t pin, ioport_level_t level)
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+	ssp_err_t err;
+	
+	// Set pin on port 1 bit 7 high
+	err = R_IOPORT_PinWrite(IOPORT_PORT_01_PIN_07, IOPORT_LEVEL_HIGH);
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t	R_IOPORT_PinRead(ioport_port_pin_t pin, ioport_level_t *p_pin_value)
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the pin level
+	ioport_level_t pinlevel;
+	// Create a variable for the returned error value.
+	ssp_err_t err;
+	    
+	// Read the level of pin on port 3 bit 9
+ 	err = R_IOPORT_PinRead(IOPORT_PORT_03_PIN_09, &pinlevel);
+
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PortWrite(ioport_port_t port, ioport_size_t value, ioport_size_t mask)
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t err;
+    
+    // Set all bits on port 2 high
+    err = R_IOPort_PortWrite(IOPORT_PORT_02, 0xFFFF, 0xFFFF);
+    
+    // Set the low 8 bits low on port 1
+    err = R_IOPort_PortWrite(IOPORT_PORT_01, 0, 0x00FF);    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PortRead(ioport_port_t port, ioport_size_t *p_port_value)
+ * 
+ * @code
+    // Example code
+    
+    // Create variable for the port read data 
+	ioport_size_t port_5_value;
+	// Create a variable for the error status
+	ssp_err_t err;
+	
+	/* Read port 5 */
+	err = R_IOPORT_PortRead(IO_PORT_05, &port_5_value);
+    
+ * @endcode
+***********************************************************************************************************************/
+
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PortDirectionSet(ioport_port_t port, ioport_size_t direction_values, ioport_size_t mask)
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the error
+    ssp_err_t err;
+    
+    // Set low 8 bits on port 1 as inputs and upper 8 bits as outputs
+    err = R_IOPORT_PortDirectionSet(IOPORT_PORT_01, 0xFF00, 0xFFFF);
+    
+    // Set port 2 as an input port
+    err = R_IOPORT_PortDirectionSet(IOPORT_PORT_02, 0x0000, 0xFFFF);
+    
+    // Set port 3 least signicant 2 bits as outputs
+    err = R_IOPORT_PortDirectionSet(IOPORT_PORT_03, 0x0003, 0x0003);
+    
+    // Set port 3 bits 3 and 7 as inputs
+    err = R_IOPORT_PortDirectionSet(IOPORT_PORT_03, 0x0000, 0x0088);    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PinDirectionSet(ioport_port_pin_t pin, ioport_direction_t direction)
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable for the returned error value.
+	ssp_err_t err;
+
+	/*  Set port E pin 0 as an output */
+	err = R_IOPORT_PinDirectionSet(IO_PORT_14_PIN_00, IOPORT_DIRECTION_OUTPUT);
+
+	/*  Set port 3 pin 12 as an input */
+	err = R_IOPORT_PinDirectionSet(IO_PORT_03_PIN_12, IOPORT_DIRECTION_INPUT);    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t   R_IOPORT_PortEventInputRead(ioport_port_t port, ioport_size_t *p_event_data)
+ * 
+ * @code
+    // Example code
+	
+	// Create a variable for the returned error value.
+	ssp_err_t err;
+    
+    // Create a variable to store the port event data
+	ioport_size_t    portAeventvalue;
+	
+	err  = R_IOPORT_PortEventInputRead(IO_PORT_10, &portAeventvalue);    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PinEventInputRead(ioport_port_pin_t pin, ioport_level_t *p_pin_event)
+ * 
+ * @code
+    // Example code
+    
+    // Create variable to store the event data.
+	ioport_level_t eventlevel;
+	// Create a variable to store return error status.
+	ssp_err_t err;
+	
+	/* Check the event input data level of port 5 pin 4. */
+	err = R_IOPORT_PinEventInputRead(IO_PORT_05_PIN_04, &eventlevel);
+	
+	if (SSP_SUCCESS == err)
+	{
+		if (IOPORT_LEVEL_HIGH == eventlevel)
+		{
+		    …
+		}
+		else
+		{
+		    …
+		}
+	}
+   
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PinEventOutputWrite(ioport_port_pin_t pin, ioport_level_t pin_value)
+ * 
+ * @code
+    // Example code
+    
+    // Create a variable to store return error status.
+	ssp_err_t err;
+	
+	/* Set the event output data level of port 5 pin 4. */
+	err = R_IOPORT_PinEventOutputWrite(IO_PORT_05_PIN_04, IOPORT_LEVEL_HIGH);    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_PortEventOutputWrite(ioport_port_t port, ioport_size_t event_data, ioport_size_t mask_value)
+ * 
+ * @code
+    // Example code
+    
+    // Create variable to hold error status
+	ssp_err_t err;
+	
+	/* Write output event data 0xAAAA to port 5 */
+	err = R_IOPORT_PortEventOutputWrite(IO_PORT_05, 0xAAAA, 0xFFFF);
+	
+	/* Clear output event data bits 0 and 1 of port 10 */
+	err = R_IOPORT_PortEventOutputWrite(IO_PORT_10, 0x0000, 0x0003);    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_EthernetModeCfg(ioport_ethernet_channel_t channel, ioport_ethernet_mode_t mode)
+ * 
+ * @code
+    // Example code
+    
+    // Create variable to hold error status
+	ssp_err_t err;
+	
+	/* Enable Ethernet channel 1 with an RMII interface */
+	err = R_IOPORT_EthernetModeCfg(IOPORT_ETHERNET_CHANNEL_1, IOPORT_ETHERNET_MODE_RMII);    
+ * @endcode
+***********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @fn     ssp_err_t R_IOPORT_VersionGet(ssp_version_t * p_data)
+ * 
+ * @code
+    // Example code
+    
+    // Create variable to hold error status
+	ssp_err_t err;
+	// Create a variable to store the version data
+	ssp_version_t   version;
+	// Create a variable to store the error status
+	  
+	err = R_IOPORT_VersionGet(&version);    
+ * @endcode
+***********************************************************************************************************************/
+

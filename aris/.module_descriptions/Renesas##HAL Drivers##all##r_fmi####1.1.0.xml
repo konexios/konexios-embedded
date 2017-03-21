@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+	<config id="config.driver.fmi" path="ssp_cfg/driver/r_fmi_cfg.h" version="0">
+        <property default="config.driver.fmi.param_checking_enable.bsp" display="Parameter Checking" id="config.driver.fmi.param_checking_enable">
+            <option display="Default (BSP)" id="config.driver.fmi.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled" id="config.driver.fmi.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled" id="config.driver.fmi.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>#define FMI_CFG_PARAM_CHECKING_ENABLE ${config.driver.fmi.param_checking_enable}
+		</content>
+	</config>
+	<module config="config.driver.fmi" display="Driver|System|${module.driver.fmi.name} FMI Driver on r_fmi" id="module.driver.fmi_on_fmi" version="1">
+        <constraint display="Unique name required for each instance">
+            "${interface.driver.fmi.${module.driver.fmi.name}}" === "1"
+        </constraint>
+        <provides interface="interface.driver.fmi" />
+        <provides interface="interface.driver.fmi_on_fmi" />
+        <provides interface="interface.driver.fmi.${module.driver.fmi.name}" />
+        <property default="g_fmi${_instance}" display="Name" id="module.driver.fmi.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.fmi.name}")</constraint>
+        </property>
+        <header>
+/** FMI on FMI Instance. */
+extern const fmi_instance_t ${module.driver.fmi.name};
+        </header>
+		<includes>
+#include &quot;r_fmi.h&quot;
+#include &quot;r_fmi_api.h&quot;
+		</includes>
+		<declarations>
+/* Instance structure to use this module. */
+const fmi_instance_t ${module.driver.fmi.name} = 
+{
+    .p_api         = &amp;g_fmi_on_fmi
+};	   
+		</declarations>
+	</module>
+</synergyModuleDescription>

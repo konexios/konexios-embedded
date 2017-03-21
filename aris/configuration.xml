@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<synergyConfiguration version="3">
+  <generalSettings>
+    <option key="#Board#" value="board.aris"/>
+    <option key="CPU" value="S7G2"/>
+    <option key="#TargetName#" value="R7FS7G27H3A01CFC"/>
+    <option key="#TargetARCHITECTURE#" value="cortex-m4"/>
+    <option key="#RTOS#" value="Express Logic ThreadX"/>
+    <option key="#pinconfiguration#" value="R7FS7G27H3A01CFC_ARIS.pincfg"/>
+    <option key="#SSPVersion#" value="1.1.3"/>
+    <option key="#DefaultLinkerScript#" value="S7G2.ld"/>
+  </generalSettings>
+  <synergyBspConfiguration>
+    <config id="config.board.aris">
+      <property id="config.board.aris.package" value="config.board.aris.package.fc"/>
+      <property id="config.board.aris.memory" value="config.board.aris.memory.h"/>
+      <property id="config.board.aris.core" value="config.board.aris.group.g"/>
+      <property id="config.board.aris.series" value="config.board.aris.series.7"/>
+      <property id="config.board.aris.main" value="0x3000"/>
+      <property id="config.board.aris.process" value="0x1000"/>
+      <property id="config.board.aris.heap" value="0x10000"/>
+      <property id="config.mcu.s7g2.OFS0" value="config.mcu.s7g2.OFS0_Register.default"/>
+      <property id="config.mcu.s7g2.OFS0.iwdt_start_mode" value="config.mcu.s7g2.OFS0.iwdt_start_mode.disabled"/>
+      <property id="config.mcu.s7g2.OFS0.iwdt_timeout" value="config.mcu.s7g2.OFS0.iwdt_timeout.2048"/>
+      <property id="config.mcu.s7g2.OFS0.iwdt_divisor" value="config.mcu.s7g2.OFS0.iwdt_divisor.128"/>
+      <property id="config.mcu.s7g2.OFS0.iwdt_window_end" value="config.mcu.s7g2.OFS0.iwdt_window_end.0"/>
+      <property id="config.mcu.s7g2.OFS0.iwdt_window_start" value="config.mcu.s7g2.OFS0.iwdt_window_start.100"/>
+      <property id="config.mcu.s7g2.OFS0.iwdt_reset_interrupt" value="config.mcu.s7g2.OFS0.iwdt_reset_interrupt.Reset"/>
+      <property id="config.mcu.s7g2.OFS0.iwdt_stop_control" value="config.mcu.s7g2.OFS0.iwdt_stop_control.stops"/>
+      <property id="config.mcu.s7g2.OFS0.wdt_start_mode" value="config.mcu.s7g2.OFS0.wdt_start_mode.register"/>
+      <property id="config.mcu.s7g2.OFS0.wdt_timeout" value="config.mcu.s7g2.OFS0.wdt_timeout.16384"/>
+      <property id="config.mcu.s7g2.OFS0.wdt_divisor" value="config.mcu.s7g2.OFS0.wdt_divisor.128"/>
+      <property id="config.mcu.s7g2.OFS0.wdt_window_end" value="config.mcu.s7g2.OFS0.wdt_window_end.0"/>
+      <property id="config.mcu.s7g2.OFS0.wdt_window_start" value="config.mcu.s7g2.OFS0.wdt_window_start.100"/>
+      <property id="config.mcu.s7g2.OFS0.wdt_reset_interrupt" value="config.mcu.s7g2.OFS0.wdt_reset_interrupt.Reset"/>
+      <property id="config.mcu.s7g2.OFS0.wdt_stop_control" value="config.mcu.s7g2.OFS0.wdt_stop_control.stops"/>
+      <property id="config.mcu.s7g2.OFS1" value="config.mcu.s7g2.OFS1_Register.default"/>
+      <property id="config.mcu.s7g2.OFS1.voltage_detection0.start" value="config.mcu.s7g2.OFS1.voltage_detection0.start.disabled"/>
+      <property id="config.mcu.s7g2.OFS1.voltage_detection0_level" value="config.mcu.s7g2.OFS1.voltage_detection0_level.280"/>
+      <property id="config.mcu.s7g2.OFS1.hoco_osc" value="config.mcu.s7g2.OFS1.hoco_osc.disabled"/>
+      <property id="config.board.aris.id1" value="0xFFFFFFFF"/>
+      <property id="config.board.aris.id2" value="0xFFFFFFFF"/>
+      <property id="config.board.aris.id3" value="0xFFFFFFFF"/>
+      <property id="config.board.aris.id4" value="0xFFFFFFFF"/>
+      <property id="config.board.common.vcc" value="3300"/>
+      <property id="config.board.common.checking" value="config.board.common.checking.enabled"/>
+      <property id="config.board.common.rtos" value="config.board.common.rtos.tx"/>
+      <property id="config.board.common.assert" value="config.board.common.assert.none"/>
+      <property id="config.board.common.error_log" value="config.board.common.error_log.none"/>
+    </config>
+  </synergyBspConfiguration>
+  <synergyClockConfiguration>
+    <node id="board.clock.xtal.freq" mul="24000000" option="_edit"/>
+    <node id="board.clock.pll.source" option="board.clock.pll.source.xtal"/>
+    <node id="board.clock.hoco.freq" option="board.clock.hoco.freq.20m"/>
+    <node id="board.clock.loco.freq" option="board.clock.loco.freq.32768"/>
+    <node id="board.clock.moco.freq" option="board.clock.moco.freq.8m"/>
+    <node id="board.clock.subclk.freq" option="board.clock.subclk.freq.32768"/>
+    <node id="board.clock.pll.div" option="board.clock.pll.div.2"/>
+    <node id="board.clock.pll.mul" option="board.clock.pll.mul.200"/>
+    <node id="board.clock.pll.display" option="board.clock.pll.display.value"/>
+    <node id="board.clock.clock.source" option="board.clock.clock.source.pll"/>
+    <node id="board.clock.iclk.div" option="board.clock.iclk.div.1"/>
+    <node id="board.clock.iclk.display" option="board.clock.iclk.display.value"/>
+    <node id="board.clock.pclka.div" option="board.clock.pclka.div.2"/>
+    <node id="board.clock.pclka.display" option="board.clock.pclka.display.value"/>
+    <node id="board.clock.pclkb.div" option="board.clock.pclkb.div.4"/>
+    <node id="board.clock.pclkb.display" option="board.clock.pclkb.display.value"/>
+    <node id="board.clock.pclkc.div" option="board.clock.pclkc.div.4"/>
+    <node id="board.clock.pclkc.display" option="board.clock.pclkc.display.value"/>
+    <node id="board.clock.pclkd.div" option="board.clock.pclkd.div.2"/>
+    <node id="board.clock.pclkd.display" option="board.clock.pclkd.display.value"/>
+    <node id="board.clock.sdclkout.div" option="board.clock.sdclkout.div.1"/>
+    <node id="board.clock.sdclkout.display" option="board.clock.sdclkout.display.value"/>
+    <node id="board.clock.bclk.div" option="board.clock.bclk.div.2"/>
+    <node id="board.clock.bclk.display" option="board.clock.bclk.display.value"/>
+    <node id="board.clock.bclkout.div" option="board.clock.bclkout.div.2"/>
+    <node id="board.clock.bclkout.display" option="board.clock.bclkout.display.value"/>
+    <node id="board.clock.uclk.div" option="board.clock.uclk.div.5"/>
+    <node id="board.clock.uclk.display" option="board.clock.uclk.display.value"/>
+    <node id="board.clock.fclk.div" option="board.clock.fclk.div.4"/>
+    <node id="board.clock.fclk.display" option="board.clock.fclk.display.value"/>
+  </synergyClockConfiguration>
+  <synergyComponentSelection>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_elc" variant="" vendor="Renesas" version="1.1.0">
+      <description>Event Link Controller: Provides=[ELC]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="BSP" condition="" group="USER" subgroup="aris" variant="" vendor="Renesas" version="1.1.1">
+      <description>Board Support Package for aris</description>
+      <originalPack>user.aris.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="Framework Services" condition="" group="all" subgroup="sf_el_ux_comms" variant="" vendor="Renesas" version="1.1.1">
+      <description>USBX CDC ACM Device Communciations: Provides=[Communications] , Requires=[USBX ,ThreadX]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="Framework Services" condition="" group="all" subgroup="sf_spi" variant="" vendor="Renesas" version="1.1.1">
+      <description>Framework SPI: Provides=[Framework SPI] , Requires=[ThreadX ,SCI SPI]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_gpt" variant="" vendor="Renesas" version="1.1.1">
+      <description>General Purpose Timer: Provides=[Timer ,GPT]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_rtc" variant="" vendor="Renesas" version="1.1.1">
+      <description>Real Time Clock: Provides=[RTC]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="Framework Services" condition="" group="all" subgroup="sf_i2c" variant="" vendor="Renesas" version="1.1.0">
+      <description>Framework I2C: Provides=[Framework I2C] , Requires=[ThreadX ,I2C]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_icu" variant="" vendor="Renesas" version="1.1.0">
+      <description>External IRQ: Provides=[External IRQ]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="tx" variant="" vendor="Renesas" version="1.1.0">
+      <description>Express Logic ThreadX: Provides=[ThreadX]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="tx_src" variant="" vendor="Renesas" version="1.1.0">
+      <description>Express Logic ThreadX: Provides=[ThreadX]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="ux_device_class_cdc_acm" variant="" vendor="Renesas" version="1.1.0">
+      <description>Express Logic USBX Device Class CDC ACM: Provides=[USBX Device Class CDC ACM] , Requires=[ThreadX ,USBX]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_sce" variant="" vendor="Renesas" version="1.1.3">
+      <description>Secure Cryptography Engine: Provides=[TRNG, AES, HASH, RSA, DSA, TDES]</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_qspi" variant="" vendor="Renesas" version="1.1.0">
+      <description>QSPI Flash: Provides=[QSPI]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_ioport" variant="" vendor="Renesas" version="1.1.1">
+      <description>I/O Port: Provides=[IO Port]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="Common" condition="" group="all" subgroup="ssp_common" variant="" vendor="Renesas" version="1.1.3">
+      <description>SSP Common Code</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="Framework Services" condition="" group="all" subgroup="sf_el_ux" variant="" vendor="Renesas" version="1.1.3">
+      <description>Express Logic USBX Synergy Port: Provides=[USBX Driver] , Requires=[USBX]</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_cgc" variant="" vendor="Renesas" version="1.1.3">
+      <description>Clock Generation Circuit: Provides=[CGC]</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_riic" variant="" vendor="Renesas" version="1.1.3">
+      <description>RIIC: Provides=[I2C Master]</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_rspi" variant="" vendor="Renesas" version="1.1.3">
+      <description>RSPI: Provides=[SPI]</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="ux" variant="" vendor="Renesas" version="1.1.3">
+      <description>Express Logic USBX: Provides=[USBX] , Requires=[ThreadX ,USBX Driver]</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="ux_src" variant="" vendor="Renesas" version="1.1.3">
+      <description>Express Logic USBX: Provides=[USBX] , Requires=[ThreadX ,USBX Driver]</description>
+      <originalPack>Renesas.Synergy.1.1.3.pack</originalPack>
+    </component>
+    <component apiversion="" class="Framework Services" condition="" group="all" subgroup="sf_console" variant="" vendor="Renesas" version="1.1.1">
+      <description>Console, Requires=[Communications ,ThreadX]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="ux_device_class_cdc_ecm" variant="" vendor="Renesas" version="1.1.0">
+      <description>Express Logic USBX Device Class CDC ECM: Provides=[USBX Device Class CDC ECM] , Requires=[ThreadX ,USBX]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="ux_network_driver" variant="" vendor="Renesas" version="1.1.0">
+      <description>Express Logic USBX Network Driver: Provides=[USBX Network Driver] , Requires=[ThreadX ,USBX]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="nxd_bsd" variant="" vendor="Renesas" version="1.1.1">
+      <description>Express Logic NetX Duo: Provides=[NetX Duo BSD Socket Compliance Layer] , Requires=[NetX Duo Source]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="Express Logic" condition="" group="all" subgroup="nxd" variant="" vendor="Renesas" version="1.1.1">
+      <description>Express Logic NetX Duo: Provides=[NetX Duo] , Requires=[ThreadX ,NetX Driver]</description>
+      <originalPack>Renesas.Synergy.1.1.1.pack</originalPack>
+    </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_wdt" variant="" vendor="Renesas" version="1.1.0">
+      <description>Watchdog Timer: Provides=[WDT]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
+  </synergyComponentSelection>
+  <synergyIcuConfiguration>
+    <node id="board.icu.adc.adc0.scan_end" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc0.scan_end_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc0.window_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc0.window_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc0.compare_match" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc0.compare_mismatch" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc1.scan_end" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc1.scan_end_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc1.window_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc1.window_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc1.compare_match" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.adc.adc1.compare_mismatch" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.agt.agt0.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.agt.agt0.compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.agt.agt0.compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.agt.agt1.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.agt.agt1.compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.agt.agt1.compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.cac.frequency_error" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.cac.measurement_end" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.cac.overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can0.error" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can0.fifo_rx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can0.fifo_tx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can0.mailbox_rx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can0.mailbox_tx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can1.error" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can1.fifo_rx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can1.fifo_tx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can1.mailbox_rx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.can.can1.mailbox_tx" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.cgc.mosc_stop" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.comp.hs_0" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.comp.hs_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.comp.hs_2" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.comp.hs_3" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.comp.hs_4" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.comp.hs_5" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ctsu.write" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ctsu.read" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ctsu.end" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac0.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac1.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac2.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac3.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac4.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac5.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac6.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dmac.dmac7.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.doc.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.drw.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dtc.complete" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.dtc.end" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.edmac.edmac0.eint" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.edmac.edmac1.eint" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.elc.software_event_0" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.elc.software_event_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.ipls" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.mint" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.pint" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer0_rise" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer1_rise" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer2_rise" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer3_rise" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer4_rise" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer5_rise" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer0_fall" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer1_fall" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer2_fall" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer3_fall" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer4_fall" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.eptpc.timer5_fall" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.fcu.fiferr" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.fcu.frdyi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.glcdc.line_detect" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.glcdc.underflow_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.glcdc.underflow_2" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt0.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt1.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt2.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt3.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt4.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt5.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt6.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.ad_trig_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt7.ad_trig_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt8.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt9.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt10.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt11.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt12.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.capture_compare_a" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.capture_compare_b" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.compare_c" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.compare_d" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.compare_e" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.compare_f" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.counter_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.gpt.gpt13.counter_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq0" option="board.icu.common.irq.priority7"/>
+    <node id="board.icu.icu.irq1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq2" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq3" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq4" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq5" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq6" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq7" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq8" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq9" option="board.icu.common.irq.priority7"/>
+    <node id="board.icu.icu.irq10" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq11" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq12" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq13" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq14" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.irq15" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.icu.snooze_cancel" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.iic.iic0.rxi" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic0.txi" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic0.tei" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic0.eri" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic0.wui" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.iic.iic1.rxi" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic1.txi" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic1.tei" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic1.eri" option="board.icu.common.irq.priority11"/>
+    <node id="board.icu.iic.iic2.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.iic.iic2.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.iic.iic2.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.iic.iic2.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ioport.event_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ioport.event_2" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ioport.event_3" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ioport.event_4" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.iwdt.underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.jpeg.jedi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.jpeg.jdti" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.key.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.lpm.snooze_request" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.lvd.lvd1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.lvd.lvd2" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ops.uvw_edge" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.pdc.receive_data_ready" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.pdc.frame_end" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.pdc.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.poeg.poeg0.event" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.poeg.poeg1.event" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.poeg.poeg2.event" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.poeg.poeg3.event" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.qspi.int" option="board.icu.common.irq.priority12"/>
+    <node id="board.icu.rtc.alarm" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.rtc.period" option="board.icu.common.irq.priority1"/>
+    <node id="board.icu.rtc.carry" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.proc_busy" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.romok" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.long_plg" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.test_busy" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.wrrdy_0" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.wrrdy_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.wrrdy_4" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.rdrdy_0" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.rdrdy_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.integrate_wrrdy" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sce.integrate_rdrdy" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci0.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci0.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci0.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci0.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci0.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci0.rxi_or_eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci1.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci1.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci1.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci1.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci1.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci2.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci2.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci2.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci2.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci2.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci3.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci3.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci3.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci3.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci3.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci4.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci4.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci4.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci4.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci4.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci5.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci5.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci5.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci5.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci5.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci6.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci6.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci6.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci6.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci6.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci7.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci7.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci7.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci7.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci7.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci8.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci8.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci8.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci8.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci8.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci9.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci9.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci9.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci9.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sci.sci9.am" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc0.accs" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc0.sdio" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc0.card" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc0.dma_req" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc1.accs" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc1.sdio" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc1.card" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.sdhimmc.sdhimmc1.dma_req" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.spi.spi0.rxi" option="board.icu.common.irq.priority9"/>
+    <node id="board.icu.spi.spi0.txi" option="board.icu.common.irq.priority9"/>
+    <node id="board.icu.spi.spi0.idle" option="board.icu.common.irq.priority9"/>
+    <node id="board.icu.spi.spi0.eri" option="board.icu.common.irq.priority9"/>
+    <node id="board.icu.spi.spi0.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.spi.spi1.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.spi.spi1.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.spi.spi1.idle" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.spi.spi1.eri" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.spi.spi1.tei" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.src.input_fifo_empty" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.src.output_fifo_full" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.src.output_fifo_overflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.src.output_fifo_underflow" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.src.conversion_end" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ssi.ssi0.txi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ssi.ssi0.rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ssi.ssi0.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ssi.ssi1.txi_rxi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.ssi.ssi1.int" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.usbfs.fifo_0" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.usbfs.fifo_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.usbfs.int" option="board.icu.common.irq.priority10"/>
+    <node id="board.icu.usbfs.resume" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.usbhs.fifo_0" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.usbhs.fifo_1" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.usbhs.usb_int_resume" option="board.icu.common.irq.priority10"/>
+    <node id="board.icu.wdt.underflow" option="board.icu.common.irq.disabled"/>
+  </synergyIcuConfiguration>
+  <synergyMessagingConfiguration/>
+  <synergyModuleConfiguration>
+    <module id="module.driver.cgc_on_cgc.1262747326">
+      <property id="module.driver.cgc.name" value="g_cgc"/>
+    </module>
+    <module id="module.driver.elc_on_elc.389265035">
+      <property id="module.driver.elc.name" value="g_elc"/>
+    </module>
+    <module id="module.driver.ioport_on_ioport.1663879723">
+      <property id="module.driver.ioport.name" value="g_ioport"/>
+    </module>
+    <module id="module.framework.sf_spi_on_sf_spi.1947304690">
+      <property id="module.framework.sf_spi.name" value="g_sf_spi_device"/>
+      <property id="module.framework.sf_spi.chipselect_port" value="module.framework.sf_spi.chipselect_port.PORT_05"/>
+      <property id="module.framework.sf_spi.chipselect_pin" value="module.framework.sf_spi.chipselect_pin.PIN_07"/>
+      <property id="module.framework.sf_spi.chipselectactive" value="module.framework.sf_spi.chipselectactive.low"/>
+    </module>
+    <module id="module.framework.sf_spi_bus_on_sf_spi.416385832">
+      <property id="module.framework.sf_spi_bus.name" value="g_sf_spi_bus"/>
+      <property id="module.framework.sf_spi_bus.spi_interface" value="module.framework.sf_spi_bus.spi_interface.rspi"/>
+      <property id="module.framework.sf_spi_bus.channel" value="0"/>
+    </module>
+    <module id="module.driver.spi_on_rspi.31069712">
+      <property id="module.driver.spi.name" value="g_spi"/>
+      <property id="module.driver.spi.channel" value="0"/>
+      <property id="module.driver.spi.operating_mode" value="module.driver.spi.operating_mode.mode_master"/>
+      <property id="module.driver.spi.clk_phase" value="module.driver.spi.clk_phase.clk_phase_edge_odd"/>
+      <property id="module.driver.spi.clk_polarity" value="module.driver.spi.clk_polarity.clk_polarity_low"/>
+      <property id="module.driver.spi.mode_fault" value="module.driver.spi.mode_fault.mode_fault_error_disable"/>
+      <property id="module.driver.spi.bit_order" value="module.driver.spi.bit_order.bit_order_msb_first"/>
+      <property id="module.driver.spi.bitrate" value="1000000"/>
+      <property id="module.driver.spi.p_callback" value="NULL"/>
+      <property id="module.driver.spi.rspi_clksyn" value="module.driver.spi.rspi_clksyn.spi_operation"/>
+      <property id="module.driver.spi.rspi_comm" value="module.driver.spi.rspi_comm.full_duplex"/>
+      <property id="module.driver.spi.sslp0" value="module.driver.spi.sslp0.low"/>
+      <property id="module.driver.spi.sslp1" value="module.driver.spi.sslp1.low"/>
+      <property id="module.driver.spi.sslp2" value="module.driver.spi.sslp2.low"/>
+      <property id="module.driver.spi.sslp3" value="module.driver.spi.sslp3.low"/>
+      <property id="module.driver.spi.looback1" value="module.driver.spi.looback1.normal"/>
+      <property id="module.driver.spi.looback2" value="module.driver.spi.looback2.normal"/>
+      <property id="module.driver.spi.mosi_idle_enable" value="module.driver.spi.mosi_idle_enable.disable"/>
+      <property id="module.driver.spi.mosi_idle_value" value="module.driver.spi.mosi_idle_value.low"/>
+      <property id="module.driver.spi.parity_enable" value="module.driver.spi.parity_enable.disable"/>
+      <property id="module.driver.spi.parity_mode" value="module.driver.spi.parity_mode.odd"/>
+      <property id="module.driver.spi.ssl_select" value="module.driver.spi.ssl_select.zero"/>
+      <property id="module.driver.spi.ssl_level_keep" value="module.driver.spi.ssl_level_keep.keep"/>
+      <property id="module.driver.spi.clock_delay_enable" value="module.driver.spi.clock_delay_enable.disable"/>
+      <property id="module.driver.spi.clock_delay_val" value="module.driver.spi.clock_delay_val.one"/>
+      <property id="module.driver.spi.rspi_ssl_neg_delay_state" value="module.driver.spi.rspi_ssl_neg_delay_state.disable"/>
+      <property id="module.driver.spi.rspi_ssl_neg_delay_count" value="module.driver.spi.rspi_ssl_neg_delay_count.one"/>
+      <property id="module.driver.spi.rspi_next_access_delay_state" value="module.driver.spi.rspi_next_access_delay_state.disable"/>
+      <property id="module.driver.spi.rspi_next_access_delay_count" value="module.driver.spi.rspi_next_access_delay_count.one"/>
+    </module>
+    <module id="module.driver.external_irq_on_icu.1315786089">
+      <property id="module.driver.external_irq.name" value="g_wifi_irq"/>
+      <property id="module.driver.external_irq.channel" value="9"/>
+      <property id="module.driver.external_irq.trigger" value="module.driver.external_irq.trigger.trig_falling"/>
+      <property id="module.driver.external_irq.filter_enable" value="module.driver.external_irq.filter_enable.false"/>
+      <property id="module.driver.external_irq.pclk_div" value="module.driver.external_irq.pclk_div.pclk_div_by_64"/>
+      <property id="module.driver.external_irq.interrupt_enable" value="module.driver.external_irq.interrupt_enable.false"/>
+      <property id="module.driver.external_irq.p_callback" value="wifiIRQIsr"/>
+    </module>
+    <module id="module.framework.sf_el_ux_comms.1942266209">
+      <property id="module.framework.sf_comms.name" value="g_sf_trace"/>
+    </module>
+    <module id="module.el.ux_device_class_cdc_acm.987896644">
+      <property id="module.el.ux_device_class_cdc_acm.name" value="g_ux_device_class_cdc_acm0"/>
+    </module>
+    <module id="module.el.ux.1962711769">
+      <property id="module.el.ux.name" value="g_ux0"/>
+    </module>
+    <module id="module.framework.sf_el_ux.1430529413">
+      <property id="module.framework.sf_el_ux.name" value="g_sf_el_ux"/>
+    </module>
+    <module id="module.framework.ux_src.2078275620"/>
+    <module id="module.framework.tx_src.867802365"/>
+    <module id="module.framework.sf_i2c_on_sf_i2c.881345987">
+      <property id="module.framework.sf_i2c.name" value="g_sf_i2c_device_tempHum"/>
+    </module>
+    <module id="module.framework.sf_i2c_bus_on_sf_i2c.532509329">
+      <property id="module.framework.sf_i2c_bus.name" value="g_sf_i2c_bus0"/>
+      <property id="module.framework.sf_i2c_bus.i2c_interface" value="module.framework.sf_i2c_bus.i2c_interface.riic"/>
+      <property id="module.framework.sf_i2c_bus.channel" value="1"/>
+    </module>
+    <module id="module.driver.i2c_on_riic.2145256289">
+      <property id="module.driver.i2c.name" value="g_i2c_tempHum"/>
+      <property id="module.driver.i2c.channel" value="1"/>
+      <property id="module.driver.i2c.rate" value="module.driver.i2c.rate.rate_standard"/>
+      <property id="module.driver.i2c.slave" value="0x40"/>
+      <property id="module.driver.i2c.addr_mode" value="module.driver.i2c.addr_mode.addr_mode_7bit"/>
+      <property id="module.driver.i2c.p_callback" value="NULL"/>
+    </module>
+    <module id="module.driver.timer_on_gpt.469794423">
+      <property id="module.driver.timer.name" value="g_timer"/>
+      <property id="module.driver.timer.channel" value="0"/>
+      <property id="module.driver.timer.mode" value="module.driver.timer.mode.mode_periodic"/>
+      <property id="module.driver.timer.period" value="1000000"/>
+      <property id="module.driver.timer.unit" value="module.driver.timer.unit.unit_period_usec"/>
+      <property id="module.driver.timer.duty_cycle" value="50"/>
+      <property id="module.driver.timer.duty_cycle_unit" value="module.driver.timer.duty_cycle_unit.unit_percent"/>
+      <property id="module.driver.timer.autostart" value="module.driver.timer.autostart.true"/>
+      <property id="module.driver.timer.gtioca_output_enabled" value="module.driver.timer.gtioca_output_enabled.false"/>
+      <property id="module.driver.timer.gtioca_stop_level" value="module.driver.timer.gtioca_stop_level.pin_level_low"/>
+      <property id="module.driver.timer.gtiocb_output_enabled" value="module.driver.timer.gtiocb_output_enabled.false"/>
+      <property id="module.driver.timer.gtiocb_stop_level" value="module.driver.timer.gtiocb_stop_level.pin_level_low"/>
+      <property id="module.driver.timer.p_callback" value="NULL"/>
+    </module>
+    <module id="module.driver.sce_hash.887713947">
+      <property id="module.driver.sce_hash.name" value="g_sce_hash"/>
+      <property id="module.driver.sce_hash.algorithm" value="module.driver.sce_hash.algorithm.sha256"/>
+    </module>
+    <module id="module.driver.sce.1210964783">
+      <property id="module.driver.sce.name" value="g_sce"/>
+    </module>
+    <module id="module.driver.rtc_on_rtc.2082352347">
+      <property id="module.driver.rtc.name" value="g_rtc"/>
+      <property id="module.driver.rtc.clock_source" value="module.driver.rtc.clock_source.clock_source_loco"/>
+      <property id="module.driver.rtc.error_adjustment_value" value="0"/>
+      <property id="module.driver.rtc.error_adjustment_type" value="module.driver.rtc.error_adjustment_type.error_adjustment_none"/>
+      <property id="module.driver.rtc.p_callback" value="NULL"/>
+    </module>
+    <module id="module.framework.sf_spi_on_sf_spi.68682905">
+      <property id="module.framework.sf_spi.name" value="g_sf_spi_acc"/>
+      <property id="module.framework.sf_spi.chipselect_port" value="module.framework.sf_spi.chipselect_port.PORT_04"/>
+      <property id="module.framework.sf_spi.chipselect_pin" value="module.framework.sf_spi.chipselect_pin.PIN_13"/>
+      <property id="module.framework.sf_spi.chipselectactive" value="module.framework.sf_spi.chipselectactive.low"/>
+    </module>
+    <module id="module.driver.spi_on_rspi.940090820">
+      <property id="module.driver.spi.name" value="g_spi_acc"/>
+      <property id="module.driver.spi.channel" value="0"/>
+      <property id="module.driver.spi.operating_mode" value="module.driver.spi.operating_mode.mode_master"/>
+      <property id="module.driver.spi.clk_phase" value="module.driver.spi.clk_phase.clk_phase_edge_odd"/>
+      <property id="module.driver.spi.clk_polarity" value="module.driver.spi.clk_polarity.clk_polarity_low"/>
+      <property id="module.driver.spi.mode_fault" value="module.driver.spi.mode_fault.mode_fault_error_disable"/>
+      <property id="module.driver.spi.bit_order" value="module.driver.spi.bit_order.bit_order_msb_first"/>
+      <property id="module.driver.spi.bitrate" value="500000"/>
+      <property id="module.driver.spi.p_callback" value="NULL"/>
+      <property id="module.driver.spi.rspi_clksyn" value="module.driver.spi.rspi_clksyn.spi_operation"/>
+      <property id="module.driver.spi.rspi_comm" value="module.driver.spi.rspi_comm.full_duplex"/>
+      <property id="module.driver.spi.sslp0" value="module.driver.spi.sslp0.low"/>
+      <property id="module.driver.spi.sslp1" value="module.driver.spi.sslp1.low"/>
+      <property id="module.driver.spi.sslp2" value="module.driver.spi.sslp2.low"/>
+      <property id="module.driver.spi.sslp3" value="module.driver.spi.sslp3.low"/>
+      <property id="module.driver.spi.looback1" value="module.driver.spi.looback1.normal"/>
+      <property id="module.driver.spi.looback2" value="module.driver.spi.looback2.normal"/>
+      <property id="module.driver.spi.mosi_idle_enable" value="module.driver.spi.mosi_idle_enable.disable"/>
+      <property id="module.driver.spi.mosi_idle_value" value="module.driver.spi.mosi_idle_value.low"/>
+      <property id="module.driver.spi.parity_enable" value="module.driver.spi.parity_enable.disable"/>
+      <property id="module.driver.spi.parity_mode" value="module.driver.spi.parity_mode.odd"/>
+      <property id="module.driver.spi.ssl_select" value="module.driver.spi.ssl_select.zero"/>
+      <property id="module.driver.spi.ssl_level_keep" value="module.driver.spi.ssl_level_keep.keep"/>
+      <property id="module.driver.spi.clock_delay_enable" value="module.driver.spi.clock_delay_enable.disable"/>
+      <property id="module.driver.spi.clock_delay_val" value="module.driver.spi.clock_delay_val.one"/>
+      <property id="module.driver.spi.rspi_ssl_neg_delay_state" value="module.driver.spi.rspi_ssl_neg_delay_state.disable"/>
+      <property id="module.driver.spi.rspi_ssl_neg_delay_count" value="module.driver.spi.rspi_ssl_neg_delay_count.one"/>
+      <property id="module.driver.spi.rspi_next_access_delay_state" value="module.driver.spi.rspi_next_access_delay_state.disable"/>
+      <property id="module.driver.spi.rspi_next_access_delay_count" value="module.driver.spi.rspi_next_access_delay_count.one"/>
+    </module>
+    <module id="module.framework.sf_spi_on_sf_spi.1597223408">
+      <property id="module.framework.sf_spi.name" value="g_sf_spi_gyro"/>
+      <property id="module.framework.sf_spi.chipselect_port" value="module.framework.sf_spi.chipselect_port.PORT_04"/>
+      <property id="module.framework.sf_spi.chipselect_pin" value="module.framework.sf_spi.chipselect_pin.PIN_14"/>
+      <property id="module.framework.sf_spi.chipselectactive" value="module.framework.sf_spi.chipselectactive.low"/>
+    </module>
+    <module id="module.driver.spi_on_rspi.556012487">
+      <property id="module.driver.spi.name" value="g_spi0"/>
+      <property id="module.driver.spi.channel" value="0"/>
+      <property id="module.driver.spi.operating_mode" value="module.driver.spi.operating_mode.mode_master"/>
+      <property id="module.driver.spi.clk_phase" value="module.driver.spi.clk_phase.clk_phase_edge_even"/>
+      <property id="module.driver.spi.clk_polarity" value="module.driver.spi.clk_polarity.clk_polarity_high"/>
+      <property id="module.driver.spi.mode_fault" value="module.driver.spi.mode_fault.mode_fault_error_disable"/>
+      <property id="module.driver.spi.bit_order" value="module.driver.spi.bit_order.bit_order_msb_first"/>
+      <property id="module.driver.spi.bitrate" value="500000"/>
+      <property id="module.driver.spi.p_callback" value="NULL"/>
+      <property id="module.driver.spi.rspi_clksyn" value="module.driver.spi.rspi_clksyn.spi_operation"/>
+      <property id="module.driver.spi.rspi_comm" value="module.driver.spi.rspi_comm.full_duplex"/>
+      <property id="module.driver.spi.sslp0" value="module.driver.spi.sslp0.low"/>
+      <property id="module.driver.spi.sslp1" value="module.driver.spi.sslp1.low"/>
+      <property id="module.driver.spi.sslp2" value="module.driver.spi.sslp2.low"/>
+      <property id="module.driver.spi.sslp3" value="module.driver.spi.sslp3.low"/>
+      <property id="module.driver.spi.looback1" value="module.driver.spi.looback1.normal"/>
+      <property id="module.driver.spi.looback2" value="module.driver.spi.looback2.normal"/>
+      <property id="module.driver.spi.mosi_idle_enable" value="module.driver.spi.mosi_idle_enable.disable"/>
+      <property id="module.driver.spi.mosi_idle_value" value="module.driver.spi.mosi_idle_value.low"/>
+      <property id="module.driver.spi.parity_enable" value="module.driver.spi.parity_enable.disable"/>
+      <property id="module.driver.spi.parity_mode" value="module.driver.spi.parity_mode.odd"/>
+      <property id="module.driver.spi.ssl_select" value="module.driver.spi.ssl_select.zero"/>
+      <property id="module.driver.spi.ssl_level_keep" value="module.driver.spi.ssl_level_keep.keep"/>
+      <property id="module.driver.spi.clock_delay_enable" value="module.driver.spi.clock_delay_enable.disable"/>
+      <property id="module.driver.spi.clock_delay_val" value="module.driver.spi.clock_delay_val.one"/>
+      <property id="module.driver.spi.rspi_ssl_neg_delay_state" value="module.driver.spi.rspi_ssl_neg_delay_state.disable"/>
+      <property id="module.driver.spi.rspi_ssl_neg_delay_count" value="module.driver.spi.rspi_ssl_neg_delay_count.one"/>
+      <property id="module.driver.spi.rspi_next_access_delay_state" value="module.driver.spi.rspi_next_access_delay_state.disable"/>
+      <property id="module.driver.spi.rspi_next_access_delay_count" value="module.driver.spi.rspi_next_access_delay_count.one"/>
+    </module>
+    <module id="module.driver.qspi_on_qspi.753114255">
+      <property id="module.driver.qspi.name" value="g_flash"/>
+    </module>
+    <module id="module.driver.watchdog_on_wdt.1445812542">
+      <property id="module.driver.watchdog.name" value="g_watchdog"/>
+      <property id="module.driver.watchdog.start_mode" value="module.driver.watchdog.start_mode.register"/>
+      <property id="module.driver.watchdog.start_wdt_after_cfg" value="module.driver.watchdog.start_mode.start_wdt_after_cfg.true"/>
+      <property id="module.driver.watchdog.timeout" value="module.driver.watchdog.timeout.16384"/>
+      <property id="module.driver.watchdog.clock_division" value="module.driver.watchdog.clock_division.8192"/>
+      <property id="module.driver.watchdog.window_start" value="module.driver.watchdog.window_start.100"/>
+      <property id="module.driver.watchdog.window_end" value="module.driver.watchdog.window_end.0"/>
+      <property id="module.driver.watchdog.reset_control" value="module.driver.watchdog.reset_control.reset"/>
+      <property id="module.driver.watchdog.stop_control" value="module.driver.watchdog.stop_control.enable"/>
+      <property id="module.driver.watchdog.nmi_callback" value="watchdog_cb"/>
+    </module>
+    <module id="module.driver.rtc_on_rtc.439415359">
+      <property id="module.driver.rtc.name" value="g_for_wdt"/>
+      <property id="module.driver.rtc.clock_source" value="module.driver.rtc.clock_source.clock_source_loco"/>
+      <property id="module.driver.rtc.error_adjustment_value" value="0"/>
+      <property id="module.driver.rtc.error_adjustment_type" value="module.driver.rtc.error_adjustment_type.error_adjustment_none"/>
+      <property id="module.driver.rtc.p_callback" value="timer_wdt_cb"/>
+    </module>
+    <context id="_hal.425932204">
+      <stack module="module.driver.cgc_on_cgc.1262747326"/>
+      <stack module="module.driver.elc_on_elc.389265035"/>
+      <stack module="module.driver.ioport_on_ioport.1663879723"/>
+      <stack module="module.framework.tx_src.867802365"/>
+      <stack module="module.driver.timer_on_gpt.469794423"/>
+      <stack module="module.driver.sce_hash.887713947">
+        <stack module="module.driver.sce.1210964783" requires="module.driver.sce"/>
+      </stack>
+      <stack module="module.driver.rtc_on_rtc.2082352347"/>
+      <stack module="module.driver.watchdog_on_wdt.1445812542"/>
+      <stack module="module.driver.rtc_on_rtc.439415359"/>
+    </context>
+    <context id="rtos.threadx.thread.147623994">
+      <property id="_symbol" value="wifi_thread"/>
+      <property id="rtos.threadx.thread.name" value="WiFi Thread"/>
+      <property id="rtos.threadx.thread.stack" value="28672"/>
+      <property id="rtos.threadx.thread.priority" value="7"/>
+      <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
+      <property id="rtos.threadx.thread.timeslice" value="1"/>
+      <stack module="module.framework.sf_spi_on_sf_spi.1947304690">
+        <stack module="module.driver.spi_on_rspi.31069712" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
+        <stack module="module.framework.sf_spi_bus_on_sf_spi.416385832" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
+      </stack>
+      <stack module="module.driver.external_irq_on_icu.1315786089"/>
+      <stack module="module.driver.qspi_on_qspi.753114255"/>
+      <object id="rtos.threadx.object.mutex.1160409100">
+        <property id="rtos.threadx.object.mutex.name" value="Wifi Mutex"/>
+        <property id="rtos.threadx.object.mutex.symbol" value="wifi_mutex"/>
+        <property id="rtos.threadx.object.mutex.inherit" value="rtos.threadx.object.mutex.inherit.disabled"/>
+      </object>
+    </context>
+    <context id="rtos.threadx.thread.2044888486">
+      <property id="_symbol" value="console_thread"/>
+      <property id="rtos.threadx.thread.name" value="Console Thread"/>
+      <property id="rtos.threadx.thread.stack" value="6000"/>
+      <property id="rtos.threadx.thread.priority" value="6"/>
+      <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
+      <property id="rtos.threadx.thread.timeslice" value="1"/>
+      <stack module="module.framework.sf_el_ux_comms.1942266209">
+        <stack module="module.el.ux_device_class_cdc_acm.987896644" requires="module.framework.sf_el_ux_comms.requires.ux_device_class_cdc_acm">
+          <stack module="module.el.ux.1962711769" requires="module.el.ux_device_class_cdc_acm.requires.ux">
+            <stack module="module.framework.sf_el_ux.1430529413" requires="module.el.ux.requires.sf_el_ux"/>
+          </stack>
+        </stack>
+      </stack>
+      <stack module="module.framework.ux_src.2078275620">
+        <stack module="module.el.ux.1962711769" requires="module.el.ux_src.requires.ux">
+          <stack module="module.framework.sf_el_ux.1430529413" requires="module.el.ux.requires.sf_el_ux"/>
+        </stack>
+      </stack>
+    </context>
+    <context id="rtos.threadx.thread.115980671">
+      <property id="_symbol" value="sensors_thread"/>
+      <property id="rtos.threadx.thread.name" value="Sensors Thread"/>
+      <property id="rtos.threadx.thread.stack" value="2048"/>
+      <property id="rtos.threadx.thread.priority" value="5"/>
+      <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
+      <property id="rtos.threadx.thread.timeslice" value="1"/>
+      <stack module="module.framework.sf_i2c_on_sf_i2c.881345987">
+        <stack module="module.driver.i2c_on_riic.2145256289" requires="module.framework.sf_i2c_on_sf_i2c.requires.i2c"/>
+        <stack module="module.framework.sf_i2c_bus_on_sf_i2c.532509329" requires="module.framework.sf_i2c_on_sf_i2c.requires.sf_i2c_bus"/>
+      </stack>
+      <stack module="module.framework.sf_spi_on_sf_spi.68682905">
+        <stack module="module.driver.spi_on_rspi.940090820" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
+        <stack module="module.framework.sf_spi_bus_on_sf_spi.416385832" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
+      </stack>
+      <stack module="module.framework.sf_spi_on_sf_spi.1597223408">
+        <stack module="module.driver.spi_on_rspi.556012487" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
+        <stack module="module.framework.sf_spi_bus_on_sf_spi.416385832" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
+      </stack>
+    </context>
+    <config id="config.driver.wdt">
+      <property id="config.driver.wdt.param_checking_enable" value="config.driver.wdt.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.el.ux"/>
+    <config id="config.driver.cgc">
+      <property id="config.driver.cgc.param_checking_enable" value="config.driver.cgc.param_checking_enable.bsp"/>
+      <property id="config.driver.cgc.main_osc_wait" value="config.driver.cgc.main_osc_wait.wait_8163"/>
+      <property id="config.driver.cgc.main_osc_clock_source" value="config.driver.cgc.main_osc_clock_source.crystal"/>
+      <property id="config.driver.cgc.osc_stop_det_used" value="config.driver.cgc.osc_stop_det_used.enabled"/>
+      <property id="config.driver.cgc.subclock_drive" value="config.driver.cgc.subclock_drive.standard"/>
+    </config>
+    <config id="config.driver.sce"/>
+    <config id="config.driver.sce_trng"/>
+    <config id="config.driver.sce_aes"/>
+    <config id="config.driver.sce_hash"/>
+    <config id="config.driver.sce_rsa"/>
+    <config id="config.driver.sce_dsa"/>
+    <config id="config.driver.ioport">
+      <property id="config.driver.ioport.checking" value="config.driver.ioport.checking.system"/>
+    </config>
+    <config id="config.threadx.thread"/>
+    <config id="config.framework.sf_el_ux">
+      <property id="config.framework.sf_el_ux.VBUSENpin_logic" value="config.framework.sf_el_ux.VBUSENpin_logic.active_high"/>
+    </config>
+    <config id="config.driver.riic">
+      <property id="config.driver.riic.param_checking_enable" value="config.driver.riic.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.el.ux_src">
+      <property id="config.el.ux_src.max_classes" value=""/>
+      <property id="config.el.ux_src.max_slave_classes" value=""/>
+      <property id="config.el.ux_src.max_slave_interfaces" value=""/>
+      <property id="config.el.ux_src.max_hcd" value=""/>
+      <property id="config.el.ux_src.max_devices" value=""/>
+      <property id="config.el.ux_src.max_slave_lun" value=""/>
+      <property id="config.el.ux_src.max_host_lun" value=""/>
+      <property id="config.el.ux_src.slave_request_control_max_length" value=""/>
+      <property id="config.el.ux_src.enforce_safe_alignment" value="config.el.ux_src.enforce_safe_alignment.disabled"/>
+    </config>
+    <config id="config.driver.gpt">
+      <property id="config.driver.gpt.param_checking_enable" value="config.driver.gpt.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.framework.sf_i2c">
+      <property id="config.framework.sf_i2c.param_checking_enable" value="config.framework.sf_i2c.param_checking_enable.enabled"/>
+    </config>
+    <config id="config.driver.icu">
+      <property id="config.driver.icu.param_checking_enable" value="config.driver.icu.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.driver.rtc">
+      <property id="config.driver.rtc.param_checking_enable" value="config.driver.rtc.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.framework.sf_el_ux_comms">
+      <property id="config.framework.sf_comms.param_checking_enable" value="config.framework.sf_comms.param_checking_enable.bsp"/>
+      <property id="config.framework.sf_comms.memory_size" value="65536"/>
+      <property id="config.framework.sf_comms.read_size" value="500"/>
+    </config>
+    <config id="config.driver.elc">
+      <property id="config.driver.elc.checking" value="config.driver.elc.checking.system"/>
+    </config>
+    <config id="config.driver.qspi">
+      <property id="config.driver.qspi.param_checking_enable" value="config.driver.qspi.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.driver.rspi">
+      <property id="config.driver.rspi.param_checking_enable" value="config.driver.rspi.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.framework.sf_console">
+      <property id="config.framework.sf_console.param_checking_enable" value="config.framework.sf_console.param_checking_enable.bsp"/>
+      <property id="config.framework.sf_console.max_input_length" value="128"/>
+      <property id="config.framework.sf_console.max_write_length" value="128"/>
+    </config>
+    <config id="config.el.tx_src">
+      <property id="config.el.tx_src.error_checking" value="config.el.tx_src.error_checking.enabled"/>
+      <property id="config.el.tx_src.timer_ticks_per_second" value=""/>
+      <property id="config.el.tx_src.max_priorities" value=""/>
+      <property id="config.el.tx_src.minimum_stack" value=""/>
+      <property id="config.el.tx_src.timer_thread_stack_size" value=""/>
+      <property id="config.el.tx_src.timer_thread_priority" value=""/>
+      <property id="config.el.tx_src.trace_time_mask" value=""/>
+      <property id="config.el.tx_src.timer_process_in_isr" value="config.el.tx_src.timer_process_in_isr.enabled"/>
+      <property id="config.el.tx_src.reactivate_inline" value="config.el.tx_src.reactivate_inline.disabled"/>
+      <property id="config.el.tx_src.stack_filling" value="config.el.tx_src.stack_filling.enabled"/>
+      <property id="config.el.tx_src.stack_checking" value="config.el.tx_src.stack_checking.disabled"/>
+      <property id="config.el.tx_src.preemption_threshold" value="config.el.tx_src.preemption_threshold.disabled"/>
+      <property id="config.el.tx_src.redundant_clearing" value="config.el.tx_src.redundant_clearing.enabled"/>
+      <property id="config.el.tx_src.no_timer" value="config.el.tx_src.no_timer.disabled"/>
+      <property id="config.el.tx_src.notify_callbacks" value="config.el.tx_src.notify_callbacks.disabled"/>
+      <property id="config.el.tx_src.inline_thread_resume_suspend" value="config.el.tx_src.inline_thread_resume_suspend.disabled"/>
+      <property id="config.el.tx_src.not_interruptable" value="config.el.tx_src.not_interruptable.disabled"/>
+      <property id="config.el.tx_src.event_trace" value="config.el.tx_src.event_trace.disabled"/>
+      <property id="config.el.tx_src.trace_buf_name" value="g_tx_trace_buffer"/>
+      <property id="config.el.tx_src.trace_buf_size" value="65536"/>
+      <property id="config.el.tx_src.num_registries" value="30"/>
+      <property id="config.el.tx_src.block_pool_performance_info" value="config.el.tx_src.block_pool_performance_info.disabled"/>
+      <property id="config.el.tx_src.byte_pool_performance_info" value="config.el.tx_src.byte_pool_performance_info.disabled"/>
+      <property id="config.el.tx_src.event_flags_performance_info" value="config.el.tx_src.event_flags_performance_info.disabled"/>
+      <property id="config.el.tx_src.mutex_performance_info" value="config.el.tx_src.mutex_performance_info.disabled"/>
+      <property id="config.el.tx_src.queue_performance_info" value="config.el.tx_src.queue_performance_info.disabled"/>
+      <property id="config.el.tx_src.semaphore_performance_info" value="config.el.tx_src.semaphore_performance_info.disabled"/>
+      <property id="config.el.tx_src.thread_performance_info" value="config.el.tx_src.thread_performance_info.disabled"/>
+      <property id="config.el.tx_src.timer_performance_info" value="config.el.tx_src.timer_performance_info.disabled"/>
+      <property id="config.el.tx_src.hw_stack_monitoring" value="config.el.tx_src.hw_stack_monitoring.enabled"/>
+      <property id="config.el.tx_src.iar_library_support" value="config.el.tx_src.iar_library_support.disabled"/>
+      <property id="config.el.tx_src.epk_support" value="config.el.tx_src.epk_support.disabled"/>
+      <property id="config.el.tx_src.tx_thread_extension_0" value=""/>
+      <property id="config.el.tx_src.tx_thread_extension_1" value=""/>
+      <property id="config.el.tx_src.tx_thread_extension_2" value=""/>
+      <property id="config.el.tx_src.tx_block_pool_extension" value=""/>
+      <property id="config.el.tx_src.tx_byte_pool_extension" value=""/>
+      <property id="config.el.tx_src.tx_event_flags_group_extension" value=""/>
+      <property id="config.el.tx_src.tx_mutex_extension" value=""/>
+      <property id="config.el.tx_src.tx_queue_extension" value=""/>
+      <property id="config.el.tx_src.tx_semaphore_extension" value=""/>
+      <property id="config.el.tx_src.tx_timer_extension" value=""/>
+      <property id="config.el.tx_src.tx_thread_user_extension" value=""/>
+      <property id="config.el.tx_src.tx_thread_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_thread_delete_extension" value=""/>
+      <property id="config.el.tx_src.tx_thread_completed_extension" value=""/>
+      <property id="config.el.tx_src.tx_thread_terminated_extension" value=""/>
+      <property id="config.el.tx_src.tx_block_pool_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_byte_pool_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_event_flags_group_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_mutex_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_queue_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_semaphore_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_timer_create_extension" value=""/>
+      <property id="config.el.tx_src.tx_block_pool_delete_extension" value=""/>
+      <property id="config.el.tx_src.tx_byte_pool_delete_extension" value=""/>
+      <property id="config.el.tx_src.tx_event_flags_group_delete_extension" value=""/>
+      <property id="config.el.tx_src.tx_mutex_delete_extension" value=""/>
+      <property id="config.el.tx_src.tx_queue_delete_extension" value=""/>
+      <property id="config.el.tx_src.tx_semaphore_delete_extension" value=""/>
+      <property id="config.el.tx_src.tx_timer_delete_extension" value=""/>
+    </config>
+    <config id="config.framework.sf_spi_bus">
+      <property id="config.framework.sf_spi_bus.param_checking_enable" value="config.framework.sf_spi_bus.param_checking_enable.bsp"/>
+    </config>
+    <config id="config.framework.sf_spi">
+      <property id="config.framework.sf_spi.param_checking_enable" value="config.framework.sf_spi.param_checking_enable.bsp"/>
+    </config>
+  </synergyModuleConfiguration>
+  <synergyPinConfiguration>
+    <pincfg active="true" name="R7FS7G27H3A01CFC_ARIS.pincfg" symbol="g_bsp_pin_cfg"/>
+  </synergyPinConfiguration>
+</synergyConfiguration>

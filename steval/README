@@ -1,0 +1,12 @@
+ST-SensorTile firmeware
+based on STM32Cube code
+
+### How to prepare SensorTile Cradle ###
+
+By default a SensorTile devkit has the only BlueNRG module for the any data transfer. This firmware configures SPI pins (standart Arduino SPI pins) as a SPI-slave. 
+According the UM2101 User manual, to use the SPI peripheral, use the following solder bridge configuration:
+- SB12, SB13, SB14, SB15, SB16 and SB17 ON (connect the signals from Arduino UNO R3 connector)
+- SB2, SB3, SB4, SB5, SB6, SB7 OFF (disconnect the signals to the DAC)
+- SB1 ON (connect reset signal)
+
+See the devkit scheme (http://www.st.com/content/ccc/resource/technical/layouts_and_diagrams/schematic_pack/group0/dd/ce/e9/b5/8c/d1/4c/07/STEVAL-STLKT01V1%20schematic/files/steval-stlkt01v1_schematic.pdf/jcr:content/translations/en.steval-stlkt01v1_schematic.pdf) for detales.

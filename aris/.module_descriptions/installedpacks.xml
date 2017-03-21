@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<synergyEditorModuleInfo>
+  <synergyEditorPacksList>
+    <pack descriptionsadded="true" path="C:\Renesas\e2_studio\internal\projectgen\arm\packs\user.aris.1.1.1.pack" shortname="user.aris.1.1.1.pack"/>
+    <pack descriptionsadded="true" path="C:\Renesas\e2_studio\internal\projectgen\arm\packs\Renesas.Synergy.1.1.1.pack" shortname="Renesas.Synergy.1.1.1.pack"/>
+    <pack descriptionsadded="true" path="C:\Renesas\e2_studio\internal\projectgen\arm\packs\Renesas.Synergy.1.1.3.pack" shortname="Renesas.Synergy.1.1.3.pack"/>
+    <pack descriptionsadded="true" path="C:\Renesas\e2_studio\internal\projectgen\arm\packs\Renesas.Synergy.1.1.0.pack" shortname="Renesas.Synergy.1.1.0.pack"/>
+    <pack descriptionsadded="true" path="C:\Renesas\e2_studio\internal\projectgen\arm\packs\Renesas.SynergyBlinkyThreadX.1.1.0.pack" shortname="Renesas.SynergyBlinkyThreadX.1.1.0.pack"/>
+    <pack descriptionsadded="true" path="C:\Renesas\e2_studio\internal\projectgen\arm\packs\Renesas.SynergyDeveloper_Examples_for_S7G2_DK.1.1.0.pack" shortname="Renesas.SynergyDeveloper_Examples_for_S7G2_DK.1.1.0.pack"/>
+    <pack descriptionsadded="true" path="C:\Renesas\e2_studio\internal\projectgen\arm\packs\Renesas.SynergyBlinky.1.1.0.pack" shortname="Renesas.SynergyBlinky.1.1.0.pack"/>
+  </synergyEditorPacksList>
+</synergyEditorModuleInfo>
