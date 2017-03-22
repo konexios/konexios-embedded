@@ -19,23 +19,23 @@
 #include "r_cgc_api.h"
 /** RTC on RTC Instance. */
 extern const rtc_instance_t g_for_wdt;
-#ifdef timer_wdt_cb
+#ifdef for_wdt_cb
 #define RTC_CALLBACK_USED_g_for_wdt (0)
 #else
 #define RTC_CALLBACK_USED_g_for_wdt (1)
 #endif
 #if RTC_CALLBACK_USED_g_for_wdt
-void timer_wdt_cb(rtc_callback_args_t * p_args);
+void for_wdt_cb(rtc_callback_args_t * p_args);
 #endif
 /** WDT on WDT Instance. */
 extern const wdt_instance_t g_watchdog;
-#ifdef watchdog_cb
+#ifdef NULL
 #define WATCHDOG_ON_WDT_CALLBACK_USED (0)
 #else
 #define WATCHDOG_ON_WDT_CALLBACK_USED (1)
 #endif
 #if WATCHDOG_ON_WDT_CALLBACK_USED
-void watchdog_cb(wdt_callback_args_t * p_args);
+void NULL(wdt_callback_args_t * p_args);
 #endif
 /** RTC on RTC Instance. */
 extern const rtc_instance_t g_rtc;

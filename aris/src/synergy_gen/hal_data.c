@@ -2,17 +2,17 @@
 #include "hal_data.h"
 #if RTC_CALLBACK_USED_g_for_wdt
 #if defined(__ICCARM__)
-#define timer_wdt_cb_WEAK_ATTRIBUTE
-#pragma weak timer_wdt_cb                            = timer_wdt_cb_internal
+#define for_wdt_cb_WEAK_ATTRIBUTE
+#pragma weak for_wdt_cb                            = for_wdt_cb_internal
 #elif defined(__GNUC__)
-#define timer_wdt_cb_WEAK_ATTRIBUTE       __attribute__ ((weak, alias("timer_wdt_cb_internal")))
+#define for_wdt_cb_WEAK_ATTRIBUTE       __attribute__ ((weak, alias("for_wdt_cb_internal")))
 #endif
-void timer_wdt_cb(rtc_callback_args_t * p_args) timer_wdt_cb_WEAK_ATTRIBUTE;
+void for_wdt_cb(rtc_callback_args_t * p_args) for_wdt_cb_WEAK_ATTRIBUTE;
 #endif
 rtc_ctrl_t g_for_wdt_ctrl;
 const rtc_cfg_t g_for_wdt_cfg =
 { .clock_source = RTC_CLOCK_SOURCE_LOCO, .error_adjustment_value = 0,
-  .error_adjustment_type = RTC_ERROR_ADJUSTMENT_NONE, .p_callback = timer_wdt_cb, .p_context = &g_for_wdt, };
+  .error_adjustment_type = RTC_ERROR_ADJUSTMENT_NONE, .p_callback = for_wdt_cb, .p_context = &g_for_wdt, };
 /* Instance structure to use this module. */
 const rtc_instance_t g_for_wdt =
 { .p_ctrl = &g_for_wdt_ctrl, .p_cfg = &g_for_wdt_cfg, .p_api = &g_rtc_on_rtc };
@@ -21,12 +21,12 @@ const rtc_instance_t g_for_wdt =
 /*******************************************************************************************************************//**
  * @brief      This is a weak example callback function.  It should be overridden by defining a user callback function 
  *             with the prototype below.
- *               - void timer_wdt_cb(rtc_callback_args_t * p_args)
+ *               - void for_wdt_cb(rtc_callback_args_t * p_args)
  *
  * @param[in]  p_args  Callback arguments used to identify what caused the callback.
  **********************************************************************************************************************/
-void timer_wdt_cb_internal(rtc_callback_args_t * p_args);
-void timer_wdt_cb_internal(rtc_callback_args_t * p_args)
+void for_wdt_cb_internal(rtc_callback_args_t * p_args);
+void for_wdt_cb_internal(rtc_callback_args_t * p_args)
 {
     /** Do nothing. */
     SSP_PARAMETER_NOT_USED(p_args);
@@ -34,12 +34,12 @@ void timer_wdt_cb_internal(rtc_callback_args_t * p_args)
 #endif
 #if WATCHDOG_ON_WDT_CALLBACK_USED
 #if defined(__ICCARM__)
-#define watchdog_cb_WEAK_ATTRIBUTE
-#pragma weak watchdog_cb                            = watchdog_cb_internal
+#define NULL_WEAK_ATTRIBUTE
+#pragma weak NULL                            = NULL_internal
 #elif defined(__GNUC__)
-#define watchdog_cb_WEAK_ATTRIBUTE       __attribute__ ((weak, alias("watchdog_cb_internal")))
+#define NULL_WEAK_ATTRIBUTE       __attribute__ ((weak, alias("NULL_internal")))
 #endif
-void watchdog_cb(wdt_callback_args_t * p_args) watchdog_cb_WEAK_ATTRIBUTE;
+void NULL(wdt_callback_args_t * p_args) NULL_WEAK_ATTRIBUTE;
 #endif
 
 static wdt_ctrl_t g_watchdog_ctrl;
@@ -48,7 +48,7 @@ static const wdt_cfg_t g_watchdog_cfg =
 { .start_mode = WDT_START_MODE_REGISTER, .autostart = true, .timeout = WDT_TIMEOUT_16384, .clock_division =
           WDT_CLOCK_DIVISION_8192,
   .window_start = WDT_WINDOW_START_100, .window_end = WDT_WINDOW_END_0, .reset_control = WDT_RESET_CONTROL_RESET,
-  .stop_control = WDT_STOP_CONTROL_ENABLE, .p_callback = watchdog_cb, };
+  .stop_control = WDT_STOP_CONTROL_ENABLE, .p_callback = NULL, };
 
 /* Instance structure to use this module. */
 const wdt_instance_t g_watchdog =
@@ -58,12 +58,12 @@ const wdt_instance_t g_watchdog =
 /*******************************************************************************************************************//**
  * @brief      This is a weak example callback function.  It should be overridden by defining a user callback function
  *             with the prototype below.
- *               - void watchdog_cb(wdt_callback_args_t * p_args)
+ *               - void NULL(wdt_callback_args_t * p_args)
  *
  * @param[in]  p_args  Callback arguments used to identify what caused the callback.
  **********************************************************************************************************************/
-void watchdog_cb_internal(wdt_callback_args_t * p_args);
-void watchdog_cb_internal(wdt_callback_args_t * p_args)
+void NULL_internal(wdt_callback_args_t * p_args);
+void NULL_internal(wdt_callback_args_t * p_args)
 {
     /** Do nothing. */
     SSP_PARAMETER_NOT_USED(p_args);

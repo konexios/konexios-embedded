@@ -1,11 +1,3 @@
-/* Copyright (c) 2017 Arrow Electronics, Inc.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Apache License 2.0
- * which accompanies this distribution, and is available at
- * http://apache.org/licenses/LICENSE-2.0
- * Contributors: Arrow Electronics, Inc.
- */
-
 #define MODULE_NAME "Sensors"
 
 #include "sensors_thread.h"
@@ -23,6 +15,7 @@
 #include "THREADS_SYNC/THREADS_SYNC_USE.h"
 #include "threads_sync_events.h"
 #include "config.h"
+#include "TRACE_USE.h"
 
 static sf_adxl362_ctrl_t adxl362_ctrl;
 static const sf_adxl362_cfg_t adxl362_cfg = { .device = &g_sf_spi_acc };
@@ -44,6 +37,10 @@ static humidity_sensor_ctrl_t hum_sens_ctrl;
 static const humidity_sensor_cfg_t hum_sens_cfg = { .p_extend_cfg = &si7013_cfg, .p_extend_ctrl = &si7013_ctrl };
 static const humidity_sensor_instance_t hum_sens = { .p_ctrl = &hum_sens_ctrl, .p_cfg = &hum_sens_cfg, .p_api = &g_sf_si7013_humidity_api };
 
+extern int __ap_mode;
+
+ioport_port_pin_t led2 = IOPORT_PORT_06_PIN_00;
+
 void sensors_thread_entry(void);
 
 /* Sensors Thread entry function */
@@ -61,7 +58,8 @@ void sensors_thread_entry(void)
     ASSERT( THREADS_SYNC_setEvent( THREAD_SENSORS_RDY_EV ) == true );
     ASSERT( THREADS_SYNC_wait( THREADS_ALL_RDY_EV, TX_WAIT_FOREVER ) == true );
 
-    while (1)
+    ioport_level_t lvl;
+    while (!__ap_mode)
     {
         if ( hum_sens.p_api->readHumidity( hum_sens.p_ctrl, &new_data.hygro.humidity ) == SSP_SUCCESS ) {
             if ( temp_sens.p_api->readTemperature(  temp_sens.p_ctrl, &new_data.hygro.temperature ) == SSP_SUCCESS ) {
@@ -83,7 +81,12 @@ void sensors_thread_entry(void)
 
         new_data.index = i++;
 
+//        DBG("write data %d", new_data.index);
         DATA_QUEUE_write(  &new_data,  TX_WAIT_FOREVER );
+
+        g_ioport.p_api->pinRead(led2, &lvl);
+        if (lvl==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led2 ,IOPORT_LEVEL_HIGH);
+        else g_ioport.p_api->pinWrite(led2 ,IOPORT_LEVEL_LOW);
         tx_thread_sleep ( CONV_MS_TO_TICK(TELEMETRY_DELAY) );
     }
 }
