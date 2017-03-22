@@ -1,16 +1,16 @@
-/*
- * wifi_internal_thread.c
- *
- *  Created on: 28 окт. 2016 г.
- *      Author: ddemidov
+/* Copyright (c) 2017 Arrow Electronics, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Apache License 2.0
+ * which accompanies this distribution, and is available at
+ * http://apache.org/licenses/LICENSE-2.0
+ * Contributors: Arrow Electronics, Inc.
  */
 
 #include "reloc_macro.h"
 #include "wifi_thread.h"
 #include "wifi_internal_thread.h"
 #include "driver/include/m2m_wifi.h"
-#include <debug.h>
-//#include "TRACE_USE.h" //FIXME delete
+#include "nx_debug.h"
 
 #define INT_STACK_LEN 1512
 
@@ -31,14 +31,14 @@ static void wifi_handle_tx_packets(NX_WF_REC *wf) {
 //    while(current)
     if ( current )
     {
-        DBG("m2m_wifi_send_ethernet_pkt |%08x|:: (%d) {%08x}",
+        NX_DBG("m2m_wifi_send_ethernet_pkt |%08x|:: (%d) {%08x}",
                 (UINT)current, (UINT)current->nx_packet_length, (UINT)current->nx_packet_prepend_ptr);
         sint8 status = m2m_wifi_send_ethernet_pkt((uint8*)current->nx_packet_prepend_ptr, (uint16)current->nx_packet_length);
         current->nx_packet_next = 0;
         NX_BACKOFF_RELEASE(current);
         // tx done
         if ( status != NX_SUCCESS ) {
-            DBG("m2m_wifi_send_ethernet_pkt fail: %d", status);
+            NX_DBG("m2m_wifi_send_ethernet_pkt fail: %d", status);
             return; // NX_NOT_SUCCESSFUL;
         }
     }

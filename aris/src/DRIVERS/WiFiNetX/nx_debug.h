@@ -6,12 +6,12 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#ifndef WIFI_INTERNAL_THREAD_H_
-#define WIFI_INTERNAL_THREAD_H_
+#ifndef DRIVERS_WIFINETX_NX_DEBUG_H_
+#define DRIVERS_WIFINETX_NX_DEBUG_H_
 
-#include "nx_aris_wifi.h"
+#include <debug.h>
 
-UINT wifi_internal_run(NX_WF_REC *wf);
-void wifi_internal_stop();
+#define NX_DBG
+#define NX_DBGby8
 
-#endif /* WIFI_INTERNAL_THREAD_H_ */
+#endif /* DRIVERS_WIFINETX_NX_DEBUG_H_ */

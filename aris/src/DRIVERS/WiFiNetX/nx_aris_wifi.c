@@ -1,10 +1,10 @@
-/*
- * nx_aris_wifi.c
- *
- *  Created on: 28 нояб. 2016 г.
- *      Author: ddemidov
+/* Copyright (c) 2017 Arrow Electronics, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Apache License 2.0
+ * which accompanies this distribution, and is available at
+ * http://apache.org/licenses/LICENSE-2.0
+ * Contributors: Arrow Electronics, Inc.
  */
-
 
 #include "bsp_api.h"
 
@@ -15,8 +15,7 @@
 #include "nx_aris_wifi.h"
 #include "nx_hw_aris_wifi.h"
 
-#include <debug.h>
-//#include "TRACE_USE.h" // FIXME delete
+#include "nx_debug.h"
 #include "reloc_macro.h"
 #include "driver/include/m2m_wifi.h"
 
@@ -82,7 +81,7 @@ VOID nx_wifi_driver(NX_IP_DRIVER *driver_req_ptr, NX_WF_REC *nx_rec_ptr) {
 
     driver_req_ptr->nx_ip_driver_status = NX_SUCCESS;
 
-    DBG("start wifi driver %d", driver_command);
+    NX_DBG("start wifi driver %d", driver_command);
 
     switch (driver_command) {
         case NX_LINK_INTERFACE_ATTACH :
@@ -90,10 +89,10 @@ VOID nx_wifi_driver(NX_IP_DRIVER *driver_req_ptr, NX_WF_REC *nx_rec_ptr) {
             nx_rec_ptr->ether_interface_ptr = driver_req_ptr->nx_ip_driver_interface;
             tx_mutex_create(&nx_rec_ptr->mtx, "NETX mutex", TX_NO_INHERIT);
             if ( tx_event_flags_create(&nx_rec_ptr->flags, "txrx_events") != TX_SUCCESS ) {
-                DBG("tx_event_flags_create fail");
+                NX_DBG("tx_event_flags_create fail");
             }
             if ( tx_event_flags_set(&nx_rec_ptr->flags, NO_ACTIVITY, TX_AND) != TX_SUCCESS ) {
-                DBG("tx_event_flags_set fail (init)");
+                NX_DBG("tx_event_flags_set fail (init)");
             }
             break;
 
@@ -167,7 +166,7 @@ VOID nx_wifi_driver(NX_IP_DRIVER *driver_req_ptr, NX_WF_REC *nx_rec_ptr) {
 
             nx_packet_pool_info_get(&pool_1, &total_packets, &free_packets, &empty_pool_requests, &empty_pool_suspensions, &invalid_packet_releases);
 
-            DBG("total: %d, free: %d, {%d, %d, %d}", total_packets, free_packets,
+            NX_DBG("total: %d, free: %d, {%d, %d, %d}", total_packets, free_packets,
                     empty_pool_requests, empty_pool_suspensions, invalid_packet_releases);
 
             if ( (driver_command==NX_LINK_PACKET_SEND) || (driver_command==NX_LINK_ARP_RESPONSE_SEND) ) {
@@ -201,7 +200,7 @@ VOID nx_wifi_driver(NX_IP_DRIVER *driver_req_ptr, NX_WF_REC *nx_rec_ptr) {
             break;
 
         default:
-            DBG("NX_UNHANDLED_COMMAND");
+            NX_DBG("NX_UNHANDLED_COMMAND");
             driver_req_ptr->nx_ip_driver_status = NX_UNHANDLED_COMMAND;
             break;
     }
