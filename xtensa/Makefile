@@ -13,13 +13,13 @@ IMAGEDIR := $(SRC_IOE)/image
 DEMO_OUT = $(IMAGEDIR)/${APP_NAME}.out
 DEMO_LIB = $(LIBDIR)/lib${APP_NAME}.a
 
-KRONOS_C_SDK_PATH = ../kronos-c-sdk/
+C_SDK_PATH = ../acn-sdk-c
 
--include $(KRONOS_C_SDK_PATH)Makefile.def
+-include $(C_SDK_PATH)/Makefile.def
 
 INCLUDES += \
-	-I../kronos-c-sdk \
-	-I../kronos-c-sdk/include
+	-I$(C_SDK_PATH) \
+	-I$(C_SDK_PATH)/include
 
 
 CFLAGS = $(COPTS) $(DEFINES) $(INCLUDES) 
@@ -86,7 +86,7 @@ $(DEMO_LIB): $(OBJS)
 	$(AR) ru $@ $^
 
 libkronoscsdk.a:
-	cd $(KRONOS_C_SDK_PATH) && make -f Makefile.xtensa
+	cd $(C_SDK_PATH) && make -f Makefile.xtensa
 
 $(DEMO_OUT): libkronoscsdk.a $(LIBS) $(LDS)
 	@mkdir -p $(IMAGEDIR)
@@ -99,7 +99,7 @@ all: $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
 
 clean:
 	$(foreach d, $(SUBDIRS), make -C $(d) clean;)
-	make -C $(KRONOS_C_SDK_PATH) -f $(KRONOS_C_SDK_PATH)Makefile.xtensa clean
+	make -C $(C_SDK_PATH) -f $(C_SDK_PATH)/Makefile.xtensa clean
 	$(RM) $(OBJS)
 	$(RM) $(DEMO_LIB)
 	$(RM) $(DEMO_OUT)

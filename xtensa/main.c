@@ -8,7 +8,6 @@
  */
 
 #include <qcom_common.h>
-#include <qcom_wps.h>
 #include <qcom_gpio.h>
 #include <qcom_gpio_interrupts.h>
 #include <qcom/socket_api.h>
