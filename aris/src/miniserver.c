@@ -13,6 +13,8 @@
 #include "flasharis.h"
 #include <bsd/socket.h>
 #include <arrow/utf8.h>
+#include <arrow/gateway.h>
+#include <arrow/device.h>
 
 #define CHUNK_SIZE 512
 
@@ -253,7 +255,6 @@ void server_run() {
     DBG("+++ on accept %d", childfd);
 
     while(1) {
-
         req.meth = NULL;
         size_t buf_len;
         if ( receive_request(childfd, &req, client_buf, &need_read, &buf_len) < 0) {
@@ -297,6 +298,12 @@ void server_run() {
                     DBG("pass: %s", wfc.password);
                     DBG("sec:  %d", wfc.secure);
                     save_wifi_setting(wfc.ssid, wfc.password, wfc.secure);
+                    arrow_gateway_t dummy_gate;
+                    arrow_device_t dummy_dev;
+                    arrow_gateway_init(&dummy_gate);
+                    arrow_device_init(&dummy_dev);
+                    save_gateway_info(&dummy_gate);
+                    save_device_info(&dummy_dev);
                     if ( wfc.ssid ) free(wfc.ssid);
                     if ( wfc.password ) free(wfc.password);
                     char *pl =
@@ -305,6 +312,8 @@ void server_run() {
                             "<body><div style='padding: 20px;'><h1>DONE</h1><h3>Wi-Fi configuration was saved</h3>"
                             "</div></body></html>";
                     send_simple_response(childfd, pl);
+                    tx_thread_sleep ( CONV_MS_TO_TICK(1000) );
+                    Reset_Handler();
                 }
             } break;
         } // switch

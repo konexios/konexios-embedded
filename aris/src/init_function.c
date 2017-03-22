@@ -22,10 +22,10 @@ void tx_application_define_user(void * first_unused_memory) {
     g_watchdog.p_api->open(g_watchdog.p_ctrl, g_watchdog.p_cfg);
     g_for_wdt.p_api->open(g_for_wdt.p_ctrl, g_for_wdt.p_cfg);
     g_for_wdt.p_api->periodicIrqRateSet(g_for_wdt.p_ctrl, RTC_PERIODIC_IRQ_SELECT_1_DIV_BY_8_SECOND);
-    g_for_wdt.p_api->calendarCounterStart(g_for_wdt.p_ctrl);
     g_for_wdt.p_api->irqEnable(g_for_wdt.p_ctrl, RTC_EVENT_PERIODIC_IRQ);
     g_rtc.p_api->open(g_rtc.p_ctrl, g_rtc.p_cfg);
     g_timer.p_api->open(g_timer.p_ctrl, g_timer.p_cfg);
     g_timer.p_api->start(g_timer.p_ctrl);
     g_watchdog.p_api->refresh(g_watchdog.p_ctrl);
+    g_for_wdt.p_api->calendarCounterStart(g_for_wdt.p_ctrl);
 }
