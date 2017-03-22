@@ -1,9 +1,11 @@
-/*
- * init_function.c
- *
- *  Created on: 27 окт. 2016 г.
- *      Author: ddemidov
+/* Copyright (c) 2017 Arrow Electronics, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Apache License 2.0
+ * which accompanies this distribution, and is available at
+ * http://apache.org/licenses/LICENSE-2.0
+ * Contributors: Arrow Electronics, Inc.
  */
+
 #include "reloc_macro.h"
 #include "THREADS_SYNC/THREADS_SYNC_OWN.h"
 #include "flasharis.h"
