@@ -44,7 +44,6 @@
 
 #include "bsp/include/nm_bsp.h"
 #include "bsp/include/nm_bsp_internal.h"
-#include "TRACE_USE.h"
 
 /**@defgroup  DebugDefines DebugDefines
  * @ingroup WlanDefines
@@ -93,11 +92,11 @@
 #endif
 #endif
 #else
-#define M2M_ERR DBG
-#define M2M_DBG DBG
-#define M2M_REQ DBG
-#define M2M_INFO DBG
-#define M2M_PRINT DBG
+#define M2M_ERR
+#define M2M_DBG
+#define M2M_REQ
+#define M2M_INFO
+#define M2M_PRINT
 #endif
 #else
 #if (!defined  __MCF964548__)||(!defined __SAMD21J18A__)

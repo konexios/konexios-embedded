@@ -1,8 +1,9 @@
-/*
- * winc.h
- *
- *  Created on: 9 февр. 2017 г.
- *      Author: ddemidov
+/* Copyright (c) 2017 Arrow Electronics, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Apache License 2.0
+ * which accompanies this distribution, and is available at
+ * http://apache.org/licenses/LICENSE-2.0
+ * Contributors: Arrow Electronics, Inc.
  */
 
 #ifndef DRIVERS_WIFIWINC_WINC_H_

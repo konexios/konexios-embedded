@@ -33,42 +33,44 @@ ioport_port_pin_t led1 = IOPORT_PORT_00_PIN_14;
 ioport_port_pin_t led2 = IOPORT_PORT_06_PIN_00;
 
 //#define TEST
-static int count_wdt = 0;
-
-void watchdog_cb(wdt_callback_args_t * p_args) {
-//    DBG("watchdog p_arg %p", p_args);
-//    g_watchdog.p_api->statusClear(g_watchdog.p_ctrl, 0);
-//    g_watchdog.p_api->refresh(g_watchdog.p_ctrl);
-}
-
-void timer_wdt_cb(rtc_callback_args_t * p_args) {
-//    DBG("--------------- watchdog p_ar %d", p_args->event);
-//    DBG("-\r\n");
-    if (count_wdt ++ < 60*8)
-        g_watchdog.p_api->refresh(g_watchdog.p_ctrl);
-}
-
-void feed_wdt() {
-    count_wdt = 0;
-    g_watchdog.p_api->refresh(g_watchdog.p_ctrl);
-}
-
+#if defined(TEST)
 #define test_http_request(request, name) \
     DBG(#name "\t"); \
     if ( ( request ) < 0 ) { DBG("[fail]"); } \
     else { DBG("[OK]"); }
+#endif
 
+static int count_wdt = 0;
+static int _stop_wdt = 0;
 
 void wifiIRQIsr( external_irq_callback_args_t *p_args ) {
     UNUSED_PARAMETER( p_args );
     nm_bsp_wifi_chip_isr();
 }
 
+void timer_wdt_cb(rtc_callback_args_t *p_args) {
+    //DBG("-\r\n");
+    SSP_PARAMETER_NOT_USED(p_args);
+    if (count_wdt ++ < 60*8 || ( _stop_wdt ) )
+        g_watchdog.p_api->refresh(g_watchdog.p_ctrl);
+}
+
+static void feed_wdt() {
+    count_wdt = 0;
+    g_watchdog.p_api->refresh(g_watchdog.p_ctrl);
+}
+
+static void stop_wdt() {
+    _stop_wdt = 1;
+}
+
+
 void wifi_thread_entry(void);
 
 /* WIFI Thread entry function */
 void wifi_thread_entry(void) {
     feed_wdt();
+    //g_for_wdt.p_api->calendarCounterStart(g_for_wdt.p_ctrl);
     ioport_level_t ap_mode_lvl; // choose the mode ap/sta
     ioport_level_t ota_mode_lvl; // choose the mode ota
     g_ioport.p_api->pinRead(IOPORT_PORT_00_PIN_00, &ap_mode_lvl);
@@ -87,10 +89,11 @@ void wifi_thread_entry(void) {
     winc1500_init();
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
 
-    if ( ap_mode_lvl == IOPORT_LEVEL_LOW ) {
+    if ( ap_mode_lvl != IOPORT_LEVEL_LOW ) {
         if ( ota_mode_lvl != IOPORT_LEVEL_LOW ) {
 force_ap:
-            DBG("init AP mode");
+            DBG("init AP mode %d", count_wdt);
+            stop_wdt();
             net_ap_init();
             server_run();
         } else {
@@ -102,10 +105,11 @@ force_ap:
         ioport_level_t lvl1;
         int i = 0;
         while(1) {
+            feed_wdt();
             server_run();
             if ( (i++ % 50) == 0 ) {
                 g_ioport.p_api->pinRead(led1, &lvl1);
-                if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
+                if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1, IOPORT_LEVEL_HIGH);
                 else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
             }
             tx_thread_sleep ( CONV_MS_TO_TICK(10) );
