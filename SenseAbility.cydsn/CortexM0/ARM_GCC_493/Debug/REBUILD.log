@@ -1,0 +1,22 @@
+--------------- Rebuild Started: 03/16/2017 11:29:24 Project: main.c, Configuration: ARM GCC 4.9-2015-q1-update Debug ---------------
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -Wno-main -I..\kronos-c-sdk -I..\kronos-c-sdk\include -I..\kronos-c-sdk\src\wolfSSL -I..\kronos-c-sdk\src\wolfSSL\wolfssl -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_493\Debug/main.lst -g -D DEBUG -D __senseability__ -Wall -ffunction-sections -Og -ffat-lto-objects -c .\main.c -o .\CortexM0\ARM_GCC_493\Debug\main.o
+In file included from ..\kronos-c-sdk\include/arrow/mem.h:4:0,
+                 from ..\kronos-c-sdk\include/arrow/gateway.h:11,
+                 from ..\kronos-c-sdk\include/arrow/connection.h:11,
+                 from .\main.c:18:
+..\kronos-c-sdk\include/config.h:17:0: warning: "DEBUG" redefined
+ #define DEBUG
+ ^
+<command-line>:0:0: note: this is the location of the previous definition
+.\main.c: In function 'main':
+.\main.c:91:27: error: invalid suffix "S" on integer constant
+         CySysWatchdogFeed(0S);
+                           ^
+.\main.c:60:28: warning: unused variable 'config' [-Wunused-variable]
+     arrow_gateway_config_t config;
+                            ^
+.\main.c:59:21: warning: unused variable 'gateway' [-Wunused-variable]
+     arrow_gateway_t gateway;
+                     ^
+The command 'arm-none-eabi-gcc.exe' failed with exit code '1'.
+--------------- Rebuild Failed: 03/16/2017 11:29:24 ---------------

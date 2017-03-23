@@ -1,0 +1,6 @@
+--------------- Clean Started: 03/23/2017 10:16:23 Project: SenseAbility, Configuration: ARM GCC 4.9-2015-q1-update Debug ---------------
+Deleting file ".\SenseAbility.cycdx"
+Deleting file ".\SenseAbility.svd"
+Deleting file ".\SenseAbility.rpt"
+Deleting file ".\SenseAbility_timing.html"
+--------------- Clean Succeeded: 03/23/2017 10:16:23 ---------------

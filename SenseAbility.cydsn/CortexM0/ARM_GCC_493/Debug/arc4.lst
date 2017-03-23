@@ -1,0 +1,1470 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"arc4.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.wc_Arc4SetKey,"ax",%progbits
+  18              		.align	2
+  19              		.global	wc_Arc4SetKey
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	wc_Arc4SetKey, %function
+  23              	wc_Arc4SetKey:
+  24              	.LFB0:
+  25              		.file 1 "..\\kronos-c-sdk\\src\\wolfSSL\\wolfcrypt\\src\\arc4.c"
+   1:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** /* arc4.c
+   2:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  *
+   3:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * Copyright (C) 2006-2016 wolfSSL Inc.
+   4:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  *
+   5:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * This file is part of wolfSSL.
+   6:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  *
+   7:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * wolfSSL is free software; you can redistribute it and/or modify
+   8:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * it under the terms of the GNU General Public License as published by
+   9:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * the Free Software Foundation; either version 2 of the License, or
+  10:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * (at your option) any later version.
+  11:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  *
+  12:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * wolfSSL is distributed in the hope that it will be useful,
+  13:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * GNU General Public License for more details.
+  16:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  *
+  17:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * You should have received a copy of the GNU General Public License
+  18:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * along with this program; if not, write to the Free Software
+  19:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+  20:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****  */
+  21:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  22:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  23:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #ifdef HAVE_CONFIG_H
+  24:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     #include <config.h>
+  25:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #endif
+  26:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  27:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #include <wolfssl/wolfcrypt/settings.h>
+  28:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  29:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #ifndef NO_RC4
+  30:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  31:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #include <wolfssl/wolfcrypt/arc4.h>
+  32:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 2
+
+
+  33:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #ifdef HAVE_CAVIUM
+  34:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     static void wc_Arc4CaviumSetKey(Arc4* arc4, const byte* key, word32 length);
+  35:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     static void wc_Arc4CaviumProcess(Arc4* arc4, byte* out, const byte* in,
+  36:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****                                   word32 length);
+  37:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #endif
+  38:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  39:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  40:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** void wc_Arc4SetKey(Arc4* arc4, const byte* key, word32 length)
+  41:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** {
+  26              		.loc 1 41 0
+  27              		.cfi_startproc
+  28              	.LVL0:
+  29 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  30              		.cfi_def_cfa_offset 20
+  31              		.cfi_offset 4, -20
+  32              		.cfi_offset 5, -16
+  33              		.cfi_offset 6, -12
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 4F46     		mov	r7, r9
+  37 0004 4646     		mov	r6, r8
+  38 0006 C0B4     		push	{r6, r7}
+  39              		.cfi_def_cfa_offset 28
+  40              		.cfi_offset 8, -28
+  41              		.cfi_offset 9, -24
+  42 0008 8946     		mov	r9, r1
+  43 000a 9446     		mov	ip, r2
+  44              	.LVL1:
+  42:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     word32 i;
+  43:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     word32 keyIndex = 0, stateIndex = 0;
+  44:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  45:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #ifdef HAVE_CAVIUM
+  46:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     if (arc4->magic == WOLFSSL_ARC4_CAVIUM_MAGIC)
+  47:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         return wc_Arc4CaviumSetKey(arc4, key, length);
+  48:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #endif
+  49:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  50:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     arc4->x = 1;
+  45              		.loc 1 50 0
+  46 000c 0123     		mov	r3, #1
+  47 000e 0370     		strb	r3, [r0]
+  51:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     arc4->y = 0;
+  48              		.loc 1 51 0
+  49 0010 0023     		mov	r3, #0
+  50 0012 4370     		strb	r3, [r0, #1]
+  51              	.LVL2:
+  52:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  53:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     for (i = 0; i < ARC4_STATE_SIZE; i++)
+  52              		.loc 1 53 0
+  53 0014 02E0     		b	.L2
+  54              	.LVL3:
+  55              	.L3:
+  54:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         arc4->state[i] = (byte)i;
+  56              		.loc 1 54 0 discriminator 3
+  57 0016 C218     		add	r2, r0, r3
+  58 0018 9370     		strb	r3, [r2, #2]
+  53:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         arc4->state[i] = (byte)i;
+  59              		.loc 1 53 0 discriminator 3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 3
+
+
+  60 001a 0133     		add	r3, r3, #1
+  61              	.LVL4:
+  62              	.L2:
+  53:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         arc4->state[i] = (byte)i;
+  63              		.loc 1 53 0 is_stmt 0 discriminator 1
+  64 001c FF2B     		cmp	r3, #255
+  65 001e FAD9     		bls	.L3
+  66 0020 0023     		mov	r3, #0
+  67              	.LVL5:
+  68 0022 0024     		mov	r4, #0
+  69 0024 0025     		mov	r5, #0
+  70 0026 10E0     		b	.L4
+  71              	.LVL6:
+  72              	.L6:
+  73              	.LBB2:
+  55:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  56:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     for (i = 0; i < ARC4_STATE_SIZE; i++) {
+  57:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         word32 a = arc4->state[i];
+  74              		.loc 1 57 0 is_stmt 1
+  75 0028 4219     		add	r2, r0, r5
+  76 002a 9778     		ldrb	r7, [r2, #2]
+  77              	.LVL7:
+  58:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         stateIndex += key[keyIndex] + a;
+  78              		.loc 1 58 0
+  79 002c 4946     		mov	r1, r9
+  80 002e 0E5D     		ldrb	r6, [r1, r4]
+  81 0030 F619     		add	r6, r6, r7
+  82 0032 F318     		add	r3, r6, r3
+  83              	.LVL8:
+  59:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         stateIndex &= 0xFF;
+  84              		.loc 1 59 0
+  85 0034 FF26     		mov	r6, #255
+  86 0036 3340     		and	r3, r6
+  87              	.LVL9:
+  60:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         arc4->state[i] = arc4->state[stateIndex];
+  88              		.loc 1 60 0
+  89 0038 C618     		add	r6, r0, r3
+  90 003a B178     		ldrb	r1, [r6, #2]
+  91 003c 9170     		strb	r1, [r2, #2]
+  61:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         arc4->state[stateIndex] = (byte)a;
+  92              		.loc 1 61 0
+  93 003e B770     		strb	r7, [r6, #2]
+  62:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  63:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         if (++keyIndex >= length)
+  94              		.loc 1 63 0
+  95 0040 0134     		add	r4, r4, #1
+  96              	.LVL10:
+  97 0042 6445     		cmp	r4, ip
+  98 0044 00D3     		bcc	.L5
+  64:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****             keyIndex = 0;
+  99              		.loc 1 64 0
+ 100 0046 0024     		mov	r4, #0
+ 101              	.LVL11:
+ 102              	.L5:
+ 103              	.LBE2:
+  56:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         word32 a = arc4->state[i];
+ 104              		.loc 1 56 0 discriminator 2
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 4
+
+
+ 105 0048 0135     		add	r5, r5, #1
+ 106              	.LVL12:
+ 107              	.L4:
+  56:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         word32 a = arc4->state[i];
+ 108              		.loc 1 56 0 is_stmt 0 discriminator 1
+ 109 004a FF2D     		cmp	r5, #255
+ 110 004c ECD9     		bls	.L6
+  65:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     }
+  66:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** }
+ 111              		.loc 1 66 0 is_stmt 1
+ 112              		@ sp needed
+ 113              	.LVL13:
+ 114              	.LVL14:
+ 115              	.LVL15:
+ 116 004e 0CBC     		pop	{r2, r3}
+ 117 0050 9046     		mov	r8, r2
+ 118 0052 9946     		mov	r9, r3
+ 119 0054 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 120              		.cfi_endproc
+ 121              	.LFE0:
+ 122              		.size	wc_Arc4SetKey, .-wc_Arc4SetKey
+ 123 0056 C046     		.section	.text.wc_Arc4Process,"ax",%progbits
+ 124              		.align	2
+ 125              		.global	wc_Arc4Process
+ 126              		.code	16
+ 127              		.thumb_func
+ 128              		.type	wc_Arc4Process, %function
+ 129              	wc_Arc4Process:
+ 130              	.LFB2:
+  67:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  68:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  69:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** static INLINE byte MakeByte(word32* x, word32* y, byte* s)
+  70:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** {
+  71:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     word32 a = s[*x], b;
+  72:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     *y = (*y+a) & 0xff;
+  73:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  74:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     b = s[*y];
+  75:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     s[*x] = (byte)b;
+  76:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     s[*y] = (byte)a;
+  77:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     *x = (*x+1) & 0xff;
+  78:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  79:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     return s[(a+b) & 0xff];
+  80:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** }
+  81:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  82:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  83:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** void wc_Arc4Process(Arc4* arc4, byte* out, const byte* in, word32 length)
+  84:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** {
+ 131              		.loc 1 84 0
+ 132              		.cfi_startproc
+ 133              	.LVL16:
+ 134 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 135              		.cfi_def_cfa_offset 20
+ 136              		.cfi_offset 4, -20
+ 137              		.cfi_offset 5, -16
+ 138              		.cfi_offset 6, -12
+ 139              		.cfi_offset 7, -8
+ 140              		.cfi_offset 14, -4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 5
+
+
+ 141 0002 4F46     		mov	r7, r9
+ 142 0004 4646     		mov	r6, r8
+ 143 0006 C0B4     		push	{r6, r7}
+ 144              		.cfi_def_cfa_offset 28
+ 145              		.cfi_offset 8, -28
+ 146              		.cfi_offset 9, -24
+ 147 0008 8146     		mov	r9, r0
+  85:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     word32 x;
+  86:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     word32 y;
+  87:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  88:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #ifdef HAVE_CAVIUM
+  89:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     if (arc4->magic == WOLFSSL_ARC4_CAVIUM_MAGIC)
+  90:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         return wc_Arc4CaviumProcess(arc4, out, in, length);
+  91:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** #endif
+  92:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  93:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     x = arc4->x;
+ 148              		.loc 1 93 0
+ 149 000a 0578     		ldrb	r5, [r0]
+ 150              	.LVL17:
+  94:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     y = arc4->y;
+ 151              		.loc 1 94 0
+ 152 000c 4478     		ldrb	r4, [r0, #1]
+ 153              	.LVL18:
+  95:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  96:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     while(length--)
+ 154              		.loc 1 96 0
+ 155 000e 15E0     		b	.L9
+ 156              	.LVL19:
+ 157              	.L10:
+  97:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         *out++ = *in++ ^ MakeByte(&x, &y, arc4->state);
+ 158              		.loc 1 97 0
+ 159 0010 1378     		ldrb	r3, [r2]
+ 160 0012 9846     		mov	r8, r3
+ 161 0014 4B46     		mov	r3, r9
+ 162 0016 9E1C     		add	r6, r3, #2
+ 163              	.LVL20:
+ 164              	.LBB5:
+ 165              	.LBB6:
+  71:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     *y = (*y+a) & 0xff;
+ 166              		.loc 1 71 0
+ 167 0018 705D     		ldrb	r0, [r6, r5]
+ 168              	.LVL21:
+  72:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+ 169              		.loc 1 72 0
+ 170 001a 2418     		add	r4, r4, r0
+ 171              	.LVL22:
+ 172 001c FF27     		mov	r7, #255
+ 173 001e 3C40     		and	r4, r7
+ 174              	.LVL23:
+  74:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     s[*x] = (byte)b;
+ 175              		.loc 1 74 0
+ 176 0020 335D     		ldrb	r3, [r6, r4]
+ 177              	.LVL24:
+  75:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     s[*y] = (byte)a;
+ 178              		.loc 1 75 0
+ 179 0022 7355     		strb	r3, [r6, r5]
+  76:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     *x = (*x+1) & 0xff;
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 6
+
+
+ 180              		.loc 1 76 0
+ 181 0024 3055     		strb	r0, [r6, r4]
+  77:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+ 182              		.loc 1 77 0
+ 183 0026 0135     		add	r5, r5, #1
+ 184              	.LVL25:
+ 185 0028 3D40     		and	r5, r7
+ 186              	.LVL26:
+  79:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** }
+ 187              		.loc 1 79 0
+ 188 002a C318     		add	r3, r0, r3
+ 189              	.LVL27:
+ 190 002c 3B40     		and	r3, r7
+ 191 002e F35C     		ldrb	r3, [r6, r3]
+ 192              	.LBE6:
+ 193              	.LBE5:
+ 194              		.loc 1 97 0
+ 195 0030 4046     		mov	r0, r8
+ 196              	.LVL28:
+ 197 0032 4340     		eor	r3, r0
+ 198 0034 0B70     		strb	r3, [r1]
+  96:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         *out++ = *in++ ^ MakeByte(&x, &y, arc4->state);
+ 199              		.loc 1 96 0
+ 200 0036 6346     		mov	r3, ip
+ 201              		.loc 1 97 0
+ 202 0038 0132     		add	r2, r2, #1
+ 203              	.LVL29:
+ 204 003a 0131     		add	r1, r1, #1
+ 205              	.LVL30:
+ 206              	.L9:
+  96:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****         *out++ = *in++ ^ MakeByte(&x, &y, arc4->state);
+ 207              		.loc 1 96 0
+ 208 003c 581E     		sub	r0, r3, #1
+ 209 003e 8446     		mov	ip, r0
+ 210              	.LVL31:
+ 211 0040 002B     		cmp	r3, #0
+ 212 0042 E5D1     		bne	.L10
+  98:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** 
+  99:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     arc4->x = (byte)x;
+ 213              		.loc 1 99 0
+ 214 0044 4B46     		mov	r3, r9
+ 215 0046 1D70     		strb	r5, [r3]
+ 100:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c ****     arc4->y = (byte)y;
+ 216              		.loc 1 100 0
+ 217 0048 5C70     		strb	r4, [r3, #1]
+ 101:..\kronos-c-sdk\src\wolfSSL\wolfcrypt\src/arc4.c **** }
+ 218              		.loc 1 101 0
+ 219              		@ sp needed
+ 220              	.LVL32:
+ 221              	.LVL33:
+ 222              	.LVL34:
+ 223 004a 0CBC     		pop	{r2, r3}
+ 224 004c 9046     		mov	r8, r2
+ 225 004e 9946     		mov	r9, r3
+ 226 0050 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 227              		.cfi_endproc
+ 228              	.LFE2:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 7
+
+
+ 229              		.size	wc_Arc4Process, .-wc_Arc4Process
+ 230 0052 C046     		.text
+ 231              	.Letext0:
+ 232              		.file 2 "..\\kronos-c-sdk\\src\\wolfSSL/wolfssl/wolfcrypt/types.h"
+ 233              		.file 3 "..\\kronos-c-sdk\\src\\wolfSSL/wolfssl/wolfcrypt/arc4.h"
+ 234              		.section	.debug_info,"",%progbits
+ 235              	.Ldebug_info0:
+ 236 0000 77020000 		.4byte	0x277
+ 237 0004 0400     		.2byte	0x4
+ 238 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 239 000a 04       		.byte	0x4
+ 240 000b 01       		.uleb128 0x1
+ 241 000c 39010000 		.4byte	.LASF21
+ 242 0010 01       		.byte	0x1
+ 243 0011 67000000 		.4byte	.LASF22
+ 244 0015 C6000000 		.4byte	.LASF23
+ 245 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 246 001d 00000000 		.4byte	0
+ 247 0021 00000000 		.4byte	.Ldebug_line0
+ 248 0025 02       		.uleb128 0x2
+ 249 0026 04       		.byte	0x4
+ 250 0027 05       		.byte	0x5
+ 251 0028 696E7400 		.ascii	"int\000"
+ 252 002c 03       		.uleb128 0x3
+ 253 002d 13000000 		.4byte	.LASF2
+ 254 0031 02       		.byte	0x2
+ 255 0032 2D       		.byte	0x2d
+ 256 0033 37000000 		.4byte	0x37
+ 257 0037 04       		.uleb128 0x4
+ 258 0038 01       		.byte	0x1
+ 259 0039 08       		.byte	0x8
+ 260 003a 28000000 		.4byte	.LASF0
+ 261 003e 04       		.uleb128 0x4
+ 262 003f 02       		.byte	0x2
+ 263 0040 07       		.byte	0x7
+ 264 0041 4F000000 		.4byte	.LASF1
+ 265 0045 03       		.uleb128 0x3
+ 266 0046 48000000 		.4byte	.LASF3
+ 267 004a 02       		.byte	0x2
+ 268 004b 30       		.byte	0x30
+ 269 004c 50000000 		.4byte	0x50
+ 270 0050 04       		.uleb128 0x4
+ 271 0051 04       		.byte	0x4
+ 272 0052 07       		.byte	0x7
+ 273 0053 06000000 		.4byte	.LASF4
+ 274 0057 04       		.uleb128 0x4
+ 275 0058 08       		.byte	0x8
+ 276 0059 07       		.byte	0x7
+ 277 005a AF000000 		.4byte	.LASF5
+ 278 005e 04       		.uleb128 0x4
+ 279 005f 01       		.byte	0x1
+ 280 0060 06       		.byte	0x6
+ 281 0061 E9010000 		.4byte	.LASF6
+ 282 0065 04       		.uleb128 0x4
+ 283 0066 02       		.byte	0x2
+ 284 0067 05       		.byte	0x5
+ 285 0068 C7010000 		.4byte	.LASF7
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 8
+
+
+ 286 006c 04       		.uleb128 0x4
+ 287 006d 04       		.byte	0x4
+ 288 006e 05       		.byte	0x5
+ 289 006f E0010000 		.4byte	.LASF8
+ 290 0073 04       		.uleb128 0x4
+ 291 0074 04       		.byte	0x4
+ 292 0075 07       		.byte	0x7
+ 293 0076 36000000 		.4byte	.LASF9
+ 294 007a 04       		.uleb128 0x4
+ 295 007b 08       		.byte	0x8
+ 296 007c 05       		.byte	0x5
+ 297 007d 26010000 		.4byte	.LASF10
+ 298 0081 04       		.uleb128 0x4
+ 299 0082 04       		.byte	0x4
+ 300 0083 07       		.byte	0x7
+ 301 0084 0F010000 		.4byte	.LASF11
+ 302 0088 04       		.uleb128 0x4
+ 303 0089 01       		.byte	0x1
+ 304 008a 08       		.byte	0x8
+ 305 008b 34010000 		.4byte	.LASF12
+ 306 008f 05       		.uleb128 0x5
+ 307 0090 02       		.byte	0x2
+ 308 0091 03       		.byte	0x3
+ 309 0092 23       		.byte	0x23
+ 310 0093 A5000000 		.4byte	0xa5
+ 311 0097 06       		.uleb128 0x6
+ 312 0098 98000000 		.4byte	.LASF13
+ 313 009c 04       		.sleb128 4
+ 314 009d 06       		.uleb128 0x6
+ 315 009e 05020000 		.4byte	.LASF14
+ 316 00a2 8002     		.sleb128 256
+ 317 00a4 00       		.byte	0
+ 318 00a5 07       		.uleb128 0x7
+ 319 00a6 62000000 		.4byte	.LASF16
+ 320 00aa 0201     		.2byte	0x102
+ 321 00ac 03       		.byte	0x3
+ 322 00ad 29       		.byte	0x29
+ 323 00ae D3000000 		.4byte	0xd3
+ 324 00b2 08       		.uleb128 0x8
+ 325 00b3 7800     		.ascii	"x\000"
+ 326 00b5 03       		.byte	0x3
+ 327 00b6 2A       		.byte	0x2a
+ 328 00b7 2C000000 		.4byte	0x2c
+ 329 00bb 00       		.byte	0
+ 330 00bc 08       		.uleb128 0x8
+ 331 00bd 7900     		.ascii	"y\000"
+ 332 00bf 03       		.byte	0x3
+ 333 00c0 2B       		.byte	0x2b
+ 334 00c1 2C000000 		.4byte	0x2c
+ 335 00c5 01       		.byte	0x1
+ 336 00c6 09       		.uleb128 0x9
+ 337 00c7 00000000 		.4byte	.LASF15
+ 338 00cb 03       		.byte	0x3
+ 339 00cc 2C       		.byte	0x2c
+ 340 00cd D3000000 		.4byte	0xd3
+ 341 00d1 02       		.byte	0x2
+ 342 00d2 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 9
+
+
+ 343 00d3 0A       		.uleb128 0xa
+ 344 00d4 2C000000 		.4byte	0x2c
+ 345 00d8 E3000000 		.4byte	0xe3
+ 346 00dc 0B       		.uleb128 0xb
+ 347 00dd 81000000 		.4byte	0x81
+ 348 00e1 FF       		.byte	0xff
+ 349 00e2 00       		.byte	0
+ 350 00e3 03       		.uleb128 0x3
+ 351 00e4 62000000 		.4byte	.LASF16
+ 352 00e8 03       		.byte	0x3
+ 353 00e9 32       		.byte	0x32
+ 354 00ea A5000000 		.4byte	0xa5
+ 355 00ee 0C       		.uleb128 0xc
+ 356 00ef 18010000 		.4byte	.LASF24
+ 357 00f3 01       		.byte	0x1
+ 358 00f4 28       		.byte	0x28
+ 359 00f5 00000000 		.4byte	.LFB0
+ 360 00f9 56000000 		.4byte	.LFE0-.LFB0
+ 361 00fd 01       		.uleb128 0x1
+ 362 00fe 9C       		.byte	0x9c
+ 363 00ff 71010000 		.4byte	0x171
+ 364 0103 0D       		.uleb128 0xd
+ 365 0104 18000000 		.4byte	.LASF17
+ 366 0108 01       		.byte	0x1
+ 367 0109 28       		.byte	0x28
+ 368 010a 71010000 		.4byte	0x171
+ 369 010e 01       		.uleb128 0x1
+ 370 010f 50       		.byte	0x50
+ 371 0110 0E       		.uleb128 0xe
+ 372 0111 6B657900 		.ascii	"key\000"
+ 373 0115 01       		.byte	0x1
+ 374 0116 28       		.byte	0x28
+ 375 0117 77010000 		.4byte	0x177
+ 376 011b 00000000 		.4byte	.LLST0
+ 377 011f 0F       		.uleb128 0xf
+ 378 0120 FE010000 		.4byte	.LASF18
+ 379 0124 01       		.byte	0x1
+ 380 0125 28       		.byte	0x28
+ 381 0126 45000000 		.4byte	0x45
+ 382 012a 2C000000 		.4byte	.LLST1
+ 383 012e 10       		.uleb128 0x10
+ 384 012f 6900     		.ascii	"i\000"
+ 385 0131 01       		.byte	0x1
+ 386 0132 2A       		.byte	0x2a
+ 387 0133 45000000 		.4byte	0x45
+ 388 0137 4A000000 		.4byte	.LLST2
+ 389 013b 11       		.uleb128 0x11
+ 390 013c A6000000 		.4byte	.LASF19
+ 391 0140 01       		.byte	0x1
+ 392 0141 2B       		.byte	0x2b
+ 393 0142 45000000 		.4byte	0x45
+ 394 0146 74000000 		.4byte	.LLST3
+ 395 014a 11       		.uleb128 0x11
+ 396 014b 1D000000 		.4byte	.LASF20
+ 397 014f 01       		.byte	0x1
+ 398 0150 2B       		.byte	0x2b
+ 399 0151 45000000 		.4byte	0x45
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 10
+
+
+ 400 0155 93000000 		.4byte	.LLST4
+ 401 0159 12       		.uleb128 0x12
+ 402 015a 28000000 		.4byte	.LBB2
+ 403 015e 20000000 		.4byte	.LBE2-.LBB2
+ 404 0162 10       		.uleb128 0x10
+ 405 0163 6100     		.ascii	"a\000"
+ 406 0165 01       		.byte	0x1
+ 407 0166 39       		.byte	0x39
+ 408 0167 45000000 		.4byte	0x45
+ 409 016b B2000000 		.4byte	.LLST5
+ 410 016f 00       		.byte	0
+ 411 0170 00       		.byte	0
+ 412 0171 13       		.uleb128 0x13
+ 413 0172 04       		.byte	0x4
+ 414 0173 E3000000 		.4byte	0xe3
+ 415 0177 13       		.uleb128 0x13
+ 416 0178 04       		.byte	0x4
+ 417 0179 7D010000 		.4byte	0x17d
+ 418 017d 14       		.uleb128 0x14
+ 419 017e 2C000000 		.4byte	0x2c
+ 420 0182 15       		.uleb128 0x15
+ 421 0183 F5010000 		.4byte	.LASF25
+ 422 0187 01       		.byte	0x1
+ 423 0188 45       		.byte	0x45
+ 424 0189 2C000000 		.4byte	0x2c
+ 425 018d 03       		.byte	0x3
+ 426 018e C0010000 		.4byte	0x1c0
+ 427 0192 16       		.uleb128 0x16
+ 428 0193 7800     		.ascii	"x\000"
+ 429 0195 01       		.byte	0x1
+ 430 0196 45       		.byte	0x45
+ 431 0197 C0010000 		.4byte	0x1c0
+ 432 019b 16       		.uleb128 0x16
+ 433 019c 7900     		.ascii	"y\000"
+ 434 019e 01       		.byte	0x1
+ 435 019f 45       		.byte	0x45
+ 436 01a0 C0010000 		.4byte	0x1c0
+ 437 01a4 16       		.uleb128 0x16
+ 438 01a5 7300     		.ascii	"s\000"
+ 439 01a7 01       		.byte	0x1
+ 440 01a8 45       		.byte	0x45
+ 441 01a9 C6010000 		.4byte	0x1c6
+ 442 01ad 17       		.uleb128 0x17
+ 443 01ae 6100     		.ascii	"a\000"
+ 444 01b0 01       		.byte	0x1
+ 445 01b1 47       		.byte	0x47
+ 446 01b2 45000000 		.4byte	0x45
+ 447 01b6 17       		.uleb128 0x17
+ 448 01b7 6200     		.ascii	"b\000"
+ 449 01b9 01       		.byte	0x1
+ 450 01ba 47       		.byte	0x47
+ 451 01bb 45000000 		.4byte	0x45
+ 452 01bf 00       		.byte	0
+ 453 01c0 13       		.uleb128 0x13
+ 454 01c1 04       		.byte	0x4
+ 455 01c2 45000000 		.4byte	0x45
+ 456 01c6 13       		.uleb128 0x13
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 11
+
+
+ 457 01c7 04       		.byte	0x4
+ 458 01c8 2C000000 		.4byte	0x2c
+ 459 01cc 18       		.uleb128 0x18
+ 460 01cd D1010000 		.4byte	.LASF26
+ 461 01d1 01       		.byte	0x1
+ 462 01d2 53       		.byte	0x53
+ 463 01d3 00000000 		.4byte	.LFB2
+ 464 01d7 52000000 		.4byte	.LFE2-.LFB2
+ 465 01db 01       		.uleb128 0x1
+ 466 01dc 9C       		.byte	0x9c
+ 467 01dd 0F       		.uleb128 0xf
+ 468 01de 18000000 		.4byte	.LASF17
+ 469 01e2 01       		.byte	0x1
+ 470 01e3 53       		.byte	0x53
+ 471 01e4 71010000 		.4byte	0x171
+ 472 01e8 C5000000 		.4byte	.LLST6
+ 473 01ec 0E       		.uleb128 0xe
+ 474 01ed 6F757400 		.ascii	"out\000"
+ 475 01f1 01       		.byte	0x1
+ 476 01f2 53       		.byte	0x53
+ 477 01f3 C6010000 		.4byte	0x1c6
+ 478 01f7 EE000000 		.4byte	.LLST7
+ 479 01fb 0E       		.uleb128 0xe
+ 480 01fc 696E00   		.ascii	"in\000"
+ 481 01ff 01       		.byte	0x1
+ 482 0200 53       		.byte	0x53
+ 483 0201 77010000 		.4byte	0x177
+ 484 0205 19010000 		.4byte	.LLST8
+ 485 0209 0F       		.uleb128 0xf
+ 486 020a FE010000 		.4byte	.LASF18
+ 487 020e 01       		.byte	0x1
+ 488 020f 53       		.byte	0x53
+ 489 0210 45000000 		.4byte	0x45
+ 490 0214 44010000 		.4byte	.LLST9
+ 491 0218 10       		.uleb128 0x10
+ 492 0219 7800     		.ascii	"x\000"
+ 493 021b 01       		.byte	0x1
+ 494 021c 55       		.byte	0x55
+ 495 021d 45000000 		.4byte	0x45
+ 496 0221 83010000 		.4byte	.LLST10
+ 497 0225 10       		.uleb128 0x10
+ 498 0226 7900     		.ascii	"y\000"
+ 499 0228 01       		.byte	0x1
+ 500 0229 56       		.byte	0x56
+ 501 022a 45000000 		.4byte	0x45
+ 502 022e AE010000 		.4byte	.LLST11
+ 503 0232 19       		.uleb128 0x19
+ 504 0233 82010000 		.4byte	0x182
+ 505 0237 18000000 		.4byte	.LBB5
+ 506 023b 18000000 		.4byte	.LBE5-.LBB5
+ 507 023f 01       		.byte	0x1
+ 508 0240 61       		.byte	0x61
+ 509 0241 1A       		.uleb128 0x1a
+ 510 0242 A4010000 		.4byte	0x1a4
+ 511 0246 CC010000 		.4byte	.LLST12
+ 512 024a 1A       		.uleb128 0x1a
+ 513 024b 9B010000 		.4byte	0x19b
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 12
+
+
+ 514 024f DF010000 		.4byte	.LLST13
+ 515 0253 1A       		.uleb128 0x1a
+ 516 0254 92010000 		.4byte	0x192
+ 517 0258 F7010000 		.4byte	.LLST14
+ 518 025c 12       		.uleb128 0x12
+ 519 025d 18000000 		.4byte	.LBB6
+ 520 0261 18000000 		.4byte	.LBE6-.LBB6
+ 521 0265 1B       		.uleb128 0x1b
+ 522 0266 AD010000 		.4byte	0x1ad
+ 523 026a 0F020000 		.4byte	.LLST15
+ 524 026e 1B       		.uleb128 0x1b
+ 525 026f B6010000 		.4byte	0x1b6
+ 526 0273 22020000 		.4byte	.LLST16
+ 527 0277 00       		.byte	0
+ 528 0278 00       		.byte	0
+ 529 0279 00       		.byte	0
+ 530 027a 00       		.byte	0
+ 531              		.section	.debug_abbrev,"",%progbits
+ 532              	.Ldebug_abbrev0:
+ 533 0000 01       		.uleb128 0x1
+ 534 0001 11       		.uleb128 0x11
+ 535 0002 01       		.byte	0x1
+ 536 0003 25       		.uleb128 0x25
+ 537 0004 0E       		.uleb128 0xe
+ 538 0005 13       		.uleb128 0x13
+ 539 0006 0B       		.uleb128 0xb
+ 540 0007 03       		.uleb128 0x3
+ 541 0008 0E       		.uleb128 0xe
+ 542 0009 1B       		.uleb128 0x1b
+ 543 000a 0E       		.uleb128 0xe
+ 544 000b 55       		.uleb128 0x55
+ 545 000c 17       		.uleb128 0x17
+ 546 000d 11       		.uleb128 0x11
+ 547 000e 01       		.uleb128 0x1
+ 548 000f 10       		.uleb128 0x10
+ 549 0010 17       		.uleb128 0x17
+ 550 0011 00       		.byte	0
+ 551 0012 00       		.byte	0
+ 552 0013 02       		.uleb128 0x2
+ 553 0014 24       		.uleb128 0x24
+ 554 0015 00       		.byte	0
+ 555 0016 0B       		.uleb128 0xb
+ 556 0017 0B       		.uleb128 0xb
+ 557 0018 3E       		.uleb128 0x3e
+ 558 0019 0B       		.uleb128 0xb
+ 559 001a 03       		.uleb128 0x3
+ 560 001b 08       		.uleb128 0x8
+ 561 001c 00       		.byte	0
+ 562 001d 00       		.byte	0
+ 563 001e 03       		.uleb128 0x3
+ 564 001f 16       		.uleb128 0x16
+ 565 0020 00       		.byte	0
+ 566 0021 03       		.uleb128 0x3
+ 567 0022 0E       		.uleb128 0xe
+ 568 0023 3A       		.uleb128 0x3a
+ 569 0024 0B       		.uleb128 0xb
+ 570 0025 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 13
+
+
+ 571 0026 0B       		.uleb128 0xb
+ 572 0027 49       		.uleb128 0x49
+ 573 0028 13       		.uleb128 0x13
+ 574 0029 00       		.byte	0
+ 575 002a 00       		.byte	0
+ 576 002b 04       		.uleb128 0x4
+ 577 002c 24       		.uleb128 0x24
+ 578 002d 00       		.byte	0
+ 579 002e 0B       		.uleb128 0xb
+ 580 002f 0B       		.uleb128 0xb
+ 581 0030 3E       		.uleb128 0x3e
+ 582 0031 0B       		.uleb128 0xb
+ 583 0032 03       		.uleb128 0x3
+ 584 0033 0E       		.uleb128 0xe
+ 585 0034 00       		.byte	0
+ 586 0035 00       		.byte	0
+ 587 0036 05       		.uleb128 0x5
+ 588 0037 04       		.uleb128 0x4
+ 589 0038 01       		.byte	0x1
+ 590 0039 0B       		.uleb128 0xb
+ 591 003a 0B       		.uleb128 0xb
+ 592 003b 3A       		.uleb128 0x3a
+ 593 003c 0B       		.uleb128 0xb
+ 594 003d 3B       		.uleb128 0x3b
+ 595 003e 0B       		.uleb128 0xb
+ 596 003f 01       		.uleb128 0x1
+ 597 0040 13       		.uleb128 0x13
+ 598 0041 00       		.byte	0
+ 599 0042 00       		.byte	0
+ 600 0043 06       		.uleb128 0x6
+ 601 0044 28       		.uleb128 0x28
+ 602 0045 00       		.byte	0
+ 603 0046 03       		.uleb128 0x3
+ 604 0047 0E       		.uleb128 0xe
+ 605 0048 1C       		.uleb128 0x1c
+ 606 0049 0D       		.uleb128 0xd
+ 607 004a 00       		.byte	0
+ 608 004b 00       		.byte	0
+ 609 004c 07       		.uleb128 0x7
+ 610 004d 13       		.uleb128 0x13
+ 611 004e 01       		.byte	0x1
+ 612 004f 03       		.uleb128 0x3
+ 613 0050 0E       		.uleb128 0xe
+ 614 0051 0B       		.uleb128 0xb
+ 615 0052 05       		.uleb128 0x5
+ 616 0053 3A       		.uleb128 0x3a
+ 617 0054 0B       		.uleb128 0xb
+ 618 0055 3B       		.uleb128 0x3b
+ 619 0056 0B       		.uleb128 0xb
+ 620 0057 01       		.uleb128 0x1
+ 621 0058 13       		.uleb128 0x13
+ 622 0059 00       		.byte	0
+ 623 005a 00       		.byte	0
+ 624 005b 08       		.uleb128 0x8
+ 625 005c 0D       		.uleb128 0xd
+ 626 005d 00       		.byte	0
+ 627 005e 03       		.uleb128 0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 14
+
+
+ 628 005f 08       		.uleb128 0x8
+ 629 0060 3A       		.uleb128 0x3a
+ 630 0061 0B       		.uleb128 0xb
+ 631 0062 3B       		.uleb128 0x3b
+ 632 0063 0B       		.uleb128 0xb
+ 633 0064 49       		.uleb128 0x49
+ 634 0065 13       		.uleb128 0x13
+ 635 0066 38       		.uleb128 0x38
+ 636 0067 0B       		.uleb128 0xb
+ 637 0068 00       		.byte	0
+ 638 0069 00       		.byte	0
+ 639 006a 09       		.uleb128 0x9
+ 640 006b 0D       		.uleb128 0xd
+ 641 006c 00       		.byte	0
+ 642 006d 03       		.uleb128 0x3
+ 643 006e 0E       		.uleb128 0xe
+ 644 006f 3A       		.uleb128 0x3a
+ 645 0070 0B       		.uleb128 0xb
+ 646 0071 3B       		.uleb128 0x3b
+ 647 0072 0B       		.uleb128 0xb
+ 648 0073 49       		.uleb128 0x49
+ 649 0074 13       		.uleb128 0x13
+ 650 0075 38       		.uleb128 0x38
+ 651 0076 0B       		.uleb128 0xb
+ 652 0077 00       		.byte	0
+ 653 0078 00       		.byte	0
+ 654 0079 0A       		.uleb128 0xa
+ 655 007a 01       		.uleb128 0x1
+ 656 007b 01       		.byte	0x1
+ 657 007c 49       		.uleb128 0x49
+ 658 007d 13       		.uleb128 0x13
+ 659 007e 01       		.uleb128 0x1
+ 660 007f 13       		.uleb128 0x13
+ 661 0080 00       		.byte	0
+ 662 0081 00       		.byte	0
+ 663 0082 0B       		.uleb128 0xb
+ 664 0083 21       		.uleb128 0x21
+ 665 0084 00       		.byte	0
+ 666 0085 49       		.uleb128 0x49
+ 667 0086 13       		.uleb128 0x13
+ 668 0087 2F       		.uleb128 0x2f
+ 669 0088 0B       		.uleb128 0xb
+ 670 0089 00       		.byte	0
+ 671 008a 00       		.byte	0
+ 672 008b 0C       		.uleb128 0xc
+ 673 008c 2E       		.uleb128 0x2e
+ 674 008d 01       		.byte	0x1
+ 675 008e 3F       		.uleb128 0x3f
+ 676 008f 19       		.uleb128 0x19
+ 677 0090 03       		.uleb128 0x3
+ 678 0091 0E       		.uleb128 0xe
+ 679 0092 3A       		.uleb128 0x3a
+ 680 0093 0B       		.uleb128 0xb
+ 681 0094 3B       		.uleb128 0x3b
+ 682 0095 0B       		.uleb128 0xb
+ 683 0096 27       		.uleb128 0x27
+ 684 0097 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 15
+
+
+ 685 0098 11       		.uleb128 0x11
+ 686 0099 01       		.uleb128 0x1
+ 687 009a 12       		.uleb128 0x12
+ 688 009b 06       		.uleb128 0x6
+ 689 009c 40       		.uleb128 0x40
+ 690 009d 18       		.uleb128 0x18
+ 691 009e 9742     		.uleb128 0x2117
+ 692 00a0 19       		.uleb128 0x19
+ 693 00a1 01       		.uleb128 0x1
+ 694 00a2 13       		.uleb128 0x13
+ 695 00a3 00       		.byte	0
+ 696 00a4 00       		.byte	0
+ 697 00a5 0D       		.uleb128 0xd
+ 698 00a6 05       		.uleb128 0x5
+ 699 00a7 00       		.byte	0
+ 700 00a8 03       		.uleb128 0x3
+ 701 00a9 0E       		.uleb128 0xe
+ 702 00aa 3A       		.uleb128 0x3a
+ 703 00ab 0B       		.uleb128 0xb
+ 704 00ac 3B       		.uleb128 0x3b
+ 705 00ad 0B       		.uleb128 0xb
+ 706 00ae 49       		.uleb128 0x49
+ 707 00af 13       		.uleb128 0x13
+ 708 00b0 02       		.uleb128 0x2
+ 709 00b1 18       		.uleb128 0x18
+ 710 00b2 00       		.byte	0
+ 711 00b3 00       		.byte	0
+ 712 00b4 0E       		.uleb128 0xe
+ 713 00b5 05       		.uleb128 0x5
+ 714 00b6 00       		.byte	0
+ 715 00b7 03       		.uleb128 0x3
+ 716 00b8 08       		.uleb128 0x8
+ 717 00b9 3A       		.uleb128 0x3a
+ 718 00ba 0B       		.uleb128 0xb
+ 719 00bb 3B       		.uleb128 0x3b
+ 720 00bc 0B       		.uleb128 0xb
+ 721 00bd 49       		.uleb128 0x49
+ 722 00be 13       		.uleb128 0x13
+ 723 00bf 02       		.uleb128 0x2
+ 724 00c0 17       		.uleb128 0x17
+ 725 00c1 00       		.byte	0
+ 726 00c2 00       		.byte	0
+ 727 00c3 0F       		.uleb128 0xf
+ 728 00c4 05       		.uleb128 0x5
+ 729 00c5 00       		.byte	0
+ 730 00c6 03       		.uleb128 0x3
+ 731 00c7 0E       		.uleb128 0xe
+ 732 00c8 3A       		.uleb128 0x3a
+ 733 00c9 0B       		.uleb128 0xb
+ 734 00ca 3B       		.uleb128 0x3b
+ 735 00cb 0B       		.uleb128 0xb
+ 736 00cc 49       		.uleb128 0x49
+ 737 00cd 13       		.uleb128 0x13
+ 738 00ce 02       		.uleb128 0x2
+ 739 00cf 17       		.uleb128 0x17
+ 740 00d0 00       		.byte	0
+ 741 00d1 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 16
+
+
+ 742 00d2 10       		.uleb128 0x10
+ 743 00d3 34       		.uleb128 0x34
+ 744 00d4 00       		.byte	0
+ 745 00d5 03       		.uleb128 0x3
+ 746 00d6 08       		.uleb128 0x8
+ 747 00d7 3A       		.uleb128 0x3a
+ 748 00d8 0B       		.uleb128 0xb
+ 749 00d9 3B       		.uleb128 0x3b
+ 750 00da 0B       		.uleb128 0xb
+ 751 00db 49       		.uleb128 0x49
+ 752 00dc 13       		.uleb128 0x13
+ 753 00dd 02       		.uleb128 0x2
+ 754 00de 17       		.uleb128 0x17
+ 755 00df 00       		.byte	0
+ 756 00e0 00       		.byte	0
+ 757 00e1 11       		.uleb128 0x11
+ 758 00e2 34       		.uleb128 0x34
+ 759 00e3 00       		.byte	0
+ 760 00e4 03       		.uleb128 0x3
+ 761 00e5 0E       		.uleb128 0xe
+ 762 00e6 3A       		.uleb128 0x3a
+ 763 00e7 0B       		.uleb128 0xb
+ 764 00e8 3B       		.uleb128 0x3b
+ 765 00e9 0B       		.uleb128 0xb
+ 766 00ea 49       		.uleb128 0x49
+ 767 00eb 13       		.uleb128 0x13
+ 768 00ec 02       		.uleb128 0x2
+ 769 00ed 17       		.uleb128 0x17
+ 770 00ee 00       		.byte	0
+ 771 00ef 00       		.byte	0
+ 772 00f0 12       		.uleb128 0x12
+ 773 00f1 0B       		.uleb128 0xb
+ 774 00f2 01       		.byte	0x1
+ 775 00f3 11       		.uleb128 0x11
+ 776 00f4 01       		.uleb128 0x1
+ 777 00f5 12       		.uleb128 0x12
+ 778 00f6 06       		.uleb128 0x6
+ 779 00f7 00       		.byte	0
+ 780 00f8 00       		.byte	0
+ 781 00f9 13       		.uleb128 0x13
+ 782 00fa 0F       		.uleb128 0xf
+ 783 00fb 00       		.byte	0
+ 784 00fc 0B       		.uleb128 0xb
+ 785 00fd 0B       		.uleb128 0xb
+ 786 00fe 49       		.uleb128 0x49
+ 787 00ff 13       		.uleb128 0x13
+ 788 0100 00       		.byte	0
+ 789 0101 00       		.byte	0
+ 790 0102 14       		.uleb128 0x14
+ 791 0103 26       		.uleb128 0x26
+ 792 0104 00       		.byte	0
+ 793 0105 49       		.uleb128 0x49
+ 794 0106 13       		.uleb128 0x13
+ 795 0107 00       		.byte	0
+ 796 0108 00       		.byte	0
+ 797 0109 15       		.uleb128 0x15
+ 798 010a 2E       		.uleb128 0x2e
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 17
+
+
+ 799 010b 01       		.byte	0x1
+ 800 010c 03       		.uleb128 0x3
+ 801 010d 0E       		.uleb128 0xe
+ 802 010e 3A       		.uleb128 0x3a
+ 803 010f 0B       		.uleb128 0xb
+ 804 0110 3B       		.uleb128 0x3b
+ 805 0111 0B       		.uleb128 0xb
+ 806 0112 27       		.uleb128 0x27
+ 807 0113 19       		.uleb128 0x19
+ 808 0114 49       		.uleb128 0x49
+ 809 0115 13       		.uleb128 0x13
+ 810 0116 20       		.uleb128 0x20
+ 811 0117 0B       		.uleb128 0xb
+ 812 0118 01       		.uleb128 0x1
+ 813 0119 13       		.uleb128 0x13
+ 814 011a 00       		.byte	0
+ 815 011b 00       		.byte	0
+ 816 011c 16       		.uleb128 0x16
+ 817 011d 05       		.uleb128 0x5
+ 818 011e 00       		.byte	0
+ 819 011f 03       		.uleb128 0x3
+ 820 0120 08       		.uleb128 0x8
+ 821 0121 3A       		.uleb128 0x3a
+ 822 0122 0B       		.uleb128 0xb
+ 823 0123 3B       		.uleb128 0x3b
+ 824 0124 0B       		.uleb128 0xb
+ 825 0125 49       		.uleb128 0x49
+ 826 0126 13       		.uleb128 0x13
+ 827 0127 00       		.byte	0
+ 828 0128 00       		.byte	0
+ 829 0129 17       		.uleb128 0x17
+ 830 012a 34       		.uleb128 0x34
+ 831 012b 00       		.byte	0
+ 832 012c 03       		.uleb128 0x3
+ 833 012d 08       		.uleb128 0x8
+ 834 012e 3A       		.uleb128 0x3a
+ 835 012f 0B       		.uleb128 0xb
+ 836 0130 3B       		.uleb128 0x3b
+ 837 0131 0B       		.uleb128 0xb
+ 838 0132 49       		.uleb128 0x49
+ 839 0133 13       		.uleb128 0x13
+ 840 0134 00       		.byte	0
+ 841 0135 00       		.byte	0
+ 842 0136 18       		.uleb128 0x18
+ 843 0137 2E       		.uleb128 0x2e
+ 844 0138 01       		.byte	0x1
+ 845 0139 3F       		.uleb128 0x3f
+ 846 013a 19       		.uleb128 0x19
+ 847 013b 03       		.uleb128 0x3
+ 848 013c 0E       		.uleb128 0xe
+ 849 013d 3A       		.uleb128 0x3a
+ 850 013e 0B       		.uleb128 0xb
+ 851 013f 3B       		.uleb128 0x3b
+ 852 0140 0B       		.uleb128 0xb
+ 853 0141 27       		.uleb128 0x27
+ 854 0142 19       		.uleb128 0x19
+ 855 0143 11       		.uleb128 0x11
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 18
+
+
+ 856 0144 01       		.uleb128 0x1
+ 857 0145 12       		.uleb128 0x12
+ 858 0146 06       		.uleb128 0x6
+ 859 0147 40       		.uleb128 0x40
+ 860 0148 18       		.uleb128 0x18
+ 861 0149 9742     		.uleb128 0x2117
+ 862 014b 19       		.uleb128 0x19
+ 863 014c 00       		.byte	0
+ 864 014d 00       		.byte	0
+ 865 014e 19       		.uleb128 0x19
+ 866 014f 1D       		.uleb128 0x1d
+ 867 0150 01       		.byte	0x1
+ 868 0151 31       		.uleb128 0x31
+ 869 0152 13       		.uleb128 0x13
+ 870 0153 11       		.uleb128 0x11
+ 871 0154 01       		.uleb128 0x1
+ 872 0155 12       		.uleb128 0x12
+ 873 0156 06       		.uleb128 0x6
+ 874 0157 58       		.uleb128 0x58
+ 875 0158 0B       		.uleb128 0xb
+ 876 0159 59       		.uleb128 0x59
+ 877 015a 0B       		.uleb128 0xb
+ 878 015b 00       		.byte	0
+ 879 015c 00       		.byte	0
+ 880 015d 1A       		.uleb128 0x1a
+ 881 015e 05       		.uleb128 0x5
+ 882 015f 00       		.byte	0
+ 883 0160 31       		.uleb128 0x31
+ 884 0161 13       		.uleb128 0x13
+ 885 0162 02       		.uleb128 0x2
+ 886 0163 17       		.uleb128 0x17
+ 887 0164 00       		.byte	0
+ 888 0165 00       		.byte	0
+ 889 0166 1B       		.uleb128 0x1b
+ 890 0167 34       		.uleb128 0x34
+ 891 0168 00       		.byte	0
+ 892 0169 31       		.uleb128 0x31
+ 893 016a 13       		.uleb128 0x13
+ 894 016b 02       		.uleb128 0x2
+ 895 016c 17       		.uleb128 0x17
+ 896 016d 00       		.byte	0
+ 897 016e 00       		.byte	0
+ 898 016f 00       		.byte	0
+ 899              		.section	.debug_loc,"",%progbits
+ 900              	.Ldebug_loc0:
+ 901              	.LLST0:
+ 902 0000 00000000 		.4byte	.LVL0
+ 903 0004 28000000 		.4byte	.LVL6
+ 904 0008 0100     		.2byte	0x1
+ 905 000a 51       		.byte	0x51
+ 906 000b 28000000 		.4byte	.LVL6
+ 907 000f 4E000000 		.4byte	.LVL15
+ 908 0013 0100     		.2byte	0x1
+ 909 0015 59       		.byte	0x59
+ 910 0016 4E000000 		.4byte	.LVL15
+ 911 001a 56000000 		.4byte	.LFE0
+ 912 001e 0400     		.2byte	0x4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 19
+
+
+ 913 0020 F3       		.byte	0xf3
+ 914 0021 01       		.uleb128 0x1
+ 915 0022 51       		.byte	0x51
+ 916 0023 9F       		.byte	0x9f
+ 917 0024 00000000 		.4byte	0
+ 918 0028 00000000 		.4byte	0
+ 919              	.LLST1:
+ 920 002c 00000000 		.4byte	.LVL0
+ 921 0030 16000000 		.4byte	.LVL3
+ 922 0034 0100     		.2byte	0x1
+ 923 0036 52       		.byte	0x52
+ 924 0037 16000000 		.4byte	.LVL3
+ 925 003b 56000000 		.4byte	.LFE0
+ 926 003f 0100     		.2byte	0x1
+ 927 0041 5C       		.byte	0x5c
+ 928 0042 00000000 		.4byte	0
+ 929 0046 00000000 		.4byte	0
+ 930              	.LLST2:
+ 931 004a 14000000 		.4byte	.LVL2
+ 932 004e 16000000 		.4byte	.LVL3
+ 933 0052 0200     		.2byte	0x2
+ 934 0054 30       		.byte	0x30
+ 935 0055 9F       		.byte	0x9f
+ 936 0056 16000000 		.4byte	.LVL3
+ 937 005a 22000000 		.4byte	.LVL5
+ 938 005e 0100     		.2byte	0x1
+ 939 0060 53       		.byte	0x53
+ 940 0061 28000000 		.4byte	.LVL6
+ 941 0065 4E000000 		.4byte	.LVL14
+ 942 0069 0100     		.2byte	0x1
+ 943 006b 55       		.byte	0x55
+ 944 006c 00000000 		.4byte	0
+ 945 0070 00000000 		.4byte	0
+ 946              	.LLST3:
+ 947 0074 0C000000 		.4byte	.LVL1
+ 948 0078 28000000 		.4byte	.LVL6
+ 949 007c 0200     		.2byte	0x2
+ 950 007e 30       		.byte	0x30
+ 951 007f 9F       		.byte	0x9f
+ 952 0080 28000000 		.4byte	.LVL6
+ 953 0084 4E000000 		.4byte	.LVL13
+ 954 0088 0100     		.2byte	0x1
+ 955 008a 54       		.byte	0x54
+ 956 008b 00000000 		.4byte	0
+ 957 008f 00000000 		.4byte	0
+ 958              	.LLST4:
+ 959 0093 0C000000 		.4byte	.LVL1
+ 960 0097 28000000 		.4byte	.LVL6
+ 961 009b 0200     		.2byte	0x2
+ 962 009d 30       		.byte	0x30
+ 963 009e 9F       		.byte	0x9f
+ 964 009f 28000000 		.4byte	.LVL6
+ 965 00a3 56000000 		.4byte	.LFE0
+ 966 00a7 0100     		.2byte	0x1
+ 967 00a9 53       		.byte	0x53
+ 968 00aa 00000000 		.4byte	0
+ 969 00ae 00000000 		.4byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 20
+
+
+ 970              	.LLST5:
+ 971 00b2 2C000000 		.4byte	.LVL7
+ 972 00b6 4A000000 		.4byte	.LVL12
+ 973 00ba 0100     		.2byte	0x1
+ 974 00bc 57       		.byte	0x57
+ 975 00bd 00000000 		.4byte	0
+ 976 00c1 00000000 		.4byte	0
+ 977              	.LLST6:
+ 978 00c5 00000000 		.4byte	.LVL16
+ 979 00c9 10000000 		.4byte	.LVL19
+ 980 00cd 0100     		.2byte	0x1
+ 981 00cf 50       		.byte	0x50
+ 982 00d0 10000000 		.4byte	.LVL19
+ 983 00d4 4A000000 		.4byte	.LVL34
+ 984 00d8 0100     		.2byte	0x1
+ 985 00da 59       		.byte	0x59
+ 986 00db 4A000000 		.4byte	.LVL34
+ 987 00df 52000000 		.4byte	.LFE2
+ 988 00e3 0100     		.2byte	0x1
+ 989 00e5 53       		.byte	0x53
+ 990 00e6 00000000 		.4byte	0
+ 991 00ea 00000000 		.4byte	0
+ 992              	.LLST7:
+ 993 00ee 00000000 		.4byte	.LVL16
+ 994 00f2 10000000 		.4byte	.LVL19
+ 995 00f6 0100     		.2byte	0x1
+ 996 00f8 51       		.byte	0x51
+ 997 00f9 10000000 		.4byte	.LVL19
+ 998 00fd 3C000000 		.4byte	.LVL30
+ 999 0101 0300     		.2byte	0x3
+ 1000 0103 71       		.byte	0x71
+ 1001 0104 01       		.sleb128 1
+ 1002 0105 9F       		.byte	0x9f
+ 1003 0106 3C000000 		.4byte	.LVL30
+ 1004 010a 52000000 		.4byte	.LFE2
+ 1005 010e 0100     		.2byte	0x1
+ 1006 0110 51       		.byte	0x51
+ 1007 0111 00000000 		.4byte	0
+ 1008 0115 00000000 		.4byte	0
+ 1009              	.LLST8:
+ 1010 0119 00000000 		.4byte	.LVL16
+ 1011 011d 10000000 		.4byte	.LVL19
+ 1012 0121 0100     		.2byte	0x1
+ 1013 0123 52       		.byte	0x52
+ 1014 0124 10000000 		.4byte	.LVL19
+ 1015 0128 3A000000 		.4byte	.LVL29
+ 1016 012c 0300     		.2byte	0x3
+ 1017 012e 72       		.byte	0x72
+ 1018 012f 01       		.sleb128 1
+ 1019 0130 9F       		.byte	0x9f
+ 1020 0131 3A000000 		.4byte	.LVL29
+ 1021 0135 52000000 		.4byte	.LFE2
+ 1022 0139 0100     		.2byte	0x1
+ 1023 013b 52       		.byte	0x52
+ 1024 013c 00000000 		.4byte	0
+ 1025 0140 00000000 		.4byte	0
+ 1026              	.LLST9:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 21
+
+
+ 1027 0144 00000000 		.4byte	.LVL16
+ 1028 0148 10000000 		.4byte	.LVL19
+ 1029 014c 0100     		.2byte	0x1
+ 1030 014e 53       		.byte	0x53
+ 1031 014f 10000000 		.4byte	.LVL19
+ 1032 0153 1A000000 		.4byte	.LVL21
+ 1033 0157 0100     		.2byte	0x1
+ 1034 0159 50       		.byte	0x50
+ 1035 015a 1A000000 		.4byte	.LVL21
+ 1036 015e 3C000000 		.4byte	.LVL30
+ 1037 0162 0100     		.2byte	0x1
+ 1038 0164 5C       		.byte	0x5c
+ 1039 0165 3C000000 		.4byte	.LVL30
+ 1040 0169 40000000 		.4byte	.LVL31
+ 1041 016d 0100     		.2byte	0x1
+ 1042 016f 53       		.byte	0x53
+ 1043 0170 40000000 		.4byte	.LVL31
+ 1044 0174 52000000 		.4byte	.LFE2
+ 1045 0178 0100     		.2byte	0x1
+ 1046 017a 50       		.byte	0x50
+ 1047 017b 00000000 		.4byte	0
+ 1048 017f 00000000 		.4byte	0
+ 1049              	.LLST10:
+ 1050 0183 0C000000 		.4byte	.LVL17
+ 1051 0187 28000000 		.4byte	.LVL25
+ 1052 018b 0100     		.2byte	0x1
+ 1053 018d 55       		.byte	0x55
+ 1054 018e 28000000 		.4byte	.LVL25
+ 1055 0192 2A000000 		.4byte	.LVL26
+ 1056 0196 0300     		.2byte	0x3
+ 1057 0198 75       		.byte	0x75
+ 1058 0199 7F       		.sleb128 -1
+ 1059 019a 9F       		.byte	0x9f
+ 1060 019b 2A000000 		.4byte	.LVL26
+ 1061 019f 4A000000 		.4byte	.LVL33
+ 1062 01a3 0100     		.2byte	0x1
+ 1063 01a5 55       		.byte	0x55
+ 1064 01a6 00000000 		.4byte	0
+ 1065 01aa 00000000 		.4byte	0
+ 1066              	.LLST11:
+ 1067 01ae 0E000000 		.4byte	.LVL18
+ 1068 01b2 1C000000 		.4byte	.LVL22
+ 1069 01b6 0100     		.2byte	0x1
+ 1070 01b8 54       		.byte	0x54
+ 1071 01b9 20000000 		.4byte	.LVL23
+ 1072 01bd 4A000000 		.4byte	.LVL32
+ 1073 01c1 0100     		.2byte	0x1
+ 1074 01c3 54       		.byte	0x54
+ 1075 01c4 00000000 		.4byte	0
+ 1076 01c8 00000000 		.4byte	0
+ 1077              	.LLST12:
+ 1078 01cc 18000000 		.4byte	.LVL20
+ 1079 01d0 3C000000 		.4byte	.LVL30
+ 1080 01d4 0100     		.2byte	0x1
+ 1081 01d6 56       		.byte	0x56
+ 1082 01d7 00000000 		.4byte	0
+ 1083 01db 00000000 		.4byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 22
+
+
+ 1084              	.LLST13:
+ 1085 01df 18000000 		.4byte	.LVL20
+ 1086 01e3 3C000000 		.4byte	.LVL30
+ 1087 01e7 0600     		.2byte	0x6
+ 1088 01e9 F2       		.byte	0xf2
+ 1089 01ea 25020000 		.4byte	.Ldebug_info0+549
+ 1090 01ee 00       		.sleb128 0
+ 1091 01ef 00000000 		.4byte	0
+ 1092 01f3 00000000 		.4byte	0
+ 1093              	.LLST14:
+ 1094 01f7 18000000 		.4byte	.LVL20
+ 1095 01fb 3C000000 		.4byte	.LVL30
+ 1096 01ff 0600     		.2byte	0x6
+ 1097 0201 F2       		.byte	0xf2
+ 1098 0202 18020000 		.4byte	.Ldebug_info0+536
+ 1099 0206 00       		.sleb128 0
+ 1100 0207 00000000 		.4byte	0
+ 1101 020b 00000000 		.4byte	0
+ 1102              	.LLST15:
+ 1103 020f 1A000000 		.4byte	.LVL21
+ 1104 0213 32000000 		.4byte	.LVL28
+ 1105 0217 0100     		.2byte	0x1
+ 1106 0219 50       		.byte	0x50
+ 1107 021a 00000000 		.4byte	0
+ 1108 021e 00000000 		.4byte	0
+ 1109              	.LLST16:
+ 1110 0222 22000000 		.4byte	.LVL24
+ 1111 0226 2C000000 		.4byte	.LVL27
+ 1112 022a 0100     		.2byte	0x1
+ 1113 022c 53       		.byte	0x53
+ 1114 022d 00000000 		.4byte	0
+ 1115 0231 00000000 		.4byte	0
+ 1116              		.section	.debug_aranges,"",%progbits
+ 1117 0000 24000000 		.4byte	0x24
+ 1118 0004 0200     		.2byte	0x2
+ 1119 0006 00000000 		.4byte	.Ldebug_info0
+ 1120 000a 04       		.byte	0x4
+ 1121 000b 00       		.byte	0
+ 1122 000c 0000     		.2byte	0
+ 1123 000e 0000     		.2byte	0
+ 1124 0010 00000000 		.4byte	.LFB0
+ 1125 0014 56000000 		.4byte	.LFE0-.LFB0
+ 1126 0018 00000000 		.4byte	.LFB2
+ 1127 001c 52000000 		.4byte	.LFE2-.LFB2
+ 1128 0020 00000000 		.4byte	0
+ 1129 0024 00000000 		.4byte	0
+ 1130              		.section	.debug_ranges,"",%progbits
+ 1131              	.Ldebug_ranges0:
+ 1132 0000 00000000 		.4byte	.LFB0
+ 1133 0004 56000000 		.4byte	.LFE0
+ 1134 0008 00000000 		.4byte	.LFB2
+ 1135 000c 52000000 		.4byte	.LFE2
+ 1136 0010 00000000 		.4byte	0
+ 1137 0014 00000000 		.4byte	0
+ 1138              		.section	.debug_line,"",%progbits
+ 1139              	.Ldebug_line0:
+ 1140 0000 F5000000 		.section	.debug_str,"MS",%progbits,1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 23
+
+
+ 1140      02008A00 
+ 1140      00000201 
+ 1140      FB0E0D00 
+ 1140      01010101 
+ 1141              	.LASF15:
+ 1142 0000 73746174 		.ascii	"state\000"
+ 1142      6500
+ 1143              	.LASF4:
+ 1144 0006 756E7369 		.ascii	"unsigned int\000"
+ 1144      676E6564 
+ 1144      20696E74 
+ 1144      00
+ 1145              	.LASF2:
+ 1146 0013 62797465 		.ascii	"byte\000"
+ 1146      00
+ 1147              	.LASF17:
+ 1148 0018 61726334 		.ascii	"arc4\000"
+ 1148      00
+ 1149              	.LASF20:
+ 1150 001d 73746174 		.ascii	"stateIndex\000"
+ 1150      65496E64 
+ 1150      657800
+ 1151              	.LASF0:
+ 1152 0028 756E7369 		.ascii	"unsigned char\000"
+ 1152      676E6564 
+ 1152      20636861 
+ 1152      7200
+ 1153              	.LASF9:
+ 1154 0036 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1154      20756E73 
+ 1154      69676E65 
+ 1154      6420696E 
+ 1154      7400
+ 1155              	.LASF3:
+ 1156 0048 776F7264 		.ascii	"word32\000"
+ 1156      333200
+ 1157              	.LASF1:
+ 1158 004f 73686F72 		.ascii	"short unsigned int\000"
+ 1158      7420756E 
+ 1158      7369676E 
+ 1158      65642069 
+ 1158      6E7400
+ 1159              	.LASF16:
+ 1160 0062 41726334 		.ascii	"Arc4\000"
+ 1160      00
+ 1161              	.LASF22:
+ 1162 0067 2E2E5C6B 		.ascii	"..\\kronos-c-sdk\\src\\wolfSSL\\wolfcrypt\\src\\arc"
+ 1162      726F6E6F 
+ 1162      732D632D 
+ 1162      73646B5C 
+ 1162      7372635C 
+ 1163 0094 342E6300 		.ascii	"4.c\000"
+ 1164              	.LASF13:
+ 1165 0098 41524334 		.ascii	"ARC4_ENC_TYPE\000"
+ 1165      5F454E43 
+ 1165      5F545950 
+ 1165      4500
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 24
+
+
+ 1166              	.LASF19:
+ 1167 00a6 6B657949 		.ascii	"keyIndex\000"
+ 1167      6E646578 
+ 1167      00
+ 1168              	.LASF5:
+ 1169 00af 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1169      206C6F6E 
+ 1169      6720756E 
+ 1169      7369676E 
+ 1169      65642069 
+ 1170              	.LASF23:
+ 1171 00c6 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 1171      73657273 
+ 1171      5C646465 
+ 1171      6D69646F 
+ 1171      765C446F 
+ 1172 00f4 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 1172      6530315C 
+ 1172      53656E73 
+ 1172      65416269 
+ 1172      6C697479 
+ 1173              	.LASF11:
+ 1174 010f 73697A65 		.ascii	"sizetype\000"
+ 1174      74797065 
+ 1174      00
+ 1175              	.LASF24:
+ 1176 0118 77635F41 		.ascii	"wc_Arc4SetKey\000"
+ 1176      72633453 
+ 1176      65744B65 
+ 1176      7900
+ 1177              	.LASF10:
+ 1178 0126 6C6F6E67 		.ascii	"long long int\000"
+ 1178      206C6F6E 
+ 1178      6720696E 
+ 1178      7400
+ 1179              	.LASF12:
+ 1180 0134 63686172 		.ascii	"char\000"
+ 1180      00
+ 1181              	.LASF21:
+ 1182 0139 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1182      4320342E 
+ 1182      392E3320 
+ 1182      32303135 
+ 1182      30333033 
+ 1183 016c 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 1183      20726576 
+ 1183      6973696F 
+ 1183      6E203232 
+ 1183      31323230 
+ 1184 019f 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 1184      66756E63 
+ 1184      74696F6E 
+ 1184      2D736563 
+ 1184      74696F6E 
+ 1185              	.LASF7:
+ 1186 01c7 73686F72 		.ascii	"short int\000"
+ 1186      7420696E 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccxvcNm7.s 			page 25
+
+
+ 1186      7400
+ 1187              	.LASF26:
+ 1188 01d1 77635F41 		.ascii	"wc_Arc4Process\000"
+ 1188      72633450 
+ 1188      726F6365 
+ 1188      737300
+ 1189              	.LASF8:
+ 1190 01e0 6C6F6E67 		.ascii	"long int\000"
+ 1190      20696E74 
+ 1190      00
+ 1191              	.LASF6:
+ 1192 01e9 7369676E 		.ascii	"signed char\000"
+ 1192      65642063 
+ 1192      68617200 
+ 1193              	.LASF25:
+ 1194 01f5 4D616B65 		.ascii	"MakeByte\000"
+ 1194      42797465 
+ 1194      00
+ 1195              	.LASF18:
+ 1196 01fe 6C656E67 		.ascii	"length\000"
+ 1196      746800
+ 1197              	.LASF14:
+ 1198 0205 41524334 		.ascii	"ARC4_STATE_SIZE\000"
+ 1198      5F535441 
+ 1198      54455F53 
+ 1198      495A4500 
+ 1199              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

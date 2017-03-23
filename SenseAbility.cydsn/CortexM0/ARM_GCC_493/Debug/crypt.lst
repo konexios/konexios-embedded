@@ -1,0 +1,1592 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"crypt.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.sha256,"ax",%progbits
+  18              		.align	1
+  19              		.global	sha256
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	sha256, %function
+  23              	sha256:
+  24              	.LFB0:
+  25              		.file 1 "..\\acn-sdk-c\\platforms\\common\\wolf\\crypt\\crypt.c"
+   1:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** /* Copyright (c) 2017 Arrow Electronics, Inc.
+   2:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****  * All rights reserved. This program and the accompanying materials
+   3:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****  * are made available under the terms of the Apache License 2.0
+   4:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****  * which accompanies this distribution, and is available at
+   5:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****  * http://apache.org/licenses/LICENSE-2.0
+   6:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****  * Contributors: Arrow Electronics, Inc.
+   7:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****  */
+   8:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** 
+   9:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** #include "crypt/crypt.h"
+  10:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** 
+  11:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** #include "wolfssl/wolfcrypt/sha256.h"
+  12:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** #include "wolfssl/wolfcrypt/hmac.h"
+  13:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** 
+  14:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** void sha256(char *shasum, char *buf, int size) {
+  26              		.loc 1 14 0
+  27              		.cfi_startproc
+  28              	.LVL0:
+  29 0000 70B5     		push	{r4, r5, r6, lr}
+  30              		.cfi_def_cfa_offset 16
+  31              		.cfi_offset 4, -16
+  32              		.cfi_offset 5, -12
+  33              		.cfi_offset 6, -8
+  34              		.cfi_offset 14, -4
+  35 0002 0E1C     		mov	r6, r1
+  36 0004 151C     		mov	r5, r2
+  37 0006 041C     		mov	r4, r0
+  38 0008 9CB0     		sub	sp, sp, #112
+  39              		.cfi_def_cfa_offset 128
+  15:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   Sha256 sh;
+  16:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   wc_InitSha256(&sh);
+  40              		.loc 1 16 0
+  41 000a 01A8     		add	r0, sp, #4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 2
+
+
+  42              	.LVL1:
+  43 000c FFF7FEFF 		bl	wc_InitSha256
+  44              	.LVL2:
+  17:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   wc_Sha256Update(&sh, (byte*)buf, (word32)size);
+  45              		.loc 1 17 0
+  46 0010 311C     		mov	r1, r6
+  47 0012 2A1C     		mov	r2, r5
+  48 0014 01A8     		add	r0, sp, #4
+  49 0016 FFF7FEFF 		bl	wc_Sha256Update
+  50              	.LVL3:
+  18:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   wc_Sha256Final(&sh, (byte*)shasum);
+  51              		.loc 1 18 0
+  52 001a 01A8     		add	r0, sp, #4
+  53 001c 211C     		mov	r1, r4
+  54 001e FFF7FEFF 		bl	wc_Sha256Final
+  55              	.LVL4:
+  19:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** }
+  56              		.loc 1 19 0
+  57 0022 1CB0     		add	sp, sp, #112
+  58              		@ sp needed
+  59              	.LVL5:
+  60              	.LVL6:
+  61              	.LVL7:
+  62 0024 70BD     		pop	{r4, r5, r6, pc}
+  63              		.cfi_endproc
+  64              	.LFE0:
+  65              		.size	sha256, .-sha256
+  66              		.section	.text.hmac256,"ax",%progbits
+  67              		.align	1
+  68              		.global	hmac256
+  69              		.code	16
+  70              		.thumb_func
+  71              		.type	hmac256, %function
+  72              	hmac256:
+  73              	.LFB1:
+  20:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** 
+  21:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** void hmac256(char *hmacdig, const char *key, int key_size, const char *buf, int buf_size) {
+  74              		.loc 1 21 0
+  75              		.cfi_startproc
+  76              	.LVL8:
+  77 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  78              		.cfi_def_cfa_offset 20
+  79              		.cfi_offset 4, -20
+  80              		.cfi_offset 5, -16
+  81              		.cfi_offset 6, -12
+  82              		.cfi_offset 7, -8
+  83              		.cfi_offset 14, -4
+  84 0002 0F1C     		mov	r7, r1
+  85 0004 161C     		mov	r6, r2
+  86 0006 1D1C     		mov	r5, r3
+  87 0008 041C     		mov	r4, r0
+  88 000a C5B0     		sub	sp, sp, #276
+  89              		.cfi_def_cfa_offset 296
+  22:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   Hmac hmac;
+  23:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   wc_HmacSetKey(&hmac, SHA256, (const byte*)key, (word32)key_size);
+  90              		.loc 1 23 0
+  91 000c 331C     		mov	r3, r6
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 3
+
+
+  92              	.LVL9:
+  93 000e 3A1C     		mov	r2, r7
+  94              	.LVL10:
+  95 0010 6846     		mov	r0, sp
+  96              	.LVL11:
+  97 0012 0221     		mov	r1, #2
+  98              	.LVL12:
+  99 0014 FFF7FEFF 		bl	wc_HmacSetKey
+ 100              	.LVL13:
+  24:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   wc_HmacUpdate(&hmac, (const byte*)buf, (word32)buf_size);
+ 101              		.loc 1 24 0
+ 102 0018 291C     		mov	r1, r5
+ 103 001a 4A9A     		ldr	r2, [sp, #296]
+ 104 001c 6846     		mov	r0, sp
+ 105 001e FFF7FEFF 		bl	wc_HmacUpdate
+ 106              	.LVL14:
+  25:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c ****   wc_HmacFinal(&hmac, (byte*)hmacdig);
+ 107              		.loc 1 25 0
+ 108 0022 6846     		mov	r0, sp
+ 109 0024 211C     		mov	r1, r4
+ 110 0026 FFF7FEFF 		bl	wc_HmacFinal
+ 111              	.LVL15:
+  26:..\acn-sdk-c\platforms\common\wolf\crypt/crypt.c **** }
+ 112              		.loc 1 26 0
+ 113 002a 45B0     		add	sp, sp, #276
+ 114              		@ sp needed
+ 115              	.LVL16:
+ 116              	.LVL17:
+ 117              	.LVL18:
+ 118              	.LVL19:
+ 119 002c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 120              		.cfi_endproc
+ 121              	.LFE1:
+ 122              		.size	hmac256, .-hmac256
+ 123              		.text
+ 124              	.Letext0:
+ 125              		.file 2 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/types.h"
+ 126              		.file 3 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/sha256.h"
+ 127              		.file 4 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/sha.h"
+ 128              		.file 5 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/hmac.h"
+ 129              		.section	.debug_info,"",%progbits
+ 130              	.Ldebug_info0:
+ 131 0000 51040000 		.4byte	0x451
+ 132 0004 0400     		.2byte	0x4
+ 133 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 134 000a 04       		.byte	0x4
+ 135 000b 01       		.uleb128 0x1
+ 136 000c 0F000000 		.4byte	.LASF44
+ 137 0010 01       		.byte	0x1
+ 138 0011 A3010000 		.4byte	.LASF45
+ 139 0015 D4010000 		.4byte	.LASF46
+ 140 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 141 001d 00000000 		.4byte	0
+ 142 0021 00000000 		.4byte	.Ldebug_line0
+ 143 0025 02       		.uleb128 0x2
+ 144 0026 04       		.byte	0x4
+ 145 0027 05       		.byte	0x5
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 4
+
+
+ 146 0028 696E7400 		.ascii	"int\000"
+ 147 002c 03       		.uleb128 0x3
+ 148 002d B3000000 		.4byte	.LASF2
+ 149 0031 02       		.byte	0x2
+ 150 0032 2D       		.byte	0x2d
+ 151 0033 37000000 		.4byte	0x37
+ 152 0037 04       		.uleb128 0x4
+ 153 0038 01       		.byte	0x1
+ 154 0039 08       		.byte	0x8
+ 155 003a 29010000 		.4byte	.LASF0
+ 156 003e 04       		.uleb128 0x4
+ 157 003f 02       		.byte	0x2
+ 158 0040 07       		.byte	0x7
+ 159 0041 04010000 		.4byte	.LASF1
+ 160 0045 03       		.uleb128 0x3
+ 161 0046 FD000000 		.4byte	.LASF3
+ 162 004a 02       		.byte	0x2
+ 163 004b 30       		.byte	0x30
+ 164 004c 50000000 		.4byte	0x50
+ 165 0050 04       		.uleb128 0x4
+ 166 0051 04       		.byte	0x4
+ 167 0052 07       		.byte	0x7
+ 168 0053 7F010000 		.4byte	.LASF4
+ 169 0057 04       		.uleb128 0x4
+ 170 0058 08       		.byte	0x8
+ 171 0059 07       		.byte	0x7
+ 172 005a 8C010000 		.4byte	.LASF5
+ 173 005e 04       		.uleb128 0x4
+ 174 005f 01       		.byte	0x1
+ 175 0060 06       		.byte	0x6
+ 176 0061 A4020000 		.4byte	.LASF6
+ 177 0065 04       		.uleb128 0x4
+ 178 0066 02       		.byte	0x2
+ 179 0067 05       		.byte	0x5
+ 180 0068 3E010000 		.4byte	.LASF7
+ 181 006c 04       		.uleb128 0x4
+ 182 006d 04       		.byte	0x4
+ 183 006e 05       		.byte	0x5
+ 184 006f 94020000 		.4byte	.LASF8
+ 185 0073 04       		.uleb128 0x4
+ 186 0074 04       		.byte	0x4
+ 187 0075 07       		.byte	0x7
+ 188 0076 EB000000 		.4byte	.LASF9
+ 189 007a 04       		.uleb128 0x4
+ 190 007b 08       		.byte	0x8
+ 191 007c 05       		.byte	0x5
+ 192 007d 3A020000 		.4byte	.LASF10
+ 193 0081 04       		.uleb128 0x4
+ 194 0082 04       		.byte	0x4
+ 195 0083 07       		.byte	0x7
+ 196 0084 31020000 		.4byte	.LASF11
+ 197 0088 05       		.uleb128 0x5
+ 198 0089 04       		.byte	0x4
+ 199 008a 8E000000 		.4byte	0x8e
+ 200 008e 04       		.uleb128 0x4
+ 201 008f 01       		.byte	0x1
+ 202 0090 08       		.byte	0x8
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 5
+
+
+ 203 0091 48020000 		.4byte	.LASF12
+ 204 0095 05       		.uleb128 0x5
+ 205 0096 04       		.byte	0x4
+ 206 0097 9B000000 		.4byte	0x9b
+ 207 009b 06       		.uleb128 0x6
+ 208 009c 8E000000 		.4byte	0x8e
+ 209 00a0 07       		.uleb128 0x7
+ 210 00a1 01       		.byte	0x1
+ 211 00a2 03       		.byte	0x3
+ 212 00a3 30       		.byte	0x30
+ 213 00a4 C2000000 		.4byte	0xc2
+ 214 00a8 08       		.uleb128 0x8
+ 215 00a9 37010000 		.4byte	.LASF13
+ 216 00ad 02       		.sleb128 2
+ 217 00ae 08       		.uleb128 0x8
+ 218 00af B0020000 		.4byte	.LASF14
+ 219 00b3 C000     		.sleb128 64
+ 220 00b5 08       		.uleb128 0x8
+ 221 00b6 C2020000 		.4byte	.LASF15
+ 222 00ba 20       		.sleb128 32
+ 223 00bb 08       		.uleb128 0x8
+ 224 00bc 63020000 		.4byte	.LASF16
+ 225 00c0 38       		.sleb128 56
+ 226 00c1 00       		.byte	0
+ 227 00c2 09       		.uleb128 0x9
+ 228 00c3 9D000000 		.4byte	.LASF22
+ 229 00c7 6C       		.byte	0x6c
+ 230 00c8 03       		.byte	0x3
+ 231 00c9 3A       		.byte	0x3a
+ 232 00ca 0B010000 		.4byte	0x10b
+ 233 00ce 0A       		.uleb128 0xa
+ 234 00cf 73020000 		.4byte	.LASF17
+ 235 00d3 03       		.byte	0x3
+ 236 00d4 3B       		.byte	0x3b
+ 237 00d5 45000000 		.4byte	0x45
+ 238 00d9 00       		.byte	0
+ 239 00da 0A       		.uleb128 0xa
+ 240 00db 7B020000 		.4byte	.LASF18
+ 241 00df 03       		.byte	0x3
+ 242 00e0 3C       		.byte	0x3c
+ 243 00e1 45000000 		.4byte	0x45
+ 244 00e5 04       		.byte	0x4
+ 245 00e6 0A       		.uleb128 0xa
+ 246 00e7 2B020000 		.4byte	.LASF19
+ 247 00eb 03       		.byte	0x3
+ 248 00ec 3D       		.byte	0x3d
+ 249 00ed 45000000 		.4byte	0x45
+ 250 00f1 08       		.byte	0x8
+ 251 00f2 0A       		.uleb128 0xa
+ 252 00f3 8D020000 		.4byte	.LASF20
+ 253 00f7 03       		.byte	0x3
+ 254 00f8 3E       		.byte	0x3e
+ 255 00f9 0B010000 		.4byte	0x10b
+ 256 00fd 0C       		.byte	0xc
+ 257 00fe 0A       		.uleb128 0xa
+ 258 00ff 81020000 		.4byte	.LASF21
+ 259 0103 03       		.byte	0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 6
+
+
+ 260 0104 3F       		.byte	0x3f
+ 261 0105 1B010000 		.4byte	0x11b
+ 262 0109 2C       		.byte	0x2c
+ 263 010a 00       		.byte	0
+ 264 010b 0B       		.uleb128 0xb
+ 265 010c 45000000 		.4byte	0x45
+ 266 0110 1B010000 		.4byte	0x11b
+ 267 0114 0C       		.uleb128 0xc
+ 268 0115 81000000 		.4byte	0x81
+ 269 0119 07       		.byte	0x7
+ 270 011a 00       		.byte	0
+ 271 011b 0B       		.uleb128 0xb
+ 272 011c 45000000 		.4byte	0x45
+ 273 0120 2B010000 		.4byte	0x12b
+ 274 0124 0C       		.uleb128 0xc
+ 275 0125 81000000 		.4byte	0x81
+ 276 0129 0F       		.byte	0xf
+ 277 012a 00       		.byte	0
+ 278 012b 03       		.uleb128 0x3
+ 279 012c 9D000000 		.4byte	.LASF22
+ 280 0130 03       		.byte	0x3
+ 281 0131 43       		.byte	0x43
+ 282 0132 C2000000 		.4byte	0xc2
+ 283 0136 0D       		.uleb128 0xd
+ 284 0137 53686100 		.ascii	"Sha\000"
+ 285 013b 60       		.byte	0x60
+ 286 013c 04       		.byte	0x4
+ 287 013d 3A       		.byte	0x3a
+ 288 013e 7F010000 		.4byte	0x17f
+ 289 0142 0A       		.uleb128 0xa
+ 290 0143 73020000 		.4byte	.LASF17
+ 291 0147 04       		.byte	0x4
+ 292 0148 3B       		.byte	0x3b
+ 293 0149 45000000 		.4byte	0x45
+ 294 014d 00       		.byte	0
+ 295 014e 0A       		.uleb128 0xa
+ 296 014f 7B020000 		.4byte	.LASF18
+ 297 0153 04       		.byte	0x4
+ 298 0154 3C       		.byte	0x3c
+ 299 0155 45000000 		.4byte	0x45
+ 300 0159 04       		.byte	0x4
+ 301 015a 0A       		.uleb128 0xa
+ 302 015b 2B020000 		.4byte	.LASF19
+ 303 015f 04       		.byte	0x4
+ 304 0160 3D       		.byte	0x3d
+ 305 0161 45000000 		.4byte	0x45
+ 306 0165 08       		.byte	0x8
+ 307 0166 0A       		.uleb128 0xa
+ 308 0167 81020000 		.4byte	.LASF21
+ 309 016b 04       		.byte	0x4
+ 310 016c 3E       		.byte	0x3e
+ 311 016d 1B010000 		.4byte	0x11b
+ 312 0171 0C       		.byte	0xc
+ 313 0172 0A       		.uleb128 0xa
+ 314 0173 8D020000 		.4byte	.LASF20
+ 315 0177 04       		.byte	0x4
+ 316 0178 40       		.byte	0x40
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 7
+
+
+ 317 0179 7F010000 		.4byte	0x17f
+ 318 017d 4C       		.byte	0x4c
+ 319 017e 00       		.byte	0
+ 320 017f 0B       		.uleb128 0xb
+ 321 0180 45000000 		.4byte	0x45
+ 322 0184 8F010000 		.4byte	0x18f
+ 323 0188 0C       		.uleb128 0xc
+ 324 0189 81000000 		.4byte	0x81
+ 325 018d 04       		.byte	0x4
+ 326 018e 00       		.byte	0
+ 327 018f 0E       		.uleb128 0xe
+ 328 0190 53686100 		.ascii	"Sha\000"
+ 329 0194 04       		.byte	0x4
+ 330 0195 45       		.byte	0x45
+ 331 0196 36010000 		.4byte	0x136
+ 332 019a 0F       		.uleb128 0xf
+ 333 019b 6C       		.byte	0x6c
+ 334 019c 05       		.byte	0x5
+ 335 019d 78       		.byte	0x78
+ 336 019e B9010000 		.4byte	0x1b9
+ 337 01a2 10       		.uleb128 0x10
+ 338 01a3 73686100 		.ascii	"sha\000"
+ 339 01a7 05       		.byte	0x5
+ 340 01a8 7D       		.byte	0x7d
+ 341 01a9 8F010000 		.4byte	0x18f
+ 342 01ad 11       		.uleb128 0x11
+ 343 01ae AC000000 		.4byte	.LASF23
+ 344 01b2 05       		.byte	0x5
+ 345 01b3 80       		.byte	0x80
+ 346 01b4 2B010000 		.4byte	0x12b
+ 347 01b8 00       		.byte	0
+ 348 01b9 03       		.uleb128 0x3
+ 349 01ba 88020000 		.4byte	.LASF24
+ 350 01be 05       		.byte	0x5
+ 351 01bf 8B       		.byte	0x8b
+ 352 01c0 9A010000 		.4byte	0x19a
+ 353 01c4 12       		.uleb128 0x12
+ 354 01c5 C1000000 		.4byte	.LASF25
+ 355 01c9 1001     		.2byte	0x110
+ 356 01cb 05       		.byte	0x5
+ 357 01cc 8E       		.byte	0x8e
+ 358 01cd 1C020000 		.4byte	0x21c
+ 359 01d1 0A       		.uleb128 0xa
+ 360 01d2 E6000000 		.4byte	.LASF26
+ 361 01d6 05       		.byte	0x5
+ 362 01d7 8F       		.byte	0x8f
+ 363 01d8 B9010000 		.4byte	0x1b9
+ 364 01dc 00       		.byte	0
+ 365 01dd 0A       		.uleb128 0xa
+ 366 01de 24010000 		.4byte	.LASF27
+ 367 01e2 05       		.byte	0x5
+ 368 01e3 90       		.byte	0x90
+ 369 01e4 1B010000 		.4byte	0x11b
+ 370 01e8 6C       		.byte	0x6c
+ 371 01e9 0A       		.uleb128 0xa
+ 372 01ea 17010000 		.4byte	.LASF28
+ 373 01ee 05       		.byte	0x5
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 8
+
+
+ 374 01ef 91       		.byte	0x91
+ 375 01f0 1B010000 		.4byte	0x11b
+ 376 01f4 AC       		.byte	0xac
+ 377 01f5 0A       		.uleb128 0xa
+ 378 01f6 48010000 		.4byte	.LASF29
+ 379 01fa 05       		.byte	0x5
+ 380 01fb 92       		.byte	0x92
+ 381 01fc 0B010000 		.4byte	0x10b
+ 382 0200 EC       		.byte	0xec
+ 383 0201 13       		.uleb128 0x13
+ 384 0202 1C010000 		.4byte	.LASF30
+ 385 0206 05       		.byte	0x5
+ 386 0207 93       		.byte	0x93
+ 387 0208 2C000000 		.4byte	0x2c
+ 388 020c 0C01     		.2byte	0x10c
+ 389 020e 13       		.uleb128 0x13
+ 390 020f 00000000 		.4byte	.LASF31
+ 391 0213 05       		.byte	0x5
+ 392 0214 94       		.byte	0x94
+ 393 0215 2C000000 		.4byte	0x2c
+ 394 0219 0D01     		.2byte	0x10d
+ 395 021b 00       		.byte	0
+ 396 021c 03       		.uleb128 0x3
+ 397 021d C1000000 		.4byte	.LASF25
+ 398 0221 05       		.byte	0x5
+ 399 0222 9E       		.byte	0x9e
+ 400 0223 C4010000 		.4byte	0x1c4
+ 401 0227 14       		.uleb128 0x14
+ 402 0228 AC000000 		.4byte	.LASF23
+ 403 022c 01       		.byte	0x1
+ 404 022d 0E       		.byte	0xe
+ 405 022e 00000000 		.4byte	.LFB0
+ 406 0232 26000000 		.4byte	.LFE0-.LFB0
+ 407 0236 01       		.uleb128 0x1
+ 408 0237 9C       		.byte	0x9c
+ 409 0238 C5020000 		.4byte	0x2c5
+ 410 023c 15       		.uleb128 0x15
+ 411 023d 9D020000 		.4byte	.LASF32
+ 412 0241 01       		.byte	0x1
+ 413 0242 0E       		.byte	0xe
+ 414 0243 88000000 		.4byte	0x88
+ 415 0247 00000000 		.4byte	.LLST0
+ 416 024b 16       		.uleb128 0x16
+ 417 024c 62756600 		.ascii	"buf\000"
+ 418 0250 01       		.byte	0x1
+ 419 0251 0E       		.byte	0xe
+ 420 0252 88000000 		.4byte	0x88
+ 421 0256 2C000000 		.4byte	.LLST1
+ 422 025a 15       		.uleb128 0x15
+ 423 025b E1000000 		.4byte	.LASF33
+ 424 025f 01       		.byte	0x1
+ 425 0260 0E       		.byte	0xe
+ 426 0261 25000000 		.4byte	0x25
+ 427 0265 58000000 		.4byte	.LLST2
+ 428 0269 17       		.uleb128 0x17
+ 429 026a 736800   		.ascii	"sh\000"
+ 430 026d 01       		.byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 9
+
+
+ 431 026e 0F       		.byte	0xf
+ 432 026f 2B010000 		.4byte	0x12b
+ 433 0273 03       		.uleb128 0x3
+ 434 0274 91       		.byte	0x91
+ 435 0275 847F     		.sleb128 -124
+ 436 0277 18       		.uleb128 0x18
+ 437 0278 10000000 		.4byte	.LVL2
+ 438 027c 90030000 		.4byte	0x390
+ 439 0280 8C020000 		.4byte	0x28c
+ 440 0284 19       		.uleb128 0x19
+ 441 0285 01       		.uleb128 0x1
+ 442 0286 50       		.byte	0x50
+ 443 0287 03       		.uleb128 0x3
+ 444 0288 91       		.byte	0x91
+ 445 0289 847F     		.sleb128 -124
+ 446 028b 00       		.byte	0
+ 447 028c 18       		.uleb128 0x18
+ 448 028d 1A000000 		.4byte	.LVL3
+ 449 0291 AB030000 		.4byte	0x3ab
+ 450 0295 AD020000 		.4byte	0x2ad
+ 451 0299 19       		.uleb128 0x19
+ 452 029a 01       		.uleb128 0x1
+ 453 029b 52       		.byte	0x52
+ 454 029c 02       		.uleb128 0x2
+ 455 029d 75       		.byte	0x75
+ 456 029e 00       		.sleb128 0
+ 457 029f 19       		.uleb128 0x19
+ 458 02a0 01       		.uleb128 0x1
+ 459 02a1 51       		.byte	0x51
+ 460 02a2 02       		.uleb128 0x2
+ 461 02a3 76       		.byte	0x76
+ 462 02a4 00       		.sleb128 0
+ 463 02a5 19       		.uleb128 0x19
+ 464 02a6 01       		.uleb128 0x1
+ 465 02a7 50       		.byte	0x50
+ 466 02a8 03       		.uleb128 0x3
+ 467 02a9 91       		.byte	0x91
+ 468 02aa 847F     		.sleb128 -124
+ 469 02ac 00       		.byte	0
+ 470 02ad 1A       		.uleb128 0x1a
+ 471 02ae 22000000 		.4byte	.LVL4
+ 472 02b2 D5030000 		.4byte	0x3d5
+ 473 02b6 19       		.uleb128 0x19
+ 474 02b7 01       		.uleb128 0x1
+ 475 02b8 51       		.byte	0x51
+ 476 02b9 02       		.uleb128 0x2
+ 477 02ba 74       		.byte	0x74
+ 478 02bb 00       		.sleb128 0
+ 479 02bc 19       		.uleb128 0x19
+ 480 02bd 01       		.uleb128 0x1
+ 481 02be 50       		.byte	0x50
+ 482 02bf 03       		.uleb128 0x3
+ 483 02c0 91       		.byte	0x91
+ 484 02c1 847F     		.sleb128 -124
+ 485 02c3 00       		.byte	0
+ 486 02c4 00       		.byte	0
+ 487 02c5 14       		.uleb128 0x14
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 10
+
+
+ 488 02c6 A4000000 		.4byte	.LASF34
+ 489 02ca 01       		.byte	0x1
+ 490 02cb 15       		.byte	0x15
+ 491 02cc 00000000 		.4byte	.LFB1
+ 492 02d0 2E000000 		.4byte	.LFE1-.LFB1
+ 493 02d4 01       		.uleb128 0x1
+ 494 02d5 9C       		.byte	0x9c
+ 495 02d6 90030000 		.4byte	0x390
+ 496 02da 15       		.uleb128 0x15
+ 497 02db D9000000 		.4byte	.LASF35
+ 498 02df 01       		.byte	0x1
+ 499 02e0 15       		.byte	0x15
+ 500 02e1 88000000 		.4byte	0x88
+ 501 02e5 84000000 		.4byte	.LLST3
+ 502 02e9 16       		.uleb128 0x16
+ 503 02ea 6B657900 		.ascii	"key\000"
+ 504 02ee 01       		.byte	0x1
+ 505 02ef 15       		.byte	0x15
+ 506 02f0 95000000 		.4byte	0x95
+ 507 02f4 B0000000 		.4byte	.LLST4
+ 508 02f8 15       		.uleb128 0x15
+ 509 02f9 B8000000 		.4byte	.LASF36
+ 510 02fd 01       		.byte	0x1
+ 511 02fe 15       		.byte	0x15
+ 512 02ff 25000000 		.4byte	0x25
+ 513 0303 E7000000 		.4byte	.LLST5
+ 514 0307 16       		.uleb128 0x16
+ 515 0308 62756600 		.ascii	"buf\000"
+ 516 030c 01       		.byte	0x1
+ 517 030d 15       		.byte	0x15
+ 518 030e 95000000 		.4byte	0x95
+ 519 0312 1E010000 		.4byte	.LLST6
+ 520 0316 1B       		.uleb128 0x1b
+ 521 0317 4D020000 		.4byte	.LASF37
+ 522 031b 01       		.byte	0x1
+ 523 031c 15       		.byte	0x15
+ 524 031d 25000000 		.4byte	0x25
+ 525 0321 02       		.uleb128 0x2
+ 526 0322 91       		.byte	0x91
+ 527 0323 00       		.sleb128 0
+ 528 0324 1C       		.uleb128 0x1c
+ 529 0325 D4000000 		.4byte	.LASF38
+ 530 0329 01       		.byte	0x1
+ 531 032a 16       		.byte	0x16
+ 532 032b 1C020000 		.4byte	0x21c
+ 533 032f 03       		.uleb128 0x3
+ 534 0330 91       		.byte	0x91
+ 535 0331 D87D     		.sleb128 -296
+ 536 0333 18       		.uleb128 0x18
+ 537 0334 18000000 		.4byte	.LVL13
+ 538 0338 F5030000 		.4byte	0x3f5
+ 539 033c 58030000 		.4byte	0x358
+ 540 0340 19       		.uleb128 0x19
+ 541 0341 01       		.uleb128 0x1
+ 542 0342 53       		.byte	0x53
+ 543 0343 02       		.uleb128 0x2
+ 544 0344 76       		.byte	0x76
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 11
+
+
+ 545 0345 00       		.sleb128 0
+ 546 0346 19       		.uleb128 0x19
+ 547 0347 01       		.uleb128 0x1
+ 548 0348 52       		.byte	0x52
+ 549 0349 02       		.uleb128 0x2
+ 550 034a 77       		.byte	0x77
+ 551 034b 00       		.sleb128 0
+ 552 034c 19       		.uleb128 0x19
+ 553 034d 01       		.uleb128 0x1
+ 554 034e 51       		.byte	0x51
+ 555 034f 01       		.uleb128 0x1
+ 556 0350 32       		.byte	0x32
+ 557 0351 19       		.uleb128 0x19
+ 558 0352 01       		.uleb128 0x1
+ 559 0353 50       		.byte	0x50
+ 560 0354 02       		.uleb128 0x2
+ 561 0355 7D       		.byte	0x7d
+ 562 0356 00       		.sleb128 0
+ 563 0357 00       		.byte	0
+ 564 0358 18       		.uleb128 0x18
+ 565 0359 22000000 		.4byte	.LVL14
+ 566 035d 1F040000 		.4byte	0x41f
+ 567 0361 79030000 		.4byte	0x379
+ 568 0365 19       		.uleb128 0x19
+ 569 0366 01       		.uleb128 0x1
+ 570 0367 52       		.byte	0x52
+ 571 0368 03       		.uleb128 0x3
+ 572 0369 91       		.byte	0x91
+ 573 036a 00       		.sleb128 0
+ 574 036b 06       		.byte	0x6
+ 575 036c 19       		.uleb128 0x19
+ 576 036d 01       		.uleb128 0x1
+ 577 036e 51       		.byte	0x51
+ 578 036f 02       		.uleb128 0x2
+ 579 0370 75       		.byte	0x75
+ 580 0371 00       		.sleb128 0
+ 581 0372 19       		.uleb128 0x19
+ 582 0373 01       		.uleb128 0x1
+ 583 0374 50       		.byte	0x50
+ 584 0375 02       		.uleb128 0x2
+ 585 0376 7D       		.byte	0x7d
+ 586 0377 00       		.sleb128 0
+ 587 0378 00       		.byte	0
+ 588 0379 1A       		.uleb128 0x1a
+ 589 037a 2A000000 		.4byte	.LVL15
+ 590 037e 3E040000 		.4byte	0x43e
+ 591 0382 19       		.uleb128 0x19
+ 592 0383 01       		.uleb128 0x1
+ 593 0384 51       		.byte	0x51
+ 594 0385 02       		.uleb128 0x2
+ 595 0386 74       		.byte	0x74
+ 596 0387 00       		.sleb128 0
+ 597 0388 19       		.uleb128 0x19
+ 598 0389 01       		.uleb128 0x1
+ 599 038a 50       		.byte	0x50
+ 600 038b 02       		.uleb128 0x2
+ 601 038c 7D       		.byte	0x7d
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 12
+
+
+ 602 038d 00       		.sleb128 0
+ 603 038e 00       		.byte	0
+ 604 038f 00       		.byte	0
+ 605 0390 1D       		.uleb128 0x1d
+ 606 0391 1D020000 		.4byte	.LASF39
+ 607 0395 03       		.byte	0x3
+ 608 0396 4B       		.byte	0x4b
+ 609 0397 25000000 		.4byte	0x25
+ 610 039b A5030000 		.4byte	0x3a5
+ 611 039f 1E       		.uleb128 0x1e
+ 612 03a0 A5030000 		.4byte	0x3a5
+ 613 03a4 00       		.byte	0
+ 614 03a5 05       		.uleb128 0x5
+ 615 03a6 04       		.byte	0x4
+ 616 03a7 2B010000 		.4byte	0x12b
+ 617 03ab 1D       		.uleb128 0x1d
+ 618 03ac 6F010000 		.4byte	.LASF40
+ 619 03b0 03       		.byte	0x3
+ 620 03b1 4C       		.byte	0x4c
+ 621 03b2 25000000 		.4byte	0x25
+ 622 03b6 CA030000 		.4byte	0x3ca
+ 623 03ba 1E       		.uleb128 0x1e
+ 624 03bb A5030000 		.4byte	0x3a5
+ 625 03bf 1E       		.uleb128 0x1e
+ 626 03c0 CA030000 		.4byte	0x3ca
+ 627 03c4 1E       		.uleb128 0x1e
+ 628 03c5 45000000 		.4byte	0x45
+ 629 03c9 00       		.byte	0
+ 630 03ca 05       		.uleb128 0x5
+ 631 03cb 04       		.byte	0x4
+ 632 03cc D0030000 		.4byte	0x3d0
+ 633 03d0 06       		.uleb128 0x6
+ 634 03d1 2C000000 		.4byte	0x2c
+ 635 03d5 1D       		.uleb128 0x1d
+ 636 03d6 60010000 		.4byte	.LASF41
+ 637 03da 03       		.byte	0x3
+ 638 03db 4D       		.byte	0x4d
+ 639 03dc 25000000 		.4byte	0x25
+ 640 03e0 EF030000 		.4byte	0x3ef
+ 641 03e4 1E       		.uleb128 0x1e
+ 642 03e5 A5030000 		.4byte	0x3a5
+ 643 03e9 1E       		.uleb128 0x1e
+ 644 03ea EF030000 		.4byte	0x3ef
+ 645 03ee 00       		.byte	0
+ 646 03ef 05       		.uleb128 0x5
+ 647 03f0 04       		.byte	0x4
+ 648 03f1 2C000000 		.4byte	0x2c
+ 649 03f5 1D       		.uleb128 0x1d
+ 650 03f6 C6000000 		.4byte	.LASF42
+ 651 03fa 05       		.byte	0x5
+ 652 03fb A3       		.byte	0xa3
+ 653 03fc 25000000 		.4byte	0x25
+ 654 0400 19040000 		.4byte	0x419
+ 655 0404 1E       		.uleb128 0x1e
+ 656 0405 19040000 		.4byte	0x419
+ 657 0409 1E       		.uleb128 0x1e
+ 658 040a 25000000 		.4byte	0x25
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 13
+
+
+ 659 040e 1E       		.uleb128 0x1e
+ 660 040f CA030000 		.4byte	0x3ca
+ 661 0413 1E       		.uleb128 0x1e
+ 662 0414 45000000 		.4byte	0x45
+ 663 0418 00       		.byte	0
+ 664 0419 05       		.uleb128 0x5
+ 665 041a 04       		.byte	0x4
+ 666 041b 1C020000 		.4byte	0x21c
+ 667 041f 1D       		.uleb128 0x1d
+ 668 0420 52010000 		.4byte	.LASF43
+ 669 0424 05       		.byte	0x5
+ 670 0425 A4       		.byte	0xa4
+ 671 0426 25000000 		.4byte	0x25
+ 672 042a 3E040000 		.4byte	0x43e
+ 673 042e 1E       		.uleb128 0x1e
+ 674 042f 19040000 		.4byte	0x419
+ 675 0433 1E       		.uleb128 0x1e
+ 676 0434 CA030000 		.4byte	0x3ca
+ 677 0438 1E       		.uleb128 0x1e
+ 678 0439 45000000 		.4byte	0x45
+ 679 043d 00       		.byte	0
+ 680 043e 1F       		.uleb128 0x1f
+ 681 043f 56020000 		.4byte	.LASF47
+ 682 0443 05       		.byte	0x5
+ 683 0444 A5       		.byte	0xa5
+ 684 0445 25000000 		.4byte	0x25
+ 685 0449 1E       		.uleb128 0x1e
+ 686 044a 19040000 		.4byte	0x419
+ 687 044e 1E       		.uleb128 0x1e
+ 688 044f EF030000 		.4byte	0x3ef
+ 689 0453 00       		.byte	0
+ 690 0454 00       		.byte	0
+ 691              		.section	.debug_abbrev,"",%progbits
+ 692              	.Ldebug_abbrev0:
+ 693 0000 01       		.uleb128 0x1
+ 694 0001 11       		.uleb128 0x11
+ 695 0002 01       		.byte	0x1
+ 696 0003 25       		.uleb128 0x25
+ 697 0004 0E       		.uleb128 0xe
+ 698 0005 13       		.uleb128 0x13
+ 699 0006 0B       		.uleb128 0xb
+ 700 0007 03       		.uleb128 0x3
+ 701 0008 0E       		.uleb128 0xe
+ 702 0009 1B       		.uleb128 0x1b
+ 703 000a 0E       		.uleb128 0xe
+ 704 000b 55       		.uleb128 0x55
+ 705 000c 17       		.uleb128 0x17
+ 706 000d 11       		.uleb128 0x11
+ 707 000e 01       		.uleb128 0x1
+ 708 000f 10       		.uleb128 0x10
+ 709 0010 17       		.uleb128 0x17
+ 710 0011 00       		.byte	0
+ 711 0012 00       		.byte	0
+ 712 0013 02       		.uleb128 0x2
+ 713 0014 24       		.uleb128 0x24
+ 714 0015 00       		.byte	0
+ 715 0016 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 14
+
+
+ 716 0017 0B       		.uleb128 0xb
+ 717 0018 3E       		.uleb128 0x3e
+ 718 0019 0B       		.uleb128 0xb
+ 719 001a 03       		.uleb128 0x3
+ 720 001b 08       		.uleb128 0x8
+ 721 001c 00       		.byte	0
+ 722 001d 00       		.byte	0
+ 723 001e 03       		.uleb128 0x3
+ 724 001f 16       		.uleb128 0x16
+ 725 0020 00       		.byte	0
+ 726 0021 03       		.uleb128 0x3
+ 727 0022 0E       		.uleb128 0xe
+ 728 0023 3A       		.uleb128 0x3a
+ 729 0024 0B       		.uleb128 0xb
+ 730 0025 3B       		.uleb128 0x3b
+ 731 0026 0B       		.uleb128 0xb
+ 732 0027 49       		.uleb128 0x49
+ 733 0028 13       		.uleb128 0x13
+ 734 0029 00       		.byte	0
+ 735 002a 00       		.byte	0
+ 736 002b 04       		.uleb128 0x4
+ 737 002c 24       		.uleb128 0x24
+ 738 002d 00       		.byte	0
+ 739 002e 0B       		.uleb128 0xb
+ 740 002f 0B       		.uleb128 0xb
+ 741 0030 3E       		.uleb128 0x3e
+ 742 0031 0B       		.uleb128 0xb
+ 743 0032 03       		.uleb128 0x3
+ 744 0033 0E       		.uleb128 0xe
+ 745 0034 00       		.byte	0
+ 746 0035 00       		.byte	0
+ 747 0036 05       		.uleb128 0x5
+ 748 0037 0F       		.uleb128 0xf
+ 749 0038 00       		.byte	0
+ 750 0039 0B       		.uleb128 0xb
+ 751 003a 0B       		.uleb128 0xb
+ 752 003b 49       		.uleb128 0x49
+ 753 003c 13       		.uleb128 0x13
+ 754 003d 00       		.byte	0
+ 755 003e 00       		.byte	0
+ 756 003f 06       		.uleb128 0x6
+ 757 0040 26       		.uleb128 0x26
+ 758 0041 00       		.byte	0
+ 759 0042 49       		.uleb128 0x49
+ 760 0043 13       		.uleb128 0x13
+ 761 0044 00       		.byte	0
+ 762 0045 00       		.byte	0
+ 763 0046 07       		.uleb128 0x7
+ 764 0047 04       		.uleb128 0x4
+ 765 0048 01       		.byte	0x1
+ 766 0049 0B       		.uleb128 0xb
+ 767 004a 0B       		.uleb128 0xb
+ 768 004b 3A       		.uleb128 0x3a
+ 769 004c 0B       		.uleb128 0xb
+ 770 004d 3B       		.uleb128 0x3b
+ 771 004e 0B       		.uleb128 0xb
+ 772 004f 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 15
+
+
+ 773 0050 13       		.uleb128 0x13
+ 774 0051 00       		.byte	0
+ 775 0052 00       		.byte	0
+ 776 0053 08       		.uleb128 0x8
+ 777 0054 28       		.uleb128 0x28
+ 778 0055 00       		.byte	0
+ 779 0056 03       		.uleb128 0x3
+ 780 0057 0E       		.uleb128 0xe
+ 781 0058 1C       		.uleb128 0x1c
+ 782 0059 0D       		.uleb128 0xd
+ 783 005a 00       		.byte	0
+ 784 005b 00       		.byte	0
+ 785 005c 09       		.uleb128 0x9
+ 786 005d 13       		.uleb128 0x13
+ 787 005e 01       		.byte	0x1
+ 788 005f 03       		.uleb128 0x3
+ 789 0060 0E       		.uleb128 0xe
+ 790 0061 0B       		.uleb128 0xb
+ 791 0062 0B       		.uleb128 0xb
+ 792 0063 3A       		.uleb128 0x3a
+ 793 0064 0B       		.uleb128 0xb
+ 794 0065 3B       		.uleb128 0x3b
+ 795 0066 0B       		.uleb128 0xb
+ 796 0067 01       		.uleb128 0x1
+ 797 0068 13       		.uleb128 0x13
+ 798 0069 00       		.byte	0
+ 799 006a 00       		.byte	0
+ 800 006b 0A       		.uleb128 0xa
+ 801 006c 0D       		.uleb128 0xd
+ 802 006d 00       		.byte	0
+ 803 006e 03       		.uleb128 0x3
+ 804 006f 0E       		.uleb128 0xe
+ 805 0070 3A       		.uleb128 0x3a
+ 806 0071 0B       		.uleb128 0xb
+ 807 0072 3B       		.uleb128 0x3b
+ 808 0073 0B       		.uleb128 0xb
+ 809 0074 49       		.uleb128 0x49
+ 810 0075 13       		.uleb128 0x13
+ 811 0076 38       		.uleb128 0x38
+ 812 0077 0B       		.uleb128 0xb
+ 813 0078 00       		.byte	0
+ 814 0079 00       		.byte	0
+ 815 007a 0B       		.uleb128 0xb
+ 816 007b 01       		.uleb128 0x1
+ 817 007c 01       		.byte	0x1
+ 818 007d 49       		.uleb128 0x49
+ 819 007e 13       		.uleb128 0x13
+ 820 007f 01       		.uleb128 0x1
+ 821 0080 13       		.uleb128 0x13
+ 822 0081 00       		.byte	0
+ 823 0082 00       		.byte	0
+ 824 0083 0C       		.uleb128 0xc
+ 825 0084 21       		.uleb128 0x21
+ 826 0085 00       		.byte	0
+ 827 0086 49       		.uleb128 0x49
+ 828 0087 13       		.uleb128 0x13
+ 829 0088 2F       		.uleb128 0x2f
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 16
+
+
+ 830 0089 0B       		.uleb128 0xb
+ 831 008a 00       		.byte	0
+ 832 008b 00       		.byte	0
+ 833 008c 0D       		.uleb128 0xd
+ 834 008d 13       		.uleb128 0x13
+ 835 008e 01       		.byte	0x1
+ 836 008f 03       		.uleb128 0x3
+ 837 0090 08       		.uleb128 0x8
+ 838 0091 0B       		.uleb128 0xb
+ 839 0092 0B       		.uleb128 0xb
+ 840 0093 3A       		.uleb128 0x3a
+ 841 0094 0B       		.uleb128 0xb
+ 842 0095 3B       		.uleb128 0x3b
+ 843 0096 0B       		.uleb128 0xb
+ 844 0097 01       		.uleb128 0x1
+ 845 0098 13       		.uleb128 0x13
+ 846 0099 00       		.byte	0
+ 847 009a 00       		.byte	0
+ 848 009b 0E       		.uleb128 0xe
+ 849 009c 16       		.uleb128 0x16
+ 850 009d 00       		.byte	0
+ 851 009e 03       		.uleb128 0x3
+ 852 009f 08       		.uleb128 0x8
+ 853 00a0 3A       		.uleb128 0x3a
+ 854 00a1 0B       		.uleb128 0xb
+ 855 00a2 3B       		.uleb128 0x3b
+ 856 00a3 0B       		.uleb128 0xb
+ 857 00a4 49       		.uleb128 0x49
+ 858 00a5 13       		.uleb128 0x13
+ 859 00a6 00       		.byte	0
+ 860 00a7 00       		.byte	0
+ 861 00a8 0F       		.uleb128 0xf
+ 862 00a9 17       		.uleb128 0x17
+ 863 00aa 01       		.byte	0x1
+ 864 00ab 0B       		.uleb128 0xb
+ 865 00ac 0B       		.uleb128 0xb
+ 866 00ad 3A       		.uleb128 0x3a
+ 867 00ae 0B       		.uleb128 0xb
+ 868 00af 3B       		.uleb128 0x3b
+ 869 00b0 0B       		.uleb128 0xb
+ 870 00b1 01       		.uleb128 0x1
+ 871 00b2 13       		.uleb128 0x13
+ 872 00b3 00       		.byte	0
+ 873 00b4 00       		.byte	0
+ 874 00b5 10       		.uleb128 0x10
+ 875 00b6 0D       		.uleb128 0xd
+ 876 00b7 00       		.byte	0
+ 877 00b8 03       		.uleb128 0x3
+ 878 00b9 08       		.uleb128 0x8
+ 879 00ba 3A       		.uleb128 0x3a
+ 880 00bb 0B       		.uleb128 0xb
+ 881 00bc 3B       		.uleb128 0x3b
+ 882 00bd 0B       		.uleb128 0xb
+ 883 00be 49       		.uleb128 0x49
+ 884 00bf 13       		.uleb128 0x13
+ 885 00c0 00       		.byte	0
+ 886 00c1 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 17
+
+
+ 887 00c2 11       		.uleb128 0x11
+ 888 00c3 0D       		.uleb128 0xd
+ 889 00c4 00       		.byte	0
+ 890 00c5 03       		.uleb128 0x3
+ 891 00c6 0E       		.uleb128 0xe
+ 892 00c7 3A       		.uleb128 0x3a
+ 893 00c8 0B       		.uleb128 0xb
+ 894 00c9 3B       		.uleb128 0x3b
+ 895 00ca 0B       		.uleb128 0xb
+ 896 00cb 49       		.uleb128 0x49
+ 897 00cc 13       		.uleb128 0x13
+ 898 00cd 00       		.byte	0
+ 899 00ce 00       		.byte	0
+ 900 00cf 12       		.uleb128 0x12
+ 901 00d0 13       		.uleb128 0x13
+ 902 00d1 01       		.byte	0x1
+ 903 00d2 03       		.uleb128 0x3
+ 904 00d3 0E       		.uleb128 0xe
+ 905 00d4 0B       		.uleb128 0xb
+ 906 00d5 05       		.uleb128 0x5
+ 907 00d6 3A       		.uleb128 0x3a
+ 908 00d7 0B       		.uleb128 0xb
+ 909 00d8 3B       		.uleb128 0x3b
+ 910 00d9 0B       		.uleb128 0xb
+ 911 00da 01       		.uleb128 0x1
+ 912 00db 13       		.uleb128 0x13
+ 913 00dc 00       		.byte	0
+ 914 00dd 00       		.byte	0
+ 915 00de 13       		.uleb128 0x13
+ 916 00df 0D       		.uleb128 0xd
+ 917 00e0 00       		.byte	0
+ 918 00e1 03       		.uleb128 0x3
+ 919 00e2 0E       		.uleb128 0xe
+ 920 00e3 3A       		.uleb128 0x3a
+ 921 00e4 0B       		.uleb128 0xb
+ 922 00e5 3B       		.uleb128 0x3b
+ 923 00e6 0B       		.uleb128 0xb
+ 924 00e7 49       		.uleb128 0x49
+ 925 00e8 13       		.uleb128 0x13
+ 926 00e9 38       		.uleb128 0x38
+ 927 00ea 05       		.uleb128 0x5
+ 928 00eb 00       		.byte	0
+ 929 00ec 00       		.byte	0
+ 930 00ed 14       		.uleb128 0x14
+ 931 00ee 2E       		.uleb128 0x2e
+ 932 00ef 01       		.byte	0x1
+ 933 00f0 3F       		.uleb128 0x3f
+ 934 00f1 19       		.uleb128 0x19
+ 935 00f2 03       		.uleb128 0x3
+ 936 00f3 0E       		.uleb128 0xe
+ 937 00f4 3A       		.uleb128 0x3a
+ 938 00f5 0B       		.uleb128 0xb
+ 939 00f6 3B       		.uleb128 0x3b
+ 940 00f7 0B       		.uleb128 0xb
+ 941 00f8 27       		.uleb128 0x27
+ 942 00f9 19       		.uleb128 0x19
+ 943 00fa 11       		.uleb128 0x11
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 18
+
+
+ 944 00fb 01       		.uleb128 0x1
+ 945 00fc 12       		.uleb128 0x12
+ 946 00fd 06       		.uleb128 0x6
+ 947 00fe 40       		.uleb128 0x40
+ 948 00ff 18       		.uleb128 0x18
+ 949 0100 9742     		.uleb128 0x2117
+ 950 0102 19       		.uleb128 0x19
+ 951 0103 01       		.uleb128 0x1
+ 952 0104 13       		.uleb128 0x13
+ 953 0105 00       		.byte	0
+ 954 0106 00       		.byte	0
+ 955 0107 15       		.uleb128 0x15
+ 956 0108 05       		.uleb128 0x5
+ 957 0109 00       		.byte	0
+ 958 010a 03       		.uleb128 0x3
+ 959 010b 0E       		.uleb128 0xe
+ 960 010c 3A       		.uleb128 0x3a
+ 961 010d 0B       		.uleb128 0xb
+ 962 010e 3B       		.uleb128 0x3b
+ 963 010f 0B       		.uleb128 0xb
+ 964 0110 49       		.uleb128 0x49
+ 965 0111 13       		.uleb128 0x13
+ 966 0112 02       		.uleb128 0x2
+ 967 0113 17       		.uleb128 0x17
+ 968 0114 00       		.byte	0
+ 969 0115 00       		.byte	0
+ 970 0116 16       		.uleb128 0x16
+ 971 0117 05       		.uleb128 0x5
+ 972 0118 00       		.byte	0
+ 973 0119 03       		.uleb128 0x3
+ 974 011a 08       		.uleb128 0x8
+ 975 011b 3A       		.uleb128 0x3a
+ 976 011c 0B       		.uleb128 0xb
+ 977 011d 3B       		.uleb128 0x3b
+ 978 011e 0B       		.uleb128 0xb
+ 979 011f 49       		.uleb128 0x49
+ 980 0120 13       		.uleb128 0x13
+ 981 0121 02       		.uleb128 0x2
+ 982 0122 17       		.uleb128 0x17
+ 983 0123 00       		.byte	0
+ 984 0124 00       		.byte	0
+ 985 0125 17       		.uleb128 0x17
+ 986 0126 34       		.uleb128 0x34
+ 987 0127 00       		.byte	0
+ 988 0128 03       		.uleb128 0x3
+ 989 0129 08       		.uleb128 0x8
+ 990 012a 3A       		.uleb128 0x3a
+ 991 012b 0B       		.uleb128 0xb
+ 992 012c 3B       		.uleb128 0x3b
+ 993 012d 0B       		.uleb128 0xb
+ 994 012e 49       		.uleb128 0x49
+ 995 012f 13       		.uleb128 0x13
+ 996 0130 02       		.uleb128 0x2
+ 997 0131 18       		.uleb128 0x18
+ 998 0132 00       		.byte	0
+ 999 0133 00       		.byte	0
+ 1000 0134 18       		.uleb128 0x18
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 19
+
+
+ 1001 0135 898201   		.uleb128 0x4109
+ 1002 0138 01       		.byte	0x1
+ 1003 0139 11       		.uleb128 0x11
+ 1004 013a 01       		.uleb128 0x1
+ 1005 013b 31       		.uleb128 0x31
+ 1006 013c 13       		.uleb128 0x13
+ 1007 013d 01       		.uleb128 0x1
+ 1008 013e 13       		.uleb128 0x13
+ 1009 013f 00       		.byte	0
+ 1010 0140 00       		.byte	0
+ 1011 0141 19       		.uleb128 0x19
+ 1012 0142 8A8201   		.uleb128 0x410a
+ 1013 0145 00       		.byte	0
+ 1014 0146 02       		.uleb128 0x2
+ 1015 0147 18       		.uleb128 0x18
+ 1016 0148 9142     		.uleb128 0x2111
+ 1017 014a 18       		.uleb128 0x18
+ 1018 014b 00       		.byte	0
+ 1019 014c 00       		.byte	0
+ 1020 014d 1A       		.uleb128 0x1a
+ 1021 014e 898201   		.uleb128 0x4109
+ 1022 0151 01       		.byte	0x1
+ 1023 0152 11       		.uleb128 0x11
+ 1024 0153 01       		.uleb128 0x1
+ 1025 0154 31       		.uleb128 0x31
+ 1026 0155 13       		.uleb128 0x13
+ 1027 0156 00       		.byte	0
+ 1028 0157 00       		.byte	0
+ 1029 0158 1B       		.uleb128 0x1b
+ 1030 0159 05       		.uleb128 0x5
+ 1031 015a 00       		.byte	0
+ 1032 015b 03       		.uleb128 0x3
+ 1033 015c 0E       		.uleb128 0xe
+ 1034 015d 3A       		.uleb128 0x3a
+ 1035 015e 0B       		.uleb128 0xb
+ 1036 015f 3B       		.uleb128 0x3b
+ 1037 0160 0B       		.uleb128 0xb
+ 1038 0161 49       		.uleb128 0x49
+ 1039 0162 13       		.uleb128 0x13
+ 1040 0163 02       		.uleb128 0x2
+ 1041 0164 18       		.uleb128 0x18
+ 1042 0165 00       		.byte	0
+ 1043 0166 00       		.byte	0
+ 1044 0167 1C       		.uleb128 0x1c
+ 1045 0168 34       		.uleb128 0x34
+ 1046 0169 00       		.byte	0
+ 1047 016a 03       		.uleb128 0x3
+ 1048 016b 0E       		.uleb128 0xe
+ 1049 016c 3A       		.uleb128 0x3a
+ 1050 016d 0B       		.uleb128 0xb
+ 1051 016e 3B       		.uleb128 0x3b
+ 1052 016f 0B       		.uleb128 0xb
+ 1053 0170 49       		.uleb128 0x49
+ 1054 0171 13       		.uleb128 0x13
+ 1055 0172 02       		.uleb128 0x2
+ 1056 0173 18       		.uleb128 0x18
+ 1057 0174 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 20
+
+
+ 1058 0175 00       		.byte	0
+ 1059 0176 1D       		.uleb128 0x1d
+ 1060 0177 2E       		.uleb128 0x2e
+ 1061 0178 01       		.byte	0x1
+ 1062 0179 3F       		.uleb128 0x3f
+ 1063 017a 19       		.uleb128 0x19
+ 1064 017b 03       		.uleb128 0x3
+ 1065 017c 0E       		.uleb128 0xe
+ 1066 017d 3A       		.uleb128 0x3a
+ 1067 017e 0B       		.uleb128 0xb
+ 1068 017f 3B       		.uleb128 0x3b
+ 1069 0180 0B       		.uleb128 0xb
+ 1070 0181 27       		.uleb128 0x27
+ 1071 0182 19       		.uleb128 0x19
+ 1072 0183 49       		.uleb128 0x49
+ 1073 0184 13       		.uleb128 0x13
+ 1074 0185 3C       		.uleb128 0x3c
+ 1075 0186 19       		.uleb128 0x19
+ 1076 0187 01       		.uleb128 0x1
+ 1077 0188 13       		.uleb128 0x13
+ 1078 0189 00       		.byte	0
+ 1079 018a 00       		.byte	0
+ 1080 018b 1E       		.uleb128 0x1e
+ 1081 018c 05       		.uleb128 0x5
+ 1082 018d 00       		.byte	0
+ 1083 018e 49       		.uleb128 0x49
+ 1084 018f 13       		.uleb128 0x13
+ 1085 0190 00       		.byte	0
+ 1086 0191 00       		.byte	0
+ 1087 0192 1F       		.uleb128 0x1f
+ 1088 0193 2E       		.uleb128 0x2e
+ 1089 0194 01       		.byte	0x1
+ 1090 0195 3F       		.uleb128 0x3f
+ 1091 0196 19       		.uleb128 0x19
+ 1092 0197 03       		.uleb128 0x3
+ 1093 0198 0E       		.uleb128 0xe
+ 1094 0199 3A       		.uleb128 0x3a
+ 1095 019a 0B       		.uleb128 0xb
+ 1096 019b 3B       		.uleb128 0x3b
+ 1097 019c 0B       		.uleb128 0xb
+ 1098 019d 27       		.uleb128 0x27
+ 1099 019e 19       		.uleb128 0x19
+ 1100 019f 49       		.uleb128 0x49
+ 1101 01a0 13       		.uleb128 0x13
+ 1102 01a1 3C       		.uleb128 0x3c
+ 1103 01a2 19       		.uleb128 0x19
+ 1104 01a3 00       		.byte	0
+ 1105 01a4 00       		.byte	0
+ 1106 01a5 00       		.byte	0
+ 1107              		.section	.debug_loc,"",%progbits
+ 1108              	.Ldebug_loc0:
+ 1109              	.LLST0:
+ 1110 0000 00000000 		.4byte	.LVL0
+ 1111 0004 0C000000 		.4byte	.LVL1
+ 1112 0008 0100     		.2byte	0x1
+ 1113 000a 50       		.byte	0x50
+ 1114 000b 0C000000 		.4byte	.LVL1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 21
+
+
+ 1115 000f 24000000 		.4byte	.LVL5
+ 1116 0013 0100     		.2byte	0x1
+ 1117 0015 54       		.byte	0x54
+ 1118 0016 24000000 		.4byte	.LVL5
+ 1119 001a 26000000 		.4byte	.LFE0
+ 1120 001e 0400     		.2byte	0x4
+ 1121 0020 F3       		.byte	0xf3
+ 1122 0021 01       		.uleb128 0x1
+ 1123 0022 50       		.byte	0x50
+ 1124 0023 9F       		.byte	0x9f
+ 1125 0024 00000000 		.4byte	0
+ 1126 0028 00000000 		.4byte	0
+ 1127              	.LLST1:
+ 1128 002c 00000000 		.4byte	.LVL0
+ 1129 0030 0F000000 		.4byte	.LVL2-1
+ 1130 0034 0100     		.2byte	0x1
+ 1131 0036 51       		.byte	0x51
+ 1132 0037 0F000000 		.4byte	.LVL2-1
+ 1133 003b 24000000 		.4byte	.LVL7
+ 1134 003f 0100     		.2byte	0x1
+ 1135 0041 56       		.byte	0x56
+ 1136 0042 24000000 		.4byte	.LVL7
+ 1137 0046 26000000 		.4byte	.LFE0
+ 1138 004a 0400     		.2byte	0x4
+ 1139 004c F3       		.byte	0xf3
+ 1140 004d 01       		.uleb128 0x1
+ 1141 004e 51       		.byte	0x51
+ 1142 004f 9F       		.byte	0x9f
+ 1143 0050 00000000 		.4byte	0
+ 1144 0054 00000000 		.4byte	0
+ 1145              	.LLST2:
+ 1146 0058 00000000 		.4byte	.LVL0
+ 1147 005c 0F000000 		.4byte	.LVL2-1
+ 1148 0060 0100     		.2byte	0x1
+ 1149 0062 52       		.byte	0x52
+ 1150 0063 0F000000 		.4byte	.LVL2-1
+ 1151 0067 24000000 		.4byte	.LVL6
+ 1152 006b 0100     		.2byte	0x1
+ 1153 006d 55       		.byte	0x55
+ 1154 006e 24000000 		.4byte	.LVL6
+ 1155 0072 26000000 		.4byte	.LFE0
+ 1156 0076 0400     		.2byte	0x4
+ 1157 0078 F3       		.byte	0xf3
+ 1158 0079 01       		.uleb128 0x1
+ 1159 007a 52       		.byte	0x52
+ 1160 007b 9F       		.byte	0x9f
+ 1161 007c 00000000 		.4byte	0
+ 1162 0080 00000000 		.4byte	0
+ 1163              	.LLST3:
+ 1164 0084 00000000 		.4byte	.LVL8
+ 1165 0088 12000000 		.4byte	.LVL11
+ 1166 008c 0100     		.2byte	0x1
+ 1167 008e 50       		.byte	0x50
+ 1168 008f 12000000 		.4byte	.LVL11
+ 1169 0093 2C000000 		.4byte	.LVL16
+ 1170 0097 0100     		.2byte	0x1
+ 1171 0099 54       		.byte	0x54
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 22
+
+
+ 1172 009a 2C000000 		.4byte	.LVL16
+ 1173 009e 2E000000 		.4byte	.LFE1
+ 1174 00a2 0400     		.2byte	0x4
+ 1175 00a4 F3       		.byte	0xf3
+ 1176 00a5 01       		.uleb128 0x1
+ 1177 00a6 50       		.byte	0x50
+ 1178 00a7 9F       		.byte	0x9f
+ 1179 00a8 00000000 		.4byte	0
+ 1180 00ac 00000000 		.4byte	0
+ 1181              	.LLST4:
+ 1182 00b0 00000000 		.4byte	.LVL8
+ 1183 00b4 14000000 		.4byte	.LVL12
+ 1184 00b8 0100     		.2byte	0x1
+ 1185 00ba 51       		.byte	0x51
+ 1186 00bb 14000000 		.4byte	.LVL12
+ 1187 00bf 17000000 		.4byte	.LVL13-1
+ 1188 00c3 0100     		.2byte	0x1
+ 1189 00c5 52       		.byte	0x52
+ 1190 00c6 17000000 		.4byte	.LVL13-1
+ 1191 00ca 2C000000 		.4byte	.LVL19
+ 1192 00ce 0100     		.2byte	0x1
+ 1193 00d0 57       		.byte	0x57
+ 1194 00d1 2C000000 		.4byte	.LVL19
+ 1195 00d5 2E000000 		.4byte	.LFE1
+ 1196 00d9 0400     		.2byte	0x4
+ 1197 00db F3       		.byte	0xf3
+ 1198 00dc 01       		.uleb128 0x1
+ 1199 00dd 51       		.byte	0x51
+ 1200 00de 9F       		.byte	0x9f
+ 1201 00df 00000000 		.4byte	0
+ 1202 00e3 00000000 		.4byte	0
+ 1203              	.LLST5:
+ 1204 00e7 00000000 		.4byte	.LVL8
+ 1205 00eb 10000000 		.4byte	.LVL10
+ 1206 00ef 0100     		.2byte	0x1
+ 1207 00f1 52       		.byte	0x52
+ 1208 00f2 10000000 		.4byte	.LVL10
+ 1209 00f6 17000000 		.4byte	.LVL13-1
+ 1210 00fa 0100     		.2byte	0x1
+ 1211 00fc 53       		.byte	0x53
+ 1212 00fd 17000000 		.4byte	.LVL13-1
+ 1213 0101 2C000000 		.4byte	.LVL18
+ 1214 0105 0100     		.2byte	0x1
+ 1215 0107 56       		.byte	0x56
+ 1216 0108 2C000000 		.4byte	.LVL18
+ 1217 010c 2E000000 		.4byte	.LFE1
+ 1218 0110 0400     		.2byte	0x4
+ 1219 0112 F3       		.byte	0xf3
+ 1220 0113 01       		.uleb128 0x1
+ 1221 0114 52       		.byte	0x52
+ 1222 0115 9F       		.byte	0x9f
+ 1223 0116 00000000 		.4byte	0
+ 1224 011a 00000000 		.4byte	0
+ 1225              	.LLST6:
+ 1226 011e 00000000 		.4byte	.LVL8
+ 1227 0122 0E000000 		.4byte	.LVL9
+ 1228 0126 0100     		.2byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 23
+
+
+ 1229 0128 53       		.byte	0x53
+ 1230 0129 0E000000 		.4byte	.LVL9
+ 1231 012d 2C000000 		.4byte	.LVL17
+ 1232 0131 0100     		.2byte	0x1
+ 1233 0133 55       		.byte	0x55
+ 1234 0134 2C000000 		.4byte	.LVL17
+ 1235 0138 2E000000 		.4byte	.LFE1
+ 1236 013c 0400     		.2byte	0x4
+ 1237 013e F3       		.byte	0xf3
+ 1238 013f 01       		.uleb128 0x1
+ 1239 0140 53       		.byte	0x53
+ 1240 0141 9F       		.byte	0x9f
+ 1241 0142 00000000 		.4byte	0
+ 1242 0146 00000000 		.4byte	0
+ 1243              		.section	.debug_aranges,"",%progbits
+ 1244 0000 24000000 		.4byte	0x24
+ 1245 0004 0200     		.2byte	0x2
+ 1246 0006 00000000 		.4byte	.Ldebug_info0
+ 1247 000a 04       		.byte	0x4
+ 1248 000b 00       		.byte	0
+ 1249 000c 0000     		.2byte	0
+ 1250 000e 0000     		.2byte	0
+ 1251 0010 00000000 		.4byte	.LFB0
+ 1252 0014 26000000 		.4byte	.LFE0-.LFB0
+ 1253 0018 00000000 		.4byte	.LFB1
+ 1254 001c 2E000000 		.4byte	.LFE1-.LFB1
+ 1255 0020 00000000 		.4byte	0
+ 1256 0024 00000000 		.4byte	0
+ 1257              		.section	.debug_ranges,"",%progbits
+ 1258              	.Ldebug_ranges0:
+ 1259 0000 00000000 		.4byte	.LFB0
+ 1260 0004 26000000 		.4byte	.LFE0
+ 1261 0008 00000000 		.4byte	.LFB1
+ 1262 000c 2E000000 		.4byte	.LFE1
+ 1263 0010 00000000 		.4byte	0
+ 1264 0014 00000000 		.4byte	0
+ 1265              		.section	.debug_line,"",%progbits
+ 1266              	.Ldebug_line0:
+ 1267 0000 C8000000 		.section	.debug_str,"MS",%progbits,1
+ 1267      02009C00 
+ 1267      00000201 
+ 1267      FB0E0D00 
+ 1267      01010101 
+ 1268              	.LASF31:
+ 1269 0000 696E6E65 		.ascii	"innerHashKeyed\000"
+ 1269      72486173 
+ 1269      684B6579 
+ 1269      656400
+ 1270              	.LASF44:
+ 1271 000f 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1271      4320342E 
+ 1271      392E3320 
+ 1271      32303135 
+ 1271      30333033 
+ 1272 0042 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 1272      20726576 
+ 1272      6973696F 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 24
+
+
+ 1272      6E203232 
+ 1272      31323230 
+ 1273 0075 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 1273      66756E63 
+ 1273      74696F6E 
+ 1273      2D736563 
+ 1273      74696F6E 
+ 1274              	.LASF22:
+ 1275 009d 53686132 		.ascii	"Sha256\000"
+ 1275      353600
+ 1276              	.LASF34:
+ 1277 00a4 686D6163 		.ascii	"hmac256\000"
+ 1277      32353600 
+ 1278              	.LASF23:
+ 1279 00ac 73686132 		.ascii	"sha256\000"
+ 1279      353600
+ 1280              	.LASF2:
+ 1281 00b3 62797465 		.ascii	"byte\000"
+ 1281      00
+ 1282              	.LASF36:
+ 1283 00b8 6B65795F 		.ascii	"key_size\000"
+ 1283      73697A65 
+ 1283      00
+ 1284              	.LASF25:
+ 1285 00c1 486D6163 		.ascii	"Hmac\000"
+ 1285      00
+ 1286              	.LASF42:
+ 1287 00c6 77635F48 		.ascii	"wc_HmacSetKey\000"
+ 1287      6D616353 
+ 1287      65744B65 
+ 1287      7900
+ 1288              	.LASF38:
+ 1289 00d4 686D6163 		.ascii	"hmac\000"
+ 1289      00
+ 1290              	.LASF35:
+ 1291 00d9 686D6163 		.ascii	"hmacdig\000"
+ 1291      64696700 
+ 1292              	.LASF33:
+ 1293 00e1 73697A65 		.ascii	"size\000"
+ 1293      00
+ 1294              	.LASF26:
+ 1295 00e6 68617368 		.ascii	"hash\000"
+ 1295      00
+ 1296              	.LASF9:
+ 1297 00eb 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1297      20756E73 
+ 1297      69676E65 
+ 1297      6420696E 
+ 1297      7400
+ 1298              	.LASF3:
+ 1299 00fd 776F7264 		.ascii	"word32\000"
+ 1299      333200
+ 1300              	.LASF1:
+ 1301 0104 73686F72 		.ascii	"short unsigned int\000"
+ 1301      7420756E 
+ 1301      7369676E 
+ 1301      65642069 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 25
+
+
+ 1301      6E7400
+ 1302              	.LASF28:
+ 1303 0117 6F706164 		.ascii	"opad\000"
+ 1303      00
+ 1304              	.LASF30:
+ 1305 011c 6D616354 		.ascii	"macType\000"
+ 1305      79706500 
+ 1306              	.LASF27:
+ 1307 0124 69706164 		.ascii	"ipad\000"
+ 1307      00
+ 1308              	.LASF0:
+ 1309 0129 756E7369 		.ascii	"unsigned char\000"
+ 1309      676E6564 
+ 1309      20636861 
+ 1309      7200
+ 1310              	.LASF13:
+ 1311 0137 53484132 		.ascii	"SHA256\000"
+ 1311      353600
+ 1312              	.LASF7:
+ 1313 013e 73686F72 		.ascii	"short int\000"
+ 1313      7420696E 
+ 1313      7400
+ 1314              	.LASF29:
+ 1315 0148 696E6E65 		.ascii	"innerHash\000"
+ 1315      72486173 
+ 1315      6800
+ 1316              	.LASF43:
+ 1317 0152 77635F48 		.ascii	"wc_HmacUpdate\000"
+ 1317      6D616355 
+ 1317      70646174 
+ 1317      6500
+ 1318              	.LASF41:
+ 1319 0160 77635F53 		.ascii	"wc_Sha256Final\000"
+ 1319      68613235 
+ 1319      3646696E 
+ 1319      616C00
+ 1320              	.LASF40:
+ 1321 016f 77635F53 		.ascii	"wc_Sha256Update\000"
+ 1321      68613235 
+ 1321      36557064 
+ 1321      61746500 
+ 1322              	.LASF4:
+ 1323 017f 756E7369 		.ascii	"unsigned int\000"
+ 1323      676E6564 
+ 1323      20696E74 
+ 1323      00
+ 1324              	.LASF5:
+ 1325 018c 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1325      206C6F6E 
+ 1325      6720756E 
+ 1325      7369676E 
+ 1325      65642069 
+ 1326              	.LASF45:
+ 1327 01a3 2E2E5C61 		.ascii	"..\\acn-sdk-c\\platforms\\common\\wolf\\crypt\\cryp"
+ 1327      636E2D73 
+ 1327      646B2D63 
+ 1327      5C706C61 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 26
+
+
+ 1327      74666F72 
+ 1328 01d0 742E6300 		.ascii	"t.c\000"
+ 1329              	.LASF46:
+ 1330 01d4 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 1330      73657273 
+ 1330      5C646465 
+ 1330      6D69646F 
+ 1330      765C446F 
+ 1331 0202 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 1331      6530315C 
+ 1331      53656E73 
+ 1331      65416269 
+ 1331      6C697479 
+ 1332              	.LASF39:
+ 1333 021d 77635F49 		.ascii	"wc_InitSha256\000"
+ 1333      6E697453 
+ 1333      68613235 
+ 1333      3600
+ 1334              	.LASF19:
+ 1335 022b 68694C65 		.ascii	"hiLen\000"
+ 1335      6E00
+ 1336              	.LASF11:
+ 1337 0231 73697A65 		.ascii	"sizetype\000"
+ 1337      74797065 
+ 1337      00
+ 1338              	.LASF10:
+ 1339 023a 6C6F6E67 		.ascii	"long long int\000"
+ 1339      206C6F6E 
+ 1339      6720696E 
+ 1339      7400
+ 1340              	.LASF12:
+ 1341 0248 63686172 		.ascii	"char\000"
+ 1341      00
+ 1342              	.LASF37:
+ 1343 024d 6275665F 		.ascii	"buf_size\000"
+ 1343      73697A65 
+ 1343      00
+ 1344              	.LASF47:
+ 1345 0256 77635F48 		.ascii	"wc_HmacFinal\000"
+ 1345      6D616346 
+ 1345      696E616C 
+ 1345      00
+ 1346              	.LASF16:
+ 1347 0263 53484132 		.ascii	"SHA256_PAD_SIZE\000"
+ 1347      35365F50 
+ 1347      41445F53 
+ 1347      495A4500 
+ 1348              	.LASF17:
+ 1349 0273 62756666 		.ascii	"buffLen\000"
+ 1349      4C656E00 
+ 1350              	.LASF18:
+ 1351 027b 6C6F4C65 		.ascii	"loLen\000"
+ 1351      6E00
+ 1352              	.LASF21:
+ 1353 0281 62756666 		.ascii	"buffer\000"
+ 1353      657200
+ 1354              	.LASF24:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccPnVEX8.s 			page 27
+
+
+ 1355 0288 48617368 		.ascii	"Hash\000"
+ 1355      00
+ 1356              	.LASF20:
+ 1357 028d 64696765 		.ascii	"digest\000"
+ 1357      737400
+ 1358              	.LASF8:
+ 1359 0294 6C6F6E67 		.ascii	"long int\000"
+ 1359      20696E74 
+ 1359      00
+ 1360              	.LASF32:
+ 1361 029d 73686173 		.ascii	"shasum\000"
+ 1361      756D00
+ 1362              	.LASF6:
+ 1363 02a4 7369676E 		.ascii	"signed char\000"
+ 1363      65642063 
+ 1363      68617200 
+ 1364              	.LASF14:
+ 1365 02b0 53484132 		.ascii	"SHA256_BLOCK_SIZE\000"
+ 1365      35365F42 
+ 1365      4C4F434B 
+ 1365      5F53495A 
+ 1365      4500
+ 1366              	.LASF15:
+ 1367 02c2 53484132 		.ascii	"SHA256_DIGEST_SIZE\000"
+ 1367      35365F44 
+ 1367      49474553 
+ 1367      545F5349 
+ 1367      5A4500
+ 1368              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

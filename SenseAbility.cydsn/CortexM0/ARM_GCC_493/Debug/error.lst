@@ -1,0 +1,2902 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"error.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.wc_GetErrorString,"ax",%progbits
+  18              		.align	1
+  19              		.global	wc_GetErrorString
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	wc_GetErrorString, %function
+  23              	wc_GetErrorString:
+  24              	.LFB0:
+  25              		.file 1 "..\\acn-sdk-c\\src\\wolfSSL\\wolfcrypt\\src\\error.c"
+   1:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** /* error.c
+   2:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  *
+   3:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * Copyright (C) 2006-2016 wolfSSL Inc.
+   4:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  *
+   5:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * This file is part of wolfSSL.
+   6:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  *
+   7:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * wolfSSL is free software; you can redistribute it and/or modify
+   8:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * it under the terms of the GNU General Public License as published by
+   9:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * the Free Software Foundation; either version 2 of the License, or
+  10:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * (at your option) any later version.
+  11:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  *
+  12:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * wolfSSL is distributed in the hope that it will be useful,
+  13:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * GNU General Public License for more details.
+  16:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  *
+  17:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * You should have received a copy of the GNU General Public License
+  18:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * along with this program; if not, write to the Free Software
+  19:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+  20:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****  */
+  21:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  22:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  23:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #ifdef HAVE_CONFIG_H
+  24:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     #include <config.h>
+  25:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #endif
+  26:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  27:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #include <wolfssl/wolfcrypt/settings.h>
+  28:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  29:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #include <wolfssl/wolfcrypt/error-crypt.h>
+  30:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  31:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #ifdef _MSC_VER
+  32:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     /* 4996 warning to use MS extensions e.g., strcpy_s instead of XSTRNCPY */
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 2
+
+
+  33:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     #pragma warning(disable: 4996)
+  34:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #endif
+  35:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  36:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** const char* wc_GetErrorString(int error)
+  37:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** {
+  26              		.loc 1 37 0
+  27              		.cfi_startproc
+  28              	.LVL0:
+  29 0000 031C     		mov	r3, r0
+  30 0002 E833     		add	r3, r3, #232
+  38:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #ifdef NO_ERROR_STRINGS
+  39:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  40:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     (void)error;
+  41:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     return "no support for error strings built in";
+  42:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  43:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #else
+  44:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  45:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     switch (error) {
+  31              		.loc 1 45 0
+  32 0004 0348     		ldr	r0, .L5
+  33              	.LVL1:
+  34 0006 832B     		cmp	r3, #131
+  35 0008 02D8     		bhi	.L2
+  36 000a 034A     		ldr	r2, .L5+4
+  37 000c 9B00     		lsl	r3, r3, #2
+  38              	.LVL2:
+  39 000e 9858     		ldr	r0, [r3, r2]
+  40              	.L2:
+  46:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  47:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case OPEN_RAN_E :
+  48:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "opening random device error";
+  49:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  50:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case READ_RAN_E :
+  51:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "reading random device error";
+  52:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  53:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case WINCRYPT_E :
+  54:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "windows crypt init error";
+  55:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  56:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case CRYPTGEN_E :
+  57:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "windows crypt generation error";
+  58:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  59:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case RAN_BLOCK_E :
+  60:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "random device read would block error";
+  61:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  62:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case BAD_MUTEX_E :
+  63:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Bad mutex, operation failed";
+  64:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  65:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_INIT_E :
+  66:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_init error state";
+  67:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  68:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_READ_E :
+  69:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_read error state";
+  70:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  71:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_EXPTMOD_E :
+  72:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_exptmod error state";
+  73:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  74:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_TO_E :
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 3
+
+
+  75:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_to_xxx error state, can't convert";
+  76:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  77:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_SUB_E :
+  78:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_sub error state, can't subtract";
+  79:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  80:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_ADD_E :
+  81:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_add error state, can't add";
+  82:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  83:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_MUL_E :
+  84:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_mul error state, can't multiply";
+  85:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  86:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_MULMOD_E :
+  87:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_mulmod error state, can't multiply mod";
+  88:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  89:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_MOD_E :
+  90:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_mod error state, can't mod";
+  91:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  92:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_INVMOD_E :
+  93:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_invmod error state, can't inv mod";
+  94:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  95:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_CMP_E :
+  96:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp_cmp error state";
+  97:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+  98:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MP_ZERO_E :
+  99:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "mp zero result, not expected";
+ 100:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 101:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MEMORY_E :
+ 102:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "out of memory error";
+ 103:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 104:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case RSA_WRONG_TYPE_E :
+ 105:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "RSA wrong block type for RSA function";
+ 106:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 107:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case RSA_BUFFER_E :
+ 108:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "RSA buffer error, output too small or input too big";
+ 109:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 110:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case BUFFER_E :
+ 111:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Buffer error, output too small or input too big";
+ 112:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 113:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ALGO_ID_E :
+ 114:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Cert AlgoID error";
+ 115:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 116:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case PUBLIC_KEY_E :
+ 117:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Cert Public Key error";
+ 118:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 119:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case DATE_E :
+ 120:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Cert Date validity error";
+ 121:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 122:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case SUBJECT_E :
+ 123:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Cert Subject name error";
+ 124:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 125:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ISSUER_E :
+ 126:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Cert Issuer name error";
+ 127:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 128:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case CA_TRUE_E :
+ 129:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting basic constraint CA true error";
+ 130:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 131:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case EXTENSIONS_E :
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 4
+
+
+ 132:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting extensions error";
+ 133:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 134:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_PARSE_E :
+ 135:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN parsing error, invalid input";
+ 136:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 137:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_VERSION_E :
+ 138:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN version error, invalid number";
+ 139:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 140:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_GETINT_E :
+ 141:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN get big int error, invalid data";
+ 142:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 143:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_RSA_KEY_E :
+ 144:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN key init error, invalid input";
+ 145:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 146:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_OBJECT_ID_E :
+ 147:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN object id error, invalid id";
+ 148:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 149:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_TAG_NULL_E :
+ 150:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN tag error, not null";
+ 151:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 152:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_EXPECT_0_E :
+ 153:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN expect error, not zero";
+ 154:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 155:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_BITSTR_E :
+ 156:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN bit string error, wrong id";
+ 157:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 158:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_UNKNOWN_OID_E :
+ 159:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN oid error, unknown sum id";
+ 160:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 161:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_DATE_SZ_E :
+ 162:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN date error, bad size";
+ 163:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 164:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_BEFORE_DATE_E :
+ 165:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN date error, current date before";
+ 166:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 167:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_AFTER_DATE_E :
+ 168:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN date error, current date after";
+ 169:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 170:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_SIG_OID_E :
+ 171:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN signature error, mismatched oid";
+ 172:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 173:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_TIME_E :
+ 174:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN time error, unknown time type";
+ 175:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 176:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_INPUT_E :
+ 177:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN input error, not enough data";
+ 178:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 179:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_SIG_CONFIRM_E :
+ 180:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN sig error, confirm failure";
+ 181:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 182:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_SIG_HASH_E :
+ 183:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN sig error, unsupported hash type";
+ 184:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 185:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_SIG_KEY_E :
+ 186:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN sig error, unsupported key type";
+ 187:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 188:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_DH_KEY_E :
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 5
+
+
+ 189:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN key init error, invalid input";
+ 190:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 191:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_NTRU_KEY_E :
+ 192:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN NTRU key decode error, invalid input";
+ 193:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 194:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_CRIT_EXT_E:
+ 195:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "X.509 Critical extension ignored";
+ 196:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 197:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ECC_BAD_ARG_E :
+ 198:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ECC input argument wrong type, invalid input";
+ 199:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 200:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_ECC_KEY_E :
+ 201:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ECC ASN1 bad key data, invalid input";
+ 202:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 203:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ECC_CURVE_OID_E :
+ 204:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ECC curve sum OID unsupported, invalid input";
+ 205:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 206:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case BAD_FUNC_ARG :
+ 207:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Bad function argument";
+ 208:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 209:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case NOT_COMPILED_IN :
+ 210:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Feature not compiled in";
+ 211:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 212:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case UNICODE_SIZE_E :
+ 213:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Unicode password too big";
+ 214:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 215:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case NO_PASSWORD :
+ 216:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "No password provided by user";
+ 217:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 218:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ALT_NAME_E :
+ 219:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Alt Name problem, too big";
+ 220:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 221:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case AES_GCM_AUTH_E:
+ 222:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "AES-GCM Authentication check fail";
+ 223:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 224:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case AES_CCM_AUTH_E:
+ 225:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "AES-CCM Authentication check fail";
+ 226:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 227:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case CAVIUM_INIT_E:
+ 228:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Cavium Init type error";
+ 229:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 230:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case COMPRESS_INIT_E:
+ 231:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Compress Init error";
+ 232:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 233:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case COMPRESS_E:
+ 234:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Compress error";
+ 235:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 236:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case DECOMPRESS_INIT_E:
+ 237:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "DeCompress Init error";
+ 238:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 239:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case DECOMPRESS_E:
+ 240:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "DeCompress error";
+ 241:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 242:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case BAD_ALIGN_E:
+ 243:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Bad alignment error, no alloc help";
+ 244:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 245:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_NO_SIGNER_E :
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 6
+
+
+ 246:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN no signer error to confirm failure";
+ 247:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 248:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_CRL_CONFIRM_E :
+ 249:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN CRL sig error, confirm failure";
+ 250:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 251:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_CRL_NO_SIGNER_E :
+ 252:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN CRL no signer error to confirm failure";
+ 253:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 254:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_OCSP_CONFIRM_E :
+ 255:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN OCSP sig error, confirm failure";
+ 256:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 257:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case BAD_ENC_STATE_E:
+ 258:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Bad ecc encrypt state operation";
+ 259:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 260:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case BAD_PADDING_E:
+ 261:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Bad padding, message wrong length";
+ 262:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 263:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case REQ_ATTRIBUTE_E:
+ 264:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting cert request attributes error";
+ 265:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 266:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case PKCS7_OID_E:
+ 267:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "PKCS#7 error: mismatched OID value";
+ 268:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 269:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case PKCS7_RECIP_E:
+ 270:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "PKCS#7 error: no matching recipient found";
+ 271:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 272:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case FIPS_NOT_ALLOWED_E:
+ 273:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "FIPS mode not allowed error";
+ 274:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 275:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_NAME_INVALID_E:
+ 276:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Name Constraint error";
+ 277:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 278:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case RNG_FAILURE_E:
+ 279:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Random Number Generator failed";
+ 280:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 281:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case HMAC_MIN_KEYLEN_E:
+ 282:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "FIPS Mode HMAC Minimum Key Length error";
+ 283:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 284:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case RSA_PAD_E:
+ 285:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Rsa Padding error";
+ 286:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 287:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case LENGTH_ONLY_E:
+ 288:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Output length only set, not for other use error";
+ 289:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 290:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case IN_CORE_FIPS_E:
+ 291:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "In Core Integrity check FIPS error";
+ 292:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 293:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case AES_KAT_FIPS_E:
+ 294:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "AES Known Answer Test check FIPS error";
+ 295:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 296:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case DES3_KAT_FIPS_E:
+ 297:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "DES3 Known Answer Test check FIPS error";
+ 298:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 299:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case HMAC_KAT_FIPS_E:
+ 300:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "HMAC Known Answer Test check FIPS error";
+ 301:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 302:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case RSA_KAT_FIPS_E:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 7
+
+
+ 303:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "RSA Known Answer Test check FIPS error";
+ 304:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 305:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case DRBG_KAT_FIPS_E:
+ 306:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "DRBG Known Answer Test check FIPS error";
+ 307:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 308:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case DRBG_CONT_FIPS_E:
+ 309:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "DRBG Continuous Test FIPS error";
+ 310:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 311:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case AESGCM_KAT_FIPS_E:
+ 312:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "AESGCM Known Answer Test check FIPS error";
+ 313:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 314:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case THREAD_STORE_KEY_E:
+ 315:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Thread Storage Key Create error";
+ 316:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 317:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case THREAD_STORE_SET_E:
+ 318:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Thread Storage Set error";
+ 319:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 320:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case MAC_CMP_FAILED_E:
+ 321:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "MAC comparison failed";
+ 322:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 323:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case IS_POINT_E:
+ 324:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ECC is point on curve failed";
+ 325:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 326:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ECC_INF_E:
+ 327:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return " ECC point at infinity error";
+ 328:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 329:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ECC_PRIV_KEY_E:
+ 330:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return " ECC private key is not valid error";
+ 331:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 332:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case SRP_CALL_ORDER_E:
+ 333:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "SRP function called in the wrong order error";
+ 334:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 335:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case SRP_VERIFY_E:
+ 336:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "SRP proof verification error";
+ 337:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 338:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case SRP_BAD_KEY_E:
+ 339:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "SRP bad key values error";
+ 340:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 341:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_NO_SKID:
+ 342:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN no Subject Key Identifier found error";
+ 343:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 344:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_NO_AKID:
+ 345:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN no Authority Key Identifier found error";
+ 346:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 347:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case ASN_NO_KEYUSAGE:
+ 348:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "ASN no Key Usage found error";
+ 349:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 350:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case SKID_E:
+ 351:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Subject Key Identifier error";
+ 352:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 353:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case AKID_E:
+ 354:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Authority Key Identifier error";
+ 355:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 356:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case KEYUSAGE_E:
+ 357:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Bad Key Usage value error";
+ 358:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 359:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case CERTPOLICIES_E:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 8
+
+
+ 360:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Setting Certificate Policies error";
+ 361:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 362:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case WC_INIT_E:
+ 363:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "wolfCrypt Initialize Failure error";
+ 364:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 365:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case SIG_VERIFY_E:
+ 366:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Signature verify error";
+ 367:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 368:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case BAD_COND_E:
+ 369:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Bad condition variable operation error";
+ 370:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 371:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case SIG_TYPE_E:
+ 372:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Signature type not enabled/available";
+ 373:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 374:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     case HASH_TYPE_E:
+ 375:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "Hash type not enabled/available";
+ 376:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 377:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     default:
+ 378:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****         return "unknown error number";
+ 379:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 380:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     }
+ 381:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 382:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** #endif /* NO_ERROR_STRINGS */
+ 383:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 384:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** }
+  41              		.loc 1 384 0
+  42              		@ sp needed
+  43 0010 7047     		bx	lr
+  44              	.L6:
+  45 0012 C046     		.align	2
+  46              	.L5:
+  47 0014 00000000 		.word	.LC0
+  48 0018 00000000 		.word	.LANCHOR0
+  49              		.cfi_endproc
+  50              	.LFE0:
+  51              		.size	wc_GetErrorString, .-wc_GetErrorString
+  52              		.section	.text.wc_ErrorString,"ax",%progbits
+  53              		.align	1
+  54              		.global	wc_ErrorString
+  55              		.code	16
+  56              		.thumb_func
+  57              		.type	wc_ErrorString, %function
+  58              	wc_ErrorString:
+  59              	.LFB1:
+ 385:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** 
+ 386:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** void wc_ErrorString(int error, char* buffer)
+ 387:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** {
+  60              		.loc 1 387 0
+  61              		.cfi_startproc
+  62              	.LVL3:
+  63 0000 10B5     		push	{r4, lr}
+  64              		.cfi_def_cfa_offset 8
+  65              		.cfi_offset 4, -8
+  66              		.cfi_offset 14, -4
+  67              		.loc 1 387 0
+  68 0002 0C1C     		mov	r4, r1
+ 388:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c ****     XSTRNCPY(buffer, wc_GetErrorString(error), WOLFSSL_MAX_ERROR_SZ);
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 9
+
+
+  69              		.loc 1 388 0
+  70 0004 FFF7FEFF 		bl	wc_GetErrorString
+  71              	.LVL4:
+  72 0008 5022     		mov	r2, #80
+  73 000a 011C     		mov	r1, r0
+  74 000c 201C     		mov	r0, r4
+  75 000e FFF7FEFF 		bl	strncpy
+  76              	.LVL5:
+ 389:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/error.c **** }
+  77              		.loc 1 389 0
+  78              		@ sp needed
+  79              	.LVL6:
+  80 0012 10BD     		pop	{r4, pc}
+  81              		.cfi_endproc
+  82              	.LFE1:
+  83              		.size	wc_ErrorString, .-wc_ErrorString
+  84              		.section	.rodata
+  85              		.align	2
+  86              		.set	.LANCHOR0,. + 0
+  87              		.type	CSWTCH.1, %object
+  88              		.size	CSWTCH.1, 528
+  89              	CSWTCH.1:
+  90 0000 15000000 		.word	.LC3
+  91 0004 35000000 		.word	.LC4
+  92 0008 5A000000 		.word	.LC5
+  93 000c 81000000 		.word	.LC6
+  94 0010 98000000 		.word	.LC7
+  95 0014 BB000000 		.word	.LC8
+  96 0018 DE000000 		.word	.LC9
+  97 001c F8000000 		.word	.LC10
+  98 0020 1F010000 		.word	.LC11
+  99 0024 44010000 		.word	.LC12
+ 100 0028 00000000 		.word	.LC0
+ 101 002c 61010000 		.word	.LC13
+ 102 0030 8D010000 		.word	.LC14
+ 103 0034 B7010000 		.word	.LC15
+ 104 0038 D0010000 		.word	.LC16
+ 105 003c ED010000 		.word	.LC17
+ 106 0040 1A020000 		.word	.LC18
+ 107 0044 3E020000 		.word	.LC19
+ 108 0048 5B020000 		.word	.LC20
+ 109 004c 78020000 		.word	.LC21
+ 110 0050 8E020000 		.word	.LC22
+ 111 0054 A7020000 		.word	.LC23
+ 112 0058 C7020000 		.word	.LC24
+ 113 005c F1020000 		.word	.LC25
+ 114 0060 11030000 		.word	.LC26
+ 115 0064 39030000 		.word	.LC27
+ 116 0068 60030000 		.word	.LC28
+ 117 006c 88030000 		.word	.LC29
+ 118 0070 B0030000 		.word	.LC30
+ 119 0074 D7030000 		.word	.LC31
+ 120 0078 FA030000 		.word	.LC32
+ 121 007c 2A040000 		.word	.LC33
+ 122 0080 3C040000 		.word	.LC34
+ 123 0084 64040000 		.word	.LC35
+ 124 0088 83040000 		.word	.LC36
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 10
+
+
+ 125 008c 99040000 		.word	.LC37
+ 126 0090 B5040000 		.word	.LC38
+ 127 0094 DF040000 		.word	.LC39
+ 128 0098 02050000 		.word	.LC40
+ 129 009c 28050000 		.word	.LC41
+ 130 00a0 4A050000 		.word	.LC42
+ 131 00a4 6A050000 		.word	.LC43
+ 132 00a8 8E050000 		.word	.LC44
+ 133 00ac B9050000 		.word	.LC45
+ 134 00b0 DC050000 		.word	.LC46
+ 135 00b4 03060000 		.word	.LC47
+ 136 00b8 26060000 		.word	.LC48
+ 137 00bc 37060000 		.word	.LC49
+ 138 00c0 4D060000 		.word	.LC50
+ 139 00c4 5C060000 		.word	.LC51
+ 140 00c8 70060000 		.word	.LC52
+ 141 00cc 87060000 		.word	.LC53
+ 142 00d0 A9060000 		.word	.LC54
+ 143 00d4 00000000 		.word	.LC0
+ 144 00d8 00000000 		.word	.LC0
+ 145 00dc CB060000 		.word	.LC55
+ 146 00e0 E5060000 		.word	.LC56
+ 147 00e4 02070000 		.word	.LC57
+ 148 00e8 1B070000 		.word	.LC58
+ 149 00ec 33070000 		.word	.LC59
+ 150 00f0 49070000 		.word	.LC60
+ 151 00f4 76070000 		.word	.LC61
+ 152 00f8 9B070000 		.word	.LC62
+ 153 00fc 00000000 		.word	.LC0
+ 154 0100 00000000 		.word	.LC0
+ 155 0104 00000000 		.word	.LC0
+ 156 0108 00000000 		.word	.LC0
+ 157 010c 00000000 		.word	.LC0
+ 158 0110 00000000 		.word	.LC0
+ 159 0114 00000000 		.word	.LC0
+ 160 0118 00000000 		.word	.LC0
+ 161 011c 00000000 		.word	.LC0
+ 162 0120 C8070000 		.word	.LC63
+ 163 0124 E9070000 		.word	.LC64
+ 164 0128 12080000 		.word	.LC65
+ 165 012c 34080000 		.word	.LC66
+ 166 0130 58080000 		.word	.LC67
+ 167 0134 7D080000 		.word	.LC68
+ 168 0138 9C080000 		.word	.LC69
+ 169 013c BD080000 		.word	.LC70
+ 170 0140 DF080000 		.word	.LC71
+ 171 0144 03090000 		.word	.LC72
+ 172 0148 26090000 		.word	.LC73
+ 173 014c 4A090000 		.word	.LC74
+ 174 0150 63090000 		.word	.LC75
+ 175 0154 81090000 		.word	.LC76
+ 176 0158 A0090000 		.word	.LC77
+ 177 015c BB090000 		.word	.LC78
+ 178 0160 D3090000 		.word	.LC79
+ 179 0164 12080000 		.word	.LC65
+ 180 0168 F3090000 		.word	.LC80
+ 181 016c 170A0000 		.word	.LC81
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 11
+
+
+ 182 0170 390A0000 		.word	.LC82
+ 183 0174 5A0A0000 		.word	.LC83
+ 184 0178 730A0000 		.word	.LC84
+ 185 017c 9A0A0000 		.word	.LC85
+ 186 0180 B90A0000 		.word	.LC86
+ 187 0184 D90A0000 		.word	.LC87
+ 188 0188 FA0A0000 		.word	.LC88
+ 189 018c 180B0000 		.word	.LC89
+ 190 0190 320B0000 		.word	.LC90
+ 191 0194 620B0000 		.word	.LC91
+ 192 0198 960B0000 		.word	.LC92
+ 193 019c 00000000 		.word	.LC0
+ 194 01a0 00000000 		.word	.LC0
+ 195 01a4 00000000 		.word	.LC0
+ 196 01a8 00000000 		.word	.LC0
+ 197 01ac BC0B0000 		.word	.LC93
+ 198 01b0 00000000 		.word	.LC0
+ 199 01b4 00000000 		.word	.LC0
+ 200 01b8 00000000 		.word	.LC0
+ 201 01bc D00B0000 		.word	.LC94
+ 202 01c0 ED0B0000 		.word	.LC95
+ 203 01c4 000C0000 		.word	.LC96
+ 204 01c8 250C0000 		.word	.LC97
+ 205 01cc 430C0000 		.word	.LC98
+ 206 01d0 6D0C0000 		.word	.LC99
+ 207 01d4 900C0000 		.word	.LC100
+ 208 01d8 AE0C0000 		.word	.LC101
+ 209 01dc D10C0000 		.word	.LC102
+ 210 01e0 F60C0000 		.word	.LC103
+ 211 01e4 0D0D0000 		.word	.LC104
+ 212 01e8 210D0000 		.word	.LC105
+ 213 01ec 00000000 		.word	.LC0
+ 214 01f0 00000000 		.word	.LC0
+ 215 01f4 00000000 		.word	.LC0
+ 216 01f8 350D0000 		.word	.LC106
+ 217 01fc 510D0000 		.word	.LC107
+ 218 0200 760D0000 		.word	.LC108
+ 219 0204 950D0000 		.word	.LC109
+ 220 0208 AE0D0000 		.word	.LC110
+ 221 020c CA0D0000 		.word	.LC111
+ 222              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 223              	.LC0:
+ 224 0000 756E6B6E 		.ascii	"unknown error number\000"
+ 224      6F776E20 
+ 224      6572726F 
+ 224      72206E75 
+ 224      6D626572 
+ 225              	.LC3:
+ 226 0015 48617368 		.ascii	"Hash type not enabled/available\000"
+ 226      20747970 
+ 226      65206E6F 
+ 226      7420656E 
+ 226      61626C65 
+ 227              	.LC4:
+ 228 0035 5369676E 		.ascii	"Signature type not enabled/available\000"
+ 228      61747572 
+ 228      65207479 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 12
+
+
+ 228      7065206E 
+ 228      6F742065 
+ 229              	.LC5:
+ 230 005a 42616420 		.ascii	"Bad condition variable operation error\000"
+ 230      636F6E64 
+ 230      6974696F 
+ 230      6E207661 
+ 230      72696162 
+ 231              	.LC6:
+ 232 0081 5369676E 		.ascii	"Signature verify error\000"
+ 232      61747572 
+ 232      65207665 
+ 232      72696679 
+ 232      20657272 
+ 233              	.LC7:
+ 234 0098 776F6C66 		.ascii	"wolfCrypt Initialize Failure error\000"
+ 234      43727970 
+ 234      7420496E 
+ 234      69746961 
+ 234      6C697A65 
+ 235              	.LC8:
+ 236 00bb 53657474 		.ascii	"Setting Certificate Policies error\000"
+ 236      696E6720 
+ 236      43657274 
+ 236      69666963 
+ 236      61746520 
+ 237              	.LC9:
+ 238 00de 42616420 		.ascii	"Bad Key Usage value error\000"
+ 238      4B657920 
+ 238      55736167 
+ 238      65207661 
+ 238      6C756520 
+ 239              	.LC10:
+ 240 00f8 53657474 		.ascii	"Setting Authority Key Identifier error\000"
+ 240      696E6720 
+ 240      41757468 
+ 240      6F726974 
+ 240      79204B65 
+ 241              	.LC11:
+ 242 011f 53657474 		.ascii	"Setting Subject Key Identifier error\000"
+ 242      696E6720 
+ 242      5375626A 
+ 242      65637420 
+ 242      4B657920 
+ 243              	.LC12:
+ 244 0144 41534E20 		.ascii	"ASN no Key Usage found error\000"
+ 244      6E6F204B 
+ 244      65792055 
+ 244      73616765 
+ 244      20666F75 
+ 245              	.LC13:
+ 246 0161 41534E20 		.ascii	"ASN no Authority Key Identifier found error\000"
+ 246      6E6F2041 
+ 246      7574686F 
+ 246      72697479 
+ 246      204B6579 
+ 247              	.LC14:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 13
+
+
+ 248 018d 41534E20 		.ascii	"ASN no Subject Key Identifier found error\000"
+ 248      6E6F2053 
+ 248      75626A65 
+ 248      6374204B 
+ 248      65792049 
+ 249              	.LC15:
+ 250 01b7 53525020 		.ascii	"SRP bad key values error\000"
+ 250      62616420 
+ 250      6B657920 
+ 250      76616C75 
+ 250      65732065 
+ 251              	.LC16:
+ 252 01d0 53525020 		.ascii	"SRP proof verification error\000"
+ 252      70726F6F 
+ 252      66207665 
+ 252      72696669 
+ 252      63617469 
+ 253              	.LC17:
+ 254 01ed 53525020 		.ascii	"SRP function called in the wrong order error\000"
+ 254      66756E63 
+ 254      74696F6E 
+ 254      2063616C 
+ 254      6C656420 
+ 255              	.LC18:
+ 256 021a 20454343 		.ascii	" ECC private key is not valid error\000"
+ 256      20707269 
+ 256      76617465 
+ 256      206B6579 
+ 256      20697320 
+ 257              	.LC19:
+ 258 023e 20454343 		.ascii	" ECC point at infinity error\000"
+ 258      20706F69 
+ 258      6E742061 
+ 258      7420696E 
+ 258      66696E69 
+ 259              	.LC20:
+ 260 025b 45434320 		.ascii	"ECC is point on curve failed\000"
+ 260      69732070 
+ 260      6F696E74 
+ 260      206F6E20 
+ 260      63757276 
+ 261              	.LC21:
+ 262 0278 4D414320 		.ascii	"MAC comparison failed\000"
+ 262      636F6D70 
+ 262      61726973 
+ 262      6F6E2066 
+ 262      61696C65 
+ 263              	.LC22:
+ 264 028e 54687265 		.ascii	"Thread Storage Set error\000"
+ 264      61642053 
+ 264      746F7261 
+ 264      67652053 
+ 264      65742065 
+ 265              	.LC23:
+ 266 02a7 54687265 		.ascii	"Thread Storage Key Create error\000"
+ 266      61642053 
+ 266      746F7261 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 14
+
+
+ 266      6765204B 
+ 266      65792043 
+ 267              	.LC24:
+ 268 02c7 41455347 		.ascii	"AESGCM Known Answer Test check FIPS error\000"
+ 268      434D204B 
+ 268      6E6F776E 
+ 268      20416E73 
+ 268      77657220 
+ 269              	.LC25:
+ 270 02f1 44524247 		.ascii	"DRBG Continuous Test FIPS error\000"
+ 270      20436F6E 
+ 270      74696E75 
+ 270      6F757320 
+ 270      54657374 
+ 271              	.LC26:
+ 272 0311 44524247 		.ascii	"DRBG Known Answer Test check FIPS error\000"
+ 272      204B6E6F 
+ 272      776E2041 
+ 272      6E737765 
+ 272      72205465 
+ 273              	.LC27:
+ 274 0339 52534120 		.ascii	"RSA Known Answer Test check FIPS error\000"
+ 274      4B6E6F77 
+ 274      6E20416E 
+ 274      73776572 
+ 274      20546573 
+ 275              	.LC28:
+ 276 0360 484D4143 		.ascii	"HMAC Known Answer Test check FIPS error\000"
+ 276      204B6E6F 
+ 276      776E2041 
+ 276      6E737765 
+ 276      72205465 
+ 277              	.LC29:
+ 278 0388 44455333 		.ascii	"DES3 Known Answer Test check FIPS error\000"
+ 278      204B6E6F 
+ 278      776E2041 
+ 278      6E737765 
+ 278      72205465 
+ 279              	.LC30:
+ 280 03b0 41455320 		.ascii	"AES Known Answer Test check FIPS error\000"
+ 280      4B6E6F77 
+ 280      6E20416E 
+ 280      73776572 
+ 280      20546573 
+ 281              	.LC31:
+ 282 03d7 496E2043 		.ascii	"In Core Integrity check FIPS error\000"
+ 282      6F726520 
+ 282      496E7465 
+ 282      67726974 
+ 282      79206368 
+ 283              	.LC32:
+ 284 03fa 4F757470 		.ascii	"Output length only set, not for other use error\000"
+ 284      7574206C 
+ 284      656E6774 
+ 284      68206F6E 
+ 284      6C792073 
+ 285              	.LC33:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 15
+
+
+ 286 042a 52736120 		.ascii	"Rsa Padding error\000"
+ 286      50616464 
+ 286      696E6720 
+ 286      6572726F 
+ 286      7200
+ 287              	.LC34:
+ 288 043c 46495053 		.ascii	"FIPS Mode HMAC Minimum Key Length error\000"
+ 288      204D6F64 
+ 288      6520484D 
+ 288      4143204D 
+ 288      696E696D 
+ 289              	.LC35:
+ 290 0464 52616E64 		.ascii	"Random Number Generator failed\000"
+ 290      6F6D204E 
+ 290      756D6265 
+ 290      72204765 
+ 290      6E657261 
+ 291              	.LC36:
+ 292 0483 4E616D65 		.ascii	"Name Constraint error\000"
+ 292      20436F6E 
+ 292      73747261 
+ 292      696E7420 
+ 292      6572726F 
+ 293              	.LC37:
+ 294 0499 46495053 		.ascii	"FIPS mode not allowed error\000"
+ 294      206D6F64 
+ 294      65206E6F 
+ 294      7420616C 
+ 294      6C6F7765 
+ 295              	.LC38:
+ 296 04b5 504B4353 		.ascii	"PKCS#7 error: no matching recipient found\000"
+ 296      23372065 
+ 296      72726F72 
+ 296      3A206E6F 
+ 296      206D6174 
+ 297              	.LC39:
+ 298 04df 504B4353 		.ascii	"PKCS#7 error: mismatched OID value\000"
+ 298      23372065 
+ 298      72726F72 
+ 298      3A206D69 
+ 298      736D6174 
+ 299              	.LC40:
+ 300 0502 53657474 		.ascii	"Setting cert request attributes error\000"
+ 300      696E6720 
+ 300      63657274 
+ 300      20726571 
+ 300      75657374 
+ 301              	.LC41:
+ 302 0528 42616420 		.ascii	"Bad padding, message wrong length\000"
+ 302      70616464 
+ 302      696E672C 
+ 302      206D6573 
+ 302      73616765 
+ 303              	.LC42:
+ 304 054a 42616420 		.ascii	"Bad ecc encrypt state operation\000"
+ 304      65636320 
+ 304      656E6372 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 16
+
+
+ 304      79707420 
+ 304      73746174 
+ 305              	.LC43:
+ 306 056a 41534E20 		.ascii	"ASN OCSP sig error, confirm failure\000"
+ 306      4F435350 
+ 306      20736967 
+ 306      20657272 
+ 306      6F722C20 
+ 307              	.LC44:
+ 308 058e 41534E20 		.ascii	"ASN CRL no signer error to confirm failure\000"
+ 308      43524C20 
+ 308      6E6F2073 
+ 308      69676E65 
+ 308      72206572 
+ 309              	.LC45:
+ 310 05b9 41534E20 		.ascii	"ASN CRL sig error, confirm failure\000"
+ 310      43524C20 
+ 310      73696720 
+ 310      6572726F 
+ 310      722C2063 
+ 311              	.LC46:
+ 312 05dc 41534E20 		.ascii	"ASN no signer error to confirm failure\000"
+ 312      6E6F2073 
+ 312      69676E65 
+ 312      72206572 
+ 312      726F7220 
+ 313              	.LC47:
+ 314 0603 42616420 		.ascii	"Bad alignment error, no alloc help\000"
+ 314      616C6967 
+ 314      6E6D656E 
+ 314      74206572 
+ 314      726F722C 
+ 315              	.LC48:
+ 316 0626 4465436F 		.ascii	"DeCompress error\000"
+ 316      6D707265 
+ 316      73732065 
+ 316      72726F72 
+ 316      00
+ 317              	.LC49:
+ 318 0637 4465436F 		.ascii	"DeCompress Init error\000"
+ 318      6D707265 
+ 318      73732049 
+ 318      6E697420 
+ 318      6572726F 
+ 319              	.LC50:
+ 320 064d 436F6D70 		.ascii	"Compress error\000"
+ 320      72657373 
+ 320      20657272 
+ 320      6F7200
+ 321              	.LC51:
+ 322 065c 436F6D70 		.ascii	"Compress Init error\000"
+ 322      72657373 
+ 322      20496E69 
+ 322      74206572 
+ 322      726F7200 
+ 323              	.LC52:
+ 324 0670 43617669 		.ascii	"Cavium Init type error\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 17
+
+
+ 324      756D2049 
+ 324      6E697420 
+ 324      74797065 
+ 324      20657272 
+ 325              	.LC53:
+ 326 0687 4145532D 		.ascii	"AES-CCM Authentication check fail\000"
+ 326      43434D20 
+ 326      41757468 
+ 326      656E7469 
+ 326      63617469 
+ 327              	.LC54:
+ 328 06a9 4145532D 		.ascii	"AES-GCM Authentication check fail\000"
+ 328      47434D20 
+ 328      41757468 
+ 328      656E7469 
+ 328      63617469 
+ 329              	.LC55:
+ 330 06cb 416C7420 		.ascii	"Alt Name problem, too big\000"
+ 330      4E616D65 
+ 330      2070726F 
+ 330      626C656D 
+ 330      2C20746F 
+ 331              	.LC56:
+ 332 06e5 4E6F2070 		.ascii	"No password provided by user\000"
+ 332      61737377 
+ 332      6F726420 
+ 332      70726F76 
+ 332      69646564 
+ 333              	.LC57:
+ 334 0702 556E6963 		.ascii	"Unicode password too big\000"
+ 334      6F646520 
+ 334      70617373 
+ 334      776F7264 
+ 334      20746F6F 
+ 335              	.LC58:
+ 336 071b 46656174 		.ascii	"Feature not compiled in\000"
+ 336      75726520 
+ 336      6E6F7420 
+ 336      636F6D70 
+ 336      696C6564 
+ 337              	.LC59:
+ 338 0733 42616420 		.ascii	"Bad function argument\000"
+ 338      66756E63 
+ 338      74696F6E 
+ 338      20617267 
+ 338      756D656E 
+ 339              	.LC60:
+ 340 0749 45434320 		.ascii	"ECC curve sum OID unsupported, invalid input\000"
+ 340      63757276 
+ 340      65207375 
+ 340      6D204F49 
+ 340      4420756E 
+ 341              	.LC61:
+ 342 0776 45434320 		.ascii	"ECC ASN1 bad key data, invalid input\000"
+ 342      41534E31 
+ 342      20626164 
+ 342      206B6579 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 18
+
+
+ 342      20646174 
+ 343              	.LC62:
+ 344 079b 45434320 		.ascii	"ECC input argument wrong type, invalid input\000"
+ 344      696E7075 
+ 344      74206172 
+ 344      67756D65 
+ 344      6E742077 
+ 345              	.LC63:
+ 346 07c8 582E3530 		.ascii	"X.509 Critical extension ignored\000"
+ 346      39204372 
+ 346      69746963 
+ 346      616C2065 
+ 346      7874656E 
+ 347              	.LC64:
+ 348 07e9 41534E20 		.ascii	"ASN NTRU key decode error, invalid input\000"
+ 348      4E545255 
+ 348      206B6579 
+ 348      20646563 
+ 348      6F646520 
+ 349              	.LC65:
+ 350 0812 41534E20 		.ascii	"ASN key init error, invalid input\000"
+ 350      6B657920 
+ 350      696E6974 
+ 350      20657272 
+ 350      6F722C20 
+ 351              	.LC66:
+ 352 0834 41534E20 		.ascii	"ASN sig error, unsupported key type\000"
+ 352      73696720 
+ 352      6572726F 
+ 352      722C2075 
+ 352      6E737570 
+ 353              	.LC67:
+ 354 0858 41534E20 		.ascii	"ASN sig error, unsupported hash type\000"
+ 354      73696720 
+ 354      6572726F 
+ 354      722C2075 
+ 354      6E737570 
+ 355              	.LC68:
+ 356 087d 41534E20 		.ascii	"ASN sig error, confirm failure\000"
+ 356      73696720 
+ 356      6572726F 
+ 356      722C2063 
+ 356      6F6E6669 
+ 357              	.LC69:
+ 358 089c 41534E20 		.ascii	"ASN input error, not enough data\000"
+ 358      696E7075 
+ 358      74206572 
+ 358      726F722C 
+ 358      206E6F74 
+ 359              	.LC70:
+ 360 08bd 41534E20 		.ascii	"ASN time error, unknown time type\000"
+ 360      74696D65 
+ 360      20657272 
+ 360      6F722C20 
+ 360      756E6B6E 
+ 361              	.LC71:
+ 362 08df 41534E20 		.ascii	"ASN signature error, mismatched oid\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 19
+
+
+ 362      7369676E 
+ 362      61747572 
+ 362      65206572 
+ 362      726F722C 
+ 363              	.LC72:
+ 364 0903 41534E20 		.ascii	"ASN date error, current date after\000"
+ 364      64617465 
+ 364      20657272 
+ 364      6F722C20 
+ 364      63757272 
+ 365              	.LC73:
+ 366 0926 41534E20 		.ascii	"ASN date error, current date before\000"
+ 366      64617465 
+ 366      20657272 
+ 366      6F722C20 
+ 366      63757272 
+ 367              	.LC74:
+ 368 094a 41534E20 		.ascii	"ASN date error, bad size\000"
+ 368      64617465 
+ 368      20657272 
+ 368      6F722C20 
+ 368      62616420 
+ 369              	.LC75:
+ 370 0963 41534E20 		.ascii	"ASN oid error, unknown sum id\000"
+ 370      6F696420 
+ 370      6572726F 
+ 370      722C2075 
+ 370      6E6B6E6F 
+ 371              	.LC76:
+ 372 0981 41534E20 		.ascii	"ASN bit string error, wrong id\000"
+ 372      62697420 
+ 372      73747269 
+ 372      6E672065 
+ 372      72726F72 
+ 373              	.LC77:
+ 374 09a0 41534E20 		.ascii	"ASN expect error, not zero\000"
+ 374      65787065 
+ 374      63742065 
+ 374      72726F72 
+ 374      2C206E6F 
+ 375              	.LC78:
+ 376 09bb 41534E20 		.ascii	"ASN tag error, not null\000"
+ 376      74616720 
+ 376      6572726F 
+ 376      722C206E 
+ 376      6F74206E 
+ 377              	.LC79:
+ 378 09d3 41534E20 		.ascii	"ASN object id error, invalid id\000"
+ 378      6F626A65 
+ 378      63742069 
+ 378      64206572 
+ 378      726F722C 
+ 379              	.LC80:
+ 380 09f3 41534E20 		.ascii	"ASN get big int error, invalid data\000"
+ 380      67657420 
+ 380      62696720 
+ 380      696E7420 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 20
+
+
+ 380      6572726F 
+ 381              	.LC81:
+ 382 0a17 41534E20 		.ascii	"ASN version error, invalid number\000"
+ 382      76657273 
+ 382      696F6E20 
+ 382      6572726F 
+ 382      722C2069 
+ 383              	.LC82:
+ 384 0a39 41534E20 		.ascii	"ASN parsing error, invalid input\000"
+ 384      70617273 
+ 384      696E6720 
+ 384      6572726F 
+ 384      722C2069 
+ 385              	.LC83:
+ 386 0a5a 53657474 		.ascii	"Setting extensions error\000"
+ 386      696E6720 
+ 386      65787465 
+ 386      6E73696F 
+ 386      6E732065 
+ 387              	.LC84:
+ 388 0a73 53657474 		.ascii	"Setting basic constraint CA true error\000"
+ 388      696E6720 
+ 388      62617369 
+ 388      6320636F 
+ 388      6E737472 
+ 389              	.LC85:
+ 390 0a9a 53657474 		.ascii	"Setting Cert Issuer name error\000"
+ 390      696E6720 
+ 390      43657274 
+ 390      20497373 
+ 390      75657220 
+ 391              	.LC86:
+ 392 0ab9 53657474 		.ascii	"Setting Cert Subject name error\000"
+ 392      696E6720 
+ 392      43657274 
+ 392      20537562 
+ 392      6A656374 
+ 393              	.LC87:
+ 394 0ad9 53657474 		.ascii	"Setting Cert Date validity error\000"
+ 394      696E6720 
+ 394      43657274 
+ 394      20446174 
+ 394      65207661 
+ 395              	.LC88:
+ 396 0afa 53657474 		.ascii	"Setting Cert Public Key error\000"
+ 396      696E6720 
+ 396      43657274 
+ 396      20507562 
+ 396      6C696320 
+ 397              	.LC89:
+ 398 0b18 53657474 		.ascii	"Setting Cert AlgoID error\000"
+ 398      696E6720 
+ 398      43657274 
+ 398      20416C67 
+ 398      6F494420 
+ 399              	.LC90:
+ 400 0b32 42756666 		.ascii	"Buffer error, output too small or input too big\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 21
+
+
+ 400      65722065 
+ 400      72726F72 
+ 400      2C206F75 
+ 400      74707574 
+ 401              	.LC91:
+ 402 0b62 52534120 		.ascii	"RSA buffer error, output too small or input too big"
+ 402      62756666 
+ 402      65722065 
+ 402      72726F72 
+ 402      2C206F75 
+ 403 0b95 00       		.ascii	"\000"
+ 404              	.LC92:
+ 405 0b96 52534120 		.ascii	"RSA wrong block type for RSA function\000"
+ 405      77726F6E 
+ 405      6720626C 
+ 405      6F636B20 
+ 405      74797065 
+ 406              	.LC93:
+ 407 0bbc 6F757420 		.ascii	"out of memory error\000"
+ 407      6F66206D 
+ 407      656D6F72 
+ 407      79206572 
+ 407      726F7200 
+ 408              	.LC94:
+ 409 0bd0 6D70207A 		.ascii	"mp zero result, not expected\000"
+ 409      65726F20 
+ 409      72657375 
+ 409      6C742C20 
+ 409      6E6F7420 
+ 410              	.LC95:
+ 411 0bed 6D705F63 		.ascii	"mp_cmp error state\000"
+ 411      6D702065 
+ 411      72726F72 
+ 411      20737461 
+ 411      746500
+ 412              	.LC96:
+ 413 0c00 6D705F69 		.ascii	"mp_invmod error state, can't inv mod\000"
+ 413      6E766D6F 
+ 413      64206572 
+ 413      726F7220 
+ 413      73746174 
+ 414              	.LC97:
+ 415 0c25 6D705F6D 		.ascii	"mp_mod error state, can't mod\000"
+ 415      6F642065 
+ 415      72726F72 
+ 415      20737461 
+ 415      74652C20 
+ 416              	.LC98:
+ 417 0c43 6D705F6D 		.ascii	"mp_mulmod error state, can't multiply mod\000"
+ 417      756C6D6F 
+ 417      64206572 
+ 417      726F7220 
+ 417      73746174 
+ 418              	.LC99:
+ 419 0c6d 6D705F6D 		.ascii	"mp_mul error state, can't multiply\000"
+ 419      756C2065 
+ 419      72726F72 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 22
+
+
+ 419      20737461 
+ 419      74652C20 
+ 420              	.LC100:
+ 421 0c90 6D705F61 		.ascii	"mp_add error state, can't add\000"
+ 421      64642065 
+ 421      72726F72 
+ 421      20737461 
+ 421      74652C20 
+ 422              	.LC101:
+ 423 0cae 6D705F73 		.ascii	"mp_sub error state, can't subtract\000"
+ 423      75622065 
+ 423      72726F72 
+ 423      20737461 
+ 423      74652C20 
+ 424              	.LC102:
+ 425 0cd1 6D705F74 		.ascii	"mp_to_xxx error state, can't convert\000"
+ 425      6F5F7878 
+ 425      78206572 
+ 425      726F7220 
+ 425      73746174 
+ 426              	.LC103:
+ 427 0cf6 6D705F65 		.ascii	"mp_exptmod error state\000"
+ 427      7870746D 
+ 427      6F642065 
+ 427      72726F72 
+ 427      20737461 
+ 428              	.LC104:
+ 429 0d0d 6D705F72 		.ascii	"mp_read error state\000"
+ 429      65616420 
+ 429      6572726F 
+ 429      72207374 
+ 429      61746500 
+ 430              	.LC105:
+ 431 0d21 6D705F69 		.ascii	"mp_init error state\000"
+ 431      6E697420 
+ 431      6572726F 
+ 431      72207374 
+ 431      61746500 
+ 432              	.LC106:
+ 433 0d35 42616420 		.ascii	"Bad mutex, operation failed\000"
+ 433      6D757465 
+ 433      782C206F 
+ 433      70657261 
+ 433      74696F6E 
+ 434              	.LC107:
+ 435 0d51 72616E64 		.ascii	"random device read would block error\000"
+ 435      6F6D2064 
+ 435      65766963 
+ 435      65207265 
+ 435      61642077 
+ 436              	.LC108:
+ 437 0d76 77696E64 		.ascii	"windows crypt generation error\000"
+ 437      6F777320 
+ 437      63727970 
+ 437      74206765 
+ 437      6E657261 
+ 438              	.LC109:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 23
+
+
+ 439 0d95 77696E64 		.ascii	"windows crypt init error\000"
+ 439      6F777320 
+ 439      63727970 
+ 439      7420696E 
+ 439      69742065 
+ 440              	.LC110:
+ 441 0dae 72656164 		.ascii	"reading random device error\000"
+ 441      696E6720 
+ 441      72616E64 
+ 441      6F6D2064 
+ 441      65766963 
+ 442              	.LC111:
+ 443 0dca 6F70656E 		.ascii	"opening random device error\000"
+ 443      696E6720 
+ 443      72616E64 
+ 443      6F6D2064 
+ 443      65766963 
+ 444              		.text
+ 445              	.Letext0:
+ 446              		.file 2 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/types.h"
+ 447              		.file 3 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/error-crypt.h"
+ 448              		.file 4 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 449              		.file 5 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 450              		.section	.debug_info,"",%progbits
+ 451              	.Ldebug_info0:
+ 452 0000 62040000 		.4byte	0x462
+ 453 0004 0400     		.2byte	0x4
+ 454 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 455 000a 04       		.byte	0x4
+ 456 000b 01       		.uleb128 0x1
+ 457 000c 00000000 		.4byte	.LASF126
+ 458 0010 01       		.byte	0x1
+ 459 0011 05060000 		.4byte	.LASF127
+ 460 0015 2F050000 		.4byte	.LASF128
+ 461 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 462 001d 00000000 		.4byte	0
+ 463 0021 00000000 		.4byte	.Ldebug_line0
+ 464 0025 02       		.uleb128 0x2
+ 465 0026 04       		.byte	0x4
+ 466 0027 05       		.byte	0x5
+ 467 0028 696E7400 		.ascii	"int\000"
+ 468 002c 03       		.uleb128 0x3
+ 469 002d 01       		.byte	0x1
+ 470 002e 08       		.byte	0x8
+ 471 002f BA040000 		.4byte	.LASF0
+ 472 0033 03       		.uleb128 0x3
+ 473 0034 02       		.byte	0x2
+ 474 0035 07       		.byte	0x7
+ 475 0036 5D030000 		.4byte	.LASF1
+ 476 003a 03       		.uleb128 0x3
+ 477 003b 04       		.byte	0x4
+ 478 003c 07       		.byte	0x7
+ 479 003d C8020000 		.4byte	.LASF2
+ 480 0041 03       		.uleb128 0x3
+ 481 0042 08       		.byte	0x8
+ 482 0043 07       		.byte	0x7
+ 483 0044 12010000 		.4byte	.LASF3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 24
+
+
+ 484 0048 04       		.uleb128 0x4
+ 485 0049 A4000000 		.4byte	.LASF129
+ 486 004d 04       		.byte	0x4
+ 487 004e D4       		.byte	0xd4
+ 488 004f 3A000000 		.4byte	0x3a
+ 489 0053 03       		.uleb128 0x3
+ 490 0054 01       		.byte	0x1
+ 491 0055 06       		.byte	0x6
+ 492 0056 B2010000 		.4byte	.LASF4
+ 493 005a 03       		.uleb128 0x3
+ 494 005b 02       		.byte	0x2
+ 495 005c 05       		.byte	0x5
+ 496 005d E6040000 		.4byte	.LASF5
+ 497 0061 03       		.uleb128 0x3
+ 498 0062 04       		.byte	0x4
+ 499 0063 05       		.byte	0x5
+ 500 0064 02020000 		.4byte	.LASF6
+ 501 0068 03       		.uleb128 0x3
+ 502 0069 04       		.byte	0x4
+ 503 006a 07       		.byte	0x7
+ 504 006b 05030000 		.4byte	.LASF7
+ 505 006f 03       		.uleb128 0x3
+ 506 0070 08       		.byte	0x8
+ 507 0071 05       		.byte	0x5
+ 508 0072 A4010000 		.4byte	.LASF8
+ 509 0076 03       		.uleb128 0x3
+ 510 0077 04       		.byte	0x4
+ 511 0078 07       		.byte	0x7
+ 512 0079 17040000 		.4byte	.LASF9
+ 513 007d 05       		.uleb128 0x5
+ 514 007e 04       		.byte	0x4
+ 515 007f 83000000 		.4byte	0x83
+ 516 0083 03       		.uleb128 0x3
+ 517 0084 01       		.byte	0x1
+ 518 0085 08       		.byte	0x8
+ 519 0086 B4050000 		.4byte	.LASF10
+ 520 008a 05       		.uleb128 0x5
+ 521 008b 04       		.byte	0x4
+ 522 008c 90000000 		.4byte	0x90
+ 523 0090 06       		.uleb128 0x6
+ 524 0091 83000000 		.4byte	0x83
+ 525 0095 07       		.uleb128 0x7
+ 526 0096 01       		.byte	0x1
+ 527 0097 02       		.byte	0x2
+ 528 0098 2E01     		.2byte	0x12e
+ 529 009a A6000000 		.4byte	0xa6
+ 530 009e 08       		.uleb128 0x8
+ 531 009f D9060000 		.4byte	.LASF11
+ 532 00a3 D000     		.sleb128 80
+ 533 00a5 00       		.byte	0
+ 534 00a6 09       		.uleb128 0x9
+ 535 00a7 02       		.byte	0x2
+ 536 00a8 03       		.byte	0x3
+ 537 00a9 27       		.byte	0x27
+ 538 00aa BF030000 		.4byte	0x3bf
+ 539 00ae 08       		.uleb128 0x8
+ 540 00af 91040000 		.4byte	.LASF12
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 25
+
+
+ 541 00b3 9C7F     		.sleb128 -100
+ 542 00b5 08       		.uleb128 0x8
+ 543 00b6 37030000 		.4byte	.LASF13
+ 544 00ba 9B7F     		.sleb128 -101
+ 545 00bc 08       		.uleb128 0x8
+ 546 00bd 20040000 		.4byte	.LASF14
+ 547 00c1 9A7F     		.sleb128 -102
+ 548 00c3 08       		.uleb128 0x8
+ 549 00c4 A0060000 		.4byte	.LASF15
+ 550 00c8 997F     		.sleb128 -103
+ 551 00ca 08       		.uleb128 0x8
+ 552 00cb 40070000 		.4byte	.LASF16
+ 553 00cf 987F     		.sleb128 -104
+ 554 00d1 08       		.uleb128 0x8
+ 555 00d2 7F040000 		.4byte	.LASF17
+ 556 00d6 977F     		.sleb128 -105
+ 557 00d8 08       		.uleb128 0x8
+ 558 00d9 88070000 		.4byte	.LASF18
+ 559 00dd 967F     		.sleb128 -106
+ 560 00df 08       		.uleb128 0x8
+ 561 00e0 0B020000 		.4byte	.LASF19
+ 562 00e4 927F     		.sleb128 -110
+ 563 00e6 08       		.uleb128 0x8
+ 564 00e7 50020000 		.4byte	.LASF20
+ 565 00eb 917F     		.sleb128 -111
+ 566 00ed 08       		.uleb128 0x8
+ 567 00ee 9C030000 		.4byte	.LASF21
+ 568 00f2 907F     		.sleb128 -112
+ 569 00f4 08       		.uleb128 0x8
+ 570 00f5 EC000000 		.4byte	.LASF22
+ 571 00f9 8F7F     		.sleb128 -113
+ 572 00fb 08       		.uleb128 0x8
+ 573 00fc AB000000 		.4byte	.LASF23
+ 574 0100 8E7F     		.sleb128 -114
+ 575 0102 08       		.uleb128 0x8
+ 576 0103 47020000 		.4byte	.LASF24
+ 577 0107 8D7F     		.sleb128 -115
+ 578 0109 08       		.uleb128 0x8
+ 579 010a C5030000 		.4byte	.LASF25
+ 580 010e 8C7F     		.sleb128 -116
+ 581 0110 08       		.uleb128 0x8
+ 582 0111 C8040000 		.4byte	.LASF26
+ 583 0115 8B7F     		.sleb128 -117
+ 584 0117 08       		.uleb128 0x8
+ 585 0118 60040000 		.4byte	.LASF27
+ 586 011c 8A7F     		.sleb128 -118
+ 587 011e 08       		.uleb128 0x8
+ 588 011f 42030000 		.4byte	.LASF28
+ 589 0123 897F     		.sleb128 -119
+ 590 0125 08       		.uleb128 0x8
+ 591 0126 DD020000 		.4byte	.LASF29
+ 592 012a 887F     		.sleb128 -120
+ 593 012c 08       		.uleb128 0x8
+ 594 012d C2000000 		.4byte	.LASF30
+ 595 0131 877F     		.sleb128 -121
+ 596 0133 08       		.uleb128 0x8
+ 597 0134 9B000000 		.4byte	.LASF31
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 26
+
+
+ 598 0138 837F     		.sleb128 -125
+ 599 013a 08       		.uleb128 0x8
+ 600 013b CE030000 		.4byte	.LASF32
+ 601 013f FE7E     		.sleb128 -130
+ 602 0141 08       		.uleb128 0x8
+ 603 0142 75060000 		.4byte	.LASF33
+ 604 0146 FD7E     		.sleb128 -131
+ 605 0148 08       		.uleb128 0x8
+ 606 0149 FE060000 		.4byte	.LASF34
+ 607 014d FC7E     		.sleb128 -132
+ 608 014f 08       		.uleb128 0x8
+ 609 0150 75040000 		.4byte	.LASF35
+ 610 0154 FB7E     		.sleb128 -133
+ 611 0156 08       		.uleb128 0x8
+ 612 0157 69010000 		.4byte	.LASF36
+ 613 015b FA7E     		.sleb128 -134
+ 614 015d 08       		.uleb128 0x8
+ 615 015e F8030000 		.4byte	.LASF37
+ 616 0162 F97E     		.sleb128 -135
+ 617 0164 08       		.uleb128 0x8
+ 618 0165 DF030000 		.4byte	.LASF38
+ 619 0169 F87E     		.sleb128 -136
+ 620 016b 08       		.uleb128 0x8
+ 621 016c 61020000 		.4byte	.LASF39
+ 622 0170 F77E     		.sleb128 -137
+ 623 0172 08       		.uleb128 0x8
+ 624 0173 34060000 		.4byte	.LASF40
+ 625 0177 F67E     		.sleb128 -138
+ 626 0179 08       		.uleb128 0x8
+ 627 017a 4B070000 		.4byte	.LASF41
+ 628 017e F57E     		.sleb128 -139
+ 629 0180 08       		.uleb128 0x8
+ 630 0181 70030000 		.4byte	.LASF42
+ 631 0185 F47E     		.sleb128 -140
+ 632 0187 08       		.uleb128 0x8
+ 633 0188 B4000000 		.4byte	.LASF43
+ 634 018c F37E     		.sleb128 -141
+ 635 018e 08       		.uleb128 0x8
+ 636 018f AA070000 		.4byte	.LASF44
+ 637 0193 F27E     		.sleb128 -142
+ 638 0195 08       		.uleb128 0x8
+ 639 0196 3E060000 		.4byte	.LASF45
+ 640 019a F17E     		.sleb128 -143
+ 641 019c 08       		.uleb128 0x8
+ 642 019d 30070000 		.4byte	.LASF46
+ 643 01a1 F07E     		.sleb128 -144
+ 644 01a3 08       		.uleb128 0x8
+ 645 01a4 95010000 		.4byte	.LASF47
+ 646 01a8 EF7E     		.sleb128 -145
+ 647 01aa 08       		.uleb128 0x8
+ 648 01ab E9030000 		.4byte	.LASF48
+ 649 01af EE7E     		.sleb128 -146
+ 650 01b1 08       		.uleb128 0x8
+ 651 01b2 3D040000 		.4byte	.LASF49
+ 652 01b6 ED7E     		.sleb128 -147
+ 653 01b8 08       		.uleb128 0x8
+ 654 01b9 7A020000 		.4byte	.LASF50
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 27
+
+
+ 655 01bd EC7E     		.sleb128 -148
+ 656 01bf 08       		.uleb128 0x8
+ 657 01c0 22070000 		.4byte	.LASF51
+ 658 01c4 EB7E     		.sleb128 -149
+ 659 01c6 08       		.uleb128 0x8
+ 660 01c7 CC000000 		.4byte	.LASF52
+ 661 01cb EA7E     		.sleb128 -150
+ 662 01cd 08       		.uleb128 0x8
+ 663 01ce FE040000 		.4byte	.LASF53
+ 664 01d2 E97E     		.sleb128 -151
+ 665 01d4 08       		.uleb128 0x8
+ 666 01d5 AC040000 		.4byte	.LASF54
+ 667 01d9 E87E     		.sleb128 -152
+ 668 01db 08       		.uleb128 0x8
+ 669 01dc 5E010000 		.4byte	.LASF55
+ 670 01e0 E77E     		.sleb128 -153
+ 671 01e2 08       		.uleb128 0x8
+ 672 01e3 35010000 		.4byte	.LASF56
+ 673 01e7 E67E     		.sleb128 -154
+ 674 01e9 08       		.uleb128 0x8
+ 675 01ea E4050000 		.4byte	.LASF57
+ 676 01ee E57E     		.sleb128 -155
+ 677 01f0 08       		.uleb128 0x8
+ 678 01f1 28030000 		.4byte	.LASF58
+ 679 01f5 E47E     		.sleb128 -156
+ 680 01f7 08       		.uleb128 0x8
+ 681 01f8 C7050000 		.4byte	.LASF59
+ 682 01fc E37E     		.sleb128 -157
+ 683 01fe 08       		.uleb128 0x8
+ 684 01ff 8E000000 		.4byte	.LASF60
+ 685 0203 E27E     		.sleb128 -158
+ 686 0205 08       		.uleb128 0x8
+ 687 0206 F6050000 		.4byte	.LASF61
+ 688 020a E17E     		.sleb128 -159
+ 689 020c 08       		.uleb128 0x8
+ 690 020d 20050000 		.4byte	.LASF62
+ 691 0211 E07E     		.sleb128 -160
+ 692 0213 08       		.uleb128 0x8
+ 693 0214 B9060000 		.4byte	.LASF63
+ 694 0218 D67E     		.sleb128 -170
+ 695 021a 08       		.uleb128 0x8
+ 696 021b 76010000 		.4byte	.LASF64
+ 697 021f D57E     		.sleb128 -171
+ 698 0221 08       		.uleb128 0x8
+ 699 0222 9B020000 		.4byte	.LASF65
+ 700 0226 D47E     		.sleb128 -172
+ 701 0228 08       		.uleb128 0x8
+ 702 0229 BB020000 		.4byte	.LASF66
+ 703 022d D37E     		.sleb128 -173
+ 704 022f 08       		.uleb128 0x8
+ 705 0230 78050000 		.4byte	.LASF67
+ 706 0234 D27E     		.sleb128 -174
+ 707 0236 08       		.uleb128 0x8
+ 708 0237 94070000 		.4byte	.LASF68
+ 709 023b D17E     		.sleb128 -175
+ 710 023d 08       		.uleb128 0x8
+ 711 023e 29010000 		.4byte	.LASF69
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 28
+
+
+ 712 0242 D07E     		.sleb128 -176
+ 713 0244 08       		.uleb128 0x8
+ 714 0245 EB010000 		.4byte	.LASF70
+ 715 0249 CF7E     		.sleb128 -177
+ 716 024b 08       		.uleb128 0x8
+ 717 024c D5050000 		.4byte	.LASF71
+ 718 0250 CC7E     		.sleb128 -180
+ 719 0252 08       		.uleb128 0x8
+ 720 0253 A5050000 		.4byte	.LASF72
+ 721 0257 CB7E     		.sleb128 -181
+ 722 0259 08       		.uleb128 0x8
+ 723 025a 09040000 		.4byte	.LASF73
+ 724 025e CA7E     		.sleb128 -182
+ 725 0260 08       		.uleb128 0x8
+ 726 0261 6A020000 		.4byte	.LASF74
+ 727 0265 C97E     		.sleb128 -183
+ 728 0267 08       		.uleb128 0x8
+ 729 0268 55040000 		.4byte	.LASF75
+ 730 026c C87E     		.sleb128 -184
+ 731 026e 08       		.uleb128 0x8
+ 732 026f 58070000 		.4byte	.LASF76
+ 733 0273 C77E     		.sleb128 -185
+ 734 0275 08       		.uleb128 0x8
+ 735 0276 DE010000 		.4byte	.LASF77
+ 736 027a C67E     		.sleb128 -186
+ 737 027c 08       		.uleb128 0x8
+ 738 027d F6010000 		.4byte	.LASF78
+ 739 0281 C57E     		.sleb128 -187
+ 740 0283 08       		.uleb128 0x8
+ 741 0284 23020000 		.4byte	.LASF79
+ 742 0288 C47E     		.sleb128 -188
+ 743 028a 08       		.uleb128 0x8
+ 744 028b 82060000 		.4byte	.LASF80
+ 745 028f C37E     		.sleb128 -189
+ 746 0291 08       		.uleb128 0x8
+ 747 0292 33020000 		.4byte	.LASF81
+ 748 0296 C27E     		.sleb128 -190
+ 749 0298 08       		.uleb128 0x8
+ 750 0299 89030000 		.4byte	.LASF82
+ 751 029d C17E     		.sleb128 -191
+ 752 029f 08       		.uleb128 0x8
+ 753 02a0 9C040000 		.4byte	.LASF83
+ 754 02a4 C07E     		.sleb128 -192
+ 755 02a6 08       		.uleb128 0x8
+ 756 02a7 15020000 		.4byte	.LASF84
+ 757 02ab BF7E     		.sleb128 -193
+ 758 02ad 08       		.uleb128 0x8
+ 759 02ae A9030000 		.4byte	.LASF85
+ 760 02b2 BE7E     		.sleb128 -194
+ 761 02b4 08       		.uleb128 0x8
+ 762 02b5 07070000 		.4byte	.LASF86
+ 763 02b9 BD7E     		.sleb128 -195
+ 764 02bb 08       		.uleb128 0x8
+ 765 02bc F0040000 		.4byte	.LASF87
+ 766 02c0 BC7E     		.sleb128 -196
+ 767 02c2 08       		.uleb128 0x8
+ 768 02c3 88050000 		.4byte	.LASF88
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 29
+
+
+ 769 02c7 BB7E     		.sleb128 -197
+ 770 02c9 08       		.uleb128 0x8
+ 771 02ca 75070000 		.4byte	.LASF89
+ 772 02ce BA7E     		.sleb128 -198
+ 773 02d0 08       		.uleb128 0x8
+ 774 02d1 DE000000 		.4byte	.LASF90
+ 775 02d5 B97E     		.sleb128 -199
+ 776 02d7 08       		.uleb128 0x8
+ 777 02d8 C7060000 		.4byte	.LASF91
+ 778 02dc B87E     		.sleb128 -200
+ 779 02de 08       		.uleb128 0x8
+ 780 02df 6B060000 		.4byte	.LASF92
+ 781 02e3 B77E     		.sleb128 -201
+ 782 02e5 08       		.uleb128 0x8
+ 783 02e6 B9050000 		.4byte	.LASF93
+ 784 02ea B67E     		.sleb128 -202
+ 785 02ec 08       		.uleb128 0x8
+ 786 02ed 4E030000 		.4byte	.LASF94
+ 787 02f1 B57E     		.sleb128 -203
+ 788 02f3 08       		.uleb128 0x8
+ 789 02f4 B7070000 		.4byte	.LASF95
+ 790 02f8 B47E     		.sleb128 -204
+ 791 02fa 08       		.uleb128 0x8
+ 792 02fb EE060000 		.4byte	.LASF96
+ 793 02ff B37E     		.sleb128 -205
+ 794 0301 08       		.uleb128 0x8
+ 795 0302 AB020000 		.4byte	.LASF97
+ 796 0306 B27E     		.sleb128 -206
+ 797 0308 08       		.uleb128 0x8
+ 798 0309 8C020000 		.4byte	.LASF98
+ 799 030d B17E     		.sleb128 -207
+ 800 030f 08       		.uleb128 0x8
+ 801 0310 F5020000 		.4byte	.LASF99
+ 802 0314 B07E     		.sleb128 -208
+ 803 0316 08       		.uleb128 0x8
+ 804 0317 0F050000 		.4byte	.LASF100
+ 805 031b AF7E     		.sleb128 -209
+ 806 031d 08       		.uleb128 0x8
+ 807 031e 41010000 		.4byte	.LASF101
+ 808 0322 AE7E     		.sleb128 -210
+ 809 0324 08       		.uleb128 0x8
+ 810 0325 BE010000 		.4byte	.LASF102
+ 811 0329 AD7E     		.sleb128 -211
+ 812 032b 08       		.uleb128 0x8
+ 813 032c F4000000 		.4byte	.LASF103
+ 814 0330 AC7E     		.sleb128 -212
+ 815 0332 08       		.uleb128 0x8
+ 816 0333 17030000 		.4byte	.LASF104
+ 817 0337 AB7E     		.sleb128 -213
+ 818 0339 08       		.uleb128 0x8
+ 819 033a 4A040000 		.4byte	.LASF105
+ 820 033e AA7E     		.sleb128 -214
+ 821 0340 08       		.uleb128 0x8
+ 822 0341 9B050000 		.4byte	.LASF106
+ 823 0345 A97E     		.sleb128 -215
+ 824 0347 08       		.uleb128 0x8
+ 825 0348 E6020000 		.4byte	.LASF107
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 30
+
+
+ 826 034c A87E     		.sleb128 -216
+ 827 034e 08       		.uleb128 0x8
+ 828 034f 84010000 		.4byte	.LASF108
+ 829 0353 A77E     		.sleb128 -217
+ 830 0355 08       		.uleb128 0x8
+ 831 0356 7C030000 		.4byte	.LASF109
+ 832 035a A67E     		.sleb128 -218
+ 833 035c 08       		.uleb128 0x8
+ 834 035d AB060000 		.4byte	.LASF110
+ 835 0361 A57E     		.sleb128 -219
+ 836 0363 08       		.uleb128 0x8
+ 837 0364 94060000 		.4byte	.LASF111
+ 838 0368 A47E     		.sleb128 -220
+ 839 036a 08       		.uleb128 0x8
+ 840 036b B9030000 		.4byte	.LASF112
+ 841 036f A37E     		.sleb128 -221
+ 842 0371 08       		.uleb128 0x8
+ 843 0372 4C060000 		.4byte	.LASF113
+ 844 0376 A17E     		.sleb128 -223
+ 845 0378 08       		.uleb128 0x8
+ 846 0379 2B040000 		.4byte	.LASF114
+ 847 037d A07E     		.sleb128 -224
+ 848 037f 08       		.uleb128 0x8
+ 849 0380 A3070000 		.4byte	.LASF115
+ 850 0384 9F7E     		.sleb128 -225
+ 851 0386 08       		.uleb128 0x8
+ 852 0387 07010000 		.4byte	.LASF116
+ 853 038b 9E7E     		.sleb128 -226
+ 854 038d 08       		.uleb128 0x8
+ 855 038e 5C060000 		.4byte	.LASF117
+ 856 0392 9D7E     		.sleb128 -227
+ 857 0394 08       		.uleb128 0x8
+ 858 0395 FF030000 		.4byte	.LASF118
+ 859 0399 9C7E     		.sleb128 -228
+ 860 039b 08       		.uleb128 0x8
+ 861 039c D1010000 		.4byte	.LASF119
+ 862 03a0 9B7E     		.sleb128 -229
+ 863 03a2 08       		.uleb128 0x8
+ 864 03a3 53010000 		.4byte	.LASF120
+ 865 03a7 9A7E     		.sleb128 -230
+ 866 03a9 08       		.uleb128 0x8
+ 867 03aa 6A070000 		.4byte	.LASF121
+ 868 03ae 997E     		.sleb128 -231
+ 869 03b0 08       		.uleb128 0x8
+ 870 03b1 69040000 		.4byte	.LASF122
+ 871 03b5 987E     		.sleb128 -232
+ 872 03b7 08       		.uleb128 0x8
+ 873 03b8 32040000 		.4byte	.LASF123
+ 874 03bc D47D     		.sleb128 -300
+ 875 03be 00       		.byte	0
+ 876 03bf 0A       		.uleb128 0xa
+ 877 03c0 D4040000 		.4byte	.LASF130
+ 878 03c4 01       		.byte	0x1
+ 879 03c5 24       		.byte	0x24
+ 880 03c6 8A000000 		.4byte	0x8a
+ 881 03ca 00000000 		.4byte	.LFB0
+ 882 03ce 1C000000 		.4byte	.LFE0-.LFB0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 31
+
+
+ 883 03d2 01       		.uleb128 0x1
+ 884 03d3 9C       		.byte	0x9c
+ 885 03d4 E8030000 		.4byte	0x3e8
+ 886 03d8 0B       		.uleb128 0xb
+ 887 03d9 8B040000 		.4byte	.LASF124
+ 888 03dd 01       		.byte	0x1
+ 889 03de 24       		.byte	0x24
+ 890 03df 25000000 		.4byte	0x25
+ 891 03e3 00000000 		.4byte	.LLST0
+ 892 03e7 00       		.byte	0
+ 893 03e8 0C       		.uleb128 0xc
+ 894 03e9 13070000 		.4byte	.LASF131
+ 895 03ed 01       		.byte	0x1
+ 896 03ee 8201     		.2byte	0x182
+ 897 03f0 00000000 		.4byte	.LFB1
+ 898 03f4 14000000 		.4byte	.LFE1-.LFB1
+ 899 03f8 01       		.uleb128 0x1
+ 900 03f9 9C       		.byte	0x9c
+ 901 03fa 4A040000 		.4byte	0x44a
+ 902 03fe 0D       		.uleb128 0xd
+ 903 03ff 8B040000 		.4byte	.LASF124
+ 904 0403 01       		.byte	0x1
+ 905 0404 8201     		.2byte	0x182
+ 906 0406 25000000 		.4byte	0x25
+ 907 040a 2F000000 		.4byte	.LLST1
+ 908 040e 0D       		.uleb128 0xd
+ 909 040f 5A020000 		.4byte	.LASF125
+ 910 0413 01       		.byte	0x1
+ 911 0414 8201     		.2byte	0x182
+ 912 0416 7D000000 		.4byte	0x7d
+ 913 041a 50000000 		.4byte	.LLST2
+ 914 041e 0E       		.uleb128 0xe
+ 915 041f 08000000 		.4byte	.LVL4
+ 916 0423 BF030000 		.4byte	0x3bf
+ 917 0427 33040000 		.4byte	0x433
+ 918 042b 0F       		.uleb128 0xf
+ 919 042c 01       		.uleb128 0x1
+ 920 042d 50       		.byte	0x50
+ 921 042e 03       		.uleb128 0x3
+ 922 042f F3       		.byte	0xf3
+ 923 0430 01       		.uleb128 0x1
+ 924 0431 50       		.byte	0x50
+ 925 0432 00       		.byte	0
+ 926 0433 10       		.uleb128 0x10
+ 927 0434 12000000 		.4byte	.LVL5
+ 928 0438 4A040000 		.4byte	0x44a
+ 929 043c 0F       		.uleb128 0xf
+ 930 043d 01       		.uleb128 0x1
+ 931 043e 52       		.byte	0x52
+ 932 043f 02       		.uleb128 0x2
+ 933 0440 08       		.byte	0x8
+ 934 0441 50       		.byte	0x50
+ 935 0442 0F       		.uleb128 0xf
+ 936 0443 01       		.uleb128 0x1
+ 937 0444 50       		.byte	0x50
+ 938 0445 02       		.uleb128 0x2
+ 939 0446 74       		.byte	0x74
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 32
+
+
+ 940 0447 00       		.sleb128 0
+ 941 0448 00       		.byte	0
+ 942 0449 00       		.byte	0
+ 943 044a 11       		.uleb128 0x11
+ 944 044b D5020000 		.4byte	.LASF132
+ 945 044f 05       		.byte	0x5
+ 946 0450 24       		.byte	0x24
+ 947 0451 7D000000 		.4byte	0x7d
+ 948 0455 12       		.uleb128 0x12
+ 949 0456 7D000000 		.4byte	0x7d
+ 950 045a 12       		.uleb128 0x12
+ 951 045b 8A000000 		.4byte	0x8a
+ 952 045f 12       		.uleb128 0x12
+ 953 0460 48000000 		.4byte	0x48
+ 954 0464 00       		.byte	0
+ 955 0465 00       		.byte	0
+ 956              		.section	.debug_abbrev,"",%progbits
+ 957              	.Ldebug_abbrev0:
+ 958 0000 01       		.uleb128 0x1
+ 959 0001 11       		.uleb128 0x11
+ 960 0002 01       		.byte	0x1
+ 961 0003 25       		.uleb128 0x25
+ 962 0004 0E       		.uleb128 0xe
+ 963 0005 13       		.uleb128 0x13
+ 964 0006 0B       		.uleb128 0xb
+ 965 0007 03       		.uleb128 0x3
+ 966 0008 0E       		.uleb128 0xe
+ 967 0009 1B       		.uleb128 0x1b
+ 968 000a 0E       		.uleb128 0xe
+ 969 000b 55       		.uleb128 0x55
+ 970 000c 17       		.uleb128 0x17
+ 971 000d 11       		.uleb128 0x11
+ 972 000e 01       		.uleb128 0x1
+ 973 000f 10       		.uleb128 0x10
+ 974 0010 17       		.uleb128 0x17
+ 975 0011 00       		.byte	0
+ 976 0012 00       		.byte	0
+ 977 0013 02       		.uleb128 0x2
+ 978 0014 24       		.uleb128 0x24
+ 979 0015 00       		.byte	0
+ 980 0016 0B       		.uleb128 0xb
+ 981 0017 0B       		.uleb128 0xb
+ 982 0018 3E       		.uleb128 0x3e
+ 983 0019 0B       		.uleb128 0xb
+ 984 001a 03       		.uleb128 0x3
+ 985 001b 08       		.uleb128 0x8
+ 986 001c 00       		.byte	0
+ 987 001d 00       		.byte	0
+ 988 001e 03       		.uleb128 0x3
+ 989 001f 24       		.uleb128 0x24
+ 990 0020 00       		.byte	0
+ 991 0021 0B       		.uleb128 0xb
+ 992 0022 0B       		.uleb128 0xb
+ 993 0023 3E       		.uleb128 0x3e
+ 994 0024 0B       		.uleb128 0xb
+ 995 0025 03       		.uleb128 0x3
+ 996 0026 0E       		.uleb128 0xe
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 33
+
+
+ 997 0027 00       		.byte	0
+ 998 0028 00       		.byte	0
+ 999 0029 04       		.uleb128 0x4
+ 1000 002a 16       		.uleb128 0x16
+ 1001 002b 00       		.byte	0
+ 1002 002c 03       		.uleb128 0x3
+ 1003 002d 0E       		.uleb128 0xe
+ 1004 002e 3A       		.uleb128 0x3a
+ 1005 002f 0B       		.uleb128 0xb
+ 1006 0030 3B       		.uleb128 0x3b
+ 1007 0031 0B       		.uleb128 0xb
+ 1008 0032 49       		.uleb128 0x49
+ 1009 0033 13       		.uleb128 0x13
+ 1010 0034 00       		.byte	0
+ 1011 0035 00       		.byte	0
+ 1012 0036 05       		.uleb128 0x5
+ 1013 0037 0F       		.uleb128 0xf
+ 1014 0038 00       		.byte	0
+ 1015 0039 0B       		.uleb128 0xb
+ 1016 003a 0B       		.uleb128 0xb
+ 1017 003b 49       		.uleb128 0x49
+ 1018 003c 13       		.uleb128 0x13
+ 1019 003d 00       		.byte	0
+ 1020 003e 00       		.byte	0
+ 1021 003f 06       		.uleb128 0x6
+ 1022 0040 26       		.uleb128 0x26
+ 1023 0041 00       		.byte	0
+ 1024 0042 49       		.uleb128 0x49
+ 1025 0043 13       		.uleb128 0x13
+ 1026 0044 00       		.byte	0
+ 1027 0045 00       		.byte	0
+ 1028 0046 07       		.uleb128 0x7
+ 1029 0047 04       		.uleb128 0x4
+ 1030 0048 01       		.byte	0x1
+ 1031 0049 0B       		.uleb128 0xb
+ 1032 004a 0B       		.uleb128 0xb
+ 1033 004b 3A       		.uleb128 0x3a
+ 1034 004c 0B       		.uleb128 0xb
+ 1035 004d 3B       		.uleb128 0x3b
+ 1036 004e 05       		.uleb128 0x5
+ 1037 004f 01       		.uleb128 0x1
+ 1038 0050 13       		.uleb128 0x13
+ 1039 0051 00       		.byte	0
+ 1040 0052 00       		.byte	0
+ 1041 0053 08       		.uleb128 0x8
+ 1042 0054 28       		.uleb128 0x28
+ 1043 0055 00       		.byte	0
+ 1044 0056 03       		.uleb128 0x3
+ 1045 0057 0E       		.uleb128 0xe
+ 1046 0058 1C       		.uleb128 0x1c
+ 1047 0059 0D       		.uleb128 0xd
+ 1048 005a 00       		.byte	0
+ 1049 005b 00       		.byte	0
+ 1050 005c 09       		.uleb128 0x9
+ 1051 005d 04       		.uleb128 0x4
+ 1052 005e 01       		.byte	0x1
+ 1053 005f 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 34
+
+
+ 1054 0060 0B       		.uleb128 0xb
+ 1055 0061 3A       		.uleb128 0x3a
+ 1056 0062 0B       		.uleb128 0xb
+ 1057 0063 3B       		.uleb128 0x3b
+ 1058 0064 0B       		.uleb128 0xb
+ 1059 0065 01       		.uleb128 0x1
+ 1060 0066 13       		.uleb128 0x13
+ 1061 0067 00       		.byte	0
+ 1062 0068 00       		.byte	0
+ 1063 0069 0A       		.uleb128 0xa
+ 1064 006a 2E       		.uleb128 0x2e
+ 1065 006b 01       		.byte	0x1
+ 1066 006c 3F       		.uleb128 0x3f
+ 1067 006d 19       		.uleb128 0x19
+ 1068 006e 03       		.uleb128 0x3
+ 1069 006f 0E       		.uleb128 0xe
+ 1070 0070 3A       		.uleb128 0x3a
+ 1071 0071 0B       		.uleb128 0xb
+ 1072 0072 3B       		.uleb128 0x3b
+ 1073 0073 0B       		.uleb128 0xb
+ 1074 0074 27       		.uleb128 0x27
+ 1075 0075 19       		.uleb128 0x19
+ 1076 0076 49       		.uleb128 0x49
+ 1077 0077 13       		.uleb128 0x13
+ 1078 0078 11       		.uleb128 0x11
+ 1079 0079 01       		.uleb128 0x1
+ 1080 007a 12       		.uleb128 0x12
+ 1081 007b 06       		.uleb128 0x6
+ 1082 007c 40       		.uleb128 0x40
+ 1083 007d 18       		.uleb128 0x18
+ 1084 007e 9742     		.uleb128 0x2117
+ 1085 0080 19       		.uleb128 0x19
+ 1086 0081 01       		.uleb128 0x1
+ 1087 0082 13       		.uleb128 0x13
+ 1088 0083 00       		.byte	0
+ 1089 0084 00       		.byte	0
+ 1090 0085 0B       		.uleb128 0xb
+ 1091 0086 05       		.uleb128 0x5
+ 1092 0087 00       		.byte	0
+ 1093 0088 03       		.uleb128 0x3
+ 1094 0089 0E       		.uleb128 0xe
+ 1095 008a 3A       		.uleb128 0x3a
+ 1096 008b 0B       		.uleb128 0xb
+ 1097 008c 3B       		.uleb128 0x3b
+ 1098 008d 0B       		.uleb128 0xb
+ 1099 008e 49       		.uleb128 0x49
+ 1100 008f 13       		.uleb128 0x13
+ 1101 0090 02       		.uleb128 0x2
+ 1102 0091 17       		.uleb128 0x17
+ 1103 0092 00       		.byte	0
+ 1104 0093 00       		.byte	0
+ 1105 0094 0C       		.uleb128 0xc
+ 1106 0095 2E       		.uleb128 0x2e
+ 1107 0096 01       		.byte	0x1
+ 1108 0097 3F       		.uleb128 0x3f
+ 1109 0098 19       		.uleb128 0x19
+ 1110 0099 03       		.uleb128 0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 35
+
+
+ 1111 009a 0E       		.uleb128 0xe
+ 1112 009b 3A       		.uleb128 0x3a
+ 1113 009c 0B       		.uleb128 0xb
+ 1114 009d 3B       		.uleb128 0x3b
+ 1115 009e 05       		.uleb128 0x5
+ 1116 009f 27       		.uleb128 0x27
+ 1117 00a0 19       		.uleb128 0x19
+ 1118 00a1 11       		.uleb128 0x11
+ 1119 00a2 01       		.uleb128 0x1
+ 1120 00a3 12       		.uleb128 0x12
+ 1121 00a4 06       		.uleb128 0x6
+ 1122 00a5 40       		.uleb128 0x40
+ 1123 00a6 18       		.uleb128 0x18
+ 1124 00a7 9742     		.uleb128 0x2117
+ 1125 00a9 19       		.uleb128 0x19
+ 1126 00aa 01       		.uleb128 0x1
+ 1127 00ab 13       		.uleb128 0x13
+ 1128 00ac 00       		.byte	0
+ 1129 00ad 00       		.byte	0
+ 1130 00ae 0D       		.uleb128 0xd
+ 1131 00af 05       		.uleb128 0x5
+ 1132 00b0 00       		.byte	0
+ 1133 00b1 03       		.uleb128 0x3
+ 1134 00b2 0E       		.uleb128 0xe
+ 1135 00b3 3A       		.uleb128 0x3a
+ 1136 00b4 0B       		.uleb128 0xb
+ 1137 00b5 3B       		.uleb128 0x3b
+ 1138 00b6 05       		.uleb128 0x5
+ 1139 00b7 49       		.uleb128 0x49
+ 1140 00b8 13       		.uleb128 0x13
+ 1141 00b9 02       		.uleb128 0x2
+ 1142 00ba 17       		.uleb128 0x17
+ 1143 00bb 00       		.byte	0
+ 1144 00bc 00       		.byte	0
+ 1145 00bd 0E       		.uleb128 0xe
+ 1146 00be 898201   		.uleb128 0x4109
+ 1147 00c1 01       		.byte	0x1
+ 1148 00c2 11       		.uleb128 0x11
+ 1149 00c3 01       		.uleb128 0x1
+ 1150 00c4 31       		.uleb128 0x31
+ 1151 00c5 13       		.uleb128 0x13
+ 1152 00c6 01       		.uleb128 0x1
+ 1153 00c7 13       		.uleb128 0x13
+ 1154 00c8 00       		.byte	0
+ 1155 00c9 00       		.byte	0
+ 1156 00ca 0F       		.uleb128 0xf
+ 1157 00cb 8A8201   		.uleb128 0x410a
+ 1158 00ce 00       		.byte	0
+ 1159 00cf 02       		.uleb128 0x2
+ 1160 00d0 18       		.uleb128 0x18
+ 1161 00d1 9142     		.uleb128 0x2111
+ 1162 00d3 18       		.uleb128 0x18
+ 1163 00d4 00       		.byte	0
+ 1164 00d5 00       		.byte	0
+ 1165 00d6 10       		.uleb128 0x10
+ 1166 00d7 898201   		.uleb128 0x4109
+ 1167 00da 01       		.byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 36
+
+
+ 1168 00db 11       		.uleb128 0x11
+ 1169 00dc 01       		.uleb128 0x1
+ 1170 00dd 31       		.uleb128 0x31
+ 1171 00de 13       		.uleb128 0x13
+ 1172 00df 00       		.byte	0
+ 1173 00e0 00       		.byte	0
+ 1174 00e1 11       		.uleb128 0x11
+ 1175 00e2 2E       		.uleb128 0x2e
+ 1176 00e3 01       		.byte	0x1
+ 1177 00e4 3F       		.uleb128 0x3f
+ 1178 00e5 19       		.uleb128 0x19
+ 1179 00e6 03       		.uleb128 0x3
+ 1180 00e7 0E       		.uleb128 0xe
+ 1181 00e8 3A       		.uleb128 0x3a
+ 1182 00e9 0B       		.uleb128 0xb
+ 1183 00ea 3B       		.uleb128 0x3b
+ 1184 00eb 0B       		.uleb128 0xb
+ 1185 00ec 27       		.uleb128 0x27
+ 1186 00ed 19       		.uleb128 0x19
+ 1187 00ee 49       		.uleb128 0x49
+ 1188 00ef 13       		.uleb128 0x13
+ 1189 00f0 3C       		.uleb128 0x3c
+ 1190 00f1 19       		.uleb128 0x19
+ 1191 00f2 00       		.byte	0
+ 1192 00f3 00       		.byte	0
+ 1193 00f4 12       		.uleb128 0x12
+ 1194 00f5 05       		.uleb128 0x5
+ 1195 00f6 00       		.byte	0
+ 1196 00f7 49       		.uleb128 0x49
+ 1197 00f8 13       		.uleb128 0x13
+ 1198 00f9 00       		.byte	0
+ 1199 00fa 00       		.byte	0
+ 1200 00fb 00       		.byte	0
+ 1201              		.section	.debug_loc,"",%progbits
+ 1202              	.Ldebug_loc0:
+ 1203              	.LLST0:
+ 1204 0000 00000000 		.4byte	.LVL0
+ 1205 0004 06000000 		.4byte	.LVL1
+ 1206 0008 0100     		.2byte	0x1
+ 1207 000a 50       		.byte	0x50
+ 1208 000b 06000000 		.4byte	.LVL1
+ 1209 000f 0E000000 		.4byte	.LVL2
+ 1210 0013 0400     		.2byte	0x4
+ 1211 0015 73       		.byte	0x73
+ 1212 0016 987E     		.sleb128 -232
+ 1213 0018 9F       		.byte	0x9f
+ 1214 0019 0E000000 		.4byte	.LVL2
+ 1215 001d 1C000000 		.4byte	.LFE0
+ 1216 0021 0400     		.2byte	0x4
+ 1217 0023 F3       		.byte	0xf3
+ 1218 0024 01       		.uleb128 0x1
+ 1219 0025 50       		.byte	0x50
+ 1220 0026 9F       		.byte	0x9f
+ 1221 0027 00000000 		.4byte	0
+ 1222 002b 00000000 		.4byte	0
+ 1223              	.LLST1:
+ 1224 002f 00000000 		.4byte	.LVL3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 37
+
+
+ 1225 0033 07000000 		.4byte	.LVL4-1
+ 1226 0037 0100     		.2byte	0x1
+ 1227 0039 50       		.byte	0x50
+ 1228 003a 07000000 		.4byte	.LVL4-1
+ 1229 003e 14000000 		.4byte	.LFE1
+ 1230 0042 0400     		.2byte	0x4
+ 1231 0044 F3       		.byte	0xf3
+ 1232 0045 01       		.uleb128 0x1
+ 1233 0046 50       		.byte	0x50
+ 1234 0047 9F       		.byte	0x9f
+ 1235 0048 00000000 		.4byte	0
+ 1236 004c 00000000 		.4byte	0
+ 1237              	.LLST2:
+ 1238 0050 00000000 		.4byte	.LVL3
+ 1239 0054 07000000 		.4byte	.LVL4-1
+ 1240 0058 0100     		.2byte	0x1
+ 1241 005a 51       		.byte	0x51
+ 1242 005b 07000000 		.4byte	.LVL4-1
+ 1243 005f 12000000 		.4byte	.LVL6
+ 1244 0063 0100     		.2byte	0x1
+ 1245 0065 54       		.byte	0x54
+ 1246 0066 12000000 		.4byte	.LVL6
+ 1247 006a 14000000 		.4byte	.LFE1
+ 1248 006e 0400     		.2byte	0x4
+ 1249 0070 F3       		.byte	0xf3
+ 1250 0071 01       		.uleb128 0x1
+ 1251 0072 51       		.byte	0x51
+ 1252 0073 9F       		.byte	0x9f
+ 1253 0074 00000000 		.4byte	0
+ 1254 0078 00000000 		.4byte	0
+ 1255              		.section	.debug_aranges,"",%progbits
+ 1256 0000 24000000 		.4byte	0x24
+ 1257 0004 0200     		.2byte	0x2
+ 1258 0006 00000000 		.4byte	.Ldebug_info0
+ 1259 000a 04       		.byte	0x4
+ 1260 000b 00       		.byte	0
+ 1261 000c 0000     		.2byte	0
+ 1262 000e 0000     		.2byte	0
+ 1263 0010 00000000 		.4byte	.LFB0
+ 1264 0014 1C000000 		.4byte	.LFE0-.LFB0
+ 1265 0018 00000000 		.4byte	.LFB1
+ 1266 001c 14000000 		.4byte	.LFE1-.LFB1
+ 1267 0020 00000000 		.4byte	0
+ 1268 0024 00000000 		.4byte	0
+ 1269              		.section	.debug_ranges,"",%progbits
+ 1270              	.Ldebug_ranges0:
+ 1271 0000 00000000 		.4byte	.LFB0
+ 1272 0004 1C000000 		.4byte	.LFE0
+ 1273 0008 00000000 		.4byte	.LFB1
+ 1274 000c 14000000 		.4byte	.LFE1
+ 1275 0010 00000000 		.4byte	0
+ 1276 0014 00000000 		.4byte	0
+ 1277              		.section	.debug_line,"",%progbits
+ 1278              	.Ldebug_line0:
+ 1279 0000 AF010000 		.section	.debug_str,"MS",%progbits,1
+ 1279      02008201 
+ 1279      00000201 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 38
+
+
+ 1279      FB0E0D00 
+ 1279      01010101 
+ 1280              	.LASF126:
+ 1281 0000 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1281      4320342E 
+ 1281      392E3320 
+ 1281      32303135 
+ 1281      30333033 
+ 1282 0033 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 1282      20726576 
+ 1282      6973696F 
+ 1282      6E203232 
+ 1282      31323230 
+ 1283 0066 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 1283      66756E63 
+ 1283      74696F6E 
+ 1283      2D736563 
+ 1283      74696F6E 
+ 1284              	.LASF60:
+ 1285 008e 41534E5F 		.ascii	"ASN_DH_KEY_E\000"
+ 1285      44485F4B 
+ 1285      45595F45 
+ 1285      00
+ 1286              	.LASF31:
+ 1287 009b 4D454D4F 		.ascii	"MEMORY_E\000"
+ 1287      52595F45 
+ 1287      00
+ 1288              	.LASF129:
+ 1289 00a4 73697A65 		.ascii	"size_t\000"
+ 1289      5F7400
+ 1290              	.LASF23:
+ 1291 00ab 4D505F53 		.ascii	"MP_SUB_E\000"
+ 1291      55425F45 
+ 1291      00
+ 1292              	.LASF43:
+ 1293 00b4 41534E5F 		.ascii	"ASN_VERSION_E\000"
+ 1293      56455253 
+ 1293      494F4E5F 
+ 1293      4500
+ 1294              	.LASF30:
+ 1295 00c2 4D505F5A 		.ascii	"MP_ZERO_E\000"
+ 1295      45524F5F 
+ 1295      4500
+ 1296              	.LASF52:
+ 1297 00cc 41534E5F 		.ascii	"ASN_BEFORE_DATE_E\000"
+ 1297      4245464F 
+ 1297      52455F44 
+ 1297      4154455F 
+ 1297      4500
+ 1298              	.LASF90:
+ 1299 00de 524E475F 		.ascii	"RNG_FAILURE_E\000"
+ 1299      4641494C 
+ 1299      5552455F 
+ 1299      4500
+ 1300              	.LASF22:
+ 1301 00ec 4D505F54 		.ascii	"MP_TO_E\000"
+ 1301      4F5F4500 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 39
+
+
+ 1302              	.LASF103:
+ 1303 00f4 54485245 		.ascii	"THREAD_STORE_SET_E\000"
+ 1303      41445F53 
+ 1303      544F5245 
+ 1303      5F534554 
+ 1303      5F4500
+ 1304              	.LASF116:
+ 1305 0107 4B455955 		.ascii	"KEYUSAGE_E\000"
+ 1305      53414745 
+ 1305      5F4500
+ 1306              	.LASF3:
+ 1307 0112 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1307      206C6F6E 
+ 1307      6720756E 
+ 1307      7369676E 
+ 1307      65642069 
+ 1308              	.LASF69:
+ 1309 0129 4E4F5F50 		.ascii	"NO_PASSWORD\000"
+ 1309      41535357 
+ 1309      4F524400 
+ 1310              	.LASF56:
+ 1311 0135 41534E5F 		.ascii	"ASN_INPUT_E\000"
+ 1311      494E5055 
+ 1311      545F4500 
+ 1312              	.LASF101:
+ 1313 0141 41455347 		.ascii	"AESGCM_KAT_FIPS_E\000"
+ 1313      434D5F4B 
+ 1313      41545F46 
+ 1313      4950535F 
+ 1313      4500
+ 1314              	.LASF120:
+ 1315 0153 4241445F 		.ascii	"BAD_COND_E\000"
+ 1315      434F4E44 
+ 1315      5F4500
+ 1316              	.LASF55:
+ 1317 015e 41534E5F 		.ascii	"ASN_TIME_E\000"
+ 1317      54494D45 
+ 1317      5F4500
+ 1318              	.LASF36:
+ 1319 0169 5055424C 		.ascii	"PUBLIC_KEY_E\000"
+ 1319      49435F4B 
+ 1319      45595F45 
+ 1319      00
+ 1320              	.LASF64:
+ 1321 0176 41534E5F 		.ascii	"ASN_ECC_KEY_E\000"
+ 1321      4543435F 
+ 1321      4B45595F 
+ 1321      4500
+ 1322              	.LASF108:
+ 1323 0184 5352505F 		.ascii	"SRP_CALL_ORDER_E\000"
+ 1323      43414C4C 
+ 1323      5F4F5244 
+ 1323      45525F45 
+ 1323      00
+ 1324              	.LASF47:
+ 1325 0195 41534E5F 		.ascii	"ASN_TAG_NULL_E\000"
+ 1325      5441475F 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 40
+
+
+ 1325      4E554C4C 
+ 1325      5F4500
+ 1326              	.LASF8:
+ 1327 01a4 6C6F6E67 		.ascii	"long long int\000"
+ 1327      206C6F6E 
+ 1327      6720696E 
+ 1327      7400
+ 1328              	.LASF4:
+ 1329 01b2 7369676E 		.ascii	"signed char\000"
+ 1329      65642063 
+ 1329      68617200 
+ 1330              	.LASF102:
+ 1331 01be 54485245 		.ascii	"THREAD_STORE_KEY_E\000"
+ 1331      41445F53 
+ 1331      544F5245 
+ 1331      5F4B4559 
+ 1331      5F4500
+ 1332              	.LASF119:
+ 1333 01d1 5349475F 		.ascii	"SIG_VERIFY_E\000"
+ 1333      56455249 
+ 1333      46595F45 
+ 1333      00
+ 1334              	.LASF77:
+ 1335 01de 4445434F 		.ascii	"DECOMPRESS_E\000"
+ 1335      4D505245 
+ 1335      53535F45 
+ 1335      00
+ 1336              	.LASF70:
+ 1337 01eb 414C545F 		.ascii	"ALT_NAME_E\000"
+ 1337      4E414D45 
+ 1337      5F4500
+ 1338              	.LASF78:
+ 1339 01f6 4241445F 		.ascii	"BAD_ALIGN_E\000"
+ 1339      414C4947 
+ 1339      4E5F4500 
+ 1340              	.LASF6:
+ 1341 0202 6C6F6E67 		.ascii	"long int\000"
+ 1341      20696E74 
+ 1341      00
+ 1342              	.LASF19:
+ 1343 020b 4D505F49 		.ascii	"MP_INIT_E\000"
+ 1343      4E49545F 
+ 1343      4500
+ 1344              	.LASF84:
+ 1345 0215 4241445F 		.ascii	"BAD_PADDING_E\000"
+ 1345      50414444 
+ 1345      494E475F 
+ 1345      4500
+ 1346              	.LASF79:
+ 1347 0223 41534E5F 		.ascii	"ASN_NO_SIGNER_E\000"
+ 1347      4E4F5F53 
+ 1347      49474E45 
+ 1347      525F4500 
+ 1348              	.LASF81:
+ 1349 0233 41534E5F 		.ascii	"ASN_CRL_NO_SIGNER_E\000"
+ 1349      43524C5F 
+ 1349      4E4F5F53 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 41
+
+
+ 1349      49474E45 
+ 1349      525F4500 
+ 1350              	.LASF24:
+ 1351 0247 4D505F41 		.ascii	"MP_ADD_E\000"
+ 1351      44445F45 
+ 1351      00
+ 1352              	.LASF20:
+ 1353 0250 4D505F52 		.ascii	"MP_READ_E\000"
+ 1353      4541445F 
+ 1353      4500
+ 1354              	.LASF125:
+ 1355 025a 62756666 		.ascii	"buffer\000"
+ 1355      657200
+ 1356              	.LASF39:
+ 1357 0261 49535355 		.ascii	"ISSUER_E\000"
+ 1357      45525F45 
+ 1357      00
+ 1358              	.LASF74:
+ 1359 026a 434F4D50 		.ascii	"COMPRESS_INIT_E\000"
+ 1359      52455353 
+ 1359      5F494E49 
+ 1359      545F4500 
+ 1360              	.LASF50:
+ 1361 027a 41534E5F 		.ascii	"ASN_UNKNOWN_OID_E\000"
+ 1361      554E4B4E 
+ 1361      4F574E5F 
+ 1361      4F49445F 
+ 1361      4500
+ 1362              	.LASF98:
+ 1363 028c 5253415F 		.ascii	"RSA_KAT_FIPS_E\000"
+ 1363      4B41545F 
+ 1363      46495053 
+ 1363      5F4500
+ 1364              	.LASF65:
+ 1365 029b 4543435F 		.ascii	"ECC_CURVE_OID_E\000"
+ 1365      43555256 
+ 1365      455F4F49 
+ 1365      445F4500 
+ 1366              	.LASF97:
+ 1367 02ab 484D4143 		.ascii	"HMAC_KAT_FIPS_E\000"
+ 1367      5F4B4154 
+ 1367      5F464950 
+ 1367      535F4500 
+ 1368              	.LASF66:
+ 1369 02bb 4241445F 		.ascii	"BAD_FUNC_ARG\000"
+ 1369      46554E43 
+ 1369      5F415247 
+ 1369      00
+ 1370              	.LASF2:
+ 1371 02c8 756E7369 		.ascii	"unsigned int\000"
+ 1371      676E6564 
+ 1371      20696E74 
+ 1371      00
+ 1372              	.LASF132:
+ 1373 02d5 7374726E 		.ascii	"strncpy\000"
+ 1373      63707900 
+ 1374              	.LASF29:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 42
+
+
+ 1375 02dd 4D505F43 		.ascii	"MP_CMP_E\000"
+ 1375      4D505F45 
+ 1375      00
+ 1376              	.LASF107:
+ 1377 02e6 4543435F 		.ascii	"ECC_PRIV_KEY_E\000"
+ 1377      50524956 
+ 1377      5F4B4559 
+ 1377      5F4500
+ 1378              	.LASF99:
+ 1379 02f5 44524247 		.ascii	"DRBG_KAT_FIPS_E\000"
+ 1379      5F4B4154 
+ 1379      5F464950 
+ 1379      535F4500 
+ 1380              	.LASF7:
+ 1381 0305 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1381      20756E73 
+ 1381      69676E65 
+ 1381      6420696E 
+ 1381      7400
+ 1382              	.LASF104:
+ 1383 0317 4D41435F 		.ascii	"MAC_CMP_FAILED_E\000"
+ 1383      434D505F 
+ 1383      4641494C 
+ 1383      45445F45 
+ 1383      00
+ 1384              	.LASF58:
+ 1385 0328 41534E5F 		.ascii	"ASN_SIG_HASH_E\000"
+ 1385      5349475F 
+ 1385      48415348 
+ 1385      5F4500
+ 1386              	.LASF13:
+ 1387 0337 4F50454E 		.ascii	"OPEN_RAN_E\000"
+ 1387      5F52414E 
+ 1387      5F4500
+ 1388              	.LASF28:
+ 1389 0342 4D505F49 		.ascii	"MP_INVMOD_E\000"
+ 1389      4E564D4F 
+ 1389      445F4500 
+ 1390              	.LASF94:
+ 1391 034e 494E5F43 		.ascii	"IN_CORE_FIPS_E\000"
+ 1391      4F52455F 
+ 1391      46495053 
+ 1391      5F4500
+ 1392              	.LASF1:
+ 1393 035d 73686F72 		.ascii	"short unsigned int\000"
+ 1393      7420756E 
+ 1393      7369676E 
+ 1393      65642069 
+ 1393      6E7400
+ 1394              	.LASF42:
+ 1395 0370 41534E5F 		.ascii	"ASN_PARSE_E\000"
+ 1395      50415253 
+ 1395      455F4500 
+ 1396              	.LASF109:
+ 1397 037c 5352505F 		.ascii	"SRP_VERIFY_E\000"
+ 1397      56455249 
+ 1397      46595F45 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 43
+
+
+ 1397      00
+ 1398              	.LASF82:
+ 1399 0389 41534E5F 		.ascii	"ASN_OCSP_CONFIRM_E\000"
+ 1399      4F435350 
+ 1399      5F434F4E 
+ 1399      4649524D 
+ 1399      5F4500
+ 1400              	.LASF21:
+ 1401 039c 4D505F45 		.ascii	"MP_EXPTMOD_E\000"
+ 1401      5850544D 
+ 1401      4F445F45 
+ 1401      00
+ 1402              	.LASF85:
+ 1403 03a9 5245515F 		.ascii	"REQ_ATTRIBUTE_E\000"
+ 1403      41545452 
+ 1403      49425554 
+ 1403      455F4500 
+ 1404              	.LASF112:
+ 1405 03b9 41534E5F 		.ascii	"ASN_NO_AKID\000"
+ 1405      4E4F5F41 
+ 1405      4B494400 
+ 1406              	.LASF25:
+ 1407 03c5 4D505F4D 		.ascii	"MP_MUL_E\000"
+ 1407      554C5F45 
+ 1407      00
+ 1408              	.LASF32:
+ 1409 03ce 5253415F 		.ascii	"RSA_WRONG_TYPE_E\000"
+ 1409      57524F4E 
+ 1409      475F5459 
+ 1409      50455F45 
+ 1409      00
+ 1410              	.LASF38:
+ 1411 03df 5355424A 		.ascii	"SUBJECT_E\000"
+ 1411      4543545F 
+ 1411      4500
+ 1412              	.LASF48:
+ 1413 03e9 41534E5F 		.ascii	"ASN_EXPECT_0_E\000"
+ 1413      45585045 
+ 1413      43545F30 
+ 1413      5F4500
+ 1414              	.LASF37:
+ 1415 03f8 44415445 		.ascii	"DATE_E\000"
+ 1415      5F4500
+ 1416              	.LASF118:
+ 1417 03ff 57435F49 		.ascii	"WC_INIT_E\000"
+ 1417      4E49545F 
+ 1417      4500
+ 1418              	.LASF73:
+ 1419 0409 43415649 		.ascii	"CAVIUM_INIT_E\000"
+ 1419      554D5F49 
+ 1419      4E49545F 
+ 1419      4500
+ 1420              	.LASF9:
+ 1421 0417 73697A65 		.ascii	"sizetype\000"
+ 1421      74797065 
+ 1421      00
+ 1422              	.LASF14:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 44
+
+
+ 1423 0420 52454144 		.ascii	"READ_RAN_E\000"
+ 1423      5F52414E 
+ 1423      5F4500
+ 1424              	.LASF114:
+ 1425 042b 534B4944 		.ascii	"SKID_E\000"
+ 1425      5F4500
+ 1426              	.LASF123:
+ 1427 0432 4D494E5F 		.ascii	"MIN_CODE_E\000"
+ 1427      434F4445 
+ 1427      5F4500
+ 1428              	.LASF49:
+ 1429 043d 41534E5F 		.ascii	"ASN_BITSTR_E\000"
+ 1429      42495453 
+ 1429      54525F45 
+ 1429      00
+ 1430              	.LASF105:
+ 1431 044a 49535F50 		.ascii	"IS_POINT_E\000"
+ 1431      4F494E54 
+ 1431      5F4500
+ 1432              	.LASF75:
+ 1433 0455 434F4D50 		.ascii	"COMPRESS_E\000"
+ 1433      52455353 
+ 1433      5F4500
+ 1434              	.LASF27:
+ 1435 0460 4D505F4D 		.ascii	"MP_MOD_E\000"
+ 1435      4F445F45 
+ 1435      00
+ 1436              	.LASF122:
+ 1437 0469 48415348 		.ascii	"HASH_TYPE_E\000"
+ 1437      5F545950 
+ 1437      455F4500 
+ 1438              	.LASF35:
+ 1439 0475 414C474F 		.ascii	"ALGO_ID_E\000"
+ 1439      5F49445F 
+ 1439      4500
+ 1440              	.LASF17:
+ 1441 047f 52414E5F 		.ascii	"RAN_BLOCK_E\000"
+ 1441      424C4F43 
+ 1441      4B5F4500 
+ 1442              	.LASF124:
+ 1443 048b 6572726F 		.ascii	"error\000"
+ 1443      7200
+ 1444              	.LASF12:
+ 1445 0491 4D41585F 		.ascii	"MAX_CODE_E\000"
+ 1445      434F4445 
+ 1445      5F4500
+ 1446              	.LASF83:
+ 1447 049c 4241445F 		.ascii	"BAD_ENC_STATE_E\000"
+ 1447      454E435F 
+ 1447      53544154 
+ 1447      455F4500 
+ 1448              	.LASF54:
+ 1449 04ac 41534E5F 		.ascii	"ASN_SIG_OID_E\000"
+ 1449      5349475F 
+ 1449      4F49445F 
+ 1449      4500
+ 1450              	.LASF0:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 45
+
+
+ 1451 04ba 756E7369 		.ascii	"unsigned char\000"
+ 1451      676E6564 
+ 1451      20636861 
+ 1451      7200
+ 1452              	.LASF26:
+ 1453 04c8 4D505F4D 		.ascii	"MP_MULMOD_E\000"
+ 1453      554C4D4F 
+ 1453      445F4500 
+ 1454              	.LASF130:
+ 1455 04d4 77635F47 		.ascii	"wc_GetErrorString\000"
+ 1455      65744572 
+ 1455      726F7253 
+ 1455      7472696E 
+ 1455      6700
+ 1456              	.LASF5:
+ 1457 04e6 73686F72 		.ascii	"short int\000"
+ 1457      7420696E 
+ 1457      7400
+ 1458              	.LASF87:
+ 1459 04f0 504B4353 		.ascii	"PKCS7_RECIP_E\000"
+ 1459      375F5245 
+ 1459      4349505F 
+ 1459      4500
+ 1460              	.LASF53:
+ 1461 04fe 41534E5F 		.ascii	"ASN_AFTER_DATE_E\000"
+ 1461      41465445 
+ 1461      525F4441 
+ 1461      54455F45 
+ 1461      00
+ 1462              	.LASF100:
+ 1463 050f 44524247 		.ascii	"DRBG_CONT_FIPS_E\000"
+ 1463      5F434F4E 
+ 1463      545F4649 
+ 1463      50535F45 
+ 1463      00
+ 1464              	.LASF62:
+ 1465 0520 41534E5F 		.ascii	"ASN_CRIT_EXT_E\000"
+ 1465      43524954 
+ 1465      5F455854 
+ 1465      5F4500
+ 1466              	.LASF128:
+ 1467 052f 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 1467      73657273 
+ 1467      5C646465 
+ 1467      6D69646F 
+ 1467      765C446F 
+ 1468 055d 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 1468      6530315C 
+ 1468      53656E73 
+ 1468      65416269 
+ 1468      6C697479 
+ 1469              	.LASF67:
+ 1470 0578 4E4F545F 		.ascii	"NOT_COMPILED_IN\000"
+ 1470      434F4D50 
+ 1470      494C4544 
+ 1470      5F494E00 
+ 1471              	.LASF88:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 46
+
+
+ 1472 0588 46495053 		.ascii	"FIPS_NOT_ALLOWED_E\000"
+ 1472      5F4E4F54 
+ 1472      5F414C4C 
+ 1472      4F574544 
+ 1472      5F4500
+ 1473              	.LASF106:
+ 1474 059b 4543435F 		.ascii	"ECC_INF_E\000"
+ 1474      494E465F 
+ 1474      4500
+ 1475              	.LASF72:
+ 1476 05a5 4145535F 		.ascii	"AES_CCM_AUTH_E\000"
+ 1476      43434D5F 
+ 1476      41555448 
+ 1476      5F4500
+ 1477              	.LASF10:
+ 1478 05b4 63686172 		.ascii	"char\000"
+ 1478      00
+ 1479              	.LASF93:
+ 1480 05b9 4C454E47 		.ascii	"LENGTH_ONLY_E\000"
+ 1480      54485F4F 
+ 1480      4E4C595F 
+ 1480      4500
+ 1481              	.LASF59:
+ 1482 05c7 41534E5F 		.ascii	"ASN_SIG_KEY_E\000"
+ 1482      5349475F 
+ 1482      4B45595F 
+ 1482      4500
+ 1483              	.LASF71:
+ 1484 05d5 4145535F 		.ascii	"AES_GCM_AUTH_E\000"
+ 1484      47434D5F 
+ 1484      41555448 
+ 1484      5F4500
+ 1485              	.LASF57:
+ 1486 05e4 41534E5F 		.ascii	"ASN_SIG_CONFIRM_E\000"
+ 1486      5349475F 
+ 1486      434F4E46 
+ 1486      49524D5F 
+ 1486      4500
+ 1487              	.LASF61:
+ 1488 05f6 41534E5F 		.ascii	"ASN_NTRU_KEY_E\000"
+ 1488      4E545255 
+ 1488      5F4B4559 
+ 1488      5F4500
+ 1489              	.LASF127:
+ 1490 0605 2E2E5C61 		.ascii	"..\\acn-sdk-c\\src\\wolfSSL\\wolfcrypt\\src\\error."
+ 1490      636E2D73 
+ 1490      646B2D63 
+ 1490      5C737263 
+ 1490      5C776F6C 
+ 1491 0632 6300     		.ascii	"c\000"
+ 1492              	.LASF40:
+ 1493 0634 43415F54 		.ascii	"CA_TRUE_E\000"
+ 1493      5255455F 
+ 1493      4500
+ 1494              	.LASF45:
+ 1495 063e 41534E5F 		.ascii	"ASN_RSA_KEY_E\000"
+ 1495      5253415F 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 47
+
+
+ 1495      4B45595F 
+ 1495      4500
+ 1496              	.LASF113:
+ 1497 064c 41534E5F 		.ascii	"ASN_NO_KEYUSAGE\000"
+ 1497      4E4F5F4B 
+ 1497      45595553 
+ 1497      41474500 
+ 1498              	.LASF117:
+ 1499 065c 43455254 		.ascii	"CERTPOLICIES_E\000"
+ 1499      504F4C49 
+ 1499      43494553 
+ 1499      5F4500
+ 1500              	.LASF92:
+ 1501 066b 5253415F 		.ascii	"RSA_PAD_E\000"
+ 1501      5041445F 
+ 1501      4500
+ 1502              	.LASF33:
+ 1503 0675 5253415F 		.ascii	"RSA_BUFFER_E\000"
+ 1503      42554646 
+ 1503      45525F45 
+ 1503      00
+ 1504              	.LASF80:
+ 1505 0682 41534E5F 		.ascii	"ASN_CRL_CONFIRM_E\000"
+ 1505      43524C5F 
+ 1505      434F4E46 
+ 1505      49524D5F 
+ 1505      4500
+ 1506              	.LASF111:
+ 1507 0694 41534E5F 		.ascii	"ASN_NO_SKID\000"
+ 1507      4E4F5F53 
+ 1507      4B494400 
+ 1508              	.LASF15:
+ 1509 06a0 57494E43 		.ascii	"WINCRYPT_E\000"
+ 1509      52595054 
+ 1509      5F4500
+ 1510              	.LASF110:
+ 1511 06ab 5352505F 		.ascii	"SRP_BAD_KEY_E\000"
+ 1511      4241445F 
+ 1511      4B45595F 
+ 1511      4500
+ 1512              	.LASF63:
+ 1513 06b9 4543435F 		.ascii	"ECC_BAD_ARG_E\000"
+ 1513      4241445F 
+ 1513      4152475F 
+ 1513      4500
+ 1514              	.LASF91:
+ 1515 06c7 484D4143 		.ascii	"HMAC_MIN_KEYLEN_E\000"
+ 1515      5F4D494E 
+ 1515      5F4B4559 
+ 1515      4C454E5F 
+ 1515      4500
+ 1516              	.LASF11:
+ 1517 06d9 574F4C46 		.ascii	"WOLFSSL_MAX_ERROR_SZ\000"
+ 1517      53534C5F 
+ 1517      4D41585F 
+ 1517      4552524F 
+ 1517      525F535A 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 48
+
+
+ 1518              	.LASF96:
+ 1519 06ee 44455333 		.ascii	"DES3_KAT_FIPS_E\000"
+ 1519      5F4B4154 
+ 1519      5F464950 
+ 1519      535F4500 
+ 1520              	.LASF34:
+ 1521 06fe 42554646 		.ascii	"BUFFER_E\000"
+ 1521      45525F45 
+ 1521      00
+ 1522              	.LASF86:
+ 1523 0707 504B4353 		.ascii	"PKCS7_OID_E\000"
+ 1523      375F4F49 
+ 1523      445F4500 
+ 1524              	.LASF131:
+ 1525 0713 77635F45 		.ascii	"wc_ErrorString\000"
+ 1525      72726F72 
+ 1525      53747269 
+ 1525      6E6700
+ 1526              	.LASF51:
+ 1527 0722 41534E5F 		.ascii	"ASN_DATE_SZ_E\000"
+ 1527      44415445 
+ 1527      5F535A5F 
+ 1527      4500
+ 1528              	.LASF46:
+ 1529 0730 41534E5F 		.ascii	"ASN_OBJECT_ID_E\000"
+ 1529      4F424A45 
+ 1529      43545F49 
+ 1529      445F4500 
+ 1530              	.LASF16:
+ 1531 0740 43525950 		.ascii	"CRYPTGEN_E\000"
+ 1531      5447454E 
+ 1531      5F4500
+ 1532              	.LASF41:
+ 1533 074b 45585445 		.ascii	"EXTENSIONS_E\000"
+ 1533      4E53494F 
+ 1533      4E535F45 
+ 1533      00
+ 1534              	.LASF76:
+ 1535 0758 4445434F 		.ascii	"DECOMPRESS_INIT_E\000"
+ 1535      4D505245 
+ 1535      53535F49 
+ 1535      4E49545F 
+ 1535      4500
+ 1536              	.LASF121:
+ 1537 076a 5349475F 		.ascii	"SIG_TYPE_E\000"
+ 1537      54595045 
+ 1537      5F4500
+ 1538              	.LASF89:
+ 1539 0775 41534E5F 		.ascii	"ASN_NAME_INVALID_E\000"
+ 1539      4E414D45 
+ 1539      5F494E56 
+ 1539      414C4944 
+ 1539      5F4500
+ 1540              	.LASF18:
+ 1541 0788 4241445F 		.ascii	"BAD_MUTEX_E\000"
+ 1541      4D555445 
+ 1541      585F4500 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cctdoCPW.s 			page 49
+
+
+ 1542              	.LASF68:
+ 1543 0794 554E4943 		.ascii	"UNICODE_SIZE_E\000"
+ 1543      4F44455F 
+ 1543      53495A45 
+ 1543      5F4500
+ 1544              	.LASF115:
+ 1545 07a3 414B4944 		.ascii	"AKID_E\000"
+ 1545      5F4500
+ 1546              	.LASF44:
+ 1547 07aa 41534E5F 		.ascii	"ASN_GETINT_E\000"
+ 1547      47455449 
+ 1547      4E545F45 
+ 1547      00
+ 1548              	.LASF95:
+ 1549 07b7 4145535F 		.ascii	"AES_KAT_FIPS_E\000"
+ 1549      4B41545F 
+ 1549      46495053 
+ 1549      5F4500
+ 1550              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

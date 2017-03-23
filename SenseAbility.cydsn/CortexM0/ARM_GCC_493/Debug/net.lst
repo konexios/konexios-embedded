@@ -1,0 +1,307 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cckKKlwe.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"net.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.get_mac_address,"ax",%progbits
+  18              		.align	1
+  19              		.global	get_mac_address
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	get_mac_address, %function
+  23              	get_mac_address:
+  24              	.LFB0:
+  25              		.file 1 "..\\acn-sdk-c\\platforms\\senseability\\arrow\\net.c"
+   1:..\acn-sdk-c\platforms\senseability\arrow/net.c **** #include "arrow/net.h"
+   2:..\acn-sdk-c\platforms\senseability\arrow/net.c **** 
+   3:..\acn-sdk-c\platforms\senseability\arrow/net.c **** int get_mac_address(char *mac) {
+  26              		.loc 1 3 0
+  27              		.cfi_startproc
+  28              	.LVL0:
+   4:..\acn-sdk-c\platforms\senseability\arrow/net.c ****     mac[0] = 0x0a;
+  29              		.loc 1 4 0
+  30 0000 0A23     		mov	r3, #10
+  31 0002 0370     		strb	r3, [r0]
+   5:..\acn-sdk-c\platforms\senseability\arrow/net.c ****     mac[1] = 0xab;
+  32              		.loc 1 5 0
+  33 0004 A133     		add	r3, r3, #161
+  34 0006 4370     		strb	r3, [r0, #1]
+   6:..\acn-sdk-c\platforms\senseability\arrow/net.c ****     mac[2] = 0x1c;
+  35              		.loc 1 6 0
+  36 0008 8F3B     		sub	r3, r3, #143
+  37 000a 8370     		strb	r3, [r0, #2]
+   7:..\acn-sdk-c\platforms\senseability\arrow/net.c ****     mac[3] = 0x2b;
+  38              		.loc 1 7 0
+  39 000c 0F33     		add	r3, r3, #15
+  40 000e C370     		strb	r3, [r0, #3]
+   8:..\acn-sdk-c\platforms\senseability\arrow/net.c ****     mac[4] = 0x3a;
+  41              		.loc 1 8 0
+  42 0010 0F33     		add	r3, r3, #15
+  43 0012 0371     		strb	r3, [r0, #4]
+   9:..\acn-sdk-c\platforms\senseability\arrow/net.c ****     mac[5] = 0x4f;
+  44              		.loc 1 9 0
+  45 0014 1533     		add	r3, r3, #21
+  46 0016 4371     		strb	r3, [r0, #5]
+  10:..\acn-sdk-c\platforms\senseability\arrow/net.c ****     return 0;
+  11:..\acn-sdk-c\platforms\senseability\arrow/net.c **** }
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cckKKlwe.s 			page 2
+
+
+  47              		.loc 1 11 0
+  48              		@ sp needed
+  49 0018 0020     		mov	r0, #0
+  50              	.LVL1:
+  51 001a 7047     		bx	lr
+  52              		.cfi_endproc
+  53              	.LFE0:
+  54              		.size	get_mac_address, .-get_mac_address
+  55              		.text
+  56              	.Letext0:
+  57              		.section	.debug_info,"",%progbits
+  58              	.Ldebug_info0:
+  59 0000 5F000000 		.4byte	0x5f
+  60 0004 0400     		.2byte	0x4
+  61 0006 00000000 		.4byte	.Ldebug_abbrev0
+  62 000a 04       		.byte	0x4
+  63 000b 01       		.uleb128 0x1
+  64 000c 5E000000 		.4byte	.LASF1
+  65 0010 01       		.byte	0x1
+  66 0011 EC000000 		.4byte	.LASF2
+  67 0015 10000000 		.4byte	.LASF3
+  68 0019 00000000 		.4byte	.Ldebug_ranges0+0
+  69 001d 00000000 		.4byte	0
+  70 0021 00000000 		.4byte	.Ldebug_line0
+  71 0025 02       		.uleb128 0x2
+  72 0026 00000000 		.4byte	.LASF4
+  73 002a 01       		.byte	0x1
+  74 002b 03       		.byte	0x3
+  75 002c 4E000000 		.4byte	0x4e
+  76 0030 00000000 		.4byte	.LFB0
+  77 0034 1C000000 		.4byte	.LFE0-.LFB0
+  78 0038 01       		.uleb128 0x1
+  79 0039 9C       		.byte	0x9c
+  80 003a 4E000000 		.4byte	0x4e
+  81 003e 03       		.uleb128 0x3
+  82 003f 6D616300 		.ascii	"mac\000"
+  83 0043 01       		.byte	0x1
+  84 0044 03       		.byte	0x3
+  85 0045 55000000 		.4byte	0x55
+  86 0049 00000000 		.4byte	.LLST0
+  87 004d 00       		.byte	0
+  88 004e 04       		.uleb128 0x4
+  89 004f 04       		.byte	0x4
+  90 0050 05       		.byte	0x5
+  91 0051 696E7400 		.ascii	"int\000"
+  92 0055 05       		.uleb128 0x5
+  93 0056 04       		.byte	0x4
+  94 0057 5B000000 		.4byte	0x5b
+  95 005b 06       		.uleb128 0x6
+  96 005c 01       		.byte	0x1
+  97 005d 08       		.byte	0x8
+  98 005e 59000000 		.4byte	.LASF0
+  99 0062 00       		.byte	0
+ 100              		.section	.debug_abbrev,"",%progbits
+ 101              	.Ldebug_abbrev0:
+ 102 0000 01       		.uleb128 0x1
+ 103 0001 11       		.uleb128 0x11
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cckKKlwe.s 			page 3
+
+
+ 104 0002 01       		.byte	0x1
+ 105 0003 25       		.uleb128 0x25
+ 106 0004 0E       		.uleb128 0xe
+ 107 0005 13       		.uleb128 0x13
+ 108 0006 0B       		.uleb128 0xb
+ 109 0007 03       		.uleb128 0x3
+ 110 0008 0E       		.uleb128 0xe
+ 111 0009 1B       		.uleb128 0x1b
+ 112 000a 0E       		.uleb128 0xe
+ 113 000b 55       		.uleb128 0x55
+ 114 000c 17       		.uleb128 0x17
+ 115 000d 11       		.uleb128 0x11
+ 116 000e 01       		.uleb128 0x1
+ 117 000f 10       		.uleb128 0x10
+ 118 0010 17       		.uleb128 0x17
+ 119 0011 00       		.byte	0
+ 120 0012 00       		.byte	0
+ 121 0013 02       		.uleb128 0x2
+ 122 0014 2E       		.uleb128 0x2e
+ 123 0015 01       		.byte	0x1
+ 124 0016 3F       		.uleb128 0x3f
+ 125 0017 19       		.uleb128 0x19
+ 126 0018 03       		.uleb128 0x3
+ 127 0019 0E       		.uleb128 0xe
+ 128 001a 3A       		.uleb128 0x3a
+ 129 001b 0B       		.uleb128 0xb
+ 130 001c 3B       		.uleb128 0x3b
+ 131 001d 0B       		.uleb128 0xb
+ 132 001e 27       		.uleb128 0x27
+ 133 001f 19       		.uleb128 0x19
+ 134 0020 49       		.uleb128 0x49
+ 135 0021 13       		.uleb128 0x13
+ 136 0022 11       		.uleb128 0x11
+ 137 0023 01       		.uleb128 0x1
+ 138 0024 12       		.uleb128 0x12
+ 139 0025 06       		.uleb128 0x6
+ 140 0026 40       		.uleb128 0x40
+ 141 0027 18       		.uleb128 0x18
+ 142 0028 9742     		.uleb128 0x2117
+ 143 002a 19       		.uleb128 0x19
+ 144 002b 01       		.uleb128 0x1
+ 145 002c 13       		.uleb128 0x13
+ 146 002d 00       		.byte	0
+ 147 002e 00       		.byte	0
+ 148 002f 03       		.uleb128 0x3
+ 149 0030 05       		.uleb128 0x5
+ 150 0031 00       		.byte	0
+ 151 0032 03       		.uleb128 0x3
+ 152 0033 08       		.uleb128 0x8
+ 153 0034 3A       		.uleb128 0x3a
+ 154 0035 0B       		.uleb128 0xb
+ 155 0036 3B       		.uleb128 0x3b
+ 156 0037 0B       		.uleb128 0xb
+ 157 0038 49       		.uleb128 0x49
+ 158 0039 13       		.uleb128 0x13
+ 159 003a 02       		.uleb128 0x2
+ 160 003b 17       		.uleb128 0x17
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cckKKlwe.s 			page 4
+
+
+ 161 003c 00       		.byte	0
+ 162 003d 00       		.byte	0
+ 163 003e 04       		.uleb128 0x4
+ 164 003f 24       		.uleb128 0x24
+ 165 0040 00       		.byte	0
+ 166 0041 0B       		.uleb128 0xb
+ 167 0042 0B       		.uleb128 0xb
+ 168 0043 3E       		.uleb128 0x3e
+ 169 0044 0B       		.uleb128 0xb
+ 170 0045 03       		.uleb128 0x3
+ 171 0046 08       		.uleb128 0x8
+ 172 0047 00       		.byte	0
+ 173 0048 00       		.byte	0
+ 174 0049 05       		.uleb128 0x5
+ 175 004a 0F       		.uleb128 0xf
+ 176 004b 00       		.byte	0
+ 177 004c 0B       		.uleb128 0xb
+ 178 004d 0B       		.uleb128 0xb
+ 179 004e 49       		.uleb128 0x49
+ 180 004f 13       		.uleb128 0x13
+ 181 0050 00       		.byte	0
+ 182 0051 00       		.byte	0
+ 183 0052 06       		.uleb128 0x6
+ 184 0053 24       		.uleb128 0x24
+ 185 0054 00       		.byte	0
+ 186 0055 0B       		.uleb128 0xb
+ 187 0056 0B       		.uleb128 0xb
+ 188 0057 3E       		.uleb128 0x3e
+ 189 0058 0B       		.uleb128 0xb
+ 190 0059 03       		.uleb128 0x3
+ 191 005a 0E       		.uleb128 0xe
+ 192 005b 00       		.byte	0
+ 193 005c 00       		.byte	0
+ 194 005d 00       		.byte	0
+ 195              		.section	.debug_loc,"",%progbits
+ 196              	.Ldebug_loc0:
+ 197              	.LLST0:
+ 198 0000 00000000 		.4byte	.LVL0
+ 199 0004 1A000000 		.4byte	.LVL1
+ 200 0008 0100     		.2byte	0x1
+ 201 000a 50       		.byte	0x50
+ 202 000b 1A000000 		.4byte	.LVL1
+ 203 000f 1C000000 		.4byte	.LFE0
+ 204 0013 0400     		.2byte	0x4
+ 205 0015 F3       		.byte	0xf3
+ 206 0016 01       		.uleb128 0x1
+ 207 0017 50       		.byte	0x50
+ 208 0018 9F       		.byte	0x9f
+ 209 0019 00000000 		.4byte	0
+ 210 001d 00000000 		.4byte	0
+ 211              		.section	.debug_aranges,"",%progbits
+ 212 0000 1C000000 		.4byte	0x1c
+ 213 0004 0200     		.2byte	0x2
+ 214 0006 00000000 		.4byte	.Ldebug_info0
+ 215 000a 04       		.byte	0x4
+ 216 000b 00       		.byte	0
+ 217 000c 0000     		.2byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cckKKlwe.s 			page 5
+
+
+ 218 000e 0000     		.2byte	0
+ 219 0010 00000000 		.4byte	.LFB0
+ 220 0014 1C000000 		.4byte	.LFE0-.LFB0
+ 221 0018 00000000 		.4byte	0
+ 222 001c 00000000 		.4byte	0
+ 223              		.section	.debug_ranges,"",%progbits
+ 224              	.Ldebug_ranges0:
+ 225 0000 00000000 		.4byte	.LFB0
+ 226 0004 1C000000 		.4byte	.LFE0
+ 227 0008 00000000 		.4byte	0
+ 228 000c 00000000 		.4byte	0
+ 229              		.section	.debug_line,"",%progbits
+ 230              	.Ldebug_line0:
+ 231 0000 60000000 		.section	.debug_str,"MS",%progbits,1
+ 231      02004600 
+ 231      00000201 
+ 231      FB0E0D00 
+ 231      01010101 
+ 232              	.LASF4:
+ 233 0000 6765745F 		.ascii	"get_mac_address\000"
+ 233      6D61635F 
+ 233      61646472 
+ 233      65737300 
+ 234              	.LASF3:
+ 235 0010 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 235      73657273 
+ 235      5C646465 
+ 235      6D69646F 
+ 235      765C446F 
+ 236 003e 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 236      6530315C 
+ 236      53656E73 
+ 236      65416269 
+ 236      6C697479 
+ 237              	.LASF0:
+ 238 0059 63686172 		.ascii	"char\000"
+ 238      00
+ 239              	.LASF1:
+ 240 005e 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 240      4320342E 
+ 240      392E3320 
+ 240      32303135 
+ 240      30333033 
+ 241 0091 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 241      20726576 
+ 241      6973696F 
+ 241      6E203232 
+ 241      31323230 
+ 242 00c4 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 242      66756E63 
+ 242      74696F6E 
+ 242      2D736563 
+ 242      74696F6E 
+ 243              	.LASF2:
+ 244 00ec 2E2E5C61 		.ascii	"..\\acn-sdk-c\\platforms\\senseability\\arrow\\net."
+ 244      636E2D73 
+ 244      646B2D63 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cckKKlwe.s 			page 6
+
+
+ 244      5C706C61 
+ 244      74666F72 
+ 245 011a 6300     		.ascii	"c\000"
+ 246              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

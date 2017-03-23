@@ -1,0 +1,59 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cckwQeNx.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"pkcs7.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              	.Letext0:
+  18              		.section	.debug_line,"",%progbits
+  19              	.Ldebug_line0:
+  20              		.section	.debug_str,"MS",%progbits,1
+  21              	.LASF0:
+  22 0000 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+  22      73657273 
+  22      5C646465 
+  22      6D69646F 
+  22      765C446F 
+  23 002e 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+  23      6530315C 
+  23      53656E73 
+  23      65416269 
+  23      6C697479 
+  24              	.LASF1:
+  25 0049 2E2E5C6B 		.ascii	"..\\kronos-c-sdk\\src\\wolfSSL\\wolfcrypt\\src\\pkc"
+  25      726F6E6F 
+  25      732D632D 
+  25      73646B5C 
+  25      7372635C 
+  26 0076 73372E63 		.ascii	"s7.c\000"
+  26      00
+  27              	.LASF2:
+  28 007b 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+  28      4320342E 
+  28      392E3320 
+  28      32303135 
+  28      30333033 
+  29 00ae 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+  29      20726576 
+  29      6973696F 
+  29      6E203232 
+  29      31323230 
+  30 00e1 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+  30      66756E63 
+  30      74696F6E 
+  30      2D736563 
+  30      74696F6E 
+  31              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

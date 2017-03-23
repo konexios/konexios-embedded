@@ -1,0 +1,3184 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"MQTTConnectServer.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MQTTPacket_checkVersion,"ax",%progbits
+  18              		.align	1
+  19              		.global	MQTTPacket_checkVersion
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	MQTTPacket_checkVersion, %function
+  23              	MQTTPacket_checkVersion:
+  24              	.LFB0:
+  25              		.file 1 "..\\acn-sdk-c\\src\\mqtt\\packet\\src\\MQTTConnectServer.c"
+   1:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** /*******************************************************************************
+   2:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  * Copyright (c) 2014 IBM Corp.
+   3:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  *
+   4:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  * All rights reserved. This program and the accompanying materials
+   5:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  * are made available under the terms of the Eclipse Public License v1.0
+   6:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  * and Eclipse Distribution License v1.0 which accompany this distribution.
+   7:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  *
+   8:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  * The Eclipse Public License is available at
+   9:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  *    http://www.eclipse.org/legal/epl-v10.html
+  10:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  * and the Eclipse Distribution License is available at
+  11:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  *   http://www.eclipse.org/org/documents/edl-v10.php.
+  12:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  *
+  13:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  * Contributors:
+  14:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  *    Ian Craggs - initial API and implementation and/or initial documentation
+  15:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****  *******************************************************************************/
+  16:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  17:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** #include "mqtt/packet/StackTrace.h"
+  18:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** #include "mqtt/packet/MQTTConnect.h"
+  19:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** #include <string.h>
+  20:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  21:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** #define min(a, b) ((a < b) ? a : b)
+  22:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  23:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  24:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** /**
+  25:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * Validates MQTT protocol name and version combinations
+  26:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param protocol the MQTT protocol name as an MQTTString
+  27:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param version the MQTT protocol version number, as in the connect packet
+  28:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @return correct MQTT combination?  1 is true, 0 is false
+  29:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   */
+  30:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** int MQTTPacket_checkVersion(MQTTString* protocol, int version)
+  31:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** {
+  26              		.loc 1 31 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 2
+
+
+  27              		.cfi_startproc
+  28              	.LVL0:
+  29 0000 08B5     		push	{r3, lr}
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 3, -8
+  32              		.cfi_offset 14, -4
+  32:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	int rc = 0;
+  33:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  34:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	if (version == 3 && memcmp(protocol->lenstring.data, "MQIsdp",
+  33              		.loc 1 34 0
+  34 0002 0329     		cmp	r1, #3
+  35 0004 06D1     		bne	.L2
+  35:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			(size_t)min(6, protocol->lenstring.len)) == 0)
+  36              		.loc 1 35 0 discriminator 1
+  37 0006 4268     		ldr	r2, [r0, #4]
+  38 0008 062A     		cmp	r2, #6
+  39 000a 00DD     		ble	.L3
+  40 000c 0622     		mov	r2, #6
+  41              	.L3:
+  34:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			(size_t)min(6, protocol->lenstring.len)) == 0)
+  42              		.loc 1 34 0 discriminator 1
+  43 000e 8068     		ldr	r0, [r0, #8]
+  44              	.LVL1:
+  45 0010 0849     		ldr	r1, .L9
+  46              	.LVL2:
+  47 0012 08E0     		b	.L7
+  48              	.LVL3:
+  49              	.L2:
+  32:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	int rc = 0;
+  50              		.loc 1 32 0
+  51 0014 0023     		mov	r3, #0
+  36:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		rc = 1;
+  37:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	else if (version == 4 && memcmp(protocol->lenstring.data, "MQTT",
+  52              		.loc 1 37 0
+  53 0016 0429     		cmp	r1, #4
+  54 0018 09D1     		bne	.L4
+  55              	.LVL4:
+  56              	.LBB4:
+  57              	.LBB5:
+  38:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			(size_t)min(4, protocol->lenstring.len)) == 0)
+  58              		.loc 1 38 0
+  59 001a 4268     		ldr	r2, [r0, #4]
+  60 001c 042A     		cmp	r2, #4
+  61 001e 00DD     		ble	.L5
+  62 0020 0A1C     		mov	r2, r1
+  63              	.L5:
+  37:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			(size_t)min(4, protocol->lenstring.len)) == 0)
+  64              		.loc 1 37 0
+  65 0022 8068     		ldr	r0, [r0, #8]
+  66              	.LVL5:
+  67 0024 0449     		ldr	r1, .L9+4
+  68              	.LVL6:
+  69              	.L7:
+  70 0026 FFF7FEFF 		bl	memcmp
+  71              	.LVL7:
+  72              	.LBE5:
+  73              	.LBE4:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 3
+
+
+  36:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		rc = 1;
+  74              		.loc 1 36 0
+  75 002a 4342     		neg	r3, r0
+  76 002c 4341     		adc	r3, r3, r0
+  77              	.L4:
+  78              	.LVL8:
+  39:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		rc = 1;
+  40:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	return rc;
+  41:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** }
+  79              		.loc 1 41 0
+  80 002e 181C     		mov	r0, r3
+  81              		@ sp needed
+  82 0030 08BD     		pop	{r3, pc}
+  83              	.L10:
+  84 0032 C046     		.align	2
+  85              	.L9:
+  86 0034 00000000 		.word	.LC0
+  87 0038 07000000 		.word	.LC2
+  88              		.cfi_endproc
+  89              	.LFE0:
+  90              		.size	MQTTPacket_checkVersion, .-MQTTPacket_checkVersion
+  91              		.section	.text.MQTTDeserialize_connect,"ax",%progbits
+  92              		.align	1
+  93              		.global	MQTTDeserialize_connect
+  94              		.code	16
+  95              		.thumb_func
+  96              		.type	MQTTDeserialize_connect, %function
+  97              	MQTTDeserialize_connect:
+  98              	.LFB1:
+  42:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  43:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  44:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** /**
+  45:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * Deserializes the supplied (wire) buffer into connect data structure
+  46:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param data the connect data structure to be filled out
+  47:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param buf the raw buffer data, of the correct length determined by the remaining length field
+  48:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param len the length in bytes of the data in the supplied buffer
+  49:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @return error code.  1 is success, 0 is failure
+  50:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   */
+  51:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** int MQTTDeserialize_connect(MQTTPacket_connectData* data, unsigned char* buf, int len)
+  52:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** {
+  99              		.loc 1 52 0
+ 100              		.cfi_startproc
+ 101              	.LVL9:
+  53:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTHeader header = {0};
+  54:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTConnectFlags flags = {0};
+  55:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	unsigned char* curdata = buf;
+  56:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	unsigned char* enddata = &buf[len];
+  57:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	int rc = 0;
+  58:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTString Protocol;
+  59:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	int version;
+  60:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	int mylen = 0;
+ 102              		.loc 1 60 0
+ 103 0000 0023     		mov	r3, #0
+  52:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTHeader header = {0};
+ 104              		.loc 1 52 0
+ 105 0002 F0B5     		push	{r4, r5, r6, r7, lr}
+ 106              		.cfi_def_cfa_offset 20
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 4
+
+
+ 107              		.cfi_offset 4, -20
+ 108              		.cfi_offset 5, -16
+ 109              		.cfi_offset 6, -12
+ 110              		.cfi_offset 7, -8
+ 111              		.cfi_offset 14, -4
+ 112 0004 87B0     		sub	sp, sp, #28
+ 113              		.cfi_def_cfa_offset 48
+  52:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTHeader header = {0};
+ 114              		.loc 1 52 0
+ 115 0006 041C     		mov	r4, r0
+  61:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  62:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	FUNC_ENTRY;
+  63:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	header.byte = readChar(&curdata);
+ 116              		.loc 1 63 0
+ 117 0008 01A8     		add	r0, sp, #4
+ 118              	.LVL10:
+  60:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 119              		.loc 1 60 0
+ 120 000a 0293     		str	r3, [sp, #8]
+  52:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTHeader header = {0};
+ 121              		.loc 1 52 0
+ 122 000c 0D1C     		mov	r5, r1
+ 123 000e 161C     		mov	r6, r2
+  55:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	unsigned char* enddata = &buf[len];
+ 124              		.loc 1 55 0
+ 125 0010 0191     		str	r1, [sp, #4]
+ 126              	.LVL11:
+ 127              		.loc 1 63 0
+ 128 0012 FFF7FEFF 		bl	readChar
+ 129              	.LVL12:
+  64:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	if (header.bits.type != CONNECT)
+ 130              		.loc 1 64 0
+ 131 0016 F023     		mov	r3, #240
+ 132 0018 1840     		and	r0, r3
+ 133              	.LVL13:
+ 134 001a 1028     		cmp	r0, #16
+ 135 001c 01D0     		beq	.L12
+ 136              	.LVL14:
+ 137              	.L14:
+  57:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTString Protocol;
+ 138              		.loc 1 57 0
+ 139 001e 0020     		mov	r0, #0
+ 140 0020 70E0     		b	.L13
+ 141              	.LVL15:
+ 142              	.L12:
+  65:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		goto exit;
+  66:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  67:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	curdata += MQTTPacket_decodeBuf(curdata, &mylen); /* read remaining length */
+ 143              		.loc 1 67 0
+ 144 0022 02A9     		add	r1, sp, #8
+ 145 0024 0198     		ldr	r0, [sp, #4]
+ 146 0026 FFF7FEFF 		bl	MQTTPacket_decodeBuf
+ 147              	.LVL16:
+ 148 002a 019B     		ldr	r3, [sp, #4]
+  56:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	int rc = 0;
+ 149              		.loc 1 56 0
+ 150 002c AD19     		add	r5, r5, r6
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 5
+
+
+ 151              	.LVL17:
+ 152              		.loc 1 67 0
+ 153 002e 1818     		add	r0, r3, r0
+ 154 0030 0190     		str	r0, [sp, #4]
+  68:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  69:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	if (!readMQTTLenString(&Protocol, &curdata, enddata) ||
+ 155              		.loc 1 69 0
+ 156 0032 01A9     		add	r1, sp, #4
+ 157 0034 03A8     		add	r0, sp, #12
+ 158 0036 2A1C     		mov	r2, r5
+ 159 0038 FFF7FEFF 		bl	readMQTTLenString
+ 160              	.LVL18:
+ 161 003c 0028     		cmp	r0, #0
+ 162 003e EED0     		beq	.L14
+  70:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		enddata - curdata < 0) /* do we have enough data to read the protocol version byte? */
+ 163              		.loc 1 70 0 discriminator 1
+ 164 0040 019B     		ldr	r3, [sp, #4]
+ 165 0042 EB1A     		sub	r3, r5, r3
+  69:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		enddata - curdata < 0) /* do we have enough data to read the protocol version byte? */
+ 166              		.loc 1 69 0 discriminator 1
+ 167 0044 EBD4     		bmi	.L14
+  71:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		goto exit;
+  72:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+  73:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	version = (int)readChar(&curdata); /* Protocol version */
+ 168              		.loc 1 73 0
+ 169 0046 01A8     		add	r0, sp, #4
+ 170 0048 FFF7FEFF 		bl	readChar
+ 171              	.LVL19:
+ 172 004c 011C     		mov	r1, r0
+ 173              	.LVL20:
+  74:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	/* If we don't recognize the protocol version, we don't parse the connect packet on the
+  75:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	 * basis that we don't know what the format will be.
+  76:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	 */
+  77:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	if (MQTTPacket_checkVersion(&Protocol, version))
+ 174              		.loc 1 77 0
+ 175 004e 03A8     		add	r0, sp, #12
+ 176 0050 FFF7FEFF 		bl	MQTTPacket_checkVersion
+ 177              	.LVL21:
+ 178 0054 0028     		cmp	r0, #0
+ 179 0056 E2D0     		beq	.L14
+  78:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	{
+  79:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		flags.all = readChar(&curdata);
+ 180              		.loc 1 79 0
+ 181 0058 01A8     		add	r0, sp, #4
+ 182 005a FFF7FEFF 		bl	readChar
+ 183              	.LVL22:
+  80:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		data->cleansession = flags.bits.cleansession;
+ 184              		.loc 1 80 0
+ 185 005e 8307     		lsl	r3, r0, #30
+ 186 0060 DB0F     		lsr	r3, r3, #31
+  79:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		data->cleansession = flags.bits.cleansession;
+ 187              		.loc 1 79 0
+ 188 0062 061C     		mov	r6, r0
+ 189              	.LVL23:
+ 190              		.loc 1 80 0
+ 191 0064 A376     		strb	r3, [r4, #26]
+  81:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		data->keepAliveInterval = readInt(&curdata);
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 6
+
+
+ 192              		.loc 1 81 0
+ 193 0066 01A8     		add	r0, sp, #4
+ 194 0068 FFF7FEFF 		bl	readInt
+ 195              	.LVL24:
+ 196 006c 2083     		strh	r0, [r4, #24]
+  82:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		if (!readMQTTLenString(&data->clientID, &curdata, enddata))
+ 197              		.loc 1 82 0
+ 198 006e 201C     		mov	r0, r4
+ 199 0070 01A9     		add	r1, sp, #4
+ 200 0072 0C30     		add	r0, r0, #12
+ 201 0074 2A1C     		mov	r2, r5
+ 202 0076 FFF7FEFF 		bl	readMQTTLenString
+ 203              	.LVL25:
+ 204 007a 0028     		cmp	r0, #0
+ 205 007c CFD0     		beq	.L14
+  83:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			goto exit;
+  84:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		data->willFlag = flags.bits.will;
+ 206              		.loc 1 84 0
+ 207 007e 7307     		lsl	r3, r6, #29
+ 208 0080 DB0F     		lsr	r3, r3, #31
+  85:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		if (flags.bits.will)
+ 209              		.loc 1 85 0
+ 210 0082 F7B2     		uxtb	r7, r6
+  84:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		if (flags.bits.will)
+ 211              		.loc 1 84 0
+ 212 0084 E376     		strb	r3, [r4, #27]
+ 213              		.loc 1 85 0
+ 214 0086 7B07     		lsl	r3, r7, #29
+ 215 0088 02D4     		bmi	.L15
+ 216              	.L18:
+  86:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		{
+  87:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			data->will.qos = flags.bits.willQoS;
+  88:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			data->will.retained = flags.bits.willRetain;
+  89:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			if (!readMQTTLenString(&data->will.topicName, &curdata, enddata) ||
+  90:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				  !readMQTTLenString(&data->will.message, &curdata, enddata))
+  91:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				goto exit;
+  92:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		}
+  93:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		if (flags.bits.username)
+ 217              		.loc 1 93 0
+ 218 008a FB09     		lsr	r3, r7, #7
+ 219 008c 1BD1     		bne	.L16
+ 220 008e 36E0     		b	.L40
+ 221              	.L15:
+  87:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			data->will.retained = flags.bits.willRetain;
+ 222              		.loc 1 87 0
+ 223 0090 221C     		mov	r2, r4
+ 224 0092 F306     		lsl	r3, r6, #27
+ 225 0094 9B0F     		lsr	r3, r3, #30
+ 226 0096 3D32     		add	r2, r2, #61
+ 227 0098 1370     		strb	r3, [r2]
+  88:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			if (!readMQTTLenString(&data->will.topicName, &curdata, enddata) ||
+ 228              		.loc 1 88 0
+ 229 009a 231C     		mov	r3, r4
+  89:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				  !readMQTTLenString(&data->will.message, &curdata, enddata))
+ 230              		.loc 1 89 0
+ 231 009c 201C     		mov	r0, r4
+  88:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			if (!readMQTTLenString(&data->will.topicName, &curdata, enddata) ||
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 7
+
+
+ 232              		.loc 1 88 0
+ 233 009e B606     		lsl	r6, r6, #26
+ 234 00a0 F60F     		lsr	r6, r6, #31
+ 235 00a2 3C33     		add	r3, r3, #60
+ 236 00a4 1E70     		strb	r6, [r3]
+  89:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				  !readMQTTLenString(&data->will.message, &curdata, enddata))
+ 237              		.loc 1 89 0
+ 238 00a6 2430     		add	r0, r0, #36
+ 239 00a8 01A9     		add	r1, sp, #4
+ 240 00aa 2A1C     		mov	r2, r5
+ 241 00ac FFF7FEFF 		bl	readMQTTLenString
+ 242              	.LVL26:
+ 243 00b0 0028     		cmp	r0, #0
+ 244 00b2 B4D0     		beq	.L14
+  90:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				goto exit;
+ 245              		.loc 1 90 0 discriminator 1
+ 246 00b4 201C     		mov	r0, r4
+ 247 00b6 01A9     		add	r1, sp, #4
+ 248 00b8 3030     		add	r0, r0, #48
+ 249 00ba 2A1C     		mov	r2, r5
+ 250 00bc FFF7FEFF 		bl	readMQTTLenString
+ 251              	.LVL27:
+  89:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				  !readMQTTLenString(&data->will.message, &curdata, enddata))
+ 252              		.loc 1 89 0 discriminator 1
+ 253 00c0 0028     		cmp	r0, #0
+ 254 00c2 E2D1     		bne	.L18
+ 255 00c4 ABE7     		b	.L14
+ 256              	.L16:
+  94:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		{
+  95:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			if (enddata - curdata < 3 || !readMQTTLenString(&data->username, &curdata, enddata))
+ 257              		.loc 1 95 0
+ 258 00c6 019B     		ldr	r3, [sp, #4]
+ 259 00c8 EB1A     		sub	r3, r5, r3
+ 260 00ca 022B     		cmp	r3, #2
+ 261 00cc A7DD     		ble	.L14
+ 262              		.loc 1 95 0 is_stmt 0 discriminator 1
+ 263 00ce 201C     		mov	r0, r4
+ 264 00d0 01A9     		add	r1, sp, #4
+ 265 00d2 4030     		add	r0, r0, #64
+ 266 00d4 2A1C     		mov	r2, r5
+ 267 00d6 FFF7FEFF 		bl	readMQTTLenString
+ 268              	.LVL28:
+ 269 00da 0028     		cmp	r0, #0
+ 270 00dc 9FD0     		beq	.L14
+  96:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				goto exit; /* username flag set, but no username supplied - invalid */
+  97:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			if (flags.bits.password &&
+  98:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				(enddata - curdata < 3 || !readMQTTLenString(&data->password, &curdata, enddata)))
+  99:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				goto exit; /* password flag set, but no password supplied - invalid */
+ 100:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		}
+ 101:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		else if (flags.bits.password)
+ 102:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			goto exit; /* password flag set without username - invalid */
+ 103:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		rc = 1;
+ 271              		.loc 1 103 0 is_stmt 1
+ 272 00de 0120     		mov	r0, #1
+  97:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				(enddata - curdata < 3 || !readMQTTLenString(&data->password, &curdata, enddata)))
+ 273              		.loc 1 97 0
+ 274 00e0 7B06     		lsl	r3, r7, #25
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 8
+
+
+ 275 00e2 0FD5     		bpl	.L13
+  98:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				goto exit; /* password flag set, but no password supplied - invalid */
+ 276              		.loc 1 98 0 discriminator 1
+ 277 00e4 019B     		ldr	r3, [sp, #4]
+ 278 00e6 EB1A     		sub	r3, r5, r3
+  97:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				(enddata - curdata < 3 || !readMQTTLenString(&data->password, &curdata, enddata)))
+ 279              		.loc 1 97 0 discriminator 1
+ 280 00e8 022B     		cmp	r3, #2
+ 281 00ea 98DD     		ble	.L14
+  98:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 				goto exit; /* password flag set, but no password supplied - invalid */
+ 282              		.loc 1 98 0
+ 283 00ec 201C     		mov	r0, r4
+ 284 00ee 01A9     		add	r1, sp, #4
+ 285 00f0 4C30     		add	r0, r0, #76
+ 286 00f2 2A1C     		mov	r2, r5
+ 287 00f4 FFF7FEFF 		bl	readMQTTLenString
+ 288              	.LVL29:
+  57:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTString Protocol;
+ 289              		.loc 1 57 0
+ 290 00f8 431E     		sub	r3, r0, #1
+ 291 00fa 9841     		sbc	r0, r0, r3
+ 292 00fc 02E0     		b	.L13
+ 293              	.L40:
+ 101:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 			goto exit; /* password flag set without username - invalid */
+ 294              		.loc 1 101 0
+ 295 00fe 0120     		mov	r0, #1
+ 296 0100 BF09     		lsr	r7, r7, #6
+ 297 0102 B843     		bic	r0, r7
+ 298              	.L13:
+ 299              	.LVL30:
+ 104:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	}
+ 105:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** exit:
+ 106:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	FUNC_EXIT_RC(rc);
+ 107:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	return rc;
+ 108:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** }
+ 300              		.loc 1 108 0
+ 301 0104 07B0     		add	sp, sp, #28
+ 302              		@ sp needed
+ 303              	.LVL31:
+ 304 0106 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 305              		.cfi_endproc
+ 306              	.LFE1:
+ 307              		.size	MQTTDeserialize_connect, .-MQTTDeserialize_connect
+ 308              		.section	.text.MQTTSerialize_connack,"ax",%progbits
+ 309              		.align	1
+ 310              		.global	MQTTSerialize_connack
+ 311              		.code	16
+ 312              		.thumb_func
+ 313              		.type	MQTTSerialize_connack, %function
+ 314              	MQTTSerialize_connack:
+ 315              	.LFB2:
+ 109:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 110:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 111:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** /**
+ 112:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * Serializes the connack packet into the supplied buffer.
+ 113:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param buf the buffer into which the packet will be serialized
+ 114:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param buflen the length in bytes of the supplied buffer
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 9
+
+
+ 115:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param connack_rc the integer connack return code to be used 
+ 116:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @param sessionPresent the MQTT 3.1.1 sessionPresent flag
+ 117:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   * @return serialized length, or error if 0
+ 118:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c ****   */
+ 119:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** int MQTTSerialize_connack(unsigned char* buf, int buflen, unsigned char connack_rc, unsigned char s
+ 120:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** {
+ 316              		.loc 1 120 0
+ 317              		.cfi_startproc
+ 318              	.LVL32:
+ 319 0000 73B5     		push	{r0, r1, r4, r5, r6, lr}
+ 320              		.cfi_def_cfa_offset 24
+ 321              		.cfi_offset 0, -24
+ 322              		.cfi_offset 1, -20
+ 323              		.cfi_offset 4, -16
+ 324              		.cfi_offset 5, -12
+ 325              		.cfi_offset 6, -8
+ 326              		.cfi_offset 14, -4
+ 121:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTHeader header = {0};
+ 122:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	int rc = 0;
+ 123:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	unsigned char *ptr = buf;
+ 327              		.loc 1 123 0
+ 328 0002 0190     		str	r0, [sp, #4]
+ 124:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	MQTTConnackFlags flags = {0};
+ 125:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 126:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	FUNC_ENTRY;
+ 127:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	if (buflen < 2)
+ 329              		.loc 1 127 0
+ 330 0004 0129     		cmp	r1, #1
+ 331 0006 1BDD     		ble	.L43
+ 332 0008 041C     		mov	r4, r0
+ 128:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	{
+ 129:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		rc = MQTTPACKET_BUFFER_TOO_SHORT;
+ 130:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		goto exit;
+ 131:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	}
+ 132:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	header.byte = 0;
+ 133:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	header.bits.type = CONNACK;
+ 134:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	writeChar(&ptr, header.byte); /* write header */
+ 333              		.loc 1 134 0
+ 334 000a 2021     		mov	r1, #32
+ 335              	.LVL33:
+ 336 000c 01A8     		add	r0, sp, #4
+ 337              	.LVL34:
+ 338 000e 151C     		mov	r5, r2
+ 339 0010 1E1C     		mov	r6, r3
+ 340 0012 FFF7FEFF 		bl	writeChar
+ 341              	.LVL35:
+ 135:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 136:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	ptr += MQTTPacket_encode(ptr, 2); /* write remaining length */
+ 342              		.loc 1 136 0
+ 343 0016 0221     		mov	r1, #2
+ 344 0018 0198     		ldr	r0, [sp, #4]
+ 345 001a FFF7FEFF 		bl	MQTTPacket_encode
+ 346              	.LVL36:
+ 137:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 138:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	flags.all = 0;
+ 139:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	flags.bits.sessionpresent = sessionPresent;
+ 347              		.loc 1 139 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 10
+
+
+ 348 001e 0121     		mov	r1, #1
+ 136:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 349              		.loc 1 136 0
+ 350 0020 019B     		ldr	r3, [sp, #4]
+ 351              		.loc 1 139 0
+ 352 0022 3140     		and	r1, r6
+ 136:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 353              		.loc 1 136 0
+ 354 0024 1818     		add	r0, r3, r0
+ 355              		.loc 1 139 0
+ 356 0026 C901     		lsl	r1, r1, #7
+ 136:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 357              		.loc 1 136 0
+ 358 0028 0190     		str	r0, [sp, #4]
+ 140:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	writeChar(&ptr, flags.all); 
+ 359              		.loc 1 140 0
+ 360 002a C9B2     		uxtb	r1, r1
+ 361              	.LVL37:
+ 362 002c 01A8     		add	r0, sp, #4
+ 363 002e FFF7FEFF 		bl	writeChar
+ 364              	.LVL38:
+ 141:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	writeChar(&ptr, connack_rc);
+ 365              		.loc 1 141 0
+ 366 0032 01A8     		add	r0, sp, #4
+ 367 0034 291C     		mov	r1, r5
+ 368 0036 FFF7FEFF 		bl	writeChar
+ 369              	.LVL39:
+ 142:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 
+ 143:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	rc = ptr - buf;
+ 370              		.loc 1 143 0
+ 371 003a 019B     		ldr	r3, [sp, #4]
+ 372 003c 181B     		sub	r0, r3, r4
+ 373              	.LVL40:
+ 374 003e 01E0     		b	.L42
+ 375              	.LVL41:
+ 376              	.L43:
+ 129:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 		goto exit;
+ 377              		.loc 1 129 0
+ 378 0040 0220     		mov	r0, #2
+ 379              	.LVL42:
+ 380 0042 4042     		neg	r0, r0
+ 381              	.LVL43:
+ 382              	.L42:
+ 144:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** exit:
+ 145:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	FUNC_EXIT_RC(rc);
+ 146:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** 	return rc;
+ 147:..\acn-sdk-c\src\mqtt\packet\src/MQTTConnectServer.c **** }
+ 383              		.loc 1 147 0
+ 384              		@ sp needed
+ 385 0044 76BD     		pop	{r1, r2, r4, r5, r6, pc}
+ 386              		.cfi_endproc
+ 387              	.LFE2:
+ 388              		.size	MQTTSerialize_connack, .-MQTTSerialize_connack
+ 389              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 390              	.LC0:
+ 391 0000 4D514973 		.ascii	"MQIsdp\000"
+ 391      647000
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 11
+
+
+ 392              	.LC2:
+ 393 0007 4D515454 		.ascii	"MQTT\000"
+ 393      00
+ 394              		.text
+ 395              	.Letext0:
+ 396              		.file 2 "..\\acn-sdk-c\\include/mqtt/packet/MQTTPacket.h"
+ 397              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 398              		.file 4 "..\\acn-sdk-c\\include/mqtt/packet/MQTTConnect.h"
+ 399              		.file 5 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 400              		.section	.debug_info,"",%progbits
+ 401              	.Ldebug_info0:
+ 402 0000 E8070000 		.4byte	0x7e8
+ 403 0004 0400     		.2byte	0x4
+ 404 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 405 000a 04       		.byte	0x4
+ 406 000b 01       		.uleb128 0x1
+ 407 000c 1C000000 		.4byte	.LASF83
+ 408 0010 01       		.byte	0x1
+ 409 0011 10040000 		.4byte	.LASF84
+ 410 0015 9A030000 		.4byte	.LASF85
+ 411 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 412 001d 00000000 		.4byte	0
+ 413 0021 00000000 		.4byte	.Ldebug_line0
+ 414 0025 02       		.uleb128 0x2
+ 415 0026 01       		.byte	0x1
+ 416 0027 06       		.byte	0x6
+ 417 0028 57010000 		.4byte	.LASF0
+ 418 002c 02       		.uleb128 0x2
+ 419 002d 01       		.byte	0x1
+ 420 002e 08       		.byte	0x8
+ 421 002f 4D030000 		.4byte	.LASF1
+ 422 0033 02       		.uleb128 0x2
+ 423 0034 02       		.byte	0x2
+ 424 0035 05       		.byte	0x5
+ 425 0036 7C030000 		.4byte	.LASF2
+ 426 003a 02       		.uleb128 0x2
+ 427 003b 02       		.byte	0x2
+ 428 003c 07       		.byte	0x7
+ 429 003d 46020000 		.4byte	.LASF3
+ 430 0041 02       		.uleb128 0x2
+ 431 0042 04       		.byte	0x4
+ 432 0043 05       		.byte	0x5
+ 433 0044 71010000 		.4byte	.LASF4
+ 434 0048 02       		.uleb128 0x2
+ 435 0049 04       		.byte	0x4
+ 436 004a 07       		.byte	0x7
+ 437 004b 27020000 		.4byte	.LASF5
+ 438 004f 02       		.uleb128 0x2
+ 439 0050 08       		.byte	0x8
+ 440 0051 05       		.byte	0x5
+ 441 0052 49010000 		.4byte	.LASF6
+ 442 0056 02       		.uleb128 0x2
+ 443 0057 08       		.byte	0x8
+ 444 0058 07       		.byte	0x7
+ 445 0059 06010000 		.4byte	.LASF7
+ 446 005d 03       		.uleb128 0x3
+ 447 005e 04       		.byte	0x4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 12
+
+
+ 448 005f 05       		.byte	0x5
+ 449 0060 696E7400 		.ascii	"int\000"
+ 450 0064 02       		.uleb128 0x2
+ 451 0065 04       		.byte	0x4
+ 452 0066 07       		.byte	0x7
+ 453 0067 E5010000 		.4byte	.LASF8
+ 454 006b 04       		.uleb128 0x4
+ 455 006c AA000000 		.4byte	.LASF34
+ 456 0070 03       		.byte	0x3
+ 457 0071 D4       		.byte	0xd4
+ 458 0072 64000000 		.4byte	0x64
+ 459 0076 02       		.uleb128 0x2
+ 460 0077 04       		.byte	0x4
+ 461 0078 07       		.byte	0x7
+ 462 0079 C2020000 		.4byte	.LASF9
+ 463 007d 05       		.uleb128 0x5
+ 464 007e 04       		.byte	0x4
+ 465 007f 2C000000 		.4byte	0x2c
+ 466 0083 05       		.uleb128 0x5
+ 467 0084 04       		.byte	0x4
+ 468 0085 89000000 		.4byte	0x89
+ 469 0089 02       		.uleb128 0x2
+ 470 008a 01       		.byte	0x1
+ 471 008b 08       		.byte	0x8
+ 472 008c 45040000 		.4byte	.LASF10
+ 473 0090 06       		.uleb128 0x6
+ 474 0091 20020000 		.4byte	.LASF14
+ 475 0095 01       		.byte	0x1
+ 476 0096 02       		.byte	0x2
+ 477 0097 2A       		.byte	0x2a
+ 478 0098 AF000000 		.4byte	0xaf
+ 479 009c 07       		.uleb128 0x7
+ 480 009d 00000000 		.4byte	.LASF11
+ 481 00a1 7E       		.sleb128 -2
+ 482 00a2 07       		.uleb128 0x7
+ 483 00a3 33010000 		.4byte	.LASF12
+ 484 00a7 7F       		.sleb128 -1
+ 485 00a8 07       		.uleb128 0x7
+ 486 00a9 59020000 		.4byte	.LASF13
+ 487 00ad 00       		.sleb128 0
+ 488 00ae 00       		.byte	0
+ 489 00af 06       		.uleb128 0x6
+ 490 00b0 D1010000 		.4byte	.LASF15
+ 491 00b4 01       		.byte	0x1
+ 492 00b5 02       		.byte	0x2
+ 493 00b6 31       		.byte	0x31
+ 494 00b7 10010000 		.4byte	0x110
+ 495 00bb 07       		.uleb128 0x7
+ 496 00bc 3C030000 		.4byte	.LASF16
+ 497 00c0 01       		.sleb128 1
+ 498 00c1 07       		.uleb128 0x7
+ 499 00c2 09020000 		.4byte	.LASF17
+ 500 00c6 02       		.sleb128 2
+ 501 00c7 07       		.uleb128 0x7
+ 502 00c8 86030000 		.4byte	.LASF18
+ 503 00cc 03       		.sleb128 3
+ 504 00cd 07       		.uleb128 0x7
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 13
+
+
+ 505 00ce 55040000 		.4byte	.LASF19
+ 506 00d2 04       		.sleb128 4
+ 507 00d3 07       		.uleb128 0x7
+ 508 00d4 9D040000 		.4byte	.LASF20
+ 509 00d8 05       		.sleb128 5
+ 510 00d9 07       		.uleb128 0x7
+ 511 00da A4040000 		.4byte	.LASF21
+ 512 00de 06       		.sleb128 6
+ 513 00df 07       		.uleb128 0x7
+ 514 00e0 74040000 		.4byte	.LASF22
+ 515 00e4 07       		.sleb128 7
+ 516 00e5 07       		.uleb128 0x7
+ 517 00e6 06040000 		.4byte	.LASF23
+ 518 00ea 08       		.sleb128 8
+ 519 00eb 07       		.uleb128 0x7
+ 520 00ec 88020000 		.4byte	.LASF24
+ 521 00f0 09       		.sleb128 9
+ 522 00f1 07       		.uleb128 0x7
+ 523 00f2 92010000 		.4byte	.LASF25
+ 524 00f6 0A       		.sleb128 10
+ 525 00f7 07       		.uleb128 0x7
+ 526 00f8 EC000000 		.4byte	.LASF26
+ 527 00fc 0B       		.sleb128 11
+ 528 00fd 07       		.uleb128 0x7
+ 529 00fe AB040000 		.4byte	.LASF27
+ 530 0102 0C       		.sleb128 12
+ 531 0103 07       		.uleb128 0x7
+ 532 0104 33030000 		.4byte	.LASF28
+ 533 0108 0D       		.sleb128 13
+ 534 0109 07       		.uleb128 0x7
+ 535 010a 05030000 		.4byte	.LASF29
+ 536 010e 0E       		.sleb128 14
+ 537 010f 00       		.byte	0
+ 538 0110 08       		.uleb128 0x8
+ 539 0111 04       		.byte	0x4
+ 540 0112 02       		.byte	0x2
+ 541 0113 47       		.byte	0x47
+ 542 0114 55010000 		.4byte	0x155
+ 543 0118 09       		.uleb128 0x9
+ 544 0119 F5000000 		.4byte	.LASF30
+ 545 011d 02       		.byte	0x2
+ 546 011e 49       		.byte	0x49
+ 547 011f 64000000 		.4byte	0x64
+ 548 0123 04       		.byte	0x4
+ 549 0124 01       		.byte	0x1
+ 550 0125 1F       		.byte	0x1f
+ 551 0126 00       		.byte	0
+ 552 0127 0A       		.uleb128 0xa
+ 553 0128 716F7300 		.ascii	"qos\000"
+ 554 012c 02       		.byte	0x2
+ 555 012d 4A       		.byte	0x4a
+ 556 012e 64000000 		.4byte	0x64
+ 557 0132 04       		.byte	0x4
+ 558 0133 02       		.byte	0x2
+ 559 0134 1D       		.byte	0x1d
+ 560 0135 00       		.byte	0
+ 561 0136 0A       		.uleb128 0xa
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 14
+
+
+ 562 0137 64757000 		.ascii	"dup\000"
+ 563 013b 02       		.byte	0x2
+ 564 013c 4B       		.byte	0x4b
+ 565 013d 64000000 		.4byte	0x64
+ 566 0141 04       		.byte	0x4
+ 567 0142 01       		.byte	0x1
+ 568 0143 1C       		.byte	0x1c
+ 569 0144 00       		.byte	0
+ 570 0145 09       		.uleb128 0x9
+ 571 0146 CC000000 		.4byte	.LASF31
+ 572 014a 02       		.byte	0x2
+ 573 014b 4C       		.byte	0x4c
+ 574 014c 64000000 		.4byte	0x64
+ 575 0150 04       		.byte	0x4
+ 576 0151 04       		.byte	0x4
+ 577 0152 18       		.byte	0x18
+ 578 0153 00       		.byte	0
+ 579 0154 00       		.byte	0
+ 580 0155 0B       		.uleb128 0xb
+ 581 0156 04       		.byte	0x4
+ 582 0157 02       		.byte	0x2
+ 583 0158 3B       		.byte	0x3b
+ 584 0159 74010000 		.4byte	0x174
+ 585 015d 0C       		.uleb128 0xc
+ 586 015e AD010000 		.4byte	.LASF32
+ 587 0162 02       		.byte	0x2
+ 588 0163 3D       		.byte	0x3d
+ 589 0164 2C000000 		.4byte	0x2c
+ 590 0168 0C       		.uleb128 0xc
+ 591 0169 6C010000 		.4byte	.LASF33
+ 592 016d 02       		.byte	0x2
+ 593 016e 4D       		.byte	0x4d
+ 594 016f 10010000 		.4byte	0x110
+ 595 0173 00       		.byte	0
+ 596 0174 04       		.uleb128 0x4
+ 597 0175 E3030000 		.4byte	.LASF35
+ 598 0179 02       		.byte	0x2
+ 599 017a 4F       		.byte	0x4f
+ 600 017b 55010000 		.4byte	0x155
+ 601 017f 08       		.uleb128 0x8
+ 602 0180 08       		.byte	0x8
+ 603 0181 02       		.byte	0x2
+ 604 0182 51       		.byte	0x51
+ 605 0183 A0010000 		.4byte	0x1a0
+ 606 0187 0D       		.uleb128 0xd
+ 607 0188 6C656E00 		.ascii	"len\000"
+ 608 018c 02       		.byte	0x2
+ 609 018d 53       		.byte	0x53
+ 610 018e 5D000000 		.4byte	0x5d
+ 611 0192 00       		.byte	0
+ 612 0193 0E       		.uleb128 0xe
+ 613 0194 41020000 		.4byte	.LASF36
+ 614 0198 02       		.byte	0x2
+ 615 0199 54       		.byte	0x54
+ 616 019a 83000000 		.4byte	0x83
+ 617 019e 04       		.byte	0x4
+ 618 019f 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 15
+
+
+ 619 01a0 04       		.uleb128 0x4
+ 620 01a1 F8030000 		.4byte	.LASF37
+ 621 01a5 02       		.byte	0x2
+ 622 01a6 55       		.byte	0x55
+ 623 01a7 7F010000 		.4byte	0x17f
+ 624 01ab 08       		.uleb128 0x8
+ 625 01ac 0C       		.byte	0xc
+ 626 01ad 02       		.byte	0x2
+ 627 01ae 57       		.byte	0x57
+ 628 01af CC010000 		.4byte	0x1cc
+ 629 01b3 0E       		.uleb128 0xe
+ 630 01b4 F5020000 		.4byte	.LASF38
+ 631 01b8 02       		.byte	0x2
+ 632 01b9 59       		.byte	0x59
+ 633 01ba 83000000 		.4byte	0x83
+ 634 01be 00       		.byte	0
+ 635 01bf 0E       		.uleb128 0xe
+ 636 01c0 FC000000 		.4byte	.LASF39
+ 637 01c4 02       		.byte	0x2
+ 638 01c5 5A       		.byte	0x5a
+ 639 01c6 A0010000 		.4byte	0x1a0
+ 640 01ca 04       		.byte	0x4
+ 641 01cb 00       		.byte	0
+ 642 01cc 04       		.uleb128 0x4
+ 643 01cd 98020000 		.4byte	.LASF40
+ 644 01d1 02       		.byte	0x2
+ 645 01d2 5B       		.byte	0x5b
+ 646 01d3 AB010000 		.4byte	0x1ab
+ 647 01d7 08       		.uleb128 0x8
+ 648 01d8 04       		.byte	0x4
+ 649 01d9 04       		.byte	0x4
+ 650 01da 2D       		.byte	0x2d
+ 651 01db 3A020000 		.4byte	0x23a
+ 652 01df 09       		.uleb128 0x9
+ 653 01e0 C4010000 		.4byte	.LASF41
+ 654 01e4 04       		.byte	0x4
+ 655 01e5 30       		.byte	0x30
+ 656 01e6 64000000 		.4byte	0x64
+ 657 01ea 04       		.byte	0x4
+ 658 01eb 01       		.byte	0x1
+ 659 01ec 1E       		.byte	0x1e
+ 660 01ed 00       		.byte	0
+ 661 01ee 09       		.uleb128 0x9
+ 662 01ef 26010000 		.4byte	.LASF42
+ 663 01f3 04       		.byte	0x4
+ 664 01f4 31       		.byte	0x31
+ 665 01f5 64000000 		.4byte	0x64
+ 666 01f9 04       		.byte	0x4
+ 667 01fa 01       		.byte	0x1
+ 668 01fb 1D       		.byte	0x1d
+ 669 01fc 00       		.byte	0
+ 670 01fd 09       		.uleb128 0x9
+ 671 01fe 2B010000 		.4byte	.LASF43
+ 672 0202 04       		.byte	0x4
+ 673 0203 32       		.byte	0x32
+ 674 0204 64000000 		.4byte	0x64
+ 675 0208 04       		.byte	0x4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 16
+
+
+ 676 0209 02       		.byte	0x2
+ 677 020a 1B       		.byte	0x1b
+ 678 020b 00       		.byte	0
+ 679 020c 09       		.uleb128 0x9
+ 680 020d DA010000 		.4byte	.LASF44
+ 681 0211 04       		.byte	0x4
+ 682 0212 33       		.byte	0x33
+ 683 0213 64000000 		.4byte	0x64
+ 684 0217 04       		.byte	0x4
+ 685 0218 01       		.byte	0x1
+ 686 0219 1A       		.byte	0x1a
+ 687 021a 00       		.byte	0
+ 688 021b 09       		.uleb128 0x9
+ 689 021c E3000000 		.4byte	.LASF45
+ 690 0220 04       		.byte	0x4
+ 691 0221 34       		.byte	0x34
+ 692 0222 64000000 		.4byte	0x64
+ 693 0226 04       		.byte	0x4
+ 694 0227 01       		.byte	0x1
+ 695 0228 19       		.byte	0x19
+ 696 0229 00       		.byte	0
+ 697 022a 09       		.uleb128 0x9
+ 698 022b 8F020000 		.4byte	.LASF46
+ 699 022f 04       		.byte	0x4
+ 700 0230 35       		.byte	0x35
+ 701 0231 64000000 		.4byte	0x64
+ 702 0235 04       		.byte	0x4
+ 703 0236 01       		.byte	0x1
+ 704 0237 18       		.byte	0x18
+ 705 0238 00       		.byte	0
+ 706 0239 00       		.byte	0
+ 707 023a 0B       		.uleb128 0xb
+ 708 023b 04       		.byte	0x4
+ 709 023c 04       		.byte	0x4
+ 710 023d 1E       		.byte	0x1e
+ 711 023e 59020000 		.4byte	0x259
+ 712 0242 0F       		.uleb128 0xf
+ 713 0243 616C6C00 		.ascii	"all\000"
+ 714 0247 04       		.byte	0x4
+ 715 0248 20       		.byte	0x20
+ 716 0249 2C000000 		.4byte	0x2c
+ 717 024d 0C       		.uleb128 0xc
+ 718 024e 6C010000 		.4byte	.LASF33
+ 719 0252 04       		.byte	0x4
+ 720 0253 36       		.byte	0x36
+ 721 0254 D7010000 		.4byte	0x1d7
+ 722 0258 00       		.byte	0
+ 723 0259 04       		.uleb128 0x4
+ 724 025a 8C040000 		.4byte	.LASF47
+ 725 025e 04       		.byte	0x4
+ 726 025f 38       		.byte	0x38
+ 727 0260 3A020000 		.4byte	0x23a
+ 728 0264 08       		.uleb128 0x8
+ 729 0265 24       		.byte	0x24
+ 730 0266 04       		.byte	0x4
+ 731 0267 40       		.byte	0x40
+ 732 0268 B5020000 		.4byte	0x2b5
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 17
+
+
+ 733 026c 0E       		.uleb128 0xe
+ 734 026d EE030000 		.4byte	.LASF48
+ 735 0271 04       		.byte	0x4
+ 736 0272 43       		.byte	0x43
+ 737 0273 B5020000 		.4byte	0x2b5
+ 738 0277 00       		.byte	0
+ 739 0278 0E       		.uleb128 0xe
+ 740 0279 83010000 		.4byte	.LASF49
+ 741 027d 04       		.byte	0x4
+ 742 027e 45       		.byte	0x45
+ 743 027f 5D000000 		.4byte	0x5d
+ 744 0283 04       		.byte	0x4
+ 745 0284 0E       		.uleb128 0xe
+ 746 0285 B1000000 		.4byte	.LASF50
+ 747 0289 04       		.byte	0x4
+ 748 028a 47       		.byte	0x47
+ 749 028b CC010000 		.4byte	0x1cc
+ 750 028f 08       		.byte	0x8
+ 751 0290 0E       		.uleb128 0xe
+ 752 0291 FD020000 		.4byte	.LASF51
+ 753 0295 04       		.byte	0x4
+ 754 0296 49       		.byte	0x49
+ 755 0297 CC010000 		.4byte	0x1cc
+ 756 029b 14       		.byte	0x14
+ 757 029c 0E       		.uleb128 0xe
+ 758 029d 73030000 		.4byte	.LASF52
+ 759 02a1 04       		.byte	0x4
+ 760 02a2 4D       		.byte	0x4d
+ 761 02a3 2C000000 		.4byte	0x2c
+ 762 02a7 20       		.byte	0x20
+ 763 02a8 0D       		.uleb128 0xd
+ 764 02a9 716F7300 		.ascii	"qos\000"
+ 765 02ad 04       		.byte	0x4
+ 766 02ae 52       		.byte	0x52
+ 767 02af 89000000 		.4byte	0x89
+ 768 02b3 21       		.byte	0x21
+ 769 02b4 00       		.byte	0
+ 770 02b5 10       		.uleb128 0x10
+ 771 02b6 89000000 		.4byte	0x89
+ 772 02ba C5020000 		.4byte	0x2c5
+ 773 02be 11       		.uleb128 0x11
+ 774 02bf 76000000 		.4byte	0x76
+ 775 02c3 03       		.byte	0x3
+ 776 02c4 00       		.byte	0
+ 777 02c5 04       		.uleb128 0x4
+ 778 02c6 F2010000 		.4byte	.LASF53
+ 779 02ca 04       		.byte	0x4
+ 780 02cb 53       		.byte	0x53
+ 781 02cc 64020000 		.4byte	0x264
+ 782 02d0 08       		.uleb128 0x8
+ 783 02d1 58       		.byte	0x58
+ 784 02d2 04       		.byte	0x4
+ 785 02d3 59       		.byte	0x59
+ 786 02d4 51030000 		.4byte	0x351
+ 787 02d8 0E       		.uleb128 0xe
+ 788 02d9 EE030000 		.4byte	.LASF48
+ 789 02dd 04       		.byte	0x4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 18
+
+
+ 790 02de 5C       		.byte	0x5c
+ 791 02df B5020000 		.4byte	0x2b5
+ 792 02e3 00       		.byte	0
+ 793 02e4 0E       		.uleb128 0xe
+ 794 02e5 83010000 		.4byte	.LASF49
+ 795 02e9 04       		.byte	0x4
+ 796 02ea 5E       		.byte	0x5e
+ 797 02eb 5D000000 		.4byte	0x5d
+ 798 02ef 04       		.byte	0x4
+ 799 02f0 0E       		.uleb128 0xe
+ 800 02f1 B3040000 		.4byte	.LASF54
+ 801 02f5 04       		.byte	0x4
+ 802 02f6 61       		.byte	0x61
+ 803 02f7 2C000000 		.4byte	0x2c
+ 804 02fb 08       		.byte	0x8
+ 805 02fc 0E       		.uleb128 0xe
+ 806 02fd C3000000 		.4byte	.LASF55
+ 807 0301 04       		.byte	0x4
+ 808 0302 62       		.byte	0x62
+ 809 0303 CC010000 		.4byte	0x1cc
+ 810 0307 0C       		.byte	0xc
+ 811 0308 0E       		.uleb128 0xe
+ 812 0309 CB020000 		.4byte	.LASF56
+ 813 030d 04       		.byte	0x4
+ 814 030e 63       		.byte	0x63
+ 815 030f 3A000000 		.4byte	0x3a
+ 816 0313 18       		.byte	0x18
+ 817 0314 0E       		.uleb128 0xe
+ 818 0315 C4010000 		.4byte	.LASF41
+ 819 0319 04       		.byte	0x4
+ 820 031a 64       		.byte	0x64
+ 821 031b 2C000000 		.4byte	0x2c
+ 822 031f 1A       		.byte	0x1a
+ 823 0320 0E       		.uleb128 0xe
+ 824 0321 7A010000 		.4byte	.LASF57
+ 825 0325 04       		.byte	0x4
+ 826 0326 65       		.byte	0x65
+ 827 0327 2C000000 		.4byte	0x2c
+ 828 032b 1B       		.byte	0x1b
+ 829 032c 0E       		.uleb128 0xe
+ 830 032d 26010000 		.4byte	.LASF42
+ 831 0331 04       		.byte	0x4
+ 832 0332 66       		.byte	0x66
+ 833 0333 C5020000 		.4byte	0x2c5
+ 834 0337 1C       		.byte	0x1c
+ 835 0338 0E       		.uleb128 0xe
+ 836 0339 8F020000 		.4byte	.LASF46
+ 837 033d 04       		.byte	0x4
+ 838 033e 67       		.byte	0x67
+ 839 033f CC010000 		.4byte	0x1cc
+ 840 0343 40       		.byte	0x40
+ 841 0344 0E       		.uleb128 0xe
+ 842 0345 E3000000 		.4byte	.LASF45
+ 843 0349 04       		.byte	0x4
+ 844 034a 68       		.byte	0x68
+ 845 034b CC010000 		.4byte	0x1cc
+ 846 034f 4C       		.byte	0x4c
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 19
+
+
+ 847 0350 00       		.byte	0
+ 848 0351 04       		.uleb128 0x4
+ 849 0352 A3020000 		.4byte	.LASF58
+ 850 0356 04       		.byte	0x4
+ 851 0357 69       		.byte	0x69
+ 852 0358 D0020000 		.4byte	0x2d0
+ 853 035c 08       		.uleb128 0x8
+ 854 035d 04       		.byte	0x4
+ 855 035e 04       		.byte	0x4
+ 856 035f 75       		.byte	0x75
+ 857 0360 74030000 		.4byte	0x374
+ 858 0364 09       		.uleb128 0x9
+ 859 0365 11020000 		.4byte	.LASF59
+ 860 0369 04       		.byte	0x4
+ 861 036a 78       		.byte	0x78
+ 862 036b 64000000 		.4byte	0x64
+ 863 036f 04       		.byte	0x4
+ 864 0370 01       		.byte	0x1
+ 865 0371 18       		.byte	0x18
+ 866 0372 00       		.byte	0
+ 867 0373 00       		.byte	0
+ 868 0374 0B       		.uleb128 0xb
+ 869 0375 04       		.byte	0x4
+ 870 0376 04       		.byte	0x4
+ 871 0377 6B       		.byte	0x6b
+ 872 0378 93030000 		.4byte	0x393
+ 873 037c 0F       		.uleb128 0xf
+ 874 037d 616C6C00 		.ascii	"all\000"
+ 875 0381 04       		.byte	0x4
+ 876 0382 6D       		.byte	0x6d
+ 877 0383 2C000000 		.4byte	0x2c
+ 878 0387 0C       		.uleb128 0xc
+ 879 0388 6C010000 		.4byte	.LASF33
+ 880 038c 04       		.byte	0x4
+ 881 038d 79       		.byte	0x79
+ 882 038e 5C030000 		.4byte	0x35c
+ 883 0392 00       		.byte	0
+ 884 0393 04       		.uleb128 0x4
+ 885 0394 5C040000 		.4byte	.LASF60
+ 886 0398 04       		.byte	0x4
+ 887 0399 7B       		.byte	0x7b
+ 888 039a 74030000 		.4byte	0x374
+ 889 039e 12       		.uleb128 0x12
+ 890 039f DD020000 		.4byte	.LASF75
+ 891 03a3 01       		.byte	0x1
+ 892 03a4 1E       		.byte	0x1e
+ 893 03a5 5D000000 		.4byte	0x5d
+ 894 03a9 01       		.byte	0x1
+ 895 03aa CF030000 		.4byte	0x3cf
+ 896 03ae 13       		.uleb128 0x13
+ 897 03af 44030000 		.4byte	.LASF61
+ 898 03b3 01       		.byte	0x1
+ 899 03b4 1E       		.byte	0x1e
+ 900 03b5 CF030000 		.4byte	0x3cf
+ 901 03b9 13       		.uleb128 0x13
+ 902 03ba BA020000 		.4byte	.LASF62
+ 903 03be 01       		.byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 20
+
+
+ 904 03bf 1E       		.byte	0x1e
+ 905 03c0 5D000000 		.4byte	0x5d
+ 906 03c4 14       		.uleb128 0x14
+ 907 03c5 726300   		.ascii	"rc\000"
+ 908 03c8 01       		.byte	0x1
+ 909 03c9 20       		.byte	0x20
+ 910 03ca 5D000000 		.4byte	0x5d
+ 911 03ce 00       		.byte	0
+ 912 03cf 05       		.uleb128 0x5
+ 913 03d0 04       		.byte	0x4
+ 914 03d1 CC010000 		.4byte	0x1cc
+ 915 03d5 15       		.uleb128 0x15
+ 916 03d6 9E030000 		.4byte	0x39e
+ 917 03da 00000000 		.4byte	.LFB0
+ 918 03de 3C000000 		.4byte	.LFE0-.LFB0
+ 919 03e2 01       		.uleb128 0x1
+ 920 03e3 9C       		.byte	0x9c
+ 921 03e4 38040000 		.4byte	0x438
+ 922 03e8 16       		.uleb128 0x16
+ 923 03e9 AE030000 		.4byte	0x3ae
+ 924 03ed 00000000 		.4byte	.LLST0
+ 925 03f1 16       		.uleb128 0x16
+ 926 03f2 B9030000 		.4byte	0x3b9
+ 927 03f6 3A000000 		.4byte	.LLST1
+ 928 03fa 17       		.uleb128 0x17
+ 929 03fb C4030000 		.4byte	0x3c4
+ 930 03ff 74000000 		.4byte	.LLST2
+ 931 0403 18       		.uleb128 0x18
+ 932 0404 1A000000 		.4byte	.LBB4
+ 933 0408 10000000 		.4byte	.LBE4-.LBB4
+ 934 040c 16       		.uleb128 0x16
+ 935 040d B9030000 		.4byte	0x3b9
+ 936 0411 93000000 		.4byte	.LLST3
+ 937 0415 16       		.uleb128 0x16
+ 938 0416 AE030000 		.4byte	0x3ae
+ 939 041a A7000000 		.4byte	.LLST4
+ 940 041e 18       		.uleb128 0x18
+ 941 041f 1A000000 		.4byte	.LBB5
+ 942 0423 10000000 		.4byte	.LBE5-.LBB5
+ 943 0427 19       		.uleb128 0x19
+ 944 0428 C4030000 		.4byte	0x3c4
+ 945 042c 1A       		.uleb128 0x1a
+ 946 042d 2A000000 		.4byte	.LVL7
+ 947 0431 2A070000 		.4byte	0x72a
+ 948 0435 00       		.byte	0
+ 949 0436 00       		.byte	0
+ 950 0437 00       		.byte	0
+ 951 0438 1B       		.uleb128 0x1b
+ 952 0439 5B030000 		.4byte	.LASF69
+ 953 043d 01       		.byte	0x1
+ 954 043e 33       		.byte	0x33
+ 955 043f 5D000000 		.4byte	0x5d
+ 956 0443 00000000 		.4byte	.LFB1
+ 957 0447 08010000 		.4byte	.LFE1-.LFB1
+ 958 044b 01       		.uleb128 0x1
+ 959 044c 9C       		.byte	0x9c
+ 960 044d 30060000 		.4byte	0x630
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 21
+
+
+ 961 0451 1C       		.uleb128 0x1c
+ 962 0452 41020000 		.4byte	.LASF36
+ 963 0456 01       		.byte	0x1
+ 964 0457 33       		.byte	0x33
+ 965 0458 30060000 		.4byte	0x630
+ 966 045c C8000000 		.4byte	.LLST5
+ 967 0460 1D       		.uleb128 0x1d
+ 968 0461 62756600 		.ascii	"buf\000"
+ 969 0465 01       		.byte	0x1
+ 970 0466 33       		.byte	0x33
+ 971 0467 7D000000 		.4byte	0x7d
+ 972 046b F4000000 		.4byte	.LLST6
+ 973 046f 1D       		.uleb128 0x1d
+ 974 0470 6C656E00 		.ascii	"len\000"
+ 975 0474 01       		.byte	0x1
+ 976 0475 33       		.byte	0x33
+ 977 0476 5D000000 		.4byte	0x5d
+ 978 047a 39010000 		.4byte	.LLST7
+ 979 047e 1E       		.uleb128 0x1e
+ 980 047f BF040000 		.4byte	.LASF64
+ 981 0483 01       		.byte	0x1
+ 982 0484 35       		.byte	0x35
+ 983 0485 74010000 		.4byte	0x174
+ 984 0489 7E010000 		.4byte	.LLST8
+ 985 048d 1F       		.uleb128 0x1f
+ 986 048e 86040000 		.4byte	.LASF63
+ 987 0492 01       		.byte	0x1
+ 988 0493 36       		.byte	0x36
+ 989 0494 59020000 		.4byte	0x259
+ 990 0498 20       		.uleb128 0x20
+ 991 0499 25030000 		.4byte	.LASF65
+ 992 049d 01       		.byte	0x1
+ 993 049e 37       		.byte	0x37
+ 994 049f 7D000000 		.4byte	0x7d
+ 995 04a3 02       		.uleb128 0x2
+ 996 04a4 91       		.byte	0x91
+ 997 04a5 54       		.sleb128 -44
+ 998 04a6 1E       		.uleb128 0x1e
+ 999 04a7 39020000 		.4byte	.LASF66
+ 1000 04ab 01       		.byte	0x1
+ 1001 04ac 38       		.byte	0x38
+ 1002 04ad 7D000000 		.4byte	0x7d
+ 1003 04b1 A5010000 		.4byte	.LLST9
+ 1004 04b5 21       		.uleb128 0x21
+ 1005 04b6 726300   		.ascii	"rc\000"
+ 1006 04b9 01       		.byte	0x1
+ 1007 04ba 39       		.byte	0x39
+ 1008 04bb 5D000000 		.4byte	0x5d
+ 1009 04bf 12020000 		.4byte	.LLST10
+ 1010 04c3 20       		.uleb128 0x20
+ 1011 04c4 1D010000 		.4byte	.LASF67
+ 1012 04c8 01       		.byte	0x1
+ 1013 04c9 3A       		.byte	0x3a
+ 1014 04ca CC010000 		.4byte	0x1cc
+ 1015 04ce 02       		.uleb128 0x2
+ 1016 04cf 91       		.byte	0x91
+ 1017 04d0 5C       		.sleb128 -36
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 22
+
+
+ 1018 04d1 1E       		.uleb128 0x1e
+ 1019 04d2 BA020000 		.4byte	.LASF62
+ 1020 04d6 01       		.byte	0x1
+ 1021 04d7 3B       		.byte	0x3b
+ 1022 04d8 5D000000 		.4byte	0x5d
+ 1023 04dc 31020000 		.4byte	.LLST11
+ 1024 04e0 20       		.uleb128 0x20
+ 1025 04e1 2D030000 		.4byte	.LASF68
+ 1026 04e5 01       		.byte	0x1
+ 1027 04e6 3C       		.byte	0x3c
+ 1028 04e7 5D000000 		.4byte	0x5d
+ 1029 04eb 02       		.uleb128 0x2
+ 1030 04ec 91       		.byte	0x91
+ 1031 04ed 58       		.sleb128 -40
+ 1032 04ee 22       		.uleb128 0x22
+ 1033 04ef 95030000 		.4byte	.LASF74
+ 1034 04f3 01       		.byte	0x1
+ 1035 04f4 69       		.byte	0x69
+ 1036 04f5 04010000 		.4byte	.L13
+ 1037 04f9 23       		.uleb128 0x23
+ 1038 04fa 16000000 		.4byte	.LVL12
+ 1039 04fe 50070000 		.4byte	0x750
+ 1040 0502 0D050000 		.4byte	0x50d
+ 1041 0506 24       		.uleb128 0x24
+ 1042 0507 01       		.uleb128 0x1
+ 1043 0508 50       		.byte	0x50
+ 1044 0509 02       		.uleb128 0x2
+ 1045 050a 91       		.byte	0x91
+ 1046 050b 54       		.sleb128 -44
+ 1047 050c 00       		.byte	0
+ 1048 050d 23       		.uleb128 0x23
+ 1049 050e 2A000000 		.4byte	.LVL16
+ 1050 0512 6B070000 		.4byte	0x76b
+ 1051 0516 21050000 		.4byte	0x521
+ 1052 051a 24       		.uleb128 0x24
+ 1053 051b 01       		.uleb128 0x1
+ 1054 051c 51       		.byte	0x51
+ 1055 051d 02       		.uleb128 0x2
+ 1056 051e 91       		.byte	0x91
+ 1057 051f 58       		.sleb128 -40
+ 1058 0520 00       		.byte	0
+ 1059 0521 23       		.uleb128 0x23
+ 1060 0522 3C000000 		.4byte	.LVL18
+ 1061 0526 8B070000 		.4byte	0x78b
+ 1062 052a 41050000 		.4byte	0x541
+ 1063 052e 24       		.uleb128 0x24
+ 1064 052f 01       		.uleb128 0x1
+ 1065 0530 52       		.byte	0x52
+ 1066 0531 02       		.uleb128 0x2
+ 1067 0532 75       		.byte	0x75
+ 1068 0533 00       		.sleb128 0
+ 1069 0534 24       		.uleb128 0x24
+ 1070 0535 01       		.uleb128 0x1
+ 1071 0536 51       		.byte	0x51
+ 1072 0537 02       		.uleb128 0x2
+ 1073 0538 91       		.byte	0x91
+ 1074 0539 54       		.sleb128 -44
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 23
+
+
+ 1075 053a 24       		.uleb128 0x24
+ 1076 053b 01       		.uleb128 0x1
+ 1077 053c 50       		.byte	0x50
+ 1078 053d 02       		.uleb128 0x2
+ 1079 053e 91       		.byte	0x91
+ 1080 053f 5C       		.sleb128 -36
+ 1081 0540 00       		.byte	0
+ 1082 0541 23       		.uleb128 0x23
+ 1083 0542 4C000000 		.4byte	.LVL19
+ 1084 0546 50070000 		.4byte	0x750
+ 1085 054a 55050000 		.4byte	0x555
+ 1086 054e 24       		.uleb128 0x24
+ 1087 054f 01       		.uleb128 0x1
+ 1088 0550 50       		.byte	0x50
+ 1089 0551 02       		.uleb128 0x2
+ 1090 0552 91       		.byte	0x91
+ 1091 0553 54       		.sleb128 -44
+ 1092 0554 00       		.byte	0
+ 1093 0555 23       		.uleb128 0x23
+ 1094 0556 54000000 		.4byte	.LVL21
+ 1095 055a 9E030000 		.4byte	0x39e
+ 1096 055e 69050000 		.4byte	0x569
+ 1097 0562 24       		.uleb128 0x24
+ 1098 0563 01       		.uleb128 0x1
+ 1099 0564 50       		.byte	0x50
+ 1100 0565 02       		.uleb128 0x2
+ 1101 0566 91       		.byte	0x91
+ 1102 0567 5C       		.sleb128 -36
+ 1103 0568 00       		.byte	0
+ 1104 0569 23       		.uleb128 0x23
+ 1105 056a 5E000000 		.4byte	.LVL22
+ 1106 056e 50070000 		.4byte	0x750
+ 1107 0572 7D050000 		.4byte	0x57d
+ 1108 0576 24       		.uleb128 0x24
+ 1109 0577 01       		.uleb128 0x1
+ 1110 0578 50       		.byte	0x50
+ 1111 0579 02       		.uleb128 0x2
+ 1112 057a 91       		.byte	0x91
+ 1113 057b 54       		.sleb128 -44
+ 1114 057c 00       		.byte	0
+ 1115 057d 23       		.uleb128 0x23
+ 1116 057e 6C000000 		.4byte	.LVL24
+ 1117 0582 AA070000 		.4byte	0x7aa
+ 1118 0586 91050000 		.4byte	0x591
+ 1119 058a 24       		.uleb128 0x24
+ 1120 058b 01       		.uleb128 0x1
+ 1121 058c 50       		.byte	0x50
+ 1122 058d 02       		.uleb128 0x2
+ 1123 058e 91       		.byte	0x91
+ 1124 058f 54       		.sleb128 -44
+ 1125 0590 00       		.byte	0
+ 1126 0591 23       		.uleb128 0x23
+ 1127 0592 7A000000 		.4byte	.LVL25
+ 1128 0596 8B070000 		.4byte	0x78b
+ 1129 059a B1050000 		.4byte	0x5b1
+ 1130 059e 24       		.uleb128 0x24
+ 1131 059f 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 24
+
+
+ 1132 05a0 52       		.byte	0x52
+ 1133 05a1 02       		.uleb128 0x2
+ 1134 05a2 75       		.byte	0x75
+ 1135 05a3 00       		.sleb128 0
+ 1136 05a4 24       		.uleb128 0x24
+ 1137 05a5 01       		.uleb128 0x1
+ 1138 05a6 51       		.byte	0x51
+ 1139 05a7 02       		.uleb128 0x2
+ 1140 05a8 91       		.byte	0x91
+ 1141 05a9 54       		.sleb128 -44
+ 1142 05aa 24       		.uleb128 0x24
+ 1143 05ab 01       		.uleb128 0x1
+ 1144 05ac 50       		.byte	0x50
+ 1145 05ad 02       		.uleb128 0x2
+ 1146 05ae 74       		.byte	0x74
+ 1147 05af 0C       		.sleb128 12
+ 1148 05b0 00       		.byte	0
+ 1149 05b1 23       		.uleb128 0x23
+ 1150 05b2 B0000000 		.4byte	.LVL26
+ 1151 05b6 8B070000 		.4byte	0x78b
+ 1152 05ba D1050000 		.4byte	0x5d1
+ 1153 05be 24       		.uleb128 0x24
+ 1154 05bf 01       		.uleb128 0x1
+ 1155 05c0 52       		.byte	0x52
+ 1156 05c1 02       		.uleb128 0x2
+ 1157 05c2 75       		.byte	0x75
+ 1158 05c3 00       		.sleb128 0
+ 1159 05c4 24       		.uleb128 0x24
+ 1160 05c5 01       		.uleb128 0x1
+ 1161 05c6 51       		.byte	0x51
+ 1162 05c7 02       		.uleb128 0x2
+ 1163 05c8 91       		.byte	0x91
+ 1164 05c9 54       		.sleb128 -44
+ 1165 05ca 24       		.uleb128 0x24
+ 1166 05cb 01       		.uleb128 0x1
+ 1167 05cc 50       		.byte	0x50
+ 1168 05cd 02       		.uleb128 0x2
+ 1169 05ce 74       		.byte	0x74
+ 1170 05cf 24       		.sleb128 36
+ 1171 05d0 00       		.byte	0
+ 1172 05d1 23       		.uleb128 0x23
+ 1173 05d2 C0000000 		.4byte	.LVL27
+ 1174 05d6 8B070000 		.4byte	0x78b
+ 1175 05da F1050000 		.4byte	0x5f1
+ 1176 05de 24       		.uleb128 0x24
+ 1177 05df 01       		.uleb128 0x1
+ 1178 05e0 52       		.byte	0x52
+ 1179 05e1 02       		.uleb128 0x2
+ 1180 05e2 75       		.byte	0x75
+ 1181 05e3 00       		.sleb128 0
+ 1182 05e4 24       		.uleb128 0x24
+ 1183 05e5 01       		.uleb128 0x1
+ 1184 05e6 51       		.byte	0x51
+ 1185 05e7 02       		.uleb128 0x2
+ 1186 05e8 91       		.byte	0x91
+ 1187 05e9 54       		.sleb128 -44
+ 1188 05ea 24       		.uleb128 0x24
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 25
+
+
+ 1189 05eb 01       		.uleb128 0x1
+ 1190 05ec 50       		.byte	0x50
+ 1191 05ed 02       		.uleb128 0x2
+ 1192 05ee 74       		.byte	0x74
+ 1193 05ef 30       		.sleb128 48
+ 1194 05f0 00       		.byte	0
+ 1195 05f1 23       		.uleb128 0x23
+ 1196 05f2 DA000000 		.4byte	.LVL28
+ 1197 05f6 8B070000 		.4byte	0x78b
+ 1198 05fa 12060000 		.4byte	0x612
+ 1199 05fe 24       		.uleb128 0x24
+ 1200 05ff 01       		.uleb128 0x1
+ 1201 0600 52       		.byte	0x52
+ 1202 0601 02       		.uleb128 0x2
+ 1203 0602 75       		.byte	0x75
+ 1204 0603 00       		.sleb128 0
+ 1205 0604 24       		.uleb128 0x24
+ 1206 0605 01       		.uleb128 0x1
+ 1207 0606 51       		.byte	0x51
+ 1208 0607 02       		.uleb128 0x2
+ 1209 0608 91       		.byte	0x91
+ 1210 0609 54       		.sleb128 -44
+ 1211 060a 24       		.uleb128 0x24
+ 1212 060b 01       		.uleb128 0x1
+ 1213 060c 50       		.byte	0x50
+ 1214 060d 03       		.uleb128 0x3
+ 1215 060e 74       		.byte	0x74
+ 1216 060f C000     		.sleb128 64
+ 1217 0611 00       		.byte	0
+ 1218 0612 25       		.uleb128 0x25
+ 1219 0613 F8000000 		.4byte	.LVL29
+ 1220 0617 8B070000 		.4byte	0x78b
+ 1221 061b 24       		.uleb128 0x24
+ 1222 061c 01       		.uleb128 0x1
+ 1223 061d 52       		.byte	0x52
+ 1224 061e 02       		.uleb128 0x2
+ 1225 061f 75       		.byte	0x75
+ 1226 0620 00       		.sleb128 0
+ 1227 0621 24       		.uleb128 0x24
+ 1228 0622 01       		.uleb128 0x1
+ 1229 0623 51       		.byte	0x51
+ 1230 0624 02       		.uleb128 0x2
+ 1231 0625 91       		.byte	0x91
+ 1232 0626 54       		.sleb128 -44
+ 1233 0627 24       		.uleb128 0x24
+ 1234 0628 01       		.uleb128 0x1
+ 1235 0629 50       		.byte	0x50
+ 1236 062a 03       		.uleb128 0x3
+ 1237 062b 74       		.byte	0x74
+ 1238 062c CC00     		.sleb128 76
+ 1239 062e 00       		.byte	0
+ 1240 062f 00       		.byte	0
+ 1241 0630 05       		.uleb128 0x5
+ 1242 0631 04       		.byte	0x4
+ 1243 0632 51030000 		.4byte	0x351
+ 1244 0636 1B       		.uleb128 0x1b
+ 1245 0637 72020000 		.4byte	.LASF70
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 26
+
+
+ 1246 063b 01       		.byte	0x1
+ 1247 063c 77       		.byte	0x77
+ 1248 063d 5D000000 		.4byte	0x5d
+ 1249 0641 00000000 		.4byte	.LFB2
+ 1250 0645 46000000 		.4byte	.LFE2-.LFB2
+ 1251 0649 01       		.uleb128 0x1
+ 1252 064a 9C       		.byte	0x9c
+ 1253 064b 2A070000 		.4byte	0x72a
+ 1254 064f 1D       		.uleb128 0x1d
+ 1255 0650 62756600 		.ascii	"buf\000"
+ 1256 0654 01       		.byte	0x1
+ 1257 0655 77       		.byte	0x77
+ 1258 0656 7D000000 		.4byte	0x7d
+ 1259 065a 49020000 		.4byte	.LLST12
+ 1260 065e 1C       		.uleb128 0x1c
+ 1261 065f 8E030000 		.4byte	.LASF71
+ 1262 0663 01       		.byte	0x1
+ 1263 0664 77       		.byte	0x77
+ 1264 0665 5D000000 		.4byte	0x5d
+ 1265 0669 8C020000 		.4byte	.LLST13
+ 1266 066d 1C       		.uleb128 0x1c
+ 1267 066e 4A040000 		.4byte	.LASF72
+ 1268 0672 01       		.byte	0x1
+ 1269 0673 77       		.byte	0x77
+ 1270 0674 2C000000 		.4byte	0x2c
+ 1271 0678 C6020000 		.4byte	.LLST14
+ 1272 067c 1C       		.uleb128 0x1c
+ 1273 067d 9E010000 		.4byte	.LASF73
+ 1274 0681 01       		.byte	0x1
+ 1275 0682 77       		.byte	0x77
+ 1276 0683 2C000000 		.4byte	0x2c
+ 1277 0687 00030000 		.4byte	.LLST15
+ 1278 068b 1F       		.uleb128 0x1f
+ 1279 068c BF040000 		.4byte	.LASF64
+ 1280 0690 01       		.byte	0x1
+ 1281 0691 79       		.byte	0x79
+ 1282 0692 74010000 		.4byte	0x174
+ 1283 0696 21       		.uleb128 0x21
+ 1284 0697 726300   		.ascii	"rc\000"
+ 1285 069a 01       		.byte	0x1
+ 1286 069b 7A       		.byte	0x7a
+ 1287 069c 5D000000 		.4byte	0x5d
+ 1288 06a0 3A030000 		.4byte	.LLST16
+ 1289 06a4 26       		.uleb128 0x26
+ 1290 06a5 70747200 		.ascii	"ptr\000"
+ 1291 06a9 01       		.byte	0x1
+ 1292 06aa 7B       		.byte	0x7b
+ 1293 06ab 7D000000 		.4byte	0x7d
+ 1294 06af 02       		.uleb128 0x2
+ 1295 06b0 91       		.byte	0x91
+ 1296 06b1 6C       		.sleb128 -20
+ 1297 06b2 1F       		.uleb128 0x1f
+ 1298 06b3 86040000 		.4byte	.LASF63
+ 1299 06b7 01       		.byte	0x1
+ 1300 06b8 7C       		.byte	0x7c
+ 1301 06b9 93030000 		.4byte	0x393
+ 1302 06bd 22       		.uleb128 0x22
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 27
+
+
+ 1303 06be 95030000 		.4byte	.LASF74
+ 1304 06c2 01       		.byte	0x1
+ 1305 06c3 90       		.byte	0x90
+ 1306 06c4 44000000 		.4byte	.L42
+ 1307 06c8 23       		.uleb128 0x23
+ 1308 06c9 16000000 		.4byte	.LVL35
+ 1309 06cd BF070000 		.4byte	0x7bf
+ 1310 06d1 E2060000 		.4byte	0x6e2
+ 1311 06d5 24       		.uleb128 0x24
+ 1312 06d6 01       		.uleb128 0x1
+ 1313 06d7 51       		.byte	0x51
+ 1314 06d8 02       		.uleb128 0x2
+ 1315 06d9 08       		.byte	0x8
+ 1316 06da 20       		.byte	0x20
+ 1317 06db 24       		.uleb128 0x24
+ 1318 06dc 01       		.uleb128 0x1
+ 1319 06dd 50       		.byte	0x50
+ 1320 06de 02       		.uleb128 0x2
+ 1321 06df 91       		.byte	0x91
+ 1322 06e0 6C       		.sleb128 -20
+ 1323 06e1 00       		.byte	0
+ 1324 06e2 23       		.uleb128 0x23
+ 1325 06e3 1E000000 		.4byte	.LVL36
+ 1326 06e7 D5070000 		.4byte	0x7d5
+ 1327 06eb F5060000 		.4byte	0x6f5
+ 1328 06ef 24       		.uleb128 0x24
+ 1329 06f0 01       		.uleb128 0x1
+ 1330 06f1 51       		.byte	0x51
+ 1331 06f2 01       		.uleb128 0x1
+ 1332 06f3 32       		.byte	0x32
+ 1333 06f4 00       		.byte	0
+ 1334 06f5 23       		.uleb128 0x23
+ 1335 06f6 32000000 		.4byte	.LVL38
+ 1336 06fa BF070000 		.4byte	0x7bf
+ 1337 06fe 13070000 		.4byte	0x713
+ 1338 0702 24       		.uleb128 0x24
+ 1339 0703 01       		.uleb128 0x1
+ 1340 0704 51       		.byte	0x51
+ 1341 0705 06       		.uleb128 0x6
+ 1342 0706 76       		.byte	0x76
+ 1343 0707 00       		.sleb128 0
+ 1344 0708 31       		.byte	0x31
+ 1345 0709 1A       		.byte	0x1a
+ 1346 070a 37       		.byte	0x37
+ 1347 070b 24       		.byte	0x24
+ 1348 070c 24       		.uleb128 0x24
+ 1349 070d 01       		.uleb128 0x1
+ 1350 070e 50       		.byte	0x50
+ 1351 070f 02       		.uleb128 0x2
+ 1352 0710 91       		.byte	0x91
+ 1353 0711 6C       		.sleb128 -20
+ 1354 0712 00       		.byte	0
+ 1355 0713 25       		.uleb128 0x25
+ 1356 0714 3A000000 		.4byte	.LVL39
+ 1357 0718 BF070000 		.4byte	0x7bf
+ 1358 071c 24       		.uleb128 0x24
+ 1359 071d 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 28
+
+
+ 1360 071e 51       		.byte	0x51
+ 1361 071f 02       		.uleb128 0x2
+ 1362 0720 75       		.byte	0x75
+ 1363 0721 00       		.sleb128 0
+ 1364 0722 24       		.uleb128 0x24
+ 1365 0723 01       		.uleb128 0x1
+ 1366 0724 50       		.byte	0x50
+ 1367 0725 02       		.uleb128 0x2
+ 1368 0726 91       		.byte	0x91
+ 1369 0727 6C       		.sleb128 -20
+ 1370 0728 00       		.byte	0
+ 1371 0729 00       		.byte	0
+ 1372 072a 27       		.uleb128 0x27
+ 1373 072b 6D040000 		.4byte	.LASF76
+ 1374 072f 05       		.byte	0x5
+ 1375 0730 16       		.byte	0x16
+ 1376 0731 5D000000 		.4byte	0x5d
+ 1377 0735 49070000 		.4byte	0x749
+ 1378 0739 28       		.uleb128 0x28
+ 1379 073a 49070000 		.4byte	0x749
+ 1380 073e 28       		.uleb128 0x28
+ 1381 073f 49070000 		.4byte	0x749
+ 1382 0743 28       		.uleb128 0x28
+ 1383 0744 6B000000 		.4byte	0x6b
+ 1384 0748 00       		.byte	0
+ 1385 0749 05       		.uleb128 0x5
+ 1386 074a 04       		.byte	0x4
+ 1387 074b 4F070000 		.4byte	0x74f
+ 1388 074f 29       		.uleb128 0x29
+ 1389 0750 27       		.uleb128 0x27
+ 1390 0751 63010000 		.4byte	.LASF77
+ 1391 0755 02       		.byte	0x2
+ 1392 0756 6C       		.byte	0x6c
+ 1393 0757 89000000 		.4byte	0x89
+ 1394 075b 65070000 		.4byte	0x765
+ 1395 075f 28       		.uleb128 0x28
+ 1396 0760 65070000 		.4byte	0x765
+ 1397 0764 00       		.byte	0
+ 1398 0765 05       		.uleb128 0x5
+ 1399 0766 04       		.byte	0x4
+ 1400 0767 7D000000 		.4byte	0x7d
+ 1401 076b 27       		.uleb128 0x27
+ 1402 076c 10030000 		.4byte	.LASF78
+ 1403 0770 02       		.byte	0x2
+ 1404 0771 69       		.byte	0x69
+ 1405 0772 5D000000 		.4byte	0x5d
+ 1406 0776 85070000 		.4byte	0x785
+ 1407 077a 28       		.uleb128 0x28
+ 1408 077b 7D000000 		.4byte	0x7d
+ 1409 077f 28       		.uleb128 0x28
+ 1410 0780 85070000 		.4byte	0x785
+ 1411 0784 00       		.byte	0
+ 1412 0785 05       		.uleb128 0x5
+ 1413 0786 04       		.byte	0x4
+ 1414 0787 5D000000 		.4byte	0x5d
+ 1415 078b 27       		.uleb128 0x27
+ 1416 078c D1000000 		.4byte	.LASF79
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 29
+
+
+ 1417 0790 02       		.byte	0x2
+ 1418 0791 6F       		.byte	0x6f
+ 1419 0792 5D000000 		.4byte	0x5d
+ 1420 0796 AA070000 		.4byte	0x7aa
+ 1421 079a 28       		.uleb128 0x28
+ 1422 079b CF030000 		.4byte	0x3cf
+ 1423 079f 28       		.uleb128 0x28
+ 1424 07a0 65070000 		.4byte	0x765
+ 1425 07a4 28       		.uleb128 0x28
+ 1426 07a5 7D000000 		.4byte	0x7d
+ 1427 07a9 00       		.byte	0
+ 1428 07aa 27       		.uleb128 0x27
+ 1429 07ab BB000000 		.4byte	.LASF80
+ 1430 07af 02       		.byte	0x2
+ 1431 07b0 6B       		.byte	0x6b
+ 1432 07b1 5D000000 		.4byte	0x5d
+ 1433 07b5 BF070000 		.4byte	0x7bf
+ 1434 07b9 28       		.uleb128 0x28
+ 1435 07ba 65070000 		.4byte	0x765
+ 1436 07be 00       		.byte	0
+ 1437 07bf 2A       		.uleb128 0x2a
+ 1438 07c0 7C040000 		.4byte	.LASF81
+ 1439 07c4 02       		.byte	0x2
+ 1440 07c5 6D       		.byte	0x6d
+ 1441 07c6 D5070000 		.4byte	0x7d5
+ 1442 07ca 28       		.uleb128 0x28
+ 1443 07cb 65070000 		.4byte	0x765
+ 1444 07cf 28       		.uleb128 0x28
+ 1445 07d0 89000000 		.4byte	0x89
+ 1446 07d4 00       		.byte	0
+ 1447 07d5 2B       		.uleb128 0x2b
+ 1448 07d6 B2010000 		.4byte	.LASF82
+ 1449 07da 02       		.byte	0x2
+ 1450 07db 67       		.byte	0x67
+ 1451 07dc 5D000000 		.4byte	0x5d
+ 1452 07e0 28       		.uleb128 0x28
+ 1453 07e1 7D000000 		.4byte	0x7d
+ 1454 07e5 28       		.uleb128 0x28
+ 1455 07e6 5D000000 		.4byte	0x5d
+ 1456 07ea 00       		.byte	0
+ 1457 07eb 00       		.byte	0
+ 1458              		.section	.debug_abbrev,"",%progbits
+ 1459              	.Ldebug_abbrev0:
+ 1460 0000 01       		.uleb128 0x1
+ 1461 0001 11       		.uleb128 0x11
+ 1462 0002 01       		.byte	0x1
+ 1463 0003 25       		.uleb128 0x25
+ 1464 0004 0E       		.uleb128 0xe
+ 1465 0005 13       		.uleb128 0x13
+ 1466 0006 0B       		.uleb128 0xb
+ 1467 0007 03       		.uleb128 0x3
+ 1468 0008 0E       		.uleb128 0xe
+ 1469 0009 1B       		.uleb128 0x1b
+ 1470 000a 0E       		.uleb128 0xe
+ 1471 000b 55       		.uleb128 0x55
+ 1472 000c 17       		.uleb128 0x17
+ 1473 000d 11       		.uleb128 0x11
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 30
+
+
+ 1474 000e 01       		.uleb128 0x1
+ 1475 000f 10       		.uleb128 0x10
+ 1476 0010 17       		.uleb128 0x17
+ 1477 0011 00       		.byte	0
+ 1478 0012 00       		.byte	0
+ 1479 0013 02       		.uleb128 0x2
+ 1480 0014 24       		.uleb128 0x24
+ 1481 0015 00       		.byte	0
+ 1482 0016 0B       		.uleb128 0xb
+ 1483 0017 0B       		.uleb128 0xb
+ 1484 0018 3E       		.uleb128 0x3e
+ 1485 0019 0B       		.uleb128 0xb
+ 1486 001a 03       		.uleb128 0x3
+ 1487 001b 0E       		.uleb128 0xe
+ 1488 001c 00       		.byte	0
+ 1489 001d 00       		.byte	0
+ 1490 001e 03       		.uleb128 0x3
+ 1491 001f 24       		.uleb128 0x24
+ 1492 0020 00       		.byte	0
+ 1493 0021 0B       		.uleb128 0xb
+ 1494 0022 0B       		.uleb128 0xb
+ 1495 0023 3E       		.uleb128 0x3e
+ 1496 0024 0B       		.uleb128 0xb
+ 1497 0025 03       		.uleb128 0x3
+ 1498 0026 08       		.uleb128 0x8
+ 1499 0027 00       		.byte	0
+ 1500 0028 00       		.byte	0
+ 1501 0029 04       		.uleb128 0x4
+ 1502 002a 16       		.uleb128 0x16
+ 1503 002b 00       		.byte	0
+ 1504 002c 03       		.uleb128 0x3
+ 1505 002d 0E       		.uleb128 0xe
+ 1506 002e 3A       		.uleb128 0x3a
+ 1507 002f 0B       		.uleb128 0xb
+ 1508 0030 3B       		.uleb128 0x3b
+ 1509 0031 0B       		.uleb128 0xb
+ 1510 0032 49       		.uleb128 0x49
+ 1511 0033 13       		.uleb128 0x13
+ 1512 0034 00       		.byte	0
+ 1513 0035 00       		.byte	0
+ 1514 0036 05       		.uleb128 0x5
+ 1515 0037 0F       		.uleb128 0xf
+ 1516 0038 00       		.byte	0
+ 1517 0039 0B       		.uleb128 0xb
+ 1518 003a 0B       		.uleb128 0xb
+ 1519 003b 49       		.uleb128 0x49
+ 1520 003c 13       		.uleb128 0x13
+ 1521 003d 00       		.byte	0
+ 1522 003e 00       		.byte	0
+ 1523 003f 06       		.uleb128 0x6
+ 1524 0040 04       		.uleb128 0x4
+ 1525 0041 01       		.byte	0x1
+ 1526 0042 03       		.uleb128 0x3
+ 1527 0043 0E       		.uleb128 0xe
+ 1528 0044 0B       		.uleb128 0xb
+ 1529 0045 0B       		.uleb128 0xb
+ 1530 0046 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 31
+
+
+ 1531 0047 0B       		.uleb128 0xb
+ 1532 0048 3B       		.uleb128 0x3b
+ 1533 0049 0B       		.uleb128 0xb
+ 1534 004a 01       		.uleb128 0x1
+ 1535 004b 13       		.uleb128 0x13
+ 1536 004c 00       		.byte	0
+ 1537 004d 00       		.byte	0
+ 1538 004e 07       		.uleb128 0x7
+ 1539 004f 28       		.uleb128 0x28
+ 1540 0050 00       		.byte	0
+ 1541 0051 03       		.uleb128 0x3
+ 1542 0052 0E       		.uleb128 0xe
+ 1543 0053 1C       		.uleb128 0x1c
+ 1544 0054 0D       		.uleb128 0xd
+ 1545 0055 00       		.byte	0
+ 1546 0056 00       		.byte	0
+ 1547 0057 08       		.uleb128 0x8
+ 1548 0058 13       		.uleb128 0x13
+ 1549 0059 01       		.byte	0x1
+ 1550 005a 0B       		.uleb128 0xb
+ 1551 005b 0B       		.uleb128 0xb
+ 1552 005c 3A       		.uleb128 0x3a
+ 1553 005d 0B       		.uleb128 0xb
+ 1554 005e 3B       		.uleb128 0x3b
+ 1555 005f 0B       		.uleb128 0xb
+ 1556 0060 01       		.uleb128 0x1
+ 1557 0061 13       		.uleb128 0x13
+ 1558 0062 00       		.byte	0
+ 1559 0063 00       		.byte	0
+ 1560 0064 09       		.uleb128 0x9
+ 1561 0065 0D       		.uleb128 0xd
+ 1562 0066 00       		.byte	0
+ 1563 0067 03       		.uleb128 0x3
+ 1564 0068 0E       		.uleb128 0xe
+ 1565 0069 3A       		.uleb128 0x3a
+ 1566 006a 0B       		.uleb128 0xb
+ 1567 006b 3B       		.uleb128 0x3b
+ 1568 006c 0B       		.uleb128 0xb
+ 1569 006d 49       		.uleb128 0x49
+ 1570 006e 13       		.uleb128 0x13
+ 1571 006f 0B       		.uleb128 0xb
+ 1572 0070 0B       		.uleb128 0xb
+ 1573 0071 0D       		.uleb128 0xd
+ 1574 0072 0B       		.uleb128 0xb
+ 1575 0073 0C       		.uleb128 0xc
+ 1576 0074 0B       		.uleb128 0xb
+ 1577 0075 38       		.uleb128 0x38
+ 1578 0076 0B       		.uleb128 0xb
+ 1579 0077 00       		.byte	0
+ 1580 0078 00       		.byte	0
+ 1581 0079 0A       		.uleb128 0xa
+ 1582 007a 0D       		.uleb128 0xd
+ 1583 007b 00       		.byte	0
+ 1584 007c 03       		.uleb128 0x3
+ 1585 007d 08       		.uleb128 0x8
+ 1586 007e 3A       		.uleb128 0x3a
+ 1587 007f 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 32
+
+
+ 1588 0080 3B       		.uleb128 0x3b
+ 1589 0081 0B       		.uleb128 0xb
+ 1590 0082 49       		.uleb128 0x49
+ 1591 0083 13       		.uleb128 0x13
+ 1592 0084 0B       		.uleb128 0xb
+ 1593 0085 0B       		.uleb128 0xb
+ 1594 0086 0D       		.uleb128 0xd
+ 1595 0087 0B       		.uleb128 0xb
+ 1596 0088 0C       		.uleb128 0xc
+ 1597 0089 0B       		.uleb128 0xb
+ 1598 008a 38       		.uleb128 0x38
+ 1599 008b 0B       		.uleb128 0xb
+ 1600 008c 00       		.byte	0
+ 1601 008d 00       		.byte	0
+ 1602 008e 0B       		.uleb128 0xb
+ 1603 008f 17       		.uleb128 0x17
+ 1604 0090 01       		.byte	0x1
+ 1605 0091 0B       		.uleb128 0xb
+ 1606 0092 0B       		.uleb128 0xb
+ 1607 0093 3A       		.uleb128 0x3a
+ 1608 0094 0B       		.uleb128 0xb
+ 1609 0095 3B       		.uleb128 0x3b
+ 1610 0096 0B       		.uleb128 0xb
+ 1611 0097 01       		.uleb128 0x1
+ 1612 0098 13       		.uleb128 0x13
+ 1613 0099 00       		.byte	0
+ 1614 009a 00       		.byte	0
+ 1615 009b 0C       		.uleb128 0xc
+ 1616 009c 0D       		.uleb128 0xd
+ 1617 009d 00       		.byte	0
+ 1618 009e 03       		.uleb128 0x3
+ 1619 009f 0E       		.uleb128 0xe
+ 1620 00a0 3A       		.uleb128 0x3a
+ 1621 00a1 0B       		.uleb128 0xb
+ 1622 00a2 3B       		.uleb128 0x3b
+ 1623 00a3 0B       		.uleb128 0xb
+ 1624 00a4 49       		.uleb128 0x49
+ 1625 00a5 13       		.uleb128 0x13
+ 1626 00a6 00       		.byte	0
+ 1627 00a7 00       		.byte	0
+ 1628 00a8 0D       		.uleb128 0xd
+ 1629 00a9 0D       		.uleb128 0xd
+ 1630 00aa 00       		.byte	0
+ 1631 00ab 03       		.uleb128 0x3
+ 1632 00ac 08       		.uleb128 0x8
+ 1633 00ad 3A       		.uleb128 0x3a
+ 1634 00ae 0B       		.uleb128 0xb
+ 1635 00af 3B       		.uleb128 0x3b
+ 1636 00b0 0B       		.uleb128 0xb
+ 1637 00b1 49       		.uleb128 0x49
+ 1638 00b2 13       		.uleb128 0x13
+ 1639 00b3 38       		.uleb128 0x38
+ 1640 00b4 0B       		.uleb128 0xb
+ 1641 00b5 00       		.byte	0
+ 1642 00b6 00       		.byte	0
+ 1643 00b7 0E       		.uleb128 0xe
+ 1644 00b8 0D       		.uleb128 0xd
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 33
+
+
+ 1645 00b9 00       		.byte	0
+ 1646 00ba 03       		.uleb128 0x3
+ 1647 00bb 0E       		.uleb128 0xe
+ 1648 00bc 3A       		.uleb128 0x3a
+ 1649 00bd 0B       		.uleb128 0xb
+ 1650 00be 3B       		.uleb128 0x3b
+ 1651 00bf 0B       		.uleb128 0xb
+ 1652 00c0 49       		.uleb128 0x49
+ 1653 00c1 13       		.uleb128 0x13
+ 1654 00c2 38       		.uleb128 0x38
+ 1655 00c3 0B       		.uleb128 0xb
+ 1656 00c4 00       		.byte	0
+ 1657 00c5 00       		.byte	0
+ 1658 00c6 0F       		.uleb128 0xf
+ 1659 00c7 0D       		.uleb128 0xd
+ 1660 00c8 00       		.byte	0
+ 1661 00c9 03       		.uleb128 0x3
+ 1662 00ca 08       		.uleb128 0x8
+ 1663 00cb 3A       		.uleb128 0x3a
+ 1664 00cc 0B       		.uleb128 0xb
+ 1665 00cd 3B       		.uleb128 0x3b
+ 1666 00ce 0B       		.uleb128 0xb
+ 1667 00cf 49       		.uleb128 0x49
+ 1668 00d0 13       		.uleb128 0x13
+ 1669 00d1 00       		.byte	0
+ 1670 00d2 00       		.byte	0
+ 1671 00d3 10       		.uleb128 0x10
+ 1672 00d4 01       		.uleb128 0x1
+ 1673 00d5 01       		.byte	0x1
+ 1674 00d6 49       		.uleb128 0x49
+ 1675 00d7 13       		.uleb128 0x13
+ 1676 00d8 01       		.uleb128 0x1
+ 1677 00d9 13       		.uleb128 0x13
+ 1678 00da 00       		.byte	0
+ 1679 00db 00       		.byte	0
+ 1680 00dc 11       		.uleb128 0x11
+ 1681 00dd 21       		.uleb128 0x21
+ 1682 00de 00       		.byte	0
+ 1683 00df 49       		.uleb128 0x49
+ 1684 00e0 13       		.uleb128 0x13
+ 1685 00e1 2F       		.uleb128 0x2f
+ 1686 00e2 0B       		.uleb128 0xb
+ 1687 00e3 00       		.byte	0
+ 1688 00e4 00       		.byte	0
+ 1689 00e5 12       		.uleb128 0x12
+ 1690 00e6 2E       		.uleb128 0x2e
+ 1691 00e7 01       		.byte	0x1
+ 1692 00e8 3F       		.uleb128 0x3f
+ 1693 00e9 19       		.uleb128 0x19
+ 1694 00ea 03       		.uleb128 0x3
+ 1695 00eb 0E       		.uleb128 0xe
+ 1696 00ec 3A       		.uleb128 0x3a
+ 1697 00ed 0B       		.uleb128 0xb
+ 1698 00ee 3B       		.uleb128 0x3b
+ 1699 00ef 0B       		.uleb128 0xb
+ 1700 00f0 27       		.uleb128 0x27
+ 1701 00f1 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 34
+
+
+ 1702 00f2 49       		.uleb128 0x49
+ 1703 00f3 13       		.uleb128 0x13
+ 1704 00f4 20       		.uleb128 0x20
+ 1705 00f5 0B       		.uleb128 0xb
+ 1706 00f6 01       		.uleb128 0x1
+ 1707 00f7 13       		.uleb128 0x13
+ 1708 00f8 00       		.byte	0
+ 1709 00f9 00       		.byte	0
+ 1710 00fa 13       		.uleb128 0x13
+ 1711 00fb 05       		.uleb128 0x5
+ 1712 00fc 00       		.byte	0
+ 1713 00fd 03       		.uleb128 0x3
+ 1714 00fe 0E       		.uleb128 0xe
+ 1715 00ff 3A       		.uleb128 0x3a
+ 1716 0100 0B       		.uleb128 0xb
+ 1717 0101 3B       		.uleb128 0x3b
+ 1718 0102 0B       		.uleb128 0xb
+ 1719 0103 49       		.uleb128 0x49
+ 1720 0104 13       		.uleb128 0x13
+ 1721 0105 00       		.byte	0
+ 1722 0106 00       		.byte	0
+ 1723 0107 14       		.uleb128 0x14
+ 1724 0108 34       		.uleb128 0x34
+ 1725 0109 00       		.byte	0
+ 1726 010a 03       		.uleb128 0x3
+ 1727 010b 08       		.uleb128 0x8
+ 1728 010c 3A       		.uleb128 0x3a
+ 1729 010d 0B       		.uleb128 0xb
+ 1730 010e 3B       		.uleb128 0x3b
+ 1731 010f 0B       		.uleb128 0xb
+ 1732 0110 49       		.uleb128 0x49
+ 1733 0111 13       		.uleb128 0x13
+ 1734 0112 00       		.byte	0
+ 1735 0113 00       		.byte	0
+ 1736 0114 15       		.uleb128 0x15
+ 1737 0115 2E       		.uleb128 0x2e
+ 1738 0116 01       		.byte	0x1
+ 1739 0117 31       		.uleb128 0x31
+ 1740 0118 13       		.uleb128 0x13
+ 1741 0119 11       		.uleb128 0x11
+ 1742 011a 01       		.uleb128 0x1
+ 1743 011b 12       		.uleb128 0x12
+ 1744 011c 06       		.uleb128 0x6
+ 1745 011d 40       		.uleb128 0x40
+ 1746 011e 18       		.uleb128 0x18
+ 1747 011f 9742     		.uleb128 0x2117
+ 1748 0121 19       		.uleb128 0x19
+ 1749 0122 01       		.uleb128 0x1
+ 1750 0123 13       		.uleb128 0x13
+ 1751 0124 00       		.byte	0
+ 1752 0125 00       		.byte	0
+ 1753 0126 16       		.uleb128 0x16
+ 1754 0127 05       		.uleb128 0x5
+ 1755 0128 00       		.byte	0
+ 1756 0129 31       		.uleb128 0x31
+ 1757 012a 13       		.uleb128 0x13
+ 1758 012b 02       		.uleb128 0x2
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 35
+
+
+ 1759 012c 17       		.uleb128 0x17
+ 1760 012d 00       		.byte	0
+ 1761 012e 00       		.byte	0
+ 1762 012f 17       		.uleb128 0x17
+ 1763 0130 34       		.uleb128 0x34
+ 1764 0131 00       		.byte	0
+ 1765 0132 31       		.uleb128 0x31
+ 1766 0133 13       		.uleb128 0x13
+ 1767 0134 02       		.uleb128 0x2
+ 1768 0135 17       		.uleb128 0x17
+ 1769 0136 00       		.byte	0
+ 1770 0137 00       		.byte	0
+ 1771 0138 18       		.uleb128 0x18
+ 1772 0139 0B       		.uleb128 0xb
+ 1773 013a 01       		.byte	0x1
+ 1774 013b 11       		.uleb128 0x11
+ 1775 013c 01       		.uleb128 0x1
+ 1776 013d 12       		.uleb128 0x12
+ 1777 013e 06       		.uleb128 0x6
+ 1778 013f 00       		.byte	0
+ 1779 0140 00       		.byte	0
+ 1780 0141 19       		.uleb128 0x19
+ 1781 0142 34       		.uleb128 0x34
+ 1782 0143 00       		.byte	0
+ 1783 0144 31       		.uleb128 0x31
+ 1784 0145 13       		.uleb128 0x13
+ 1785 0146 00       		.byte	0
+ 1786 0147 00       		.byte	0
+ 1787 0148 1A       		.uleb128 0x1a
+ 1788 0149 898201   		.uleb128 0x4109
+ 1789 014c 00       		.byte	0
+ 1790 014d 11       		.uleb128 0x11
+ 1791 014e 01       		.uleb128 0x1
+ 1792 014f 31       		.uleb128 0x31
+ 1793 0150 13       		.uleb128 0x13
+ 1794 0151 00       		.byte	0
+ 1795 0152 00       		.byte	0
+ 1796 0153 1B       		.uleb128 0x1b
+ 1797 0154 2E       		.uleb128 0x2e
+ 1798 0155 01       		.byte	0x1
+ 1799 0156 3F       		.uleb128 0x3f
+ 1800 0157 19       		.uleb128 0x19
+ 1801 0158 03       		.uleb128 0x3
+ 1802 0159 0E       		.uleb128 0xe
+ 1803 015a 3A       		.uleb128 0x3a
+ 1804 015b 0B       		.uleb128 0xb
+ 1805 015c 3B       		.uleb128 0x3b
+ 1806 015d 0B       		.uleb128 0xb
+ 1807 015e 27       		.uleb128 0x27
+ 1808 015f 19       		.uleb128 0x19
+ 1809 0160 49       		.uleb128 0x49
+ 1810 0161 13       		.uleb128 0x13
+ 1811 0162 11       		.uleb128 0x11
+ 1812 0163 01       		.uleb128 0x1
+ 1813 0164 12       		.uleb128 0x12
+ 1814 0165 06       		.uleb128 0x6
+ 1815 0166 40       		.uleb128 0x40
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 36
+
+
+ 1816 0167 18       		.uleb128 0x18
+ 1817 0168 9742     		.uleb128 0x2117
+ 1818 016a 19       		.uleb128 0x19
+ 1819 016b 01       		.uleb128 0x1
+ 1820 016c 13       		.uleb128 0x13
+ 1821 016d 00       		.byte	0
+ 1822 016e 00       		.byte	0
+ 1823 016f 1C       		.uleb128 0x1c
+ 1824 0170 05       		.uleb128 0x5
+ 1825 0171 00       		.byte	0
+ 1826 0172 03       		.uleb128 0x3
+ 1827 0173 0E       		.uleb128 0xe
+ 1828 0174 3A       		.uleb128 0x3a
+ 1829 0175 0B       		.uleb128 0xb
+ 1830 0176 3B       		.uleb128 0x3b
+ 1831 0177 0B       		.uleb128 0xb
+ 1832 0178 49       		.uleb128 0x49
+ 1833 0179 13       		.uleb128 0x13
+ 1834 017a 02       		.uleb128 0x2
+ 1835 017b 17       		.uleb128 0x17
+ 1836 017c 00       		.byte	0
+ 1837 017d 00       		.byte	0
+ 1838 017e 1D       		.uleb128 0x1d
+ 1839 017f 05       		.uleb128 0x5
+ 1840 0180 00       		.byte	0
+ 1841 0181 03       		.uleb128 0x3
+ 1842 0182 08       		.uleb128 0x8
+ 1843 0183 3A       		.uleb128 0x3a
+ 1844 0184 0B       		.uleb128 0xb
+ 1845 0185 3B       		.uleb128 0x3b
+ 1846 0186 0B       		.uleb128 0xb
+ 1847 0187 49       		.uleb128 0x49
+ 1848 0188 13       		.uleb128 0x13
+ 1849 0189 02       		.uleb128 0x2
+ 1850 018a 17       		.uleb128 0x17
+ 1851 018b 00       		.byte	0
+ 1852 018c 00       		.byte	0
+ 1853 018d 1E       		.uleb128 0x1e
+ 1854 018e 34       		.uleb128 0x34
+ 1855 018f 00       		.byte	0
+ 1856 0190 03       		.uleb128 0x3
+ 1857 0191 0E       		.uleb128 0xe
+ 1858 0192 3A       		.uleb128 0x3a
+ 1859 0193 0B       		.uleb128 0xb
+ 1860 0194 3B       		.uleb128 0x3b
+ 1861 0195 0B       		.uleb128 0xb
+ 1862 0196 49       		.uleb128 0x49
+ 1863 0197 13       		.uleb128 0x13
+ 1864 0198 02       		.uleb128 0x2
+ 1865 0199 17       		.uleb128 0x17
+ 1866 019a 00       		.byte	0
+ 1867 019b 00       		.byte	0
+ 1868 019c 1F       		.uleb128 0x1f
+ 1869 019d 34       		.uleb128 0x34
+ 1870 019e 00       		.byte	0
+ 1871 019f 03       		.uleb128 0x3
+ 1872 01a0 0E       		.uleb128 0xe
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 37
+
+
+ 1873 01a1 3A       		.uleb128 0x3a
+ 1874 01a2 0B       		.uleb128 0xb
+ 1875 01a3 3B       		.uleb128 0x3b
+ 1876 01a4 0B       		.uleb128 0xb
+ 1877 01a5 49       		.uleb128 0x49
+ 1878 01a6 13       		.uleb128 0x13
+ 1879 01a7 00       		.byte	0
+ 1880 01a8 00       		.byte	0
+ 1881 01a9 20       		.uleb128 0x20
+ 1882 01aa 34       		.uleb128 0x34
+ 1883 01ab 00       		.byte	0
+ 1884 01ac 03       		.uleb128 0x3
+ 1885 01ad 0E       		.uleb128 0xe
+ 1886 01ae 3A       		.uleb128 0x3a
+ 1887 01af 0B       		.uleb128 0xb
+ 1888 01b0 3B       		.uleb128 0x3b
+ 1889 01b1 0B       		.uleb128 0xb
+ 1890 01b2 49       		.uleb128 0x49
+ 1891 01b3 13       		.uleb128 0x13
+ 1892 01b4 02       		.uleb128 0x2
+ 1893 01b5 18       		.uleb128 0x18
+ 1894 01b6 00       		.byte	0
+ 1895 01b7 00       		.byte	0
+ 1896 01b8 21       		.uleb128 0x21
+ 1897 01b9 34       		.uleb128 0x34
+ 1898 01ba 00       		.byte	0
+ 1899 01bb 03       		.uleb128 0x3
+ 1900 01bc 08       		.uleb128 0x8
+ 1901 01bd 3A       		.uleb128 0x3a
+ 1902 01be 0B       		.uleb128 0xb
+ 1903 01bf 3B       		.uleb128 0x3b
+ 1904 01c0 0B       		.uleb128 0xb
+ 1905 01c1 49       		.uleb128 0x49
+ 1906 01c2 13       		.uleb128 0x13
+ 1907 01c3 02       		.uleb128 0x2
+ 1908 01c4 17       		.uleb128 0x17
+ 1909 01c5 00       		.byte	0
+ 1910 01c6 00       		.byte	0
+ 1911 01c7 22       		.uleb128 0x22
+ 1912 01c8 0A       		.uleb128 0xa
+ 1913 01c9 00       		.byte	0
+ 1914 01ca 03       		.uleb128 0x3
+ 1915 01cb 0E       		.uleb128 0xe
+ 1916 01cc 3A       		.uleb128 0x3a
+ 1917 01cd 0B       		.uleb128 0xb
+ 1918 01ce 3B       		.uleb128 0x3b
+ 1919 01cf 0B       		.uleb128 0xb
+ 1920 01d0 11       		.uleb128 0x11
+ 1921 01d1 01       		.uleb128 0x1
+ 1922 01d2 00       		.byte	0
+ 1923 01d3 00       		.byte	0
+ 1924 01d4 23       		.uleb128 0x23
+ 1925 01d5 898201   		.uleb128 0x4109
+ 1926 01d8 01       		.byte	0x1
+ 1927 01d9 11       		.uleb128 0x11
+ 1928 01da 01       		.uleb128 0x1
+ 1929 01db 31       		.uleb128 0x31
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 38
+
+
+ 1930 01dc 13       		.uleb128 0x13
+ 1931 01dd 01       		.uleb128 0x1
+ 1932 01de 13       		.uleb128 0x13
+ 1933 01df 00       		.byte	0
+ 1934 01e0 00       		.byte	0
+ 1935 01e1 24       		.uleb128 0x24
+ 1936 01e2 8A8201   		.uleb128 0x410a
+ 1937 01e5 00       		.byte	0
+ 1938 01e6 02       		.uleb128 0x2
+ 1939 01e7 18       		.uleb128 0x18
+ 1940 01e8 9142     		.uleb128 0x2111
+ 1941 01ea 18       		.uleb128 0x18
+ 1942 01eb 00       		.byte	0
+ 1943 01ec 00       		.byte	0
+ 1944 01ed 25       		.uleb128 0x25
+ 1945 01ee 898201   		.uleb128 0x4109
+ 1946 01f1 01       		.byte	0x1
+ 1947 01f2 11       		.uleb128 0x11
+ 1948 01f3 01       		.uleb128 0x1
+ 1949 01f4 31       		.uleb128 0x31
+ 1950 01f5 13       		.uleb128 0x13
+ 1951 01f6 00       		.byte	0
+ 1952 01f7 00       		.byte	0
+ 1953 01f8 26       		.uleb128 0x26
+ 1954 01f9 34       		.uleb128 0x34
+ 1955 01fa 00       		.byte	0
+ 1956 01fb 03       		.uleb128 0x3
+ 1957 01fc 08       		.uleb128 0x8
+ 1958 01fd 3A       		.uleb128 0x3a
+ 1959 01fe 0B       		.uleb128 0xb
+ 1960 01ff 3B       		.uleb128 0x3b
+ 1961 0200 0B       		.uleb128 0xb
+ 1962 0201 49       		.uleb128 0x49
+ 1963 0202 13       		.uleb128 0x13
+ 1964 0203 02       		.uleb128 0x2
+ 1965 0204 18       		.uleb128 0x18
+ 1966 0205 00       		.byte	0
+ 1967 0206 00       		.byte	0
+ 1968 0207 27       		.uleb128 0x27
+ 1969 0208 2E       		.uleb128 0x2e
+ 1970 0209 01       		.byte	0x1
+ 1971 020a 3F       		.uleb128 0x3f
+ 1972 020b 19       		.uleb128 0x19
+ 1973 020c 03       		.uleb128 0x3
+ 1974 020d 0E       		.uleb128 0xe
+ 1975 020e 3A       		.uleb128 0x3a
+ 1976 020f 0B       		.uleb128 0xb
+ 1977 0210 3B       		.uleb128 0x3b
+ 1978 0211 0B       		.uleb128 0xb
+ 1979 0212 27       		.uleb128 0x27
+ 1980 0213 19       		.uleb128 0x19
+ 1981 0214 49       		.uleb128 0x49
+ 1982 0215 13       		.uleb128 0x13
+ 1983 0216 3C       		.uleb128 0x3c
+ 1984 0217 19       		.uleb128 0x19
+ 1985 0218 01       		.uleb128 0x1
+ 1986 0219 13       		.uleb128 0x13
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 39
+
+
+ 1987 021a 00       		.byte	0
+ 1988 021b 00       		.byte	0
+ 1989 021c 28       		.uleb128 0x28
+ 1990 021d 05       		.uleb128 0x5
+ 1991 021e 00       		.byte	0
+ 1992 021f 49       		.uleb128 0x49
+ 1993 0220 13       		.uleb128 0x13
+ 1994 0221 00       		.byte	0
+ 1995 0222 00       		.byte	0
+ 1996 0223 29       		.uleb128 0x29
+ 1997 0224 26       		.uleb128 0x26
+ 1998 0225 00       		.byte	0
+ 1999 0226 00       		.byte	0
+ 2000 0227 00       		.byte	0
+ 2001 0228 2A       		.uleb128 0x2a
+ 2002 0229 2E       		.uleb128 0x2e
+ 2003 022a 01       		.byte	0x1
+ 2004 022b 3F       		.uleb128 0x3f
+ 2005 022c 19       		.uleb128 0x19
+ 2006 022d 03       		.uleb128 0x3
+ 2007 022e 0E       		.uleb128 0xe
+ 2008 022f 3A       		.uleb128 0x3a
+ 2009 0230 0B       		.uleb128 0xb
+ 2010 0231 3B       		.uleb128 0x3b
+ 2011 0232 0B       		.uleb128 0xb
+ 2012 0233 27       		.uleb128 0x27
+ 2013 0234 19       		.uleb128 0x19
+ 2014 0235 3C       		.uleb128 0x3c
+ 2015 0236 19       		.uleb128 0x19
+ 2016 0237 01       		.uleb128 0x1
+ 2017 0238 13       		.uleb128 0x13
+ 2018 0239 00       		.byte	0
+ 2019 023a 00       		.byte	0
+ 2020 023b 2B       		.uleb128 0x2b
+ 2021 023c 2E       		.uleb128 0x2e
+ 2022 023d 01       		.byte	0x1
+ 2023 023e 3F       		.uleb128 0x3f
+ 2024 023f 19       		.uleb128 0x19
+ 2025 0240 03       		.uleb128 0x3
+ 2026 0241 0E       		.uleb128 0xe
+ 2027 0242 3A       		.uleb128 0x3a
+ 2028 0243 0B       		.uleb128 0xb
+ 2029 0244 3B       		.uleb128 0x3b
+ 2030 0245 0B       		.uleb128 0xb
+ 2031 0246 27       		.uleb128 0x27
+ 2032 0247 19       		.uleb128 0x19
+ 2033 0248 49       		.uleb128 0x49
+ 2034 0249 13       		.uleb128 0x13
+ 2035 024a 3C       		.uleb128 0x3c
+ 2036 024b 19       		.uleb128 0x19
+ 2037 024c 00       		.byte	0
+ 2038 024d 00       		.byte	0
+ 2039 024e 00       		.byte	0
+ 2040              		.section	.debug_loc,"",%progbits
+ 2041              	.Ldebug_loc0:
+ 2042              	.LLST0:
+ 2043 0000 00000000 		.4byte	.LVL0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 40
+
+
+ 2044 0004 10000000 		.4byte	.LVL1
+ 2045 0008 0100     		.2byte	0x1
+ 2046 000a 50       		.byte	0x50
+ 2047 000b 10000000 		.4byte	.LVL1
+ 2048 000f 14000000 		.4byte	.LVL3
+ 2049 0013 0400     		.2byte	0x4
+ 2050 0015 F3       		.byte	0xf3
+ 2051 0016 01       		.uleb128 0x1
+ 2052 0017 50       		.byte	0x50
+ 2053 0018 9F       		.byte	0x9f
+ 2054 0019 14000000 		.4byte	.LVL3
+ 2055 001d 24000000 		.4byte	.LVL5
+ 2056 0021 0100     		.2byte	0x1
+ 2057 0023 50       		.byte	0x50
+ 2058 0024 24000000 		.4byte	.LVL5
+ 2059 0028 3C000000 		.4byte	.LFE0
+ 2060 002c 0400     		.2byte	0x4
+ 2061 002e F3       		.byte	0xf3
+ 2062 002f 01       		.uleb128 0x1
+ 2063 0030 50       		.byte	0x50
+ 2064 0031 9F       		.byte	0x9f
+ 2065 0032 00000000 		.4byte	0
+ 2066 0036 00000000 		.4byte	0
+ 2067              	.LLST1:
+ 2068 003a 00000000 		.4byte	.LVL0
+ 2069 003e 12000000 		.4byte	.LVL2
+ 2070 0042 0100     		.2byte	0x1
+ 2071 0044 51       		.byte	0x51
+ 2072 0045 12000000 		.4byte	.LVL2
+ 2073 0049 14000000 		.4byte	.LVL3
+ 2074 004d 0400     		.2byte	0x4
+ 2075 004f F3       		.byte	0xf3
+ 2076 0050 01       		.uleb128 0x1
+ 2077 0051 51       		.byte	0x51
+ 2078 0052 9F       		.byte	0x9f
+ 2079 0053 14000000 		.4byte	.LVL3
+ 2080 0057 26000000 		.4byte	.LVL6
+ 2081 005b 0100     		.2byte	0x1
+ 2082 005d 51       		.byte	0x51
+ 2083 005e 26000000 		.4byte	.LVL6
+ 2084 0062 3C000000 		.4byte	.LFE0
+ 2085 0066 0400     		.2byte	0x4
+ 2086 0068 F3       		.byte	0xf3
+ 2087 0069 01       		.uleb128 0x1
+ 2088 006a 51       		.byte	0x51
+ 2089 006b 9F       		.byte	0x9f
+ 2090 006c 00000000 		.4byte	0
+ 2091 0070 00000000 		.4byte	0
+ 2092              	.LLST2:
+ 2093 0074 00000000 		.4byte	.LVL0
+ 2094 0078 2E000000 		.4byte	.LVL8
+ 2095 007c 0200     		.2byte	0x2
+ 2096 007e 30       		.byte	0x30
+ 2097 007f 9F       		.byte	0x9f
+ 2098 0080 2E000000 		.4byte	.LVL8
+ 2099 0084 3C000000 		.4byte	.LFE0
+ 2100 0088 0100     		.2byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 41
+
+
+ 2101 008a 53       		.byte	0x53
+ 2102 008b 00000000 		.4byte	0
+ 2103 008f 00000000 		.4byte	0
+ 2104              	.LLST3:
+ 2105 0093 1A000000 		.4byte	.LVL4
+ 2106 0097 26000000 		.4byte	.LVL6
+ 2107 009b 0200     		.2byte	0x2
+ 2108 009d 34       		.byte	0x34
+ 2109 009e 9F       		.byte	0x9f
+ 2110 009f 00000000 		.4byte	0
+ 2111 00a3 00000000 		.4byte	0
+ 2112              	.LLST4:
+ 2113 00a7 1A000000 		.4byte	.LVL4
+ 2114 00ab 24000000 		.4byte	.LVL5
+ 2115 00af 0100     		.2byte	0x1
+ 2116 00b1 50       		.byte	0x50
+ 2117 00b2 24000000 		.4byte	.LVL5
+ 2118 00b6 26000000 		.4byte	.LVL6
+ 2119 00ba 0400     		.2byte	0x4
+ 2120 00bc F3       		.byte	0xf3
+ 2121 00bd 01       		.uleb128 0x1
+ 2122 00be 50       		.byte	0x50
+ 2123 00bf 9F       		.byte	0x9f
+ 2124 00c0 00000000 		.4byte	0
+ 2125 00c4 00000000 		.4byte	0
+ 2126              	.LLST5:
+ 2127 00c8 00000000 		.4byte	.LVL9
+ 2128 00cc 0A000000 		.4byte	.LVL10
+ 2129 00d0 0100     		.2byte	0x1
+ 2130 00d2 50       		.byte	0x50
+ 2131 00d3 0A000000 		.4byte	.LVL10
+ 2132 00d7 06010000 		.4byte	.LVL31
+ 2133 00db 0100     		.2byte	0x1
+ 2134 00dd 54       		.byte	0x54
+ 2135 00de 06010000 		.4byte	.LVL31
+ 2136 00e2 08010000 		.4byte	.LFE1
+ 2137 00e6 0400     		.2byte	0x4
+ 2138 00e8 F3       		.byte	0xf3
+ 2139 00e9 01       		.uleb128 0x1
+ 2140 00ea 50       		.byte	0x50
+ 2141 00eb 9F       		.byte	0x9f
+ 2142 00ec 00000000 		.4byte	0
+ 2143 00f0 00000000 		.4byte	0
+ 2144              	.LLST6:
+ 2145 00f4 00000000 		.4byte	.LVL9
+ 2146 00f8 15000000 		.4byte	.LVL12-1
+ 2147 00fc 0100     		.2byte	0x1
+ 2148 00fe 51       		.byte	0x51
+ 2149 00ff 15000000 		.4byte	.LVL12-1
+ 2150 0103 1E000000 		.4byte	.LVL14
+ 2151 0107 0100     		.2byte	0x1
+ 2152 0109 55       		.byte	0x55
+ 2153 010a 1E000000 		.4byte	.LVL14
+ 2154 010e 22000000 		.4byte	.LVL15
+ 2155 0112 0400     		.2byte	0x4
+ 2156 0114 F3       		.byte	0xf3
+ 2157 0115 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 42
+
+
+ 2158 0116 51       		.byte	0x51
+ 2159 0117 9F       		.byte	0x9f
+ 2160 0118 22000000 		.4byte	.LVL15
+ 2161 011c 2E000000 		.4byte	.LVL17
+ 2162 0120 0100     		.2byte	0x1
+ 2163 0122 55       		.byte	0x55
+ 2164 0123 2E000000 		.4byte	.LVL17
+ 2165 0127 08010000 		.4byte	.LFE1
+ 2166 012b 0400     		.2byte	0x4
+ 2167 012d F3       		.byte	0xf3
+ 2168 012e 01       		.uleb128 0x1
+ 2169 012f 51       		.byte	0x51
+ 2170 0130 9F       		.byte	0x9f
+ 2171 0131 00000000 		.4byte	0
+ 2172 0135 00000000 		.4byte	0
+ 2173              	.LLST7:
+ 2174 0139 00000000 		.4byte	.LVL9
+ 2175 013d 15000000 		.4byte	.LVL12-1
+ 2176 0141 0100     		.2byte	0x1
+ 2177 0143 52       		.byte	0x52
+ 2178 0144 15000000 		.4byte	.LVL12-1
+ 2179 0148 1E000000 		.4byte	.LVL14
+ 2180 014c 0100     		.2byte	0x1
+ 2181 014e 56       		.byte	0x56
+ 2182 014f 1E000000 		.4byte	.LVL14
+ 2183 0153 22000000 		.4byte	.LVL15
+ 2184 0157 0400     		.2byte	0x4
+ 2185 0159 F3       		.byte	0xf3
+ 2186 015a 01       		.uleb128 0x1
+ 2187 015b 52       		.byte	0x52
+ 2188 015c 9F       		.byte	0x9f
+ 2189 015d 22000000 		.4byte	.LVL15
+ 2190 0161 64000000 		.4byte	.LVL23
+ 2191 0165 0100     		.2byte	0x1
+ 2192 0167 56       		.byte	0x56
+ 2193 0168 64000000 		.4byte	.LVL23
+ 2194 016c 08010000 		.4byte	.LFE1
+ 2195 0170 0400     		.2byte	0x4
+ 2196 0172 F3       		.byte	0xf3
+ 2197 0173 01       		.uleb128 0x1
+ 2198 0174 52       		.byte	0x52
+ 2199 0175 9F       		.byte	0x9f
+ 2200 0176 00000000 		.4byte	0
+ 2201 017a 00000000 		.4byte	0
+ 2202              	.LLST8:
+ 2203 017e 00000000 		.4byte	.LVL9
+ 2204 0182 16000000 		.4byte	.LVL12
+ 2205 0186 0600     		.2byte	0x6
+ 2206 0188 30       		.byte	0x30
+ 2207 0189 9F       		.byte	0x9f
+ 2208 018a 93       		.byte	0x93
+ 2209 018b 01       		.uleb128 0x1
+ 2210 018c 93       		.byte	0x93
+ 2211 018d 03       		.uleb128 0x3
+ 2212 018e 16000000 		.4byte	.LVL12
+ 2213 0192 1A000000 		.4byte	.LVL13
+ 2214 0196 0500     		.2byte	0x5
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 43
+
+
+ 2215 0198 50       		.byte	0x50
+ 2216 0199 93       		.byte	0x93
+ 2217 019a 01       		.uleb128 0x1
+ 2218 019b 93       		.byte	0x93
+ 2219 019c 03       		.uleb128 0x3
+ 2220 019d 00000000 		.4byte	0
+ 2221 01a1 00000000 		.4byte	0
+ 2222              	.LLST9:
+ 2223 01a5 12000000 		.4byte	.LVL11
+ 2224 01a9 15000000 		.4byte	.LVL12-1
+ 2225 01ad 0600     		.2byte	0x6
+ 2226 01af 71       		.byte	0x71
+ 2227 01b0 00       		.sleb128 0
+ 2228 01b1 72       		.byte	0x72
+ 2229 01b2 00       		.sleb128 0
+ 2230 01b3 22       		.byte	0x22
+ 2231 01b4 9F       		.byte	0x9f
+ 2232 01b5 15000000 		.4byte	.LVL12-1
+ 2233 01b9 1E000000 		.4byte	.LVL14
+ 2234 01bd 0600     		.2byte	0x6
+ 2235 01bf 75       		.byte	0x75
+ 2236 01c0 00       		.sleb128 0
+ 2237 01c1 76       		.byte	0x76
+ 2238 01c2 00       		.sleb128 0
+ 2239 01c3 22       		.byte	0x22
+ 2240 01c4 9F       		.byte	0x9f
+ 2241 01c5 1E000000 		.4byte	.LVL14
+ 2242 01c9 22000000 		.4byte	.LVL15
+ 2243 01cd 0800     		.2byte	0x8
+ 2244 01cf F3       		.byte	0xf3
+ 2245 01d0 01       		.uleb128 0x1
+ 2246 01d1 51       		.byte	0x51
+ 2247 01d2 F3       		.byte	0xf3
+ 2248 01d3 01       		.uleb128 0x1
+ 2249 01d4 52       		.byte	0x52
+ 2250 01d5 22       		.byte	0x22
+ 2251 01d6 9F       		.byte	0x9f
+ 2252 01d7 22000000 		.4byte	.LVL15
+ 2253 01db 2E000000 		.4byte	.LVL17
+ 2254 01df 0600     		.2byte	0x6
+ 2255 01e1 75       		.byte	0x75
+ 2256 01e2 00       		.sleb128 0
+ 2257 01e3 76       		.byte	0x76
+ 2258 01e4 00       		.sleb128 0
+ 2259 01e5 22       		.byte	0x22
+ 2260 01e6 9F       		.byte	0x9f
+ 2261 01e7 2E000000 		.4byte	.LVL17
+ 2262 01eb 64000000 		.4byte	.LVL23
+ 2263 01ef 0700     		.2byte	0x7
+ 2264 01f1 F3       		.byte	0xf3
+ 2265 01f2 01       		.uleb128 0x1
+ 2266 01f3 51       		.byte	0x51
+ 2267 01f4 76       		.byte	0x76
+ 2268 01f5 00       		.sleb128 0
+ 2269 01f6 22       		.byte	0x22
+ 2270 01f7 9F       		.byte	0x9f
+ 2271 01f8 64000000 		.4byte	.LVL23
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 44
+
+
+ 2272 01fc 08010000 		.4byte	.LFE1
+ 2273 0200 0800     		.2byte	0x8
+ 2274 0202 F3       		.byte	0xf3
+ 2275 0203 01       		.uleb128 0x1
+ 2276 0204 51       		.byte	0x51
+ 2277 0205 F3       		.byte	0xf3
+ 2278 0206 01       		.uleb128 0x1
+ 2279 0207 52       		.byte	0x52
+ 2280 0208 22       		.byte	0x22
+ 2281 0209 9F       		.byte	0x9f
+ 2282 020a 00000000 		.4byte	0
+ 2283 020e 00000000 		.4byte	0
+ 2284              	.LLST10:
+ 2285 0212 12000000 		.4byte	.LVL11
+ 2286 0216 04010000 		.4byte	.LVL30
+ 2287 021a 0200     		.2byte	0x2
+ 2288 021c 30       		.byte	0x30
+ 2289 021d 9F       		.byte	0x9f
+ 2290 021e 04010000 		.4byte	.LVL30
+ 2291 0222 08010000 		.4byte	.LFE1
+ 2292 0226 0100     		.2byte	0x1
+ 2293 0228 50       		.byte	0x50
+ 2294 0229 00000000 		.4byte	0
+ 2295 022d 00000000 		.4byte	0
+ 2296              	.LLST11:
+ 2297 0231 4E000000 		.4byte	.LVL20
+ 2298 0235 53000000 		.4byte	.LVL21-1
+ 2299 0239 0600     		.2byte	0x6
+ 2300 023b 71       		.byte	0x71
+ 2301 023c 00       		.sleb128 0
+ 2302 023d 08       		.byte	0x8
+ 2303 023e FF       		.byte	0xff
+ 2304 023f 1A       		.byte	0x1a
+ 2305 0240 9F       		.byte	0x9f
+ 2306 0241 00000000 		.4byte	0
+ 2307 0245 00000000 		.4byte	0
+ 2308              	.LLST12:
+ 2309 0249 00000000 		.4byte	.LVL32
+ 2310 024d 0E000000 		.4byte	.LVL34
+ 2311 0251 0100     		.2byte	0x1
+ 2312 0253 50       		.byte	0x50
+ 2313 0254 0E000000 		.4byte	.LVL34
+ 2314 0258 40000000 		.4byte	.LVL41
+ 2315 025c 0100     		.2byte	0x1
+ 2316 025e 54       		.byte	0x54
+ 2317 025f 40000000 		.4byte	.LVL41
+ 2318 0263 42000000 		.4byte	.LVL42
+ 2319 0267 0100     		.2byte	0x1
+ 2320 0269 50       		.byte	0x50
+ 2321 026a 42000000 		.4byte	.LVL42
+ 2322 026e 44000000 		.4byte	.LVL43
+ 2323 0272 0200     		.2byte	0x2
+ 2324 0274 91       		.byte	0x91
+ 2325 0275 6C       		.sleb128 -20
+ 2326 0276 44000000 		.4byte	.LVL43
+ 2327 027a 46000000 		.4byte	.LFE2
+ 2328 027e 0400     		.2byte	0x4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 45
+
+
+ 2329 0280 F3       		.byte	0xf3
+ 2330 0281 01       		.uleb128 0x1
+ 2331 0282 50       		.byte	0x50
+ 2332 0283 9F       		.byte	0x9f
+ 2333 0284 00000000 		.4byte	0
+ 2334 0288 00000000 		.4byte	0
+ 2335              	.LLST13:
+ 2336 028c 00000000 		.4byte	.LVL32
+ 2337 0290 0C000000 		.4byte	.LVL33
+ 2338 0294 0100     		.2byte	0x1
+ 2339 0296 51       		.byte	0x51
+ 2340 0297 0C000000 		.4byte	.LVL33
+ 2341 029b 40000000 		.4byte	.LVL41
+ 2342 029f 0400     		.2byte	0x4
+ 2343 02a1 F3       		.byte	0xf3
+ 2344 02a2 01       		.uleb128 0x1
+ 2345 02a3 51       		.byte	0x51
+ 2346 02a4 9F       		.byte	0x9f
+ 2347 02a5 40000000 		.4byte	.LVL41
+ 2348 02a9 44000000 		.4byte	.LVL43
+ 2349 02ad 0100     		.2byte	0x1
+ 2350 02af 51       		.byte	0x51
+ 2351 02b0 44000000 		.4byte	.LVL43
+ 2352 02b4 46000000 		.4byte	.LFE2
+ 2353 02b8 0400     		.2byte	0x4
+ 2354 02ba F3       		.byte	0xf3
+ 2355 02bb 01       		.uleb128 0x1
+ 2356 02bc 51       		.byte	0x51
+ 2357 02bd 9F       		.byte	0x9f
+ 2358 02be 00000000 		.4byte	0
+ 2359 02c2 00000000 		.4byte	0
+ 2360              	.LLST14:
+ 2361 02c6 00000000 		.4byte	.LVL32
+ 2362 02ca 15000000 		.4byte	.LVL35-1
+ 2363 02ce 0100     		.2byte	0x1
+ 2364 02d0 52       		.byte	0x52
+ 2365 02d1 15000000 		.4byte	.LVL35-1
+ 2366 02d5 40000000 		.4byte	.LVL41
+ 2367 02d9 0400     		.2byte	0x4
+ 2368 02db F3       		.byte	0xf3
+ 2369 02dc 01       		.uleb128 0x1
+ 2370 02dd 52       		.byte	0x52
+ 2371 02de 9F       		.byte	0x9f
+ 2372 02df 40000000 		.4byte	.LVL41
+ 2373 02e3 44000000 		.4byte	.LVL43
+ 2374 02e7 0100     		.2byte	0x1
+ 2375 02e9 52       		.byte	0x52
+ 2376 02ea 44000000 		.4byte	.LVL43
+ 2377 02ee 46000000 		.4byte	.LFE2
+ 2378 02f2 0400     		.2byte	0x4
+ 2379 02f4 F3       		.byte	0xf3
+ 2380 02f5 01       		.uleb128 0x1
+ 2381 02f6 52       		.byte	0x52
+ 2382 02f7 9F       		.byte	0x9f
+ 2383 02f8 00000000 		.4byte	0
+ 2384 02fc 00000000 		.4byte	0
+ 2385              	.LLST15:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 46
+
+
+ 2386 0300 00000000 		.4byte	.LVL32
+ 2387 0304 15000000 		.4byte	.LVL35-1
+ 2388 0308 0100     		.2byte	0x1
+ 2389 030a 53       		.byte	0x53
+ 2390 030b 15000000 		.4byte	.LVL35-1
+ 2391 030f 40000000 		.4byte	.LVL41
+ 2392 0313 0400     		.2byte	0x4
+ 2393 0315 F3       		.byte	0xf3
+ 2394 0316 01       		.uleb128 0x1
+ 2395 0317 53       		.byte	0x53
+ 2396 0318 9F       		.byte	0x9f
+ 2397 0319 40000000 		.4byte	.LVL41
+ 2398 031d 44000000 		.4byte	.LVL43
+ 2399 0321 0100     		.2byte	0x1
+ 2400 0323 53       		.byte	0x53
+ 2401 0324 44000000 		.4byte	.LVL43
+ 2402 0328 46000000 		.4byte	.LFE2
+ 2403 032c 0400     		.2byte	0x4
+ 2404 032e F3       		.byte	0xf3
+ 2405 032f 01       		.uleb128 0x1
+ 2406 0330 53       		.byte	0x53
+ 2407 0331 9F       		.byte	0x9f
+ 2408 0332 00000000 		.4byte	0
+ 2409 0336 00000000 		.4byte	0
+ 2410              	.LLST16:
+ 2411 033a 00000000 		.4byte	.LVL32
+ 2412 033e 3E000000 		.4byte	.LVL40
+ 2413 0342 0200     		.2byte	0x2
+ 2414 0344 30       		.byte	0x30
+ 2415 0345 9F       		.byte	0x9f
+ 2416 0346 3E000000 		.4byte	.LVL40
+ 2417 034a 40000000 		.4byte	.LVL41
+ 2418 034e 0100     		.2byte	0x1
+ 2419 0350 50       		.byte	0x50
+ 2420 0351 40000000 		.4byte	.LVL41
+ 2421 0355 44000000 		.4byte	.LVL43
+ 2422 0359 0200     		.2byte	0x2
+ 2423 035b 30       		.byte	0x30
+ 2424 035c 9F       		.byte	0x9f
+ 2425 035d 44000000 		.4byte	.LVL43
+ 2426 0361 46000000 		.4byte	.LFE2
+ 2427 0365 0100     		.2byte	0x1
+ 2428 0367 50       		.byte	0x50
+ 2429 0368 00000000 		.4byte	0
+ 2430 036c 00000000 		.4byte	0
+ 2431              		.section	.debug_aranges,"",%progbits
+ 2432 0000 2C000000 		.4byte	0x2c
+ 2433 0004 0200     		.2byte	0x2
+ 2434 0006 00000000 		.4byte	.Ldebug_info0
+ 2435 000a 04       		.byte	0x4
+ 2436 000b 00       		.byte	0
+ 2437 000c 0000     		.2byte	0
+ 2438 000e 0000     		.2byte	0
+ 2439 0010 00000000 		.4byte	.LFB0
+ 2440 0014 3C000000 		.4byte	.LFE0-.LFB0
+ 2441 0018 00000000 		.4byte	.LFB1
+ 2442 001c 08010000 		.4byte	.LFE1-.LFB1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 47
+
+
+ 2443 0020 00000000 		.4byte	.LFB2
+ 2444 0024 46000000 		.4byte	.LFE2-.LFB2
+ 2445 0028 00000000 		.4byte	0
+ 2446 002c 00000000 		.4byte	0
+ 2447              		.section	.debug_ranges,"",%progbits
+ 2448              	.Ldebug_ranges0:
+ 2449 0000 00000000 		.4byte	.LFB0
+ 2450 0004 3C000000 		.4byte	.LFE0
+ 2451 0008 00000000 		.4byte	.LFB1
+ 2452 000c 08010000 		.4byte	.LFE1
+ 2453 0010 00000000 		.4byte	.LFB2
+ 2454 0014 46000000 		.4byte	.LFE2
+ 2455 0018 00000000 		.4byte	0
+ 2456 001c 00000000 		.4byte	0
+ 2457              		.section	.debug_line,"",%progbits
+ 2458              	.Ldebug_line0:
+ 2459 0000 3D020000 		.section	.debug_str,"MS",%progbits,1
+ 2459      02008301 
+ 2459      00000201 
+ 2459      FB0E0D00 
+ 2459      01010101 
+ 2460              	.LASF11:
+ 2461 0000 4D515454 		.ascii	"MQTTPACKET_BUFFER_TOO_SHORT\000"
+ 2461      5041434B 
+ 2461      45545F42 
+ 2461      55464645 
+ 2461      525F544F 
+ 2462              	.LASF83:
+ 2463 001c 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 2463      4320342E 
+ 2463      392E3320 
+ 2463      32303135 
+ 2463      30333033 
+ 2464 004f 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 2464      20726576 
+ 2464      6973696F 
+ 2464      6E203232 
+ 2464      31323230 
+ 2465 0082 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 2465      66756E63 
+ 2465      74696F6E 
+ 2465      2D736563 
+ 2465      74696F6E 
+ 2466              	.LASF34:
+ 2467 00aa 73697A65 		.ascii	"size_t\000"
+ 2467      5F7400
+ 2468              	.LASF50:
+ 2469 00b1 746F7069 		.ascii	"topicName\000"
+ 2469      634E616D 
+ 2469      6500
+ 2470              	.LASF80:
+ 2471 00bb 72656164 		.ascii	"readInt\000"
+ 2471      496E7400 
+ 2472              	.LASF55:
+ 2473 00c3 636C6965 		.ascii	"clientID\000"
+ 2473      6E744944 
+ 2473      00
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 48
+
+
+ 2474              	.LASF31:
+ 2475 00cc 74797065 		.ascii	"type\000"
+ 2475      00
+ 2476              	.LASF79:
+ 2477 00d1 72656164 		.ascii	"readMQTTLenString\000"
+ 2477      4D515454 
+ 2477      4C656E53 
+ 2477      7472696E 
+ 2477      6700
+ 2478              	.LASF45:
+ 2479 00e3 70617373 		.ascii	"password\000"
+ 2479      776F7264 
+ 2479      00
+ 2480              	.LASF26:
+ 2481 00ec 554E5355 		.ascii	"UNSUBACK\000"
+ 2481      4241434B 
+ 2481      00
+ 2482              	.LASF30:
+ 2483 00f5 72657461 		.ascii	"retain\000"
+ 2483      696E00
+ 2484              	.LASF39:
+ 2485 00fc 6C656E73 		.ascii	"lenstring\000"
+ 2485      7472696E 
+ 2485      6700
+ 2486              	.LASF7:
+ 2487 0106 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2487      206C6F6E 
+ 2487      6720756E 
+ 2487      7369676E 
+ 2487      65642069 
+ 2488              	.LASF67:
+ 2489 011d 50726F74 		.ascii	"Protocol\000"
+ 2489      6F636F6C 
+ 2489      00
+ 2490              	.LASF42:
+ 2491 0126 77696C6C 		.ascii	"will\000"
+ 2491      00
+ 2492              	.LASF43:
+ 2493 012b 77696C6C 		.ascii	"willQoS\000"
+ 2493      516F5300 
+ 2494              	.LASF12:
+ 2495 0133 4D515454 		.ascii	"MQTTPACKET_READ_ERROR\000"
+ 2495      5041434B 
+ 2495      45545F52 
+ 2495      4541445F 
+ 2495      4552524F 
+ 2496              	.LASF6:
+ 2497 0149 6C6F6E67 		.ascii	"long long int\000"
+ 2497      206C6F6E 
+ 2497      6720696E 
+ 2497      7400
+ 2498              	.LASF0:
+ 2499 0157 7369676E 		.ascii	"signed char\000"
+ 2499      65642063 
+ 2499      68617200 
+ 2500              	.LASF77:
+ 2501 0163 72656164 		.ascii	"readChar\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 49
+
+
+ 2501      43686172 
+ 2501      00
+ 2502              	.LASF33:
+ 2503 016c 62697473 		.ascii	"bits\000"
+ 2503      00
+ 2504              	.LASF4:
+ 2505 0171 6C6F6E67 		.ascii	"long int\000"
+ 2505      20696E74 
+ 2505      00
+ 2506              	.LASF57:
+ 2507 017a 77696C6C 		.ascii	"willFlag\000"
+ 2507      466C6167 
+ 2507      00
+ 2508              	.LASF49:
+ 2509 0183 73747275 		.ascii	"struct_version\000"
+ 2509      63745F76 
+ 2509      65727369 
+ 2509      6F6E00
+ 2510              	.LASF25:
+ 2511 0192 554E5355 		.ascii	"UNSUBSCRIBE\000"
+ 2511      42534352 
+ 2511      49424500 
+ 2512              	.LASF73:
+ 2513 019e 73657373 		.ascii	"sessionPresent\000"
+ 2513      696F6E50 
+ 2513      72657365 
+ 2513      6E7400
+ 2514              	.LASF32:
+ 2515 01ad 62797465 		.ascii	"byte\000"
+ 2515      00
+ 2516              	.LASF82:
+ 2517 01b2 4D515454 		.ascii	"MQTTPacket_encode\000"
+ 2517      5061636B 
+ 2517      65745F65 
+ 2517      6E636F64 
+ 2517      6500
+ 2518              	.LASF41:
+ 2519 01c4 636C6561 		.ascii	"cleansession\000"
+ 2519      6E736573 
+ 2519      73696F6E 
+ 2519      00
+ 2520              	.LASF15:
+ 2521 01d1 6D736754 		.ascii	"msgTypes\000"
+ 2521      79706573 
+ 2521      00
+ 2522              	.LASF44:
+ 2523 01da 77696C6C 		.ascii	"willRetain\000"
+ 2523      52657461 
+ 2523      696E00
+ 2524              	.LASF8:
+ 2525 01e5 756E7369 		.ascii	"unsigned int\000"
+ 2525      676E6564 
+ 2525      20696E74 
+ 2525      00
+ 2526              	.LASF53:
+ 2527 01f2 4D515454 		.ascii	"MQTTPacket_willOptions\000"
+ 2527      5061636B 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 50
+
+
+ 2527      65745F77 
+ 2527      696C6C4F 
+ 2527      7074696F 
+ 2528              	.LASF17:
+ 2529 0209 434F4E4E 		.ascii	"CONNACK\000"
+ 2529      41434B00 
+ 2530              	.LASF59:
+ 2531 0211 73657373 		.ascii	"sessionpresent\000"
+ 2531      696F6E70 
+ 2531      72657365 
+ 2531      6E7400
+ 2532              	.LASF14:
+ 2533 0220 6572726F 		.ascii	"errors\000"
+ 2533      727300
+ 2534              	.LASF5:
+ 2535 0227 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2535      20756E73 
+ 2535      69676E65 
+ 2535      6420696E 
+ 2535      7400
+ 2536              	.LASF66:
+ 2537 0239 656E6464 		.ascii	"enddata\000"
+ 2537      61746100 
+ 2538              	.LASF36:
+ 2539 0241 64617461 		.ascii	"data\000"
+ 2539      00
+ 2540              	.LASF3:
+ 2541 0246 73686F72 		.ascii	"short unsigned int\000"
+ 2541      7420756E 
+ 2541      7369676E 
+ 2541      65642069 
+ 2541      6E7400
+ 2542              	.LASF13:
+ 2543 0259 4D515454 		.ascii	"MQTTPACKET_READ_COMPLETE\000"
+ 2543      5041434B 
+ 2543      45545F52 
+ 2543      4541445F 
+ 2543      434F4D50 
+ 2544              	.LASF70:
+ 2545 0272 4D515454 		.ascii	"MQTTSerialize_connack\000"
+ 2545      53657269 
+ 2545      616C697A 
+ 2545      655F636F 
+ 2545      6E6E6163 
+ 2546              	.LASF24:
+ 2547 0288 53554241 		.ascii	"SUBACK\000"
+ 2547      434B00
+ 2548              	.LASF46:
+ 2549 028f 75736572 		.ascii	"username\000"
+ 2549      6E616D65 
+ 2549      00
+ 2550              	.LASF40:
+ 2551 0298 4D515454 		.ascii	"MQTTString\000"
+ 2551      53747269 
+ 2551      6E6700
+ 2552              	.LASF58:
+ 2553 02a3 4D515454 		.ascii	"MQTTPacket_connectData\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 51
+
+
+ 2553      5061636B 
+ 2553      65745F63 
+ 2553      6F6E6E65 
+ 2553      63744461 
+ 2554              	.LASF62:
+ 2555 02ba 76657273 		.ascii	"version\000"
+ 2555      696F6E00 
+ 2556              	.LASF9:
+ 2557 02c2 73697A65 		.ascii	"sizetype\000"
+ 2557      74797065 
+ 2557      00
+ 2558              	.LASF56:
+ 2559 02cb 6B656570 		.ascii	"keepAliveInterval\000"
+ 2559      416C6976 
+ 2559      65496E74 
+ 2559      65727661 
+ 2559      6C00
+ 2560              	.LASF75:
+ 2561 02dd 4D515454 		.ascii	"MQTTPacket_checkVersion\000"
+ 2561      5061636B 
+ 2561      65745F63 
+ 2561      6865636B 
+ 2561      56657273 
+ 2562              	.LASF38:
+ 2563 02f5 63737472 		.ascii	"cstring\000"
+ 2563      696E6700 
+ 2564              	.LASF51:
+ 2565 02fd 6D657373 		.ascii	"message\000"
+ 2565      61676500 
+ 2566              	.LASF29:
+ 2567 0305 44495343 		.ascii	"DISCONNECT\000"
+ 2567      4F4E4E45 
+ 2567      435400
+ 2568              	.LASF78:
+ 2569 0310 4D515454 		.ascii	"MQTTPacket_decodeBuf\000"
+ 2569      5061636B 
+ 2569      65745F64 
+ 2569      65636F64 
+ 2569      65427566 
+ 2570              	.LASF65:
+ 2571 0325 63757264 		.ascii	"curdata\000"
+ 2571      61746100 
+ 2572              	.LASF68:
+ 2573 032d 6D796C65 		.ascii	"mylen\000"
+ 2573      6E00
+ 2574              	.LASF28:
+ 2575 0333 50494E47 		.ascii	"PINGRESP\000"
+ 2575      52455350 
+ 2575      00
+ 2576              	.LASF16:
+ 2577 033c 434F4E4E 		.ascii	"CONNECT\000"
+ 2577      45435400 
+ 2578              	.LASF61:
+ 2579 0344 70726F74 		.ascii	"protocol\000"
+ 2579      6F636F6C 
+ 2579      00
+ 2580              	.LASF1:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 52
+
+
+ 2581 034d 756E7369 		.ascii	"unsigned char\000"
+ 2581      676E6564 
+ 2581      20636861 
+ 2581      7200
+ 2582              	.LASF69:
+ 2583 035b 4D515454 		.ascii	"MQTTDeserialize_connect\000"
+ 2583      44657365 
+ 2583      7269616C 
+ 2583      697A655F 
+ 2583      636F6E6E 
+ 2584              	.LASF52:
+ 2585 0373 72657461 		.ascii	"retained\000"
+ 2585      696E6564 
+ 2585      00
+ 2586              	.LASF2:
+ 2587 037c 73686F72 		.ascii	"short int\000"
+ 2587      7420696E 
+ 2587      7400
+ 2588              	.LASF18:
+ 2589 0386 5055424C 		.ascii	"PUBLISH\000"
+ 2589      49534800 
+ 2590              	.LASF71:
+ 2591 038e 6275666C 		.ascii	"buflen\000"
+ 2591      656E00
+ 2592              	.LASF74:
+ 2593 0395 65786974 		.ascii	"exit\000"
+ 2593      00
+ 2594              	.LASF85:
+ 2595 039a 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 2595      73657273 
+ 2595      5C646465 
+ 2595      6D69646F 
+ 2595      765C446F 
+ 2596 03c8 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 2596      6530315C 
+ 2596      53656E73 
+ 2596      65416269 
+ 2596      6C697479 
+ 2597              	.LASF35:
+ 2598 03e3 4D515454 		.ascii	"MQTTHeader\000"
+ 2598      48656164 
+ 2598      657200
+ 2599              	.LASF48:
+ 2600 03ee 73747275 		.ascii	"struct_id\000"
+ 2600      63745F69 
+ 2600      6400
+ 2601              	.LASF37:
+ 2602 03f8 4D515454 		.ascii	"MQTTLenString\000"
+ 2602      4C656E53 
+ 2602      7472696E 
+ 2602      6700
+ 2603              	.LASF23:
+ 2604 0406 53554253 		.ascii	"SUBSCRIBE\000"
+ 2604      43524942 
+ 2604      4500
+ 2605              	.LASF84:
+ 2606 0410 2E2E5C61 		.ascii	"..\\acn-sdk-c\\src\\mqtt\\packet\\src\\MQTTConnectS"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 53
+
+
+ 2606      636E2D73 
+ 2606      646B2D63 
+ 2606      5C737263 
+ 2606      5C6D7174 
+ 2607 043d 65727665 		.ascii	"erver.c\000"
+ 2607      722E6300 
+ 2608              	.LASF10:
+ 2609 0445 63686172 		.ascii	"char\000"
+ 2609      00
+ 2610              	.LASF72:
+ 2611 044a 636F6E6E 		.ascii	"connack_rc\000"
+ 2611      61636B5F 
+ 2611      726300
+ 2612              	.LASF19:
+ 2613 0455 50554241 		.ascii	"PUBACK\000"
+ 2613      434B00
+ 2614              	.LASF60:
+ 2615 045c 4D515454 		.ascii	"MQTTConnackFlags\000"
+ 2615      436F6E6E 
+ 2615      61636B46 
+ 2615      6C616773 
+ 2615      00
+ 2616              	.LASF76:
+ 2617 046d 6D656D63 		.ascii	"memcmp\000"
+ 2617      6D7000
+ 2618              	.LASF22:
+ 2619 0474 50554243 		.ascii	"PUBCOMP\000"
+ 2619      4F4D5000 
+ 2620              	.LASF81:
+ 2621 047c 77726974 		.ascii	"writeChar\000"
+ 2621      65436861 
+ 2621      7200
+ 2622              	.LASF63:
+ 2623 0486 666C6167 		.ascii	"flags\000"
+ 2623      7300
+ 2624              	.LASF47:
+ 2625 048c 4D515454 		.ascii	"MQTTConnectFlags\000"
+ 2625      436F6E6E 
+ 2625      65637446 
+ 2625      6C616773 
+ 2625      00
+ 2626              	.LASF20:
+ 2627 049d 50554252 		.ascii	"PUBREC\000"
+ 2627      454300
+ 2628              	.LASF21:
+ 2629 04a4 50554252 		.ascii	"PUBREL\000"
+ 2629      454C00
+ 2630              	.LASF27:
+ 2631 04ab 50494E47 		.ascii	"PINGREQ\000"
+ 2631      52455100 
+ 2632              	.LASF54:
+ 2633 04b3 4D515454 		.ascii	"MQTTVersion\000"
+ 2633      56657273 
+ 2633      696F6E00 
+ 2634              	.LASF64:
+ 2635 04bf 68656164 		.ascii	"header\000"
+ 2635      657200
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cc8P5geE.s 			page 54
+
+
+ 2636              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

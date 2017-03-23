@@ -1,0 +1,4609 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.RTC_PPS_InterruptHandler,"ax",%progbits
+  18              		.align	1
+  19              		.global	RTC_PPS_InterruptHandler
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	RTC_PPS_InterruptHandler, %function
+  23              	RTC_PPS_InterruptHandler:
+  24              	.LFB66:
+  25              		.file 1 ".\\main.c"
+   1:.\main.c      **** /* ========================================
+   2:.\main.c      ****  *
+   3:.\main.c      ****  * Copyright YOUR COMPANY, THE YEAR
+   4:.\main.c      ****  * All Rights Reserved
+   5:.\main.c      ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:.\main.c      ****  *
+   7:.\main.c      ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:.\main.c      ****  * WHICH IS THE PROPERTY OF your company.
+   9:.\main.c      ****  *
+  10:.\main.c      ****  * ========================================
+  11:.\main.c      **** */
+  12:.\main.c      **** #include <project.h>
+  13:.\main.c      **** #include <main.h>
+  14:.\main.c      **** #include <json/telemetry.h>
+  15:.\main.c      **** #include <Sensor_Processes.h>
+  16:.\main.c      **** #include <stdio.h>
+  17:.\main.c      **** #include <ntp/ntp.h>
+  18:.\main.c      **** #include <time/time.h>
+  19:.\main.c      **** #include <arrow/connection.h>
+  20:.\main.c      **** #include <debug.h>
+  21:.\main.c      **** #include <arrow/mqtt.h>
+  22:.\main.c      **** 
+  23:.\main.c      **** #include <arrow/connection.h>
+  24:.\main.c      **** 
+  25:.\main.c      **** #define TX_ENABLE
+  26:.\main.c      **** #define LED_ON          0
+  27:.\main.c      **** #define LED_OFF         1
+  28:.\main.c      **** 
+  29:.\main.c      **** #define WDT_MATCH_VALUE_1SEC 10*WDT_MATCH_VALUE_100MS
+  30:.\main.c      **** static int counter = 0;
+  31:.\main.c      **** 
+  32:.\main.c      **** void WDT_INT_Handler(void) {
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 2
+
+
+  33:.\main.c      ****     
+  34:.\main.c      ****     if(CySysWdtGetInterruptSource() & CY_SYS_WDT_COUNTER0_INT)
+  35:.\main.c      **** 	{
+  36:.\main.c      **** 		CySysWdtClearInterrupt(CY_SYS_WDT_COUNTER0_INT);
+  37:.\main.c      **** 		CySysWdtUnlock();
+  38:.\main.c      ****         BLUE_LED_Write( ~BLUE_LED_Read() );
+  39:.\main.c      **** 		CySysWdtDisable(CY_SYS_WDT_COUNTER0_MASK);
+  40:.\main.c      **** 		if ( counter < 60 ) {
+  41:.\main.c      ****             CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
+  42:.\main.c      **** 		    CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, WDT_MATCH_VALUE_1SEC);
+  43:.\main.c      ****         } else {
+  44:.\main.c      ****             CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_RESET);
+  45:.\main.c      ****             CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, 0x0001);
+  46:.\main.c      ****             CySysWdtWriteClearOnMatch(CY_SYS_WDT_COUNTER0, TRUE);
+  47:.\main.c      ****             
+  48:.\main.c      ****         }
+  49:.\main.c      **** 		CySysWdtEnable(CY_SYS_WDT_COUNTER0_MASK);
+  50:.\main.c      **** 	    CySysWdtLock();
+  51:.\main.c      ****         counter++;
+  52:.\main.c      **** 	}
+  53:.\main.c      **** }
+  54:.\main.c      **** 
+  55:.\main.c      **** void WDT_Feed() {
+  56:.\main.c      ****     counter = 0;
+  57:.\main.c      ****     CySysWatchdogFeed(CY_SYS_WDT_COUNTER0); // if this board sent the data
+  58:.\main.c      ****     CySysWdtResetCounters(CY_SYS_WDT_COUNTER0);
+  59:.\main.c      ****     
+  60:.\main.c      **** }
+  61:.\main.c      **** 
+  62:.\main.c      **** void wdt_init() {
+  63:.\main.c      ****     CySysWdtUnlock(); 
+  64:.\main.c      ****     CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
+  65:.\main.c      ****     CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, WDT_MATCH_VALUE_1SEC); // 1 sec
+  66:.\main.c      **** 	CySysWdtWriteClearOnMatch(CY_SYS_WDT_COUNTER0, TRUE);
+  67:.\main.c      **** 	CyIntSetPriority(WATCHDOG_INT_VEC_NUM, WATCHDOG_INT_VEC_PRIORITY);
+  68:.\main.c      ****     CyIntEnable(WATCHDOG_INT_VEC_NUM);
+  69:.\main.c      ****     CySysWdtEnable(CY_SYS_WDT_COUNTER0_MASK);
+  70:.\main.c      ****     CySysWdtLock();
+  71:.\main.c      ****     CyIntSetVector(WATCHDOG_INT_VEC_NUM, &WDT_INT_Handler);
+  72:.\main.c      **** }
+  73:.\main.c      **** 
+  74:.\main.c      **** CY_ISR(RTC_PPS_InterruptHandler) {
+  26              		.loc 1 74 0
+  27              		.cfi_startproc
+  28 0000 08B5     		push	{r3, lr}
+  29              		.cfi_def_cfa_offset 8
+  30              		.cfi_offset 3, -8
+  31              		.cfi_offset 14, -4
+  75:.\main.c      ****    	RTC_PPS_STATUS;
+  32              		.loc 1 75 0
+  33 0002 024B     		ldr	r3, .L2
+  76:.\main.c      ****     RTC_Update();
+  77:.\main.c      **** }
+  34              		.loc 1 77 0
+  35              		@ sp needed
+  75:.\main.c      ****    	RTC_PPS_STATUS;
+  36              		.loc 1 75 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 3
+
+
+  37 0004 1B78     		ldrb	r3, [r3]
+  76:.\main.c      ****     RTC_Update();
+  38              		.loc 1 76 0
+  39 0006 FFF7FEFF 		bl	RTC_Update
+  40              	.LVL0:
+  41              		.loc 1 77 0
+  42 000a 08BD     		pop	{r3, pc}
+  43              	.L3:
+  44              		.align	2
+  45              	.L2:
+  46 000c 63000F40 		.word	1074724963
+  47              		.cfi_endproc
+  48              	.LFE66:
+  49              		.size	RTC_PPS_InterruptHandler, .-RTC_PPS_InterruptHandler
+  50              		.section	.text.WDT_INT_Handler,"ax",%progbits
+  51              		.align	1
+  52              		.global	WDT_INT_Handler
+  53              		.code	16
+  54              		.thumb_func
+  55              		.type	WDT_INT_Handler, %function
+  56              	WDT_INT_Handler:
+  57              	.LFB63:
+  32:.\main.c      ****     
+  58              		.loc 1 32 0
+  59              		.cfi_startproc
+  60 0000 10B5     		push	{r4, lr}
+  61              		.cfi_def_cfa_offset 8
+  62              		.cfi_offset 4, -8
+  63              		.cfi_offset 14, -4
+  34:.\main.c      **** 	{
+  64              		.loc 1 34 0
+  65 0002 FFF7FEFF 		bl	CySysWdtGetInterruptSource
+  66              	.LVL1:
+  67 0006 0423     		mov	r3, #4
+  68 0008 1842     		tst	r0, r3
+  69 000a 2ED0     		beq	.L4
+  70              	.LBB4:
+  71              	.LBB5:
+  36:.\main.c      **** 		CySysWdtUnlock();
+  72              		.loc 1 36 0
+  73 000c 181C     		mov	r0, r3
+  74 000e FFF7FEFF 		bl	CySysWdtClearInterrupt
+  75              	.LVL2:
+  37:.\main.c      ****         BLUE_LED_Write( ~BLUE_LED_Read() );
+  76              		.loc 1 37 0
+  77 0012 FFF7FEFF 		bl	CySysWdtUnlock
+  78              	.LVL3:
+  38:.\main.c      **** 		CySysWdtDisable(CY_SYS_WDT_COUNTER0_MASK);
+  79              		.loc 1 38 0
+  80 0016 FFF7FEFF 		bl	BLUE_LED_Read
+  81              	.LVL4:
+  82 001a C043     		mvn	r0, r0
+  83 001c C0B2     		uxtb	r0, r0
+  84 001e FFF7FEFF 		bl	BLUE_LED_Write
+  85              	.LVL5:
+  39:.\main.c      **** 		if ( counter < 60 ) {
+  86              		.loc 1 39 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 4
+
+
+  87 0022 0120     		mov	r0, #1
+  88 0024 FFF7FEFF 		bl	CySysWdtDisable
+  89              	.LVL6:
+  40:.\main.c      ****             CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
+  90              		.loc 1 40 0
+  91 0028 104C     		ldr	r4, .L12
+  41:.\main.c      **** 		    CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, WDT_MATCH_VALUE_1SEC);
+  92              		.loc 1 41 0
+  93 002a 0020     		mov	r0, #0
+  40:.\main.c      ****             CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
+  94              		.loc 1 40 0
+  95 002c 2368     		ldr	r3, [r4]
+  96 002e 3B2B     		cmp	r3, #59
+  97 0030 08DC     		bgt	.L6
+  41:.\main.c      **** 		    CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, WDT_MATCH_VALUE_1SEC);
+  98              		.loc 1 41 0
+  99 0032 0121     		mov	r1, #1
+ 100 0034 FFF7FEFF 		bl	CySysWdtSetMode
+ 101              	.LVL7:
+  42:.\main.c      ****         } else {
+ 102              		.loc 1 42 0
+ 103 0038 AF21     		mov	r1, #175
+ 104 003a 0020     		mov	r0, #0
+ 105 003c 0902     		lsl	r1, r1, #8
+ 106 003e FFF7FEFF 		bl	CySysWdtSetMatch
+ 107              	.LVL8:
+ 108 0042 0AE0     		b	.L7
+ 109              	.L6:
+  44:.\main.c      ****             CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, 0x0001);
+ 110              		.loc 1 44 0
+ 111 0044 0221     		mov	r1, #2
+ 112 0046 FFF7FEFF 		bl	CySysWdtSetMode
+ 113              	.LVL9:
+  45:.\main.c      ****             CySysWdtWriteClearOnMatch(CY_SYS_WDT_COUNTER0, TRUE);
+ 114              		.loc 1 45 0
+ 115 004a 0020     		mov	r0, #0
+ 116 004c 0121     		mov	r1, #1
+ 117 004e FFF7FEFF 		bl	CySysWdtSetMatch
+ 118              	.LVL10:
+  46:.\main.c      ****             
+ 119              		.loc 1 46 0
+ 120 0052 0020     		mov	r0, #0
+ 121 0054 0121     		mov	r1, #1
+ 122 0056 FFF7FEFF 		bl	CySysWdtSetClearOnMatch
+ 123              	.LVL11:
+ 124              	.L7:
+  49:.\main.c      **** 	    CySysWdtLock();
+ 125              		.loc 1 49 0
+ 126 005a 0120     		mov	r0, #1
+ 127 005c FFF7FEFF 		bl	CySysWdtEnable
+ 128              	.LVL12:
+  50:.\main.c      ****         counter++;
+ 129              		.loc 1 50 0
+ 130 0060 FFF7FEFF 		bl	CySysWdtLock
+ 131              	.LVL13:
+  51:.\main.c      **** 	}
+ 132              		.loc 1 51 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 5
+
+
+ 133 0064 2368     		ldr	r3, [r4]
+ 134 0066 0133     		add	r3, r3, #1
+ 135 0068 2360     		str	r3, [r4]
+ 136              	.L4:
+ 137              	.LBE5:
+ 138              	.LBE4:
+  53:.\main.c      **** 
+ 139              		.loc 1 53 0
+ 140              		@ sp needed
+ 141 006a 10BD     		pop	{r4, pc}
+ 142              	.L13:
+ 143              		.align	2
+ 144              	.L12:
+ 145 006c 00000000 		.word	.LANCHOR0
+ 146              		.cfi_endproc
+ 147              	.LFE63:
+ 148              		.size	WDT_INT_Handler, .-WDT_INT_Handler
+ 149              		.section	.text.WDT_Feed,"ax",%progbits
+ 150              		.align	1
+ 151              		.global	WDT_Feed
+ 152              		.code	16
+ 153              		.thumb_func
+ 154              		.type	WDT_Feed, %function
+ 155              	WDT_Feed:
+ 156              	.LFB64:
+  55:.\main.c      ****     counter = 0;
+ 157              		.loc 1 55 0
+ 158              		.cfi_startproc
+ 159 0000 10B5     		push	{r4, lr}
+ 160              		.cfi_def_cfa_offset 8
+ 161              		.cfi_offset 4, -8
+ 162              		.cfi_offset 14, -4
+  56:.\main.c      ****     CySysWatchdogFeed(CY_SYS_WDT_COUNTER0); // if this board sent the data
+ 163              		.loc 1 56 0
+ 164 0002 0024     		mov	r4, #0
+ 165 0004 044B     		ldr	r3, .L15
+  57:.\main.c      ****     CySysWdtResetCounters(CY_SYS_WDT_COUNTER0);
+ 166              		.loc 1 57 0
+ 167 0006 201C     		mov	r0, r4
+  56:.\main.c      ****     CySysWatchdogFeed(CY_SYS_WDT_COUNTER0); // if this board sent the data
+ 168              		.loc 1 56 0
+ 169 0008 1C60     		str	r4, [r3]
+  57:.\main.c      ****     CySysWdtResetCounters(CY_SYS_WDT_COUNTER0);
+ 170              		.loc 1 57 0
+ 171 000a FFF7FEFF 		bl	CySysWatchdogFeed
+ 172              	.LVL14:
+  58:.\main.c      ****     
+ 173              		.loc 1 58 0
+ 174 000e 201C     		mov	r0, r4
+ 175 0010 FFF7FEFF 		bl	CySysWdtResetCounters
+ 176              	.LVL15:
+  60:.\main.c      **** 
+ 177              		.loc 1 60 0
+ 178              		@ sp needed
+ 179 0014 10BD     		pop	{r4, pc}
+ 180              	.L16:
+ 181 0016 C046     		.align	2
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 6
+
+
+ 182              	.L15:
+ 183 0018 00000000 		.word	.LANCHOR0
+ 184              		.cfi_endproc
+ 185              	.LFE64:
+ 186              		.size	WDT_Feed, .-WDT_Feed
+ 187              		.section	.text.wdt_init,"ax",%progbits
+ 188              		.align	1
+ 189              		.global	wdt_init
+ 190              		.code	16
+ 191              		.thumb_func
+ 192              		.type	wdt_init, %function
+ 193              	wdt_init:
+ 194              	.LFB65:
+  62:.\main.c      ****     CySysWdtUnlock(); 
+ 195              		.loc 1 62 0
+ 196              		.cfi_startproc
+ 197 0000 08B5     		push	{r3, lr}
+ 198              		.cfi_def_cfa_offset 8
+ 199              		.cfi_offset 3, -8
+ 200              		.cfi_offset 14, -4
+  63:.\main.c      ****     CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
+ 201              		.loc 1 63 0
+ 202 0002 FFF7FEFF 		bl	CySysWdtUnlock
+ 203              	.LVL16:
+  64:.\main.c      ****     CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, WDT_MATCH_VALUE_1SEC); // 1 sec
+ 204              		.loc 1 64 0
+ 205 0006 0020     		mov	r0, #0
+ 206 0008 0121     		mov	r1, #1
+ 207 000a FFF7FEFF 		bl	CySysWdtSetMode
+ 208              	.LVL17:
+  65:.\main.c      **** 	CySysWdtWriteClearOnMatch(CY_SYS_WDT_COUNTER0, TRUE);
+ 209              		.loc 1 65 0
+ 210 000e AF21     		mov	r1, #175
+ 211 0010 0020     		mov	r0, #0
+ 212 0012 0902     		lsl	r1, r1, #8
+ 213 0014 FFF7FEFF 		bl	CySysWdtSetMatch
+ 214              	.LVL18:
+  66:.\main.c      **** 	CyIntSetPriority(WATCHDOG_INT_VEC_NUM, WATCHDOG_INT_VEC_PRIORITY);
+ 215              		.loc 1 66 0
+ 216 0018 0020     		mov	r0, #0
+ 217 001a 0121     		mov	r1, #1
+ 218 001c FFF7FEFF 		bl	CySysWdtSetClearOnMatch
+ 219              	.LVL19:
+  67:.\main.c      ****     CyIntEnable(WATCHDOG_INT_VEC_NUM);
+ 220              		.loc 1 67 0
+ 221 0020 0321     		mov	r1, #3
+ 222 0022 0820     		mov	r0, #8
+ 223 0024 FFF7FEFF 		bl	CyIntSetPriority
+ 224              	.LVL20:
+  68:.\main.c      ****     CySysWdtEnable(CY_SYS_WDT_COUNTER0_MASK);
+ 225              		.loc 1 68 0
+ 226 0028 0820     		mov	r0, #8
+ 227 002a FFF7FEFF 		bl	CyIntEnable
+ 228              	.LVL21:
+  69:.\main.c      ****     CySysWdtLock();
+ 229              		.loc 1 69 0
+ 230 002e 0120     		mov	r0, #1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 7
+
+
+ 231 0030 FFF7FEFF 		bl	CySysWdtEnable
+ 232              	.LVL22:
+  70:.\main.c      ****     CyIntSetVector(WATCHDOG_INT_VEC_NUM, &WDT_INT_Handler);
+ 233              		.loc 1 70 0
+ 234 0034 FFF7FEFF 		bl	CySysWdtLock
+ 235              	.LVL23:
+  71:.\main.c      **** }
+ 236              		.loc 1 71 0
+ 237 0038 0820     		mov	r0, #8
+ 238 003a 0249     		ldr	r1, .L18
+ 239 003c FFF7FEFF 		bl	CyIntSetVector
+ 240              	.LVL24:
+  72:.\main.c      **** 
+ 241              		.loc 1 72 0
+ 242              		@ sp needed
+ 243 0040 08BD     		pop	{r3, pc}
+ 244              	.L19:
+ 245 0042 C046     		.align	2
+ 246              	.L18:
+ 247 0044 00000000 		.word	WDT_INT_Handler
+ 248              		.cfi_endproc
+ 249              	.LFE65:
+ 250              		.size	wdt_init, .-wdt_init
+ 251              		.section	.text.user_init,"ax",%progbits
+ 252              		.align	1
+ 253              		.global	user_init
+ 254              		.code	16
+ 255              		.thumb_func
+ 256              		.type	user_init, %function
+ 257              	user_init:
+ 258              	.LFB67:
+  78:.\main.c      **** 
+  79:.\main.c      **** void user_init() {
+ 259              		.loc 1 79 0
+ 260              		.cfi_startproc
+ 261 0000 08B5     		push	{r3, lr}
+ 262              		.cfi_def_cfa_offset 8
+ 263              		.cfi_offset 3, -8
+ 264              		.cfi_offset 14, -4
+  80:.\main.c      ****     RED_LED_Write(LED_OFF);
+ 265              		.loc 1 80 0
+ 266 0002 0120     		mov	r0, #1
+ 267 0004 FFF7FEFF 		bl	RED_LED_Write
+ 268              	.LVL25:
+  81:.\main.c      ****     GREEN_LED_Write(LED_OFF);
+ 269              		.loc 1 81 0
+ 270 0008 0120     		mov	r0, #1
+ 271 000a FFF7FEFF 		bl	GREEN_LED_Write
+ 272              	.LVL26:
+  82:.\main.c      ****     BLUE_LED_Write(LED_OFF);
+ 273              		.loc 1 82 0
+ 274 000e 0120     		mov	r0, #1
+ 275 0010 FFF7FEFF 		bl	BLUE_LED_Write
+ 276              	.LVL27:
+  83:.\main.c      **** 
+  84:.\main.c      ****     SHD_LED_1_Write(LED_OFF);
+ 277              		.loc 1 84 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 8
+
+
+ 278 0014 0120     		mov	r0, #1
+ 279 0016 FFF7FEFF 		bl	SHD_LED_1_Write
+ 280              	.LVL28:
+  85:.\main.c      ****     SHD_LED_2_Write(LED_OFF);
+ 281              		.loc 1 85 0
+ 282 001a 0120     		mov	r0, #1
+ 283 001c FFF7FEFF 		bl	SHD_LED_2_Write
+ 284              	.LVL29:
+  86:.\main.c      ****     
+  87:.\main.c      **** #ifdef TX_ENABLE
+  88:.\main.c      ****     SW_Tx_UART_1_Start();
+ 285              		.loc 1 88 0
+ 286 0020 FFF7FEFF 		bl	SW_Tx_UART_1_Start
+ 287              	.LVL30:
+  89:.\main.c      **** #endif
+  90:.\main.c      **** 
+  91:.\main.c      ****     I2CM_Start();
+ 288              		.loc 1 91 0
+ 289 0024 FFF7FEFF 		bl	I2CM_Start
+ 290              	.LVL31:
+  92:.\main.c      ****     I2CM_Enable();
+ 291              		.loc 1 92 0
+ 292 0028 FFF7FEFF 		bl	I2CM_Enable
+ 293              	.LVL32:
+  93:.\main.c      ****     I2CM_EnableInt();
+ 294              		.loc 1 93 0
+ 295 002c 0A20     		mov	r0, #10
+ 296 002e FFF7FEFF 		bl	CyIntEnable
+ 297              	.LVL33:
+  94:.\main.c      **** }
+ 298              		.loc 1 94 0
+ 299              		@ sp needed
+ 300 0032 08BD     		pop	{r3, pc}
+ 301              		.cfi_endproc
+ 302              	.LFE67:
+ 303              		.size	user_init, .-user_init
+ 304              		.section	.text.read_sensor,"ax",%progbits
+ 305              		.align	1
+ 306              		.global	read_sensor
+ 307              		.code	16
+ 308              		.thumb_func
+ 309              		.type	read_sensor, %function
+ 310              	read_sensor:
+ 311              	.LFB68:
+  95:.\main.c      **** 
+  96:.\main.c      **** void read_sensor(Sensor_Data_t *sensor_data) {
+ 312              		.loc 1 96 0
+ 313              		.cfi_startproc
+ 314              	.LVL34:
+ 315 0000 10B5     		push	{r4, lr}
+ 316              		.cfi_def_cfa_offset 8
+ 317              		.cfi_offset 4, -8
+ 318              		.cfi_offset 14, -4
+  97:.\main.c      ****     if ( (sensor_data->Status & HUMIDICON_PRESENT_MASK) == 1) {
+ 319              		.loc 1 97 0
+ 320 0002 0378     		ldrb	r3, [r0]
+  96:.\main.c      ****     if ( (sensor_data->Status & HUMIDICON_PRESENT_MASK) == 1) {
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 9
+
+
+ 321              		.loc 1 96 0
+ 322 0004 041C     		mov	r4, r0
+ 323              		.loc 1 97 0
+ 324 0006 DB07     		lsl	r3, r3, #31
+ 325 0008 09D5     		bpl	.L23
+  98:.\main.c      ****         Start_TH_Measurement();
+ 326              		.loc 1 98 0
+ 327 000a FFF7FEFF 		bl	Start_TH_Measurement
+ 328              	.LVL35:
+  99:.\main.c      ****         if ( Read_Temp_and_Humidity(sensor_data) < 0 ) RED_LED_Write(LED_ON);
+ 329              		.loc 1 99 0
+ 330 000e 201C     		mov	r0, r4
+ 331 0010 FFF7FEFF 		bl	Read_Temp_and_Humidity
+ 332              	.LVL36:
+ 333 0014 0028     		cmp	r0, #0
+ 334 0016 02DA     		bge	.L23
+ 335              		.loc 1 99 0 is_stmt 0 discriminator 1
+ 336 0018 0020     		mov	r0, #0
+ 337 001a FFF7FEFF 		bl	RED_LED_Write
+ 338              	.LVL37:
+ 339              	.L23:
+ 100:.\main.c      ****     }
+ 101:.\main.c      ****     if ( sensor_data->Status & AIRFLOW_PRESENT_MASK) {
+ 340              		.loc 1 101 0 is_stmt 1
+ 341 001e 2378     		ldrb	r3, [r4]
+ 342 0020 9B07     		lsl	r3, r3, #30
+ 343 0022 09D5     		bpl	.L26
+ 102:.\main.c      ****         Start_Airflow_Measurement();
+ 344              		.loc 1 102 0
+ 345 0024 FFF7FEFF 		bl	Start_Airflow_Measurement
+ 346              	.LVL38:
+ 103:.\main.c      ****         if ( Read_Airflow(sensor_data) < 0 ) RED_LED_Write(LED_ON);
+ 347              		.loc 1 103 0
+ 348 0028 201C     		mov	r0, r4
+ 349 002a FFF7FEFF 		bl	Read_Airflow
+ 350              	.LVL39:
+ 351 002e 0028     		cmp	r0, #0
+ 352 0030 02DA     		bge	.L26
+ 353              		.loc 1 103 0 is_stmt 0 discriminator 1
+ 354 0032 0020     		mov	r0, #0
+ 355 0034 FFF7FEFF 		bl	RED_LED_Write
+ 356              	.LVL40:
+ 357              	.L26:
+ 104:.\main.c      ****     }
+ 105:.\main.c      ****     if ( sensor_data->Status & PRESSURE_PRESENT_MASK) {
+ 358              		.loc 1 105 0 is_stmt 1
+ 359 0038 2378     		ldrb	r3, [r4]
+ 360 003a 5B07     		lsl	r3, r3, #29
+ 361 003c 07D5     		bpl	.L29
+ 106:.\main.c      ****         if ( Read_Pressure(sensor_data) < 0) RED_LED_Write(LED_ON);
+ 362              		.loc 1 106 0
+ 363 003e 201C     		mov	r0, r4
+ 364 0040 FFF7FEFF 		bl	Read_Pressure
+ 365              	.LVL41:
+ 366 0044 0028     		cmp	r0, #0
+ 367 0046 02DA     		bge	.L29
+ 368              		.loc 1 106 0 is_stmt 0 discriminator 1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 10
+
+
+ 369 0048 0020     		mov	r0, #0
+ 370 004a FFF7FEFF 		bl	RED_LED_Write
+ 371              	.LVL42:
+ 372              	.L29:
+ 107:.\main.c      ****     }
+ 108:.\main.c      ****     if ( sensor_data->Status & PRESSURE_PRESENT_MASK) {
+ 373              		.loc 1 108 0 is_stmt 1
+ 374 004e 2378     		ldrb	r3, [r4]
+ 375 0050 5B07     		lsl	r3, r3, #29
+ 376 0052 02D5     		bpl	.L21
+ 109:.\main.c      ****         sensor_data->Magnetic_Switch = MAG_SW_IN_Read();
+ 377              		.loc 1 109 0
+ 378 0054 FFF7FEFF 		bl	MAG_SW_IN_Read
+ 379              	.LVL43:
+ 380 0058 E070     		strb	r0, [r4, #3]
+ 381              	.L21:
+ 110:.\main.c      ****     }
+ 111:.\main.c      **** }
+ 382              		.loc 1 111 0
+ 383              		@ sp needed
+ 384              	.LVL44:
+ 385 005a 10BD     		pop	{r4, pc}
+ 386              		.cfi_endproc
+ 387              	.LFE68:
+ 388              		.size	read_sensor, .-read_sensor
+ 389              		.section	.text.startup.main,"ax",%progbits
+ 390              		.align	1
+ 391              		.global	main
+ 392              		.code	16
+ 393              		.thumb_func
+ 394              		.type	main, %function
+ 395              	main:
+ 396              	.LFB69:
+ 112:.\main.c      **** 
+ 113:.\main.c      **** int main() {
+ 397              		.loc 1 113 0
+ 398              		.cfi_startproc
+ 399 0000 10B5     		push	{r4, lr}
+ 400              		.cfi_def_cfa_offset 8
+ 401              		.cfi_offset 4, -8
+ 402              		.cfi_offset 14, -4
+ 403 0002 94B0     		sub	sp, sp, #80
+ 404              		.cfi_def_cfa_offset 88
+ 114:.\main.c      ****     
+ 115:.\main.c      ****     Sensor_Data_t sensor_data;
+ 116:.\main.c      ****     arrow_gateway_t gateway;
+ 117:.\main.c      ****     arrow_gateway_config_t config;
+ 118:.\main.c      ****     arrow_device_t device;
+ 119:.\main.c      ****     
+ 120:.\main.c      ****     wdt_init();
+ 405              		.loc 1 120 0
+ 406 0004 FFF7FEFF 		bl	wdt_init
+ 407              	.LVL45:
+ 121:.\main.c      ****     CySysTickStart();
+ 408              		.loc 1 121 0
+ 409 0008 FFF7FEFF 		bl	CySysTickStart
+ 410              	.LVL46:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 11
+
+
+ 122:.\main.c      ****     
+ 123:.\main.c      ****     PPS_ISR_Enable();
+ 411              		.loc 1 123 0
+ 412 000c FFF7FEFF 		bl	PPS_ISR_Enable
+ 413              	.LVL47:
+ 124:.\main.c      ****     PPS_ISR_StartEx(RTC_PPS_InterruptHandler);
+ 414              		.loc 1 124 0
+ 415 0010 6E48     		ldr	r0, .L58
+ 416 0012 FFF7FEFF 		bl	PPS_ISR_StartEx
+ 417              	.LVL48:
+ 125:.\main.c      ****     RTC_PPS_Start();    
+ 418              		.loc 1 125 0
+ 419 0016 FFF7FEFF 		bl	RTC_PPS_Start
+ 420              	.LVL49:
+ 126:.\main.c      ****     RTC_Start();
+ 421              		.loc 1 126 0
+ 422 001a FFF7FEFF 		bl	RTC_Start
+ 423              	.LVL50:
+ 127:.\main.c      ****     RTC_SetUnixTime(build_time());
+ 424              		.loc 1 127 0
+ 425 001e FFF7FEFF 		bl	build_time
+ 426              	.LVL51:
+ 427 0022 C117     		asr	r1, r0, #31
+ 428 0024 FFF7FEFF 		bl	RTC_SetUnixTime
+ 429              	.LVL52:
+ 128:.\main.c      ****     RTC_SetPeriod(1u, 1u);
+ 430              		.loc 1 128 0
+ 431 0028 0120     		mov	r0, #1
+ 432 002a 011C     		mov	r1, r0
+ 433 002c FFF7FEFF 		bl	RTC_SetPeriod
+ 434              	.LVL53:
+ 129:.\main.c      ****     
+ 130:.\main.c      ****     
+ 131:.\main.c      ****     
+ 132:.\main.c      ****     CyGlobalIntEnable; /* Enable global interrupts. */
+ 435              		.loc 1 132 0
+ 436              	@ 132 ".\main.c" 1
+ 437 0030 62B6     		CPSIE   i
+ 438              	@ 0 "" 2
+ 133:.\main.c      ****     
+ 134:.\main.c      ****     user_init();
+ 439              		.loc 1 134 0
+ 440              		.code	16
+ 441 0032 FFF7FEFF 		bl	user_init
+ 442              	.LVL54:
+ 135:.\main.c      ****       
+ 136:.\main.c      ****     arrow_device_init(&device);
+ 443              		.loc 1 136 0
+ 444 0036 07A8     		add	r0, sp, #28
+ 445 0038 FFF7FEFF 		bl	arrow_device_init
+ 446              	.LVL55:
+ 137:.\main.c      ****     arrow_device_set_hid(&device, "7896873687623");
+ 447              		.loc 1 137 0
+ 448 003c 07A8     		add	r0, sp, #28
+ 449 003e 6449     		ldr	r1, .L58+4
+ 450 0040 FFF7FEFF 		bl	arrow_device_set_hid
+ 451              	.LVL56:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 12
+
+
+ 138:.\main.c      ****     
+ 139:.\main.c      ****     Sensor_Data_init(&sensor_data);
+ 452              		.loc 1 139 0
+ 453 0044 05A8     		add	r0, sp, #20
+ 454 0046 FFF7FEFF 		bl	Sensor_Data_init
+ 455              	.LVL57:
+ 140:.\main.c      ****     
+ 141:.\main.c      ****     if ( Sensor_Present_Test(&sensor_data) < 0 ) {
+ 456              		.loc 1 141 0
+ 457 004a 05A8     		add	r0, sp, #20
+ 458 004c FFF7FEFF 		bl	Sensor_Present_Test
+ 459              	.LVL58:
+ 460 0050 0028     		cmp	r0, #0
+ 461 0052 02DA     		bge	.L36
+ 142:.\main.c      ****         RED_LED_Write(LED_ON);
+ 462              		.loc 1 142 0
+ 463 0054 0020     		mov	r0, #0
+ 464 0056 FFF7FEFF 		bl	RED_LED_Write
+ 465              	.LVL59:
+ 466              	.L36:
+ 143:.\main.c      ****         //CySysPmSleep();
+ 144:.\main.c      ****         //return -1;
+ 145:.\main.c      ****     }
+ 146:.\main.c      ****     
+ 147:.\main.c      ****     
+ 148:.\main.c      ****     volatile time_t now_s = time(NULL);
+ 467              		.loc 1 148 0
+ 468 005a 0020     		mov	r0, #0
+ 469 005c FFF7FEFF 		bl	time
+ 470              	.LVL60:
+ 149:.\main.c      ****     DBG("Unix time [%d]", now_s);   
+ 471              		.loc 1 149 0
+ 472 0060 5C4C     		ldr	r4, .L58+8
+ 148:.\main.c      ****     DBG("Unix time [%d]", now_s);   
+ 473              		.loc 1 148 0
+ 474 0062 0290     		str	r0, [sp, #8]
+ 475              		.loc 1 149 0
+ 476 0064 0299     		ldr	r1, [sp, #8]
+ 477 0066 201C     		mov	r0, r4
+ 478 0068 FFF7FEFF 		bl	dbg_line
+ 479              	.LVL61:
+ 150:.\main.c      ****     CyDelay(5000);
+ 480              		.loc 1 150 0
+ 481 006c 5A48     		ldr	r0, .L58+12
+ 482 006e FFF7FEFF 		bl	CyDelay
+ 483              	.LVL62:
+ 151:.\main.c      ****     
+ 152:.\main.c      ****     now_s = time(NULL);
+ 484              		.loc 1 152 0
+ 485 0072 0020     		mov	r0, #0
+ 486 0074 FFF7FEFF 		bl	time
+ 487              	.LVL63:
+ 488 0078 0290     		str	r0, [sp, #8]
+ 153:.\main.c      ****     DBG("Unix time [%d]", now_s);
+ 489              		.loc 1 153 0
+ 490 007a 0299     		ldr	r1, [sp, #8]
+ 491 007c 201C     		mov	r0, r4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 13
+
+
+ 492 007e FFF7FEFF 		bl	dbg_line
+ 493              	.LVL64:
+ 154:.\main.c      ****     
+ 155:.\main.c      ****     DBG("set time...");
+ 494              		.loc 1 155 0
+ 495 0082 5648     		ldr	r0, .L58+16
+ 496 0084 FFF7FEFF 		bl	dbg_line
+ 497              	.LVL65:
+ 156:.\main.c      ****     ntp_set_time_cycle();
+ 498              		.loc 1 156 0
+ 499 0088 FFF7FEFF 		bl	ntp_set_time_cycle
+ 500              	.LVL66:
+ 157:.\main.c      ****     
+ 158:.\main.c      ****     time_t now = time(NULL);
+ 501              		.loc 1 158 0
+ 502 008c 0020     		mov	r0, #0
+ 503 008e FFF7FEFF 		bl	time
+ 504              	.LVL67:
+ 505 0092 0390     		str	r0, [sp, #12]
+ 159:.\main.c      ****     DBG("date : %s", ctime(&now));
+ 506              		.loc 1 159 0
+ 507 0094 03A8     		add	r0, sp, #12
+ 508 0096 FFF7FEFF 		bl	ctime
+ 509              	.LVL68:
+ 510 009a 011C     		mov	r1, r0
+ 511 009c 5048     		ldr	r0, .L58+20
+ 512 009e FFF7FEFF 		bl	dbg_line
+ 513              	.LVL69:
+ 160:.\main.c      ****     
+ 161:.\main.c      ****     WDT_Feed();
+ 514              		.loc 1 161 0
+ 515 00a2 FFF7FEFF 		bl	WDT_Feed
+ 516              	.LVL70:
+ 517              	.L37:
+ 162:.\main.c      ****     while ( arrow_connect_gateway(&gateway) < 0) {
+ 518              		.loc 1 162 0
+ 519 00a6 0CA8     		add	r0, sp, #48
+ 520 00a8 FFF7FEFF 		bl	arrow_connect_gateway
+ 521              	.LVL71:
+ 522 00ac 0028     		cmp	r0, #0
+ 523 00ae 07DA     		bge	.L53
+ 163:.\main.c      ****         DBG("arrow gateway connection fail");
+ 524              		.loc 1 163 0
+ 525 00b0 4C48     		ldr	r0, .L58+24
+ 526 00b2 FFF7FEFF 		bl	dbg_line
+ 527              	.LVL72:
+ 164:.\main.c      ****         CyDelay(1000);
+ 528              		.loc 1 164 0
+ 529 00b6 FA20     		mov	r0, #250
+ 530 00b8 8000     		lsl	r0, r0, #2
+ 531 00ba FFF7FEFF 		bl	CyDelay
+ 532              	.LVL73:
+ 533 00be F2E7     		b	.L37
+ 534              	.L53:
+ 165:.\main.c      ****     }
+ 166:.\main.c      ****     
+ 167:.\main.c      ****     WDT_Feed();
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 14
+
+
+ 535              		.loc 1 167 0
+ 536 00c0 FFF7FEFF 		bl	WDT_Feed
+ 537              	.LVL74:
+ 538              	.L39:
+ 168:.\main.c      ****     while ( arrow_config( &gateway, &config ) < 0 ) {
+ 539              		.loc 1 168 0
+ 540 00c4 0CA8     		add	r0, sp, #48
+ 541 00c6 01A9     		add	r1, sp, #4
+ 542 00c8 FFF7FEFF 		bl	arrow_config
+ 543              	.LVL75:
+ 544 00cc 0028     		cmp	r0, #0
+ 545 00ce 07DA     		bge	.L54
+ 169:.\main.c      ****         DBG("arrow gateway config fail");
+ 546              		.loc 1 169 0
+ 547 00d0 4548     		ldr	r0, .L58+28
+ 548 00d2 FFF7FEFF 		bl	dbg_line
+ 549              	.LVL76:
+ 170:.\main.c      ****         CyDelay(1000);
+ 550              		.loc 1 170 0
+ 551 00d6 FA20     		mov	r0, #250
+ 552 00d8 8000     		lsl	r0, r0, #2
+ 553 00da FFF7FEFF 		bl	CyDelay
+ 554              	.LVL77:
+ 555 00de F1E7     		b	.L39
+ 556              	.L54:
+ 171:.\main.c      ****     }
+ 172:.\main.c      **** 
+ 173:.\main.c      ****     WDT_Feed();
+ 557              		.loc 1 173 0
+ 558 00e0 FFF7FEFF 		bl	WDT_Feed
+ 559              	.LVL78:
+ 174:.\main.c      ****     DBG("init device...");
+ 560              		.loc 1 174 0
+ 561 00e4 4148     		ldr	r0, .L58+32
+ 562 00e6 FFF7FEFF 		bl	dbg_line
+ 563              	.LVL79:
+ 564              	.L41:
+ 175:.\main.c      ****     while ( arrow_connect_device(&gateway, &device) < 0 ) {
+ 565              		.loc 1 175 0
+ 566 00ea 0CA8     		add	r0, sp, #48
+ 567 00ec 07A9     		add	r1, sp, #28
+ 568 00ee FFF7FEFF 		bl	arrow_connect_device
+ 569              	.LVL80:
+ 570 00f2 0028     		cmp	r0, #0
+ 571 00f4 07DA     		bge	.L55
+ 176:.\main.c      ****         DBG("arrow device connection fail");
+ 572              		.loc 1 176 0
+ 573 00f6 3E48     		ldr	r0, .L58+36
+ 574 00f8 FFF7FEFF 		bl	dbg_line
+ 575              	.LVL81:
+ 177:.\main.c      ****         CyDelay(1000);
+ 576              		.loc 1 177 0
+ 577 00fc FA20     		mov	r0, #250
+ 578 00fe 8000     		lsl	r0, r0, #2
+ 579 0100 FFF7FEFF 		bl	CyDelay
+ 580              	.LVL82:
+ 581 0104 F1E7     		b	.L41
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 15
+
+
+ 582              	.L55:
+ 178:.\main.c      ****     }
+ 179:.\main.c      ****     
+ 180:.\main.c      ****     DBG("send telemetry");
+ 583              		.loc 1 180 0
+ 584 0106 3B48     		ldr	r0, .L58+40
+ 585 0108 FFF7FEFF 		bl	dbg_line
+ 586              	.LVL83:
+ 181:.\main.c      ****     
+ 182:.\main.c      ****     read_sensor(&sensor_data);
+ 587              		.loc 1 182 0
+ 588 010c 05A8     		add	r0, sp, #20
+ 589 010e FFF7FEFF 		bl	read_sensor
+ 590              	.LVL84:
+ 183:.\main.c      ****     WDT_Feed();
+ 591              		.loc 1 183 0
+ 592 0112 FFF7FEFF 		bl	WDT_Feed
+ 593              	.LVL85:
+ 594              	.L43:
+ 184:.\main.c      ****     while ( arrow_send_telemetry(&device, &sensor_data) < 0 ) { 
+ 595              		.loc 1 184 0
+ 596 0116 07A8     		add	r0, sp, #28
+ 597 0118 05A9     		add	r1, sp, #20
+ 598 011a FFF7FEFF 		bl	arrow_send_telemetry
+ 599              	.LVL86:
+ 600 011e 0028     		cmp	r0, #0
+ 601 0120 07DA     		bge	.L56
+ 185:.\main.c      ****         DBG("send telemetry fail");
+ 602              		.loc 1 185 0
+ 603 0122 3548     		ldr	r0, .L58+44
+ 604 0124 FFF7FEFF 		bl	dbg_line
+ 605              	.LVL87:
+ 186:.\main.c      ****         CyDelay(1000);
+ 606              		.loc 1 186 0
+ 607 0128 FA20     		mov	r0, #250
+ 608 012a 8000     		lsl	r0, r0, #2
+ 609 012c FFF7FEFF 		bl	CyDelay
+ 610              	.LVL88:
+ 611 0130 F1E7     		b	.L43
+ 612              	.L56:
+ 187:.\main.c      ****     }
+ 188:.\main.c      **** 
+ 189:.\main.c      ****     DBG("mqtt connecting...");
+ 613              		.loc 1 189 0
+ 614 0132 3248     		ldr	r0, .L58+48
+ 615 0134 FFF7FEFF 		bl	dbg_line
+ 616              	.LVL89:
+ 190:.\main.c      ****     WDT_Feed();
+ 617              		.loc 1 190 0
+ 618 0138 FFF7FEFF 		bl	WDT_Feed
+ 619              	.LVL90:
+ 620              	.L45:
+ 191:.\main.c      ****     while ( mqtt_connect(&gateway, &device, &config) < 0 ) {
+ 621              		.loc 1 191 0
+ 622 013c 0CA8     		add	r0, sp, #48
+ 623 013e 07A9     		add	r1, sp, #28
+ 624 0140 01AA     		add	r2, sp, #4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 16
+
+
+ 625 0142 FFF7FEFF 		bl	mqtt_connect
+ 626              	.LVL91:
+ 627 0146 0028     		cmp	r0, #0
+ 628 0148 04DA     		bge	.L57
+ 192:.\main.c      ****         CyDelay(1000);
+ 629              		.loc 1 192 0
+ 630 014a FA20     		mov	r0, #250
+ 631 014c 8000     		lsl	r0, r0, #2
+ 632 014e FFF7FEFF 		bl	CyDelay
+ 633              	.LVL92:
+ 634 0152 F3E7     		b	.L45
+ 635              	.L57:
+ 193:.\main.c      ****     }
+ 194:.\main.c      **** 
+ 195:.\main.c      ****     DBG("telemetry data sending...");
+ 636              		.loc 1 195 0
+ 637 0154 2A48     		ldr	r0, .L58+52
+ 638 0156 FFF7FEFF 		bl	dbg_line
+ 639              	.LVL93:
+ 196:.\main.c      ****     
+ 197:.\main.c      ****     volatile int i=0;
+ 640              		.loc 1 197 0
+ 641 015a 0023     		mov	r3, #0
+ 642 015c 0493     		str	r3, [sp, #16]
+ 643              	.L52:
+ 198:.\main.c      ****     for(;;) {
+ 199:.\main.c      ****         WDT_Feed();
+ 644              		.loc 1 199 0
+ 645 015e FFF7FEFF 		bl	WDT_Feed
+ 646              	.LVL94:
+ 200:.\main.c      ****         read_sensor(&sensor_data);
+ 647              		.loc 1 200 0
+ 648 0162 05A8     		add	r0, sp, #20
+ 649 0164 FFF7FEFF 		bl	read_sensor
+ 650              	.LVL95:
+ 201:.\main.c      ****         SW_Tx_UART_1_PutHexInt(i++);
+ 651              		.loc 1 201 0
+ 652 0168 0498     		ldr	r0, [sp, #16]
+ 653 016a 431C     		add	r3, r0, #1
+ 654 016c 80B2     		uxth	r0, r0
+ 655 016e 0493     		str	r3, [sp, #16]
+ 656 0170 FFF7FEFF 		bl	SW_Tx_UART_1_PutHexInt
+ 657              	.LVL96:
+ 202:.\main.c      ****         SW_Tx_UART_1_PutString(": ");
+ 658              		.loc 1 202 0
+ 659 0174 2348     		ldr	r0, .L58+56
+ 660 0176 FFF7FEFF 		bl	SW_Tx_UART_1_PutString
+ 661              	.LVL97:
+ 203:.\main.c      ****         SW_Tx_UART_1_PutCRLF();
+ 662              		.loc 1 203 0
+ 663 017a FFF7FEFF 		bl	SW_Tx_UART_1_PutCRLF
+ 664              	.LVL98:
+ 204:.\main.c      ****         
+ 205:.\main.c      ****         if ( mqtt_publish(&device, &sensor_data) < 0 ) {
+ 665              		.loc 1 205 0
+ 666 017e 07A8     		add	r0, sp, #28
+ 667 0180 05A9     		add	r1, sp, #20
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 17
+
+
+ 668 0182 FFF7FEFF 		bl	mqtt_publish
+ 669              	.LVL99:
+ 670 0186 0028     		cmp	r0, #0
+ 671 0188 10DA     		bge	.L48
+ 206:.\main.c      ****             DBG("mqtt publish failure...");
+ 672              		.loc 1 206 0
+ 673 018a 1F48     		ldr	r0, .L58+60
+ 674 018c FFF7FEFF 		bl	dbg_line
+ 675              	.LVL100:
+ 207:.\main.c      ****             mqtt_disconnect();
+ 676              		.loc 1 207 0
+ 677 0190 FFF7FEFF 		bl	mqtt_disconnect
+ 678              	.LVL101:
+ 679              	.L49:
+ 208:.\main.c      ****             while (mqtt_connect(&gateway, &device, &config) < 0) { CyDelay(1000); }
+ 680              		.loc 1 208 0 discriminator 1
+ 681 0194 0CA8     		add	r0, sp, #48
+ 682 0196 07A9     		add	r1, sp, #28
+ 683 0198 01AA     		add	r2, sp, #4
+ 684 019a FFF7FEFF 		bl	mqtt_connect
+ 685              	.LVL102:
+ 686 019e 0028     		cmp	r0, #0
+ 687 01a0 04DA     		bge	.L48
+ 688              		.loc 1 208 0 is_stmt 0 discriminator 2
+ 689 01a2 FA20     		mov	r0, #250
+ 690 01a4 8000     		lsl	r0, r0, #2
+ 691 01a6 FFF7FEFF 		bl	CyDelay
+ 692              	.LVL103:
+ 693 01aa F3E7     		b	.L49
+ 694              	.L48:
+ 209:.\main.c      ****         }
+ 210:.\main.c      ****         DBG("mqtt publish done");
+ 695              		.loc 1 210 0 is_stmt 1
+ 696 01ac 1748     		ldr	r0, .L58+64
+ 697 01ae FFF7FEFF 		bl	dbg_line
+ 698              	.LVL104:
+ 211:.\main.c      ****         WDT_Feed();
+ 699              		.loc 1 211 0
+ 700 01b2 FFF7FEFF 		bl	WDT_Feed
+ 701              	.LVL105:
+ 212:.\main.c      ****         
+ 213:.\main.c      ****         GREEN_LED_Write(LED_OFF);
+ 702              		.loc 1 213 0
+ 703 01b6 0120     		mov	r0, #1
+ 704 01b8 FFF7FEFF 		bl	GREEN_LED_Write
+ 705              	.LVL106:
+ 214:.\main.c      ****         CyDelay(TELEMETRY_DELAY);
+ 706              		.loc 1 214 0
+ 707 01bc 0648     		ldr	r0, .L58+12
+ 708 01be FFF7FEFF 		bl	CyDelay
+ 709              	.LVL107:
+ 215:.\main.c      ****         GREEN_LED_Write(LED_ON);
+ 710              		.loc 1 215 0
+ 711 01c2 0020     		mov	r0, #0
+ 712 01c4 FFF7FEFF 		bl	GREEN_LED_Write
+ 713              	.LVL108:
+ 216:.\main.c      ****          //CySysPmSleep();  
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 18
+
+
+ 217:.\main.c      ****         
+ 218:.\main.c      ****     }
+ 714              		.loc 1 218 0
+ 715 01c8 C9E7     		b	.L52
+ 716              	.L59:
+ 717 01ca C046     		.align	2
+ 718              	.L58:
+ 719 01cc 00000000 		.word	RTC_PPS_InterruptHandler
+ 720 01d0 00000000 		.word	.LC4
+ 721 01d4 0E000000 		.word	.LC6
+ 722 01d8 88130000 		.word	5000
+ 723 01dc 1D000000 		.word	.LC8
+ 724 01e0 29000000 		.word	.LC10
+ 725 01e4 33000000 		.word	.LC12
+ 726 01e8 51000000 		.word	.LC14
+ 727 01ec 6B000000 		.word	.LC16
+ 728 01f0 7A000000 		.word	.LC18
+ 729 01f4 97000000 		.word	.LC20
+ 730 01f8 A6000000 		.word	.LC22
+ 731 01fc BA000000 		.word	.LC24
+ 732 0200 CD000000 		.word	.LC26
+ 733 0204 E7000000 		.word	.LC28
+ 734 0208 EA000000 		.word	.LC30
+ 735 020c 02010000 		.word	.LC32
+ 736              		.cfi_endproc
+ 737              	.LFE69:
+ 738              		.size	main, .-main
+ 739              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 740              	.LC4:
+ 741 0000 37383936 		.ascii	"7896873687623\000"
+ 741      38373336 
+ 741      38373632 
+ 741      3300
+ 742              	.LC6:
+ 743 000e 556E6978 		.ascii	"Unix time [%d]\000"
+ 743      2074696D 
+ 743      65205B25 
+ 743      645D00
+ 744              	.LC8:
+ 745 001d 73657420 		.ascii	"set time...\000"
+ 745      74696D65 
+ 745      2E2E2E00 
+ 746              	.LC10:
+ 747 0029 64617465 		.ascii	"date : %s\000"
+ 747      203A2025 
+ 747      7300
+ 748              	.LC12:
+ 749 0033 6172726F 		.ascii	"arrow gateway connection fail\000"
+ 749      77206761 
+ 749      74657761 
+ 749      7920636F 
+ 749      6E6E6563 
+ 750              	.LC14:
+ 751 0051 6172726F 		.ascii	"arrow gateway config fail\000"
+ 751      77206761 
+ 751      74657761 
+ 751      7920636F 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 19
+
+
+ 751      6E666967 
+ 752              	.LC16:
+ 753 006b 696E6974 		.ascii	"init device...\000"
+ 753      20646576 
+ 753      6963652E 
+ 753      2E2E00
+ 754              	.LC18:
+ 755 007a 6172726F 		.ascii	"arrow device connection fail\000"
+ 755      77206465 
+ 755      76696365 
+ 755      20636F6E 
+ 755      6E656374 
+ 756              	.LC20:
+ 757 0097 73656E64 		.ascii	"send telemetry\000"
+ 757      2074656C 
+ 757      656D6574 
+ 757      727900
+ 758              	.LC22:
+ 759 00a6 73656E64 		.ascii	"send telemetry fail\000"
+ 759      2074656C 
+ 759      656D6574 
+ 759      72792066 
+ 759      61696C00 
+ 760              	.LC24:
+ 761 00ba 6D717474 		.ascii	"mqtt connecting...\000"
+ 761      20636F6E 
+ 761      6E656374 
+ 761      696E672E 
+ 761      2E2E00
+ 762              	.LC26:
+ 763 00cd 74656C65 		.ascii	"telemetry data sending...\000"
+ 763      6D657472 
+ 763      79206461 
+ 763      74612073 
+ 763      656E6469 
+ 764              	.LC28:
+ 765 00e7 3A2000   		.ascii	": \000"
+ 766              	.LC30:
+ 767 00ea 6D717474 		.ascii	"mqtt publish failure...\000"
+ 767      20707562 
+ 767      6C697368 
+ 767      20666169 
+ 767      6C757265 
+ 768              	.LC32:
+ 769 0102 6D717474 		.ascii	"mqtt publish done\000"
+ 769      20707562 
+ 769      6C697368 
+ 769      20646F6E 
+ 769      6500
+ 770              		.bss
+ 771              		.align	2
+ 772              		.set	.LANCHOR0,. + 0
+ 773              		.type	counter, %object
+ 774              		.size	counter, 4
+ 775              	counter:
+ 776 0000 00000000 		.space	4
+ 777              		.text
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 20
+
+
+ 778              	.Letext0:
+ 779              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 780              		.file 3 "..\\acn-sdk-c\\include/json/json.h"
+ 781              		.file 4 "..\\acn-sdk-c\\include/arrow/device.h"
+ 782              		.file 5 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 783              		.file 6 "..\\acn-sdk-c\\include/json/telemetry.h"
+ 784              		.file 7 "..\\acn-sdk-c\\include/arrow/gateway.h"
+ 785              		.file 8 "Generated_Source\\PSoC4/RTC.h"
+ 786              		.file 9 "Generated_Source\\PSoC4/CyLFClk.h"
+ 787              		.file 10 "Generated_Source\\PSoC4/BLUE_LED.h"
+ 788              		.file 11 "Generated_Source\\PSoC4/CyLib.h"
+ 789              		.file 12 "Generated_Source\\PSoC4/RED_LED.h"
+ 790              		.file 13 "Generated_Source\\PSoC4/GREEN_LED.h"
+ 791              		.file 14 "Generated_Source\\PSoC4/SHD_LED_1.h"
+ 792              		.file 15 "Generated_Source\\PSoC4/SHD_LED_2.h"
+ 793              		.file 16 "Generated_Source\\PSoC4/SW_Tx_UART_1.h"
+ 794              		.file 17 "Generated_Source\\PSoC4/I2CM.h"
+ 795              		.file 18 "./Sensor_Processes.h"
+ 796              		.file 19 "Generated_Source\\PSoC4/MAG_SW_IN.h"
+ 797              		.file 20 "Generated_Source\\PSoC4/PPS_ISR.h"
+ 798              		.file 21 "Generated_Source\\PSoC4/RTC_PPS.h"
+ 799              		.file 22 "..\\acn-sdk-c\\include/time/time.h"
+ 800              		.file 23 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9
+ 801              		.file 24 "..\\acn-sdk-c/platforms/senseability/trace.h"
+ 802              		.file 25 "..\\acn-sdk-c\\include/ntp/ntp.h"
+ 803              		.file 26 "..\\acn-sdk-c\\include/arrow/connection.h"
+ 804              		.file 27 "..\\acn-sdk-c\\include/arrow/mqtt.h"
+ 805              		.section	.debug_info,"",%progbits
+ 806              	.Ldebug_info0:
+ 807 0000 E40F0000 		.4byte	0xfe4
+ 808 0004 0400     		.2byte	0x4
+ 809 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 810 000a 04       		.byte	0x4
+ 811 000b 01       		.uleb128 0x1
+ 812 000c 04020000 		.4byte	.LASF127
+ 813 0010 01       		.byte	0x1
+ 814 0011 33070000 		.4byte	.LASF128
+ 815 0015 CD040000 		.4byte	.LASF129
+ 816 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 817 001d 00000000 		.4byte	0
+ 818 0021 00000000 		.4byte	.Ldebug_line0
+ 819 0025 02       		.uleb128 0x2
+ 820 0026 01       		.byte	0x1
+ 821 0027 06       		.byte	0x6
+ 822 0028 C9060000 		.4byte	.LASF0
+ 823 002c 02       		.uleb128 0x2
+ 824 002d 01       		.byte	0x1
+ 825 002e 08       		.byte	0x8
+ 826 002f 53060000 		.4byte	.LASF1
+ 827 0033 02       		.uleb128 0x2
+ 828 0034 02       		.byte	0x2
+ 829 0035 05       		.byte	0x5
+ 830 0036 33050000 		.4byte	.LASF2
+ 831 003a 02       		.uleb128 0x2
+ 832 003b 02       		.byte	0x2
+ 833 003c 07       		.byte	0x7
+ 834 003d D5060000 		.4byte	.LASF3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 21
+
+
+ 835 0041 02       		.uleb128 0x2
+ 836 0042 04       		.byte	0x4
+ 837 0043 05       		.byte	0x5
+ 838 0044 4A050000 		.4byte	.LASF4
+ 839 0048 02       		.uleb128 0x2
+ 840 0049 04       		.byte	0x4
+ 841 004a 07       		.byte	0x7
+ 842 004b 15060000 		.4byte	.LASF5
+ 843 004f 02       		.uleb128 0x2
+ 844 0050 08       		.byte	0x8
+ 845 0051 05       		.byte	0x5
+ 846 0052 FB030000 		.4byte	.LASF6
+ 847 0056 02       		.uleb128 0x2
+ 848 0057 08       		.byte	0x8
+ 849 0058 07       		.byte	0x7
+ 850 0059 AC010000 		.4byte	.LASF7
+ 851 005d 03       		.uleb128 0x3
+ 852 005e 04       		.byte	0x4
+ 853 005f 05       		.byte	0x5
+ 854 0060 696E7400 		.ascii	"int\000"
+ 855 0064 02       		.uleb128 0x2
+ 856 0065 04       		.byte	0x4
+ 857 0066 07       		.byte	0x7
+ 858 0067 89000000 		.4byte	.LASF8
+ 859 006b 04       		.uleb128 0x4
+ 860 006c 0D070000 		.4byte	.LASF9
+ 861 0070 02       		.byte	0x2
+ 862 0071 3801     		.2byte	0x138
+ 863 0073 2C000000 		.4byte	0x2c
+ 864 0077 04       		.uleb128 0x4
+ 865 0078 5E030000 		.4byte	.LASF10
+ 866 007c 02       		.byte	0x2
+ 867 007d 3901     		.2byte	0x139
+ 868 007f 3A000000 		.4byte	0x3a
+ 869 0083 04       		.uleb128 0x4
+ 870 0084 5B040000 		.4byte	.LASF11
+ 871 0088 02       		.byte	0x2
+ 872 0089 3A01     		.2byte	0x13a
+ 873 008b 48000000 		.4byte	0x48
+ 874 008f 04       		.uleb128 0x4
+ 875 0090 65030000 		.4byte	.LASF12
+ 876 0094 02       		.byte	0x2
+ 877 0095 3B01     		.2byte	0x13b
+ 878 0097 25000000 		.4byte	0x25
+ 879 009b 04       		.uleb128 0x4
+ 880 009c A7000000 		.4byte	.LASF13
+ 881 00a0 02       		.byte	0x2
+ 882 00a1 3C01     		.2byte	0x13c
+ 883 00a3 33000000 		.4byte	0x33
+ 884 00a7 02       		.uleb128 0x2
+ 885 00a8 04       		.byte	0x4
+ 886 00a9 04       		.byte	0x4
+ 887 00aa 6F010000 		.4byte	.LASF14
+ 888 00ae 02       		.uleb128 0x2
+ 889 00af 08       		.byte	0x8
+ 890 00b0 04       		.byte	0x4
+ 891 00b1 13070000 		.4byte	.LASF15
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 22
+
+
+ 892 00b5 04       		.uleb128 0x4
+ 893 00b6 F4050000 		.4byte	.LASF16
+ 894 00ba 02       		.byte	0x2
+ 895 00bb 4401     		.2byte	0x144
+ 896 00bd 56000000 		.4byte	0x56
+ 897 00c1 04       		.uleb128 0x4
+ 898 00c2 A0030000 		.4byte	.LASF17
+ 899 00c6 02       		.byte	0x2
+ 900 00c7 4901     		.2byte	0x149
+ 901 00c9 CD000000 		.4byte	0xcd
+ 902 00cd 02       		.uleb128 0x2
+ 903 00ce 01       		.byte	0x1
+ 904 00cf 08       		.byte	0x8
+ 905 00d0 44030000 		.4byte	.LASF18
+ 906 00d4 04       		.uleb128 0x4
+ 907 00d5 AD000000 		.4byte	.LASF19
+ 908 00d9 02       		.byte	0x2
+ 909 00da E201     		.2byte	0x1e2
+ 910 00dc E0000000 		.4byte	0xe0
+ 911 00e0 05       		.uleb128 0x5
+ 912 00e1 6B000000 		.4byte	0x6b
+ 913 00e5 04       		.uleb128 0x4
+ 914 00e6 30040000 		.4byte	.LASF20
+ 915 00ea 02       		.byte	0x2
+ 916 00eb F401     		.2byte	0x1f4
+ 917 00ed F1000000 		.4byte	0xf1
+ 918 00f1 06       		.uleb128 0x6
+ 919 00f2 04       		.byte	0x4
+ 920 00f3 F7000000 		.4byte	0xf7
+ 921 00f7 07       		.uleb128 0x7
+ 922 00f8 02       		.uleb128 0x2
+ 923 00f9 04       		.byte	0x4
+ 924 00fa 07       		.byte	0x7
+ 925 00fb 04060000 		.4byte	.LASF21
+ 926 00ff 08       		.uleb128 0x8
+ 927 0100 04       		.byte	0x4
+ 928 0101 06       		.uleb128 0x6
+ 929 0102 04       		.byte	0x4
+ 930 0103 CD000000 		.4byte	0xcd
+ 931 0107 06       		.uleb128 0x6
+ 932 0108 04       		.byte	0x4
+ 933 0109 0D010000 		.4byte	0x10d
+ 934 010d 09       		.uleb128 0x9
+ 935 010e CD000000 		.4byte	0xcd
+ 936 0112 0A       		.uleb128 0xa
+ 937 0113 01       		.byte	0x1
+ 938 0114 03       		.byte	0x3
+ 939 0115 2C       		.byte	0x2c
+ 940 0116 3F010000 		.4byte	0x13f
+ 941 011a 0B       		.uleb128 0xb
+ 942 011b C1020000 		.4byte	.LASF22
+ 943 011f 00       		.sleb128 0
+ 944 0120 0B       		.uleb128 0xb
+ 945 0121 8E010000 		.4byte	.LASF23
+ 946 0125 01       		.sleb128 1
+ 947 0126 0B       		.uleb128 0xb
+ 948 0127 30010000 		.4byte	.LASF24
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 23
+
+
+ 949 012b 02       		.sleb128 2
+ 950 012c 0B       		.uleb128 0xb
+ 951 012d EF030000 		.4byte	.LASF25
+ 952 0131 03       		.sleb128 3
+ 953 0132 0B       		.uleb128 0xb
+ 954 0133 7E060000 		.4byte	.LASF26
+ 955 0137 04       		.sleb128 4
+ 956 0138 0B       		.uleb128 0xb
+ 957 0139 7D000000 		.4byte	.LASF27
+ 958 013d 05       		.sleb128 5
+ 959 013e 00       		.byte	0
+ 960 013f 0C       		.uleb128 0xc
+ 961 0140 B5060000 		.4byte	.LASF28
+ 962 0144 03       		.byte	0x3
+ 963 0145 33       		.byte	0x33
+ 964 0146 12010000 		.4byte	0x112
+ 965 014a 0C       		.uleb128 0xc
+ 966 014b 4F000000 		.4byte	.LASF29
+ 967 014f 03       		.byte	0x3
+ 968 0150 35       		.byte	0x35
+ 969 0151 55010000 		.4byte	0x155
+ 970 0155 0D       		.uleb128 0xd
+ 971 0156 4F000000 		.4byte	.LASF29
+ 972 015a 20       		.byte	0x20
+ 973 015b 03       		.byte	0x3
+ 974 015c 37       		.byte	0x37
+ 975 015d A4010000 		.4byte	0x1a4
+ 976 0161 0E       		.uleb128 0xe
+ 977 0162 2C050000 		.4byte	.LASF30
+ 978 0166 03       		.byte	0x3
+ 979 0167 3A       		.byte	0x3a
+ 980 0168 C5010000 		.4byte	0x1c5
+ 981 016c 00       		.byte	0
+ 982 016d 0E       		.uleb128 0xe
+ 983 016e 14010000 		.4byte	.LASF31
+ 984 0172 03       		.byte	0x3
+ 985 0173 3B       		.byte	0x3b
+ 986 0174 C5010000 		.4byte	0x1c5
+ 987 0178 04       		.byte	0x4
+ 988 0179 0E       		.uleb128 0xe
+ 989 017a 96000000 		.4byte	.LASF32
+ 990 017e 03       		.byte	0x3
+ 991 017f 3B       		.byte	0x3b
+ 992 0180 C5010000 		.4byte	0x1c5
+ 993 0184 08       		.byte	0x8
+ 994 0185 0F       		.uleb128 0xf
+ 995 0186 6B657900 		.ascii	"key\000"
+ 996 018a 03       		.byte	0x3
+ 997 018b 3E       		.byte	0x3e
+ 998 018c 01010000 		.4byte	0x101
+ 999 0190 0C       		.byte	0xc
+ 1000 0191 0F       		.uleb128 0xf
+ 1001 0192 74616700 		.ascii	"tag\000"
+ 1002 0196 03       		.byte	0x3
+ 1003 0197 40       		.byte	0x40
+ 1004 0198 3F010000 		.4byte	0x13f
+ 1005 019c 10       		.byte	0x10
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 24
+
+
+ 1006 019d 10       		.uleb128 0x10
+ 1007 019e CB010000 		.4byte	0x1cb
+ 1008 01a2 18       		.byte	0x18
+ 1009 01a3 00       		.byte	0
+ 1010 01a4 11       		.uleb128 0x11
+ 1011 01a5 08       		.byte	0x8
+ 1012 01a6 03       		.byte	0x3
+ 1013 01a7 4D       		.byte	0x4d
+ 1014 01a8 C5010000 		.4byte	0x1c5
+ 1015 01ac 0E       		.uleb128 0xe
+ 1016 01ad A2000000 		.4byte	.LASF33
+ 1017 01b1 03       		.byte	0x3
+ 1018 01b2 4E       		.byte	0x4e
+ 1019 01b3 C5010000 		.4byte	0x1c5
+ 1020 01b7 00       		.byte	0
+ 1021 01b8 0E       		.uleb128 0xe
+ 1022 01b9 6C060000 		.4byte	.LASF34
+ 1023 01bd 03       		.byte	0x3
+ 1024 01be 4E       		.byte	0x4e
+ 1025 01bf C5010000 		.4byte	0x1c5
+ 1026 01c3 04       		.byte	0x4
+ 1027 01c4 00       		.byte	0
+ 1028 01c5 06       		.uleb128 0x6
+ 1029 01c6 04       		.byte	0x4
+ 1030 01c7 4A010000 		.4byte	0x14a
+ 1031 01cb 12       		.uleb128 0x12
+ 1032 01cc 08       		.byte	0x8
+ 1033 01cd 03       		.byte	0x3
+ 1034 01ce 41       		.byte	0x41
+ 1035 01cf 00020000 		.4byte	0x200
+ 1036 01d3 13       		.uleb128 0x13
+ 1037 01d4 49000000 		.4byte	.LASF35
+ 1038 01d8 03       		.byte	0x3
+ 1039 01d9 43       		.byte	0x43
+ 1040 01da 00020000 		.4byte	0x200
+ 1041 01de 13       		.uleb128 0x13
+ 1042 01df CB000000 		.4byte	.LASF36
+ 1043 01e3 03       		.byte	0x3
+ 1044 01e4 46       		.byte	0x46
+ 1045 01e5 01010000 		.4byte	0x101
+ 1046 01e9 13       		.uleb128 0x13
+ 1047 01ea 0D060000 		.4byte	.LASF37
+ 1048 01ee 03       		.byte	0x3
+ 1049 01ef 49       		.byte	0x49
+ 1050 01f0 AE000000 		.4byte	0xae
+ 1051 01f4 13       		.uleb128 0x13
+ 1052 01f5 85010000 		.4byte	.LASF38
+ 1053 01f9 03       		.byte	0x3
+ 1054 01fa 4F       		.byte	0x4f
+ 1055 01fb A4010000 		.4byte	0x1a4
+ 1056 01ff 00       		.byte	0
+ 1057 0200 02       		.uleb128 0x2
+ 1058 0201 01       		.byte	0x1
+ 1059 0202 02       		.byte	0x2
+ 1060 0203 CB020000 		.4byte	.LASF39
+ 1061 0207 11       		.uleb128 0x11
+ 1062 0208 14       		.byte	0x14
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 25
+
+
+ 1063 0209 04       		.byte	0x4
+ 1064 020a 0E       		.byte	0xe
+ 1065 020b 4C020000 		.4byte	0x24c
+ 1066 020f 0E       		.uleb128 0xe
+ 1067 0210 F1060000 		.4byte	.LASF40
+ 1068 0214 04       		.byte	0x4
+ 1069 0215 14       		.byte	0x14
+ 1070 0216 C5010000 		.4byte	0x1c5
+ 1071 021a 00       		.byte	0
+ 1072 021b 0E       		.uleb128 0xe
+ 1073 021c 71040000 		.4byte	.LASF41
+ 1074 0220 04       		.byte	0x4
+ 1075 0221 15       		.byte	0x15
+ 1076 0222 C5010000 		.4byte	0x1c5
+ 1077 0226 04       		.byte	0x4
+ 1078 0227 0E       		.uleb128 0xe
+ 1079 0228 27060000 		.4byte	.LASF42
+ 1080 022c 04       		.byte	0x4
+ 1081 022d 16       		.byte	0x16
+ 1082 022e C5010000 		.4byte	0x1c5
+ 1083 0232 08       		.byte	0x8
+ 1084 0233 0F       		.uleb128 0xf
+ 1085 0234 68696400 		.ascii	"hid\000"
+ 1086 0238 04       		.byte	0x4
+ 1087 0239 18       		.byte	0x18
+ 1088 023a 01010000 		.4byte	0x101
+ 1089 023e 0C       		.byte	0xc
+ 1090 023f 0F       		.uleb128 0xf
+ 1091 0240 65696400 		.ascii	"eid\000"
+ 1092 0244 04       		.byte	0x4
+ 1093 0245 19       		.byte	0x19
+ 1094 0246 01010000 		.4byte	0x101
+ 1095 024a 10       		.byte	0x10
+ 1096 024b 00       		.byte	0
+ 1097 024c 0C       		.uleb128 0xc
+ 1098 024d 21010000 		.4byte	.LASF43
+ 1099 0251 04       		.byte	0x4
+ 1100 0252 1A       		.byte	0x1a
+ 1101 0253 07020000 		.4byte	0x207
+ 1102 0257 0C       		.uleb128 0xc
+ 1103 0258 A6030000 		.4byte	.LASF44
+ 1104 025c 05       		.byte	0x5
+ 1105 025d 7A       		.byte	0x7a
+ 1106 025e 41000000 		.4byte	0x41
+ 1107 0262 11       		.uleb128 0x11
+ 1108 0263 08       		.byte	0x8
+ 1109 0264 06       		.byte	0x6
+ 1110 0265 20       		.byte	0x20
+ 1111 0266 B3020000 		.4byte	0x2b3
+ 1112 026a 0E       		.uleb128 0xe
+ 1113 026b 9B000000 		.4byte	.LASF45
+ 1114 026f 06       		.byte	0x6
+ 1115 0270 21       		.byte	0x21
+ 1116 0271 6B000000 		.4byte	0x6b
+ 1117 0275 00       		.byte	0
+ 1118 0276 0E       		.uleb128 0xe
+ 1119 0277 9C040000 		.4byte	.LASF46
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 26
+
+
+ 1120 027b 06       		.byte	0x6
+ 1121 027c 2A       		.byte	0x2a
+ 1122 027d 8F000000 		.4byte	0x8f
+ 1123 0281 01       		.byte	0x1
+ 1124 0282 0E       		.uleb128 0xe
+ 1125 0283 FB010000 		.4byte	.LASF47
+ 1126 0287 06       		.byte	0x6
+ 1127 0288 2B       		.byte	0x2b
+ 1128 0289 6B000000 		.4byte	0x6b
+ 1129 028d 02       		.byte	0x2
+ 1130 028e 0E       		.uleb128 0xe
+ 1131 028f E6000000 		.4byte	.LASF48
+ 1132 0293 06       		.byte	0x6
+ 1133 0294 2C       		.byte	0x2c
+ 1134 0295 6B000000 		.4byte	0x6b
+ 1135 0299 03       		.byte	0x3
+ 1136 029a 0E       		.uleb128 0xe
+ 1137 029b C2030000 		.4byte	.LASF49
+ 1138 029f 06       		.byte	0x6
+ 1139 02a0 2D       		.byte	0x2d
+ 1140 02a1 9B000000 		.4byte	0x9b
+ 1141 02a5 04       		.byte	0x4
+ 1142 02a6 0E       		.uleb128 0xe
+ 1143 02a7 DD000000 		.4byte	.LASF50
+ 1144 02ab 06       		.byte	0x6
+ 1145 02ac 2E       		.byte	0x2e
+ 1146 02ad 9B000000 		.4byte	0x9b
+ 1147 02b1 06       		.byte	0x6
+ 1148 02b2 00       		.byte	0
+ 1149 02b3 0C       		.uleb128 0xc
+ 1150 02b4 ED020000 		.4byte	.LASF51
+ 1151 02b8 06       		.byte	0x6
+ 1152 02b9 2F       		.byte	0x2f
+ 1153 02ba 62020000 		.4byte	0x262
+ 1154 02be 11       		.uleb128 0x11
+ 1155 02bf 20       		.byte	0x20
+ 1156 02c0 07       		.byte	0x7
+ 1157 02c1 10       		.byte	0x10
+ 1158 02c2 26030000 		.4byte	0x326
+ 1159 02c6 0E       		.uleb128 0xe
+ 1160 02c7 EF050000 		.4byte	.LASF52
+ 1161 02cb 07       		.byte	0x7
+ 1162 02cc 11       		.byte	0x11
+ 1163 02cd 01010000 		.4byte	0x101
+ 1164 02d1 00       		.byte	0
+ 1165 02d2 0F       		.uleb128 0xf
+ 1166 02d3 75696400 		.ascii	"uid\000"
+ 1167 02d7 07       		.byte	0x7
+ 1168 02d8 12       		.byte	0x12
+ 1169 02d9 01010000 		.4byte	0x101
+ 1170 02dd 04       		.byte	0x4
+ 1171 02de 0F       		.uleb128 0xf
+ 1172 02df 6F7300   		.ascii	"os\000"
+ 1173 02e2 07       		.byte	0x7
+ 1174 02e3 13       		.byte	0x13
+ 1175 02e4 01010000 		.4byte	0x101
+ 1176 02e8 08       		.byte	0x8
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 27
+
+
+ 1177 02e9 0E       		.uleb128 0xe
+ 1178 02ea 4E060000 		.4byte	.LASF53
+ 1179 02ee 07       		.byte	0x7
+ 1180 02ef 14       		.byte	0x14
+ 1181 02f0 01010000 		.4byte	0x101
+ 1182 02f4 0C       		.byte	0xc
+ 1183 02f5 0F       		.uleb128 0xf
+ 1184 02f6 68696400 		.ascii	"hid\000"
+ 1185 02fa 07       		.byte	0x7
+ 1186 02fb 15       		.byte	0x15
+ 1187 02fc 01010000 		.4byte	0x101
+ 1188 0300 10       		.byte	0x10
+ 1189 0301 0E       		.uleb128 0xe
+ 1190 0302 06010000 		.4byte	.LASF54
+ 1191 0306 07       		.byte	0x7
+ 1192 0307 16       		.byte	0x16
+ 1193 0308 01010000 		.4byte	0x101
+ 1194 030c 14       		.byte	0x14
+ 1195 030d 0E       		.uleb128 0xe
+ 1196 030e 28030000 		.4byte	.LASF55
+ 1197 0312 07       		.byte	0x7
+ 1198 0313 17       		.byte	0x17
+ 1199 0314 01010000 		.4byte	0x101
+ 1200 0318 18       		.byte	0x18
+ 1201 0319 0E       		.uleb128 0xe
+ 1202 031a 39060000 		.4byte	.LASF56
+ 1203 031e 07       		.byte	0x7
+ 1204 031f 18       		.byte	0x18
+ 1205 0320 01010000 		.4byte	0x101
+ 1206 0324 1C       		.byte	0x1c
+ 1207 0325 00       		.byte	0
+ 1208 0326 0C       		.uleb128 0xc
+ 1209 0327 99060000 		.4byte	.LASF57
+ 1210 032b 07       		.byte	0x7
+ 1211 032c 19       		.byte	0x19
+ 1212 032d BE020000 		.4byte	0x2be
+ 1213 0331 11       		.uleb128 0x11
+ 1214 0332 04       		.byte	0x4
+ 1215 0333 07       		.byte	0x7
+ 1216 0334 23       		.byte	0x23
+ 1217 0335 46030000 		.4byte	0x346
+ 1218 0339 0E       		.uleb128 0xe
+ 1219 033a 4E060000 		.4byte	.LASF53
+ 1220 033e 07       		.byte	0x7
+ 1221 033f 24       		.byte	0x24
+ 1222 0340 5D000000 		.4byte	0x5d
+ 1223 0344 00       		.byte	0
+ 1224 0345 00       		.byte	0
+ 1225 0346 0C       		.uleb128 0xc
+ 1226 0347 25000000 		.4byte	.LASF58
+ 1227 034b 07       		.byte	0x7
+ 1228 034c 30       		.byte	0x30
+ 1229 034d 31030000 		.4byte	0x331
+ 1230 0351 14       		.uleb128 0x14
+ 1231 0352 9F050000 		.4byte	.LASF70
+ 1232 0356 01       		.byte	0x1
+ 1233 0357 20       		.byte	0x20
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 28
+
+
+ 1234 0358 01       		.byte	0x1
+ 1235 0359 15       		.uleb128 0x15
+ 1236 035a B2000000 		.4byte	.LASF62
+ 1237 035e 01       		.byte	0x1
+ 1238 035f 4A       		.byte	0x4a
+ 1239 0360 00000000 		.4byte	.LFB66
+ 1240 0364 10000000 		.4byte	.LFE66-.LFB66
+ 1241 0368 01       		.uleb128 0x1
+ 1242 0369 9C       		.byte	0x9c
+ 1243 036a 78030000 		.4byte	0x378
+ 1244 036e 16       		.uleb128 0x16
+ 1245 036f 0A000000 		.4byte	.LVL0
+ 1246 0373 0A0C0000 		.4byte	0xc0a
+ 1247 0377 00       		.byte	0
+ 1248 0378 17       		.uleb128 0x17
+ 1249 0379 51030000 		.4byte	0x351
+ 1250 037d 00000000 		.4byte	.LFB63
+ 1251 0381 70000000 		.4byte	.LFE63-.LFB63
+ 1252 0385 01       		.uleb128 0x1
+ 1253 0386 9C       		.byte	0x9c
+ 1254 0387 67040000 		.4byte	0x467
+ 1255 038b 16       		.uleb128 0x16
+ 1256 038c 06000000 		.4byte	.LVL1
+ 1257 0390 120C0000 		.4byte	0xc12
+ 1258 0394 18       		.uleb128 0x18
+ 1259 0395 12000000 		.4byte	.LVL2
+ 1260 0399 1D0C0000 		.4byte	0xc1d
+ 1261 039d A7030000 		.4byte	0x3a7
+ 1262 03a1 19       		.uleb128 0x19
+ 1263 03a2 01       		.uleb128 0x1
+ 1264 03a3 50       		.byte	0x50
+ 1265 03a4 01       		.uleb128 0x1
+ 1266 03a5 34       		.byte	0x34
+ 1267 03a6 00       		.byte	0
+ 1268 03a7 16       		.uleb128 0x16
+ 1269 03a8 16000000 		.4byte	.LVL3
+ 1270 03ac 2E0C0000 		.4byte	0xc2e
+ 1271 03b0 16       		.uleb128 0x16
+ 1272 03b1 1A000000 		.4byte	.LVL4
+ 1273 03b5 350C0000 		.4byte	0xc35
+ 1274 03b9 16       		.uleb128 0x16
+ 1275 03ba 22000000 		.4byte	.LVL5
+ 1276 03be 400C0000 		.4byte	0xc40
+ 1277 03c2 18       		.uleb128 0x18
+ 1278 03c3 28000000 		.4byte	.LVL6
+ 1279 03c7 510C0000 		.4byte	0xc51
+ 1280 03cb D5030000 		.4byte	0x3d5
+ 1281 03cf 19       		.uleb128 0x19
+ 1282 03d0 01       		.uleb128 0x1
+ 1283 03d1 50       		.byte	0x50
+ 1284 03d2 01       		.uleb128 0x1
+ 1285 03d3 31       		.byte	0x31
+ 1286 03d4 00       		.byte	0
+ 1287 03d5 18       		.uleb128 0x18
+ 1288 03d6 38000000 		.4byte	.LVL7
+ 1289 03da 620C0000 		.4byte	0xc62
+ 1290 03de ED030000 		.4byte	0x3ed
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 29
+
+
+ 1291 03e2 19       		.uleb128 0x19
+ 1292 03e3 01       		.uleb128 0x1
+ 1293 03e4 51       		.byte	0x51
+ 1294 03e5 01       		.uleb128 0x1
+ 1295 03e6 31       		.byte	0x31
+ 1296 03e7 19       		.uleb128 0x19
+ 1297 03e8 01       		.uleb128 0x1
+ 1298 03e9 50       		.byte	0x50
+ 1299 03ea 01       		.uleb128 0x1
+ 1300 03eb 30       		.byte	0x30
+ 1301 03ec 00       		.byte	0
+ 1302 03ed 18       		.uleb128 0x18
+ 1303 03ee 42000000 		.4byte	.LVL8
+ 1304 03f2 780C0000 		.4byte	0xc78
+ 1305 03f6 07040000 		.4byte	0x407
+ 1306 03fa 19       		.uleb128 0x19
+ 1307 03fb 01       		.uleb128 0x1
+ 1308 03fc 51       		.byte	0x51
+ 1309 03fd 03       		.uleb128 0x3
+ 1310 03fe 0A       		.byte	0xa
+ 1311 03ff 00AF     		.2byte	0xaf00
+ 1312 0401 19       		.uleb128 0x19
+ 1313 0402 01       		.uleb128 0x1
+ 1314 0403 50       		.byte	0x50
+ 1315 0404 01       		.uleb128 0x1
+ 1316 0405 30       		.byte	0x30
+ 1317 0406 00       		.byte	0
+ 1318 0407 18       		.uleb128 0x18
+ 1319 0408 4A000000 		.4byte	.LVL9
+ 1320 040c 620C0000 		.4byte	0xc62
+ 1321 0410 1A040000 		.4byte	0x41a
+ 1322 0414 19       		.uleb128 0x19
+ 1323 0415 01       		.uleb128 0x1
+ 1324 0416 51       		.byte	0x51
+ 1325 0417 01       		.uleb128 0x1
+ 1326 0418 32       		.byte	0x32
+ 1327 0419 00       		.byte	0
+ 1328 041a 18       		.uleb128 0x18
+ 1329 041b 52000000 		.4byte	.LVL10
+ 1330 041f 780C0000 		.4byte	0xc78
+ 1331 0423 32040000 		.4byte	0x432
+ 1332 0427 19       		.uleb128 0x19
+ 1333 0428 01       		.uleb128 0x1
+ 1334 0429 51       		.byte	0x51
+ 1335 042a 01       		.uleb128 0x1
+ 1336 042b 31       		.byte	0x31
+ 1337 042c 19       		.uleb128 0x19
+ 1338 042d 01       		.uleb128 0x1
+ 1339 042e 50       		.byte	0x50
+ 1340 042f 01       		.uleb128 0x1
+ 1341 0430 30       		.byte	0x30
+ 1342 0431 00       		.byte	0
+ 1343 0432 18       		.uleb128 0x18
+ 1344 0433 5A000000 		.4byte	.LVL11
+ 1345 0437 8E0C0000 		.4byte	0xc8e
+ 1346 043b 4A040000 		.4byte	0x44a
+ 1347 043f 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 30
+
+
+ 1348 0440 01       		.uleb128 0x1
+ 1349 0441 51       		.byte	0x51
+ 1350 0442 01       		.uleb128 0x1
+ 1351 0443 31       		.byte	0x31
+ 1352 0444 19       		.uleb128 0x19
+ 1353 0445 01       		.uleb128 0x1
+ 1354 0446 50       		.byte	0x50
+ 1355 0447 01       		.uleb128 0x1
+ 1356 0448 30       		.byte	0x30
+ 1357 0449 00       		.byte	0
+ 1358 044a 18       		.uleb128 0x18
+ 1359 044b 60000000 		.4byte	.LVL12
+ 1360 044f A40C0000 		.4byte	0xca4
+ 1361 0453 5D040000 		.4byte	0x45d
+ 1362 0457 19       		.uleb128 0x19
+ 1363 0458 01       		.uleb128 0x1
+ 1364 0459 50       		.byte	0x50
+ 1365 045a 01       		.uleb128 0x1
+ 1366 045b 31       		.byte	0x31
+ 1367 045c 00       		.byte	0
+ 1368 045d 16       		.uleb128 0x16
+ 1369 045e 64000000 		.4byte	.LVL13
+ 1370 0462 B50C0000 		.4byte	0xcb5
+ 1371 0466 00       		.byte	0
+ 1372 0467 1A       		.uleb128 0x1a
+ 1373 0468 1A070000 		.4byte	.LASF59
+ 1374 046c 01       		.byte	0x1
+ 1375 046d 37       		.byte	0x37
+ 1376 046e 00000000 		.4byte	.LFB64
+ 1377 0472 1C000000 		.4byte	.LFE64-.LFB64
+ 1378 0476 01       		.uleb128 0x1
+ 1379 0477 9C       		.byte	0x9c
+ 1380 0478 A1040000 		.4byte	0x4a1
+ 1381 047c 18       		.uleb128 0x18
+ 1382 047d 0E000000 		.4byte	.LVL14
+ 1383 0481 BC0C0000 		.4byte	0xcbc
+ 1384 0485 90040000 		.4byte	0x490
+ 1385 0489 19       		.uleb128 0x19
+ 1386 048a 01       		.uleb128 0x1
+ 1387 048b 50       		.byte	0x50
+ 1388 048c 02       		.uleb128 0x2
+ 1389 048d 74       		.byte	0x74
+ 1390 048e 00       		.sleb128 0
+ 1391 048f 00       		.byte	0
+ 1392 0490 1B       		.uleb128 0x1b
+ 1393 0491 14000000 		.4byte	.LVL15
+ 1394 0495 CD0C0000 		.4byte	0xccd
+ 1395 0499 19       		.uleb128 0x19
+ 1396 049a 01       		.uleb128 0x1
+ 1397 049b 50       		.byte	0x50
+ 1398 049c 02       		.uleb128 0x2
+ 1399 049d 74       		.byte	0x74
+ 1400 049e 00       		.sleb128 0
+ 1401 049f 00       		.byte	0
+ 1402 04a0 00       		.byte	0
+ 1403 04a1 1A       		.uleb128 0x1a
+ 1404 04a2 FB050000 		.4byte	.LASF60
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 31
+
+
+ 1405 04a6 01       		.byte	0x1
+ 1406 04a7 3E       		.byte	0x3e
+ 1407 04a8 00000000 		.4byte	.LFB65
+ 1408 04ac 48000000 		.4byte	.LFE65-.LFB65
+ 1409 04b0 01       		.uleb128 0x1
+ 1410 04b1 9C       		.byte	0x9c
+ 1411 04b2 69050000 		.4byte	0x569
+ 1412 04b6 16       		.uleb128 0x16
+ 1413 04b7 06000000 		.4byte	.LVL16
+ 1414 04bb 2E0C0000 		.4byte	0xc2e
+ 1415 04bf 18       		.uleb128 0x18
+ 1416 04c0 0E000000 		.4byte	.LVL17
+ 1417 04c4 620C0000 		.4byte	0xc62
+ 1418 04c8 D7040000 		.4byte	0x4d7
+ 1419 04cc 19       		.uleb128 0x19
+ 1420 04cd 01       		.uleb128 0x1
+ 1421 04ce 51       		.byte	0x51
+ 1422 04cf 01       		.uleb128 0x1
+ 1423 04d0 31       		.byte	0x31
+ 1424 04d1 19       		.uleb128 0x19
+ 1425 04d2 01       		.uleb128 0x1
+ 1426 04d3 50       		.byte	0x50
+ 1427 04d4 01       		.uleb128 0x1
+ 1428 04d5 30       		.byte	0x30
+ 1429 04d6 00       		.byte	0
+ 1430 04d7 18       		.uleb128 0x18
+ 1431 04d8 18000000 		.4byte	.LVL18
+ 1432 04dc 780C0000 		.4byte	0xc78
+ 1433 04e0 F1040000 		.4byte	0x4f1
+ 1434 04e4 19       		.uleb128 0x19
+ 1435 04e5 01       		.uleb128 0x1
+ 1436 04e6 51       		.byte	0x51
+ 1437 04e7 03       		.uleb128 0x3
+ 1438 04e8 0A       		.byte	0xa
+ 1439 04e9 00AF     		.2byte	0xaf00
+ 1440 04eb 19       		.uleb128 0x19
+ 1441 04ec 01       		.uleb128 0x1
+ 1442 04ed 50       		.byte	0x50
+ 1443 04ee 01       		.uleb128 0x1
+ 1444 04ef 30       		.byte	0x30
+ 1445 04f0 00       		.byte	0
+ 1446 04f1 18       		.uleb128 0x18
+ 1447 04f2 20000000 		.4byte	.LVL19
+ 1448 04f6 8E0C0000 		.4byte	0xc8e
+ 1449 04fa 09050000 		.4byte	0x509
+ 1450 04fe 19       		.uleb128 0x19
+ 1451 04ff 01       		.uleb128 0x1
+ 1452 0500 51       		.byte	0x51
+ 1453 0501 01       		.uleb128 0x1
+ 1454 0502 31       		.byte	0x31
+ 1455 0503 19       		.uleb128 0x19
+ 1456 0504 01       		.uleb128 0x1
+ 1457 0505 50       		.byte	0x50
+ 1458 0506 01       		.uleb128 0x1
+ 1459 0507 30       		.byte	0x30
+ 1460 0508 00       		.byte	0
+ 1461 0509 18       		.uleb128 0x18
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 32
+
+
+ 1462 050a 28000000 		.4byte	.LVL20
+ 1463 050e DE0C0000 		.4byte	0xcde
+ 1464 0512 21050000 		.4byte	0x521
+ 1465 0516 19       		.uleb128 0x19
+ 1466 0517 01       		.uleb128 0x1
+ 1467 0518 51       		.byte	0x51
+ 1468 0519 01       		.uleb128 0x1
+ 1469 051a 33       		.byte	0x33
+ 1470 051b 19       		.uleb128 0x19
+ 1471 051c 01       		.uleb128 0x1
+ 1472 051d 50       		.byte	0x50
+ 1473 051e 01       		.uleb128 0x1
+ 1474 051f 38       		.byte	0x38
+ 1475 0520 00       		.byte	0
+ 1476 0521 18       		.uleb128 0x18
+ 1477 0522 2E000000 		.4byte	.LVL21
+ 1478 0526 F40C0000 		.4byte	0xcf4
+ 1479 052a 34050000 		.4byte	0x534
+ 1480 052e 19       		.uleb128 0x19
+ 1481 052f 01       		.uleb128 0x1
+ 1482 0530 50       		.byte	0x50
+ 1483 0531 01       		.uleb128 0x1
+ 1484 0532 38       		.byte	0x38
+ 1485 0533 00       		.byte	0
+ 1486 0534 18       		.uleb128 0x18
+ 1487 0535 34000000 		.4byte	.LVL22
+ 1488 0539 A40C0000 		.4byte	0xca4
+ 1489 053d 47050000 		.4byte	0x547
+ 1490 0541 19       		.uleb128 0x19
+ 1491 0542 01       		.uleb128 0x1
+ 1492 0543 50       		.byte	0x50
+ 1493 0544 01       		.uleb128 0x1
+ 1494 0545 31       		.byte	0x31
+ 1495 0546 00       		.byte	0
+ 1496 0547 16       		.uleb128 0x16
+ 1497 0548 38000000 		.4byte	.LVL23
+ 1498 054c B50C0000 		.4byte	0xcb5
+ 1499 0550 1B       		.uleb128 0x1b
+ 1500 0551 40000000 		.4byte	.LVL24
+ 1501 0555 050D0000 		.4byte	0xd05
+ 1502 0559 19       		.uleb128 0x19
+ 1503 055a 01       		.uleb128 0x1
+ 1504 055b 51       		.byte	0x51
+ 1505 055c 05       		.uleb128 0x5
+ 1506 055d 03       		.byte	0x3
+ 1507 055e 00000000 		.4byte	WDT_INT_Handler
+ 1508 0562 19       		.uleb128 0x19
+ 1509 0563 01       		.uleb128 0x1
+ 1510 0564 50       		.byte	0x50
+ 1511 0565 01       		.uleb128 0x1
+ 1512 0566 38       		.byte	0x38
+ 1513 0567 00       		.byte	0
+ 1514 0568 00       		.byte	0
+ 1515 0569 1A       		.uleb128 0x1a
+ 1516 056a 44060000 		.4byte	.LASF61
+ 1517 056e 01       		.byte	0x1
+ 1518 056f 4F       		.byte	0x4f
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 33
+
+
+ 1519 0570 00000000 		.4byte	.LFB67
+ 1520 0574 34000000 		.4byte	.LFE67-.LFB67
+ 1521 0578 01       		.uleb128 0x1
+ 1522 0579 9C       		.byte	0x9c
+ 1523 057a 08060000 		.4byte	0x608
+ 1524 057e 18       		.uleb128 0x18
+ 1525 057f 08000000 		.4byte	.LVL25
+ 1526 0583 1F0D0000 		.4byte	0xd1f
+ 1527 0587 91050000 		.4byte	0x591
+ 1528 058b 19       		.uleb128 0x19
+ 1529 058c 01       		.uleb128 0x1
+ 1530 058d 50       		.byte	0x50
+ 1531 058e 01       		.uleb128 0x1
+ 1532 058f 31       		.byte	0x31
+ 1533 0590 00       		.byte	0
+ 1534 0591 18       		.uleb128 0x18
+ 1535 0592 0E000000 		.4byte	.LVL26
+ 1536 0596 300D0000 		.4byte	0xd30
+ 1537 059a A4050000 		.4byte	0x5a4
+ 1538 059e 19       		.uleb128 0x19
+ 1539 059f 01       		.uleb128 0x1
+ 1540 05a0 50       		.byte	0x50
+ 1541 05a1 01       		.uleb128 0x1
+ 1542 05a2 31       		.byte	0x31
+ 1543 05a3 00       		.byte	0
+ 1544 05a4 18       		.uleb128 0x18
+ 1545 05a5 14000000 		.4byte	.LVL27
+ 1546 05a9 400C0000 		.4byte	0xc40
+ 1547 05ad B7050000 		.4byte	0x5b7
+ 1548 05b1 19       		.uleb128 0x19
+ 1549 05b2 01       		.uleb128 0x1
+ 1550 05b3 50       		.byte	0x50
+ 1551 05b4 01       		.uleb128 0x1
+ 1552 05b5 31       		.byte	0x31
+ 1553 05b6 00       		.byte	0
+ 1554 05b7 18       		.uleb128 0x18
+ 1555 05b8 1A000000 		.4byte	.LVL28
+ 1556 05bc 410D0000 		.4byte	0xd41
+ 1557 05c0 CA050000 		.4byte	0x5ca
+ 1558 05c4 19       		.uleb128 0x19
+ 1559 05c5 01       		.uleb128 0x1
+ 1560 05c6 50       		.byte	0x50
+ 1561 05c7 01       		.uleb128 0x1
+ 1562 05c8 31       		.byte	0x31
+ 1563 05c9 00       		.byte	0
+ 1564 05ca 18       		.uleb128 0x18
+ 1565 05cb 20000000 		.4byte	.LVL29
+ 1566 05cf 520D0000 		.4byte	0xd52
+ 1567 05d3 DD050000 		.4byte	0x5dd
+ 1568 05d7 19       		.uleb128 0x19
+ 1569 05d8 01       		.uleb128 0x1
+ 1570 05d9 50       		.byte	0x50
+ 1571 05da 01       		.uleb128 0x1
+ 1572 05db 31       		.byte	0x31
+ 1573 05dc 00       		.byte	0
+ 1574 05dd 16       		.uleb128 0x16
+ 1575 05de 24000000 		.4byte	.LVL30
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 34
+
+
+ 1576 05e2 630D0000 		.4byte	0xd63
+ 1577 05e6 16       		.uleb128 0x16
+ 1578 05e7 28000000 		.4byte	.LVL31
+ 1579 05eb 6A0D0000 		.4byte	0xd6a
+ 1580 05ef 16       		.uleb128 0x16
+ 1581 05f0 2C000000 		.4byte	.LVL32
+ 1582 05f4 710D0000 		.4byte	0xd71
+ 1583 05f8 1B       		.uleb128 0x1b
+ 1584 05f9 32000000 		.4byte	.LVL33
+ 1585 05fd F40C0000 		.4byte	0xcf4
+ 1586 0601 19       		.uleb128 0x19
+ 1587 0602 01       		.uleb128 0x1
+ 1588 0603 50       		.byte	0x50
+ 1589 0604 01       		.uleb128 0x1
+ 1590 0605 3A       		.byte	0x3a
+ 1591 0606 00       		.byte	0
+ 1592 0607 00       		.byte	0
+ 1593 0608 15       		.uleb128 0x15
+ 1594 0609 19000000 		.4byte	.LASF63
+ 1595 060d 01       		.byte	0x1
+ 1596 060e 60       		.byte	0x60
+ 1597 060f 00000000 		.4byte	.LFB68
+ 1598 0613 5C000000 		.4byte	.LFE68-.LFB68
+ 1599 0617 01       		.uleb128 0x1
+ 1600 0618 9C       		.byte	0x9c
+ 1601 0619 BD060000 		.4byte	0x6bd
+ 1602 061d 1C       		.uleb128 0x1c
+ 1603 061e BD060000 		.4byte	.LASF64
+ 1604 0622 01       		.byte	0x1
+ 1605 0623 60       		.byte	0x60
+ 1606 0624 BD060000 		.4byte	0x6bd
+ 1607 0628 00000000 		.4byte	.LLST0
+ 1608 062c 16       		.uleb128 0x16
+ 1609 062d 0E000000 		.4byte	.LVL35
+ 1610 0631 780D0000 		.4byte	0xd78
+ 1611 0635 18       		.uleb128 0x18
+ 1612 0636 14000000 		.4byte	.LVL36
+ 1613 063a 830D0000 		.4byte	0xd83
+ 1614 063e 49060000 		.4byte	0x649
+ 1615 0642 19       		.uleb128 0x19
+ 1616 0643 01       		.uleb128 0x1
+ 1617 0644 50       		.byte	0x50
+ 1618 0645 02       		.uleb128 0x2
+ 1619 0646 74       		.byte	0x74
+ 1620 0647 00       		.sleb128 0
+ 1621 0648 00       		.byte	0
+ 1622 0649 18       		.uleb128 0x18
+ 1623 064a 1E000000 		.4byte	.LVL37
+ 1624 064e 1F0D0000 		.4byte	0xd1f
+ 1625 0652 5C060000 		.4byte	0x65c
+ 1626 0656 19       		.uleb128 0x19
+ 1627 0657 01       		.uleb128 0x1
+ 1628 0658 50       		.byte	0x50
+ 1629 0659 01       		.uleb128 0x1
+ 1630 065a 30       		.byte	0x30
+ 1631 065b 00       		.byte	0
+ 1632 065c 16       		.uleb128 0x16
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 35
+
+
+ 1633 065d 28000000 		.4byte	.LVL38
+ 1634 0661 980D0000 		.4byte	0xd98
+ 1635 0665 18       		.uleb128 0x18
+ 1636 0666 2E000000 		.4byte	.LVL39
+ 1637 066a A30D0000 		.4byte	0xda3
+ 1638 066e 79060000 		.4byte	0x679
+ 1639 0672 19       		.uleb128 0x19
+ 1640 0673 01       		.uleb128 0x1
+ 1641 0674 50       		.byte	0x50
+ 1642 0675 02       		.uleb128 0x2
+ 1643 0676 74       		.byte	0x74
+ 1644 0677 00       		.sleb128 0
+ 1645 0678 00       		.byte	0
+ 1646 0679 18       		.uleb128 0x18
+ 1647 067a 38000000 		.4byte	.LVL40
+ 1648 067e 1F0D0000 		.4byte	0xd1f
+ 1649 0682 8C060000 		.4byte	0x68c
+ 1650 0686 19       		.uleb128 0x19
+ 1651 0687 01       		.uleb128 0x1
+ 1652 0688 50       		.byte	0x50
+ 1653 0689 01       		.uleb128 0x1
+ 1654 068a 30       		.byte	0x30
+ 1655 068b 00       		.byte	0
+ 1656 068c 18       		.uleb128 0x18
+ 1657 068d 44000000 		.4byte	.LVL41
+ 1658 0691 B80D0000 		.4byte	0xdb8
+ 1659 0695 A0060000 		.4byte	0x6a0
+ 1660 0699 19       		.uleb128 0x19
+ 1661 069a 01       		.uleb128 0x1
+ 1662 069b 50       		.byte	0x50
+ 1663 069c 02       		.uleb128 0x2
+ 1664 069d 74       		.byte	0x74
+ 1665 069e 00       		.sleb128 0
+ 1666 069f 00       		.byte	0
+ 1667 06a0 18       		.uleb128 0x18
+ 1668 06a1 4E000000 		.4byte	.LVL42
+ 1669 06a5 1F0D0000 		.4byte	0xd1f
+ 1670 06a9 B3060000 		.4byte	0x6b3
+ 1671 06ad 19       		.uleb128 0x19
+ 1672 06ae 01       		.uleb128 0x1
+ 1673 06af 50       		.byte	0x50
+ 1674 06b0 01       		.uleb128 0x1
+ 1675 06b1 30       		.byte	0x30
+ 1676 06b2 00       		.byte	0
+ 1677 06b3 16       		.uleb128 0x16
+ 1678 06b4 58000000 		.4byte	.LVL43
+ 1679 06b8 CD0D0000 		.4byte	0xdcd
+ 1680 06bc 00       		.byte	0
+ 1681 06bd 06       		.uleb128 0x6
+ 1682 06be 04       		.byte	0x4
+ 1683 06bf B3020000 		.4byte	0x2b3
+ 1684 06c3 1D       		.uleb128 0x1d
+ 1685 06c4 F1060000 		.4byte	.LASF40
+ 1686 06c8 01       		.byte	0x1
+ 1687 06c9 71       		.byte	0x71
+ 1688 06ca 5D000000 		.4byte	0x5d
+ 1689 06ce 00000000 		.4byte	.LFB69
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 36
+
+
+ 1690 06d2 10020000 		.4byte	.LFE69-.LFB69
+ 1691 06d6 01       		.uleb128 0x1
+ 1692 06d7 9C       		.byte	0x9c
+ 1693 06d8 EF0B0000 		.4byte	0xbef
+ 1694 06dc 1E       		.uleb128 0x1e
+ 1695 06dd BD060000 		.4byte	.LASF64
+ 1696 06e1 01       		.byte	0x1
+ 1697 06e2 73       		.byte	0x73
+ 1698 06e3 B3020000 		.4byte	0x2b3
+ 1699 06e7 03       		.uleb128 0x3
+ 1700 06e8 91       		.byte	0x91
+ 1701 06e9 BC7F     		.sleb128 -68
+ 1702 06eb 1E       		.uleb128 0x1e
+ 1703 06ec 19010000 		.4byte	.LASF65
+ 1704 06f0 01       		.byte	0x1
+ 1705 06f1 74       		.byte	0x74
+ 1706 06f2 26030000 		.4byte	0x326
+ 1707 06f6 02       		.uleb128 0x2
+ 1708 06f7 91       		.byte	0x91
+ 1709 06f8 58       		.sleb128 -40
+ 1710 06f9 1E       		.uleb128 0x1e
+ 1711 06fa 16050000 		.4byte	.LASF66
+ 1712 06fe 01       		.byte	0x1
+ 1713 06ff 75       		.byte	0x75
+ 1714 0700 46030000 		.4byte	0x346
+ 1715 0704 03       		.uleb128 0x3
+ 1716 0705 91       		.byte	0x91
+ 1717 0706 AC7F     		.sleb128 -84
+ 1718 0708 1E       		.uleb128 0x1e
+ 1719 0709 52010000 		.4byte	.LASF67
+ 1720 070d 01       		.byte	0x1
+ 1721 070e 76       		.byte	0x76
+ 1722 070f 4C020000 		.4byte	0x24c
+ 1723 0713 02       		.uleb128 0x2
+ 1724 0714 91       		.byte	0x91
+ 1725 0715 44       		.sleb128 -60
+ 1726 0716 1E       		.uleb128 0x1e
+ 1727 0717 59010000 		.4byte	.LASF68
+ 1728 071b 01       		.byte	0x1
+ 1729 071c 94       		.byte	0x94
+ 1730 071d EF0B0000 		.4byte	0xbef
+ 1731 0721 03       		.uleb128 0x3
+ 1732 0722 91       		.byte	0x91
+ 1733 0723 B07F     		.sleb128 -80
+ 1734 0725 1F       		.uleb128 0x1f
+ 1735 0726 6E6F7700 		.ascii	"now\000"
+ 1736 072a 01       		.byte	0x1
+ 1737 072b 9E       		.byte	0x9e
+ 1738 072c 57020000 		.4byte	0x257
+ 1739 0730 03       		.uleb128 0x3
+ 1740 0731 91       		.byte	0x91
+ 1741 0732 B47F     		.sleb128 -76
+ 1742 0734 1F       		.uleb128 0x1f
+ 1743 0735 6900     		.ascii	"i\000"
+ 1744 0737 01       		.byte	0x1
+ 1745 0738 C5       		.byte	0xc5
+ 1746 0739 F40B0000 		.4byte	0xbf4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 37
+
+
+ 1747 073d 03       		.uleb128 0x3
+ 1748 073e 91       		.byte	0x91
+ 1749 073f B87F     		.sleb128 -72
+ 1750 0741 16       		.uleb128 0x16
+ 1751 0742 08000000 		.4byte	.LVL45
+ 1752 0746 A1040000 		.4byte	0x4a1
+ 1753 074a 16       		.uleb128 0x16
+ 1754 074b 0C000000 		.4byte	.LVL46
+ 1755 074f D80D0000 		.4byte	0xdd8
+ 1756 0753 16       		.uleb128 0x16
+ 1757 0754 10000000 		.4byte	.LVL47
+ 1758 0758 DF0D0000 		.4byte	0xddf
+ 1759 075c 18       		.uleb128 0x18
+ 1760 075d 16000000 		.4byte	.LVL48
+ 1761 0761 E60D0000 		.4byte	0xde6
+ 1762 0765 73070000 		.4byte	0x773
+ 1763 0769 19       		.uleb128 0x19
+ 1764 076a 01       		.uleb128 0x1
+ 1765 076b 50       		.byte	0x50
+ 1766 076c 05       		.uleb128 0x5
+ 1767 076d 03       		.byte	0x3
+ 1768 076e 00000000 		.4byte	RTC_PPS_InterruptHandler
+ 1769 0772 00       		.byte	0
+ 1770 0773 16       		.uleb128 0x16
+ 1771 0774 1A000000 		.4byte	.LVL49
+ 1772 0778 F70D0000 		.4byte	0xdf7
+ 1773 077c 16       		.uleb128 0x16
+ 1774 077d 1E000000 		.4byte	.LVL50
+ 1775 0781 FE0D0000 		.4byte	0xdfe
+ 1776 0785 16       		.uleb128 0x16
+ 1777 0786 22000000 		.4byte	.LVL51
+ 1778 078a 060E0000 		.4byte	0xe06
+ 1779 078e 16       		.uleb128 0x16
+ 1780 078f 28000000 		.4byte	.LVL52
+ 1781 0793 170E0000 		.4byte	0xe17
+ 1782 0797 18       		.uleb128 0x18
+ 1783 0798 30000000 		.4byte	.LVL53
+ 1784 079c 290E0000 		.4byte	0xe29
+ 1785 07a0 AF070000 		.4byte	0x7af
+ 1786 07a4 19       		.uleb128 0x19
+ 1787 07a5 01       		.uleb128 0x1
+ 1788 07a6 51       		.byte	0x51
+ 1789 07a7 01       		.uleb128 0x1
+ 1790 07a8 31       		.byte	0x31
+ 1791 07a9 19       		.uleb128 0x19
+ 1792 07aa 01       		.uleb128 0x1
+ 1793 07ab 50       		.byte	0x50
+ 1794 07ac 01       		.uleb128 0x1
+ 1795 07ad 31       		.byte	0x31
+ 1796 07ae 00       		.byte	0
+ 1797 07af 16       		.uleb128 0x16
+ 1798 07b0 36000000 		.4byte	.LVL54
+ 1799 07b4 69050000 		.4byte	0x569
+ 1800 07b8 18       		.uleb128 0x18
+ 1801 07b9 3C000000 		.4byte	.LVL55
+ 1802 07bd 400E0000 		.4byte	0xe40
+ 1803 07c1 CC070000 		.4byte	0x7cc
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 38
+
+
+ 1804 07c5 19       		.uleb128 0x19
+ 1805 07c6 01       		.uleb128 0x1
+ 1806 07c7 50       		.byte	0x50
+ 1807 07c8 02       		.uleb128 0x2
+ 1808 07c9 91       		.byte	0x91
+ 1809 07ca 44       		.sleb128 -60
+ 1810 07cb 00       		.byte	0
+ 1811 07cc 18       		.uleb128 0x18
+ 1812 07cd 44000000 		.4byte	.LVL56
+ 1813 07d1 570E0000 		.4byte	0xe57
+ 1814 07d5 E9070000 		.4byte	0x7e9
+ 1815 07d9 19       		.uleb128 0x19
+ 1816 07da 01       		.uleb128 0x1
+ 1817 07db 51       		.byte	0x51
+ 1818 07dc 05       		.uleb128 0x5
+ 1819 07dd 03       		.byte	0x3
+ 1820 07de 00000000 		.4byte	.LC4
+ 1821 07e2 19       		.uleb128 0x19
+ 1822 07e3 01       		.uleb128 0x1
+ 1823 07e4 50       		.byte	0x50
+ 1824 07e5 02       		.uleb128 0x2
+ 1825 07e6 91       		.byte	0x91
+ 1826 07e7 44       		.sleb128 -60
+ 1827 07e8 00       		.byte	0
+ 1828 07e9 18       		.uleb128 0x18
+ 1829 07ea 4A000000 		.4byte	.LVL57
+ 1830 07ee 6D0E0000 		.4byte	0xe6d
+ 1831 07f2 FE070000 		.4byte	0x7fe
+ 1832 07f6 19       		.uleb128 0x19
+ 1833 07f7 01       		.uleb128 0x1
+ 1834 07f8 50       		.byte	0x50
+ 1835 07f9 03       		.uleb128 0x3
+ 1836 07fa 91       		.byte	0x91
+ 1837 07fb BC7F     		.sleb128 -68
+ 1838 07fd 00       		.byte	0
+ 1839 07fe 18       		.uleb128 0x18
+ 1840 07ff 50000000 		.4byte	.LVL58
+ 1841 0803 7E0E0000 		.4byte	0xe7e
+ 1842 0807 13080000 		.4byte	0x813
+ 1843 080b 19       		.uleb128 0x19
+ 1844 080c 01       		.uleb128 0x1
+ 1845 080d 50       		.byte	0x50
+ 1846 080e 03       		.uleb128 0x3
+ 1847 080f 91       		.byte	0x91
+ 1848 0810 BC7F     		.sleb128 -68
+ 1849 0812 00       		.byte	0
+ 1850 0813 18       		.uleb128 0x18
+ 1851 0814 5A000000 		.4byte	.LVL59
+ 1852 0818 1F0D0000 		.4byte	0xd1f
+ 1853 081c 26080000 		.4byte	0x826
+ 1854 0820 19       		.uleb128 0x19
+ 1855 0821 01       		.uleb128 0x1
+ 1856 0822 50       		.byte	0x50
+ 1857 0823 01       		.uleb128 0x1
+ 1858 0824 30       		.byte	0x30
+ 1859 0825 00       		.byte	0
+ 1860 0826 18       		.uleb128 0x18
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 39
+
+
+ 1861 0827 60000000 		.4byte	.LVL60
+ 1862 082b 930E0000 		.4byte	0xe93
+ 1863 082f 39080000 		.4byte	0x839
+ 1864 0833 19       		.uleb128 0x19
+ 1865 0834 01       		.uleb128 0x1
+ 1866 0835 50       		.byte	0x50
+ 1867 0836 01       		.uleb128 0x1
+ 1868 0837 30       		.byte	0x30
+ 1869 0838 00       		.byte	0
+ 1870 0839 18       		.uleb128 0x18
+ 1871 083a 6C000000 		.4byte	.LVL61
+ 1872 083e AE0E0000 		.4byte	0xeae
+ 1873 0842 4D080000 		.4byte	0x84d
+ 1874 0846 19       		.uleb128 0x19
+ 1875 0847 01       		.uleb128 0x1
+ 1876 0848 50       		.byte	0x50
+ 1877 0849 02       		.uleb128 0x2
+ 1878 084a 74       		.byte	0x74
+ 1879 084b 00       		.sleb128 0
+ 1880 084c 00       		.byte	0
+ 1881 084d 18       		.uleb128 0x18
+ 1882 084e 72000000 		.4byte	.LVL62
+ 1883 0852 C00E0000 		.4byte	0xec0
+ 1884 0856 62080000 		.4byte	0x862
+ 1885 085a 19       		.uleb128 0x19
+ 1886 085b 01       		.uleb128 0x1
+ 1887 085c 50       		.byte	0x50
+ 1888 085d 03       		.uleb128 0x3
+ 1889 085e 0A       		.byte	0xa
+ 1890 085f 8813     		.2byte	0x1388
+ 1891 0861 00       		.byte	0
+ 1892 0862 18       		.uleb128 0x18
+ 1893 0863 78000000 		.4byte	.LVL63
+ 1894 0867 930E0000 		.4byte	0xe93
+ 1895 086b 75080000 		.4byte	0x875
+ 1896 086f 19       		.uleb128 0x19
+ 1897 0870 01       		.uleb128 0x1
+ 1898 0871 50       		.byte	0x50
+ 1899 0872 01       		.uleb128 0x1
+ 1900 0873 30       		.byte	0x30
+ 1901 0874 00       		.byte	0
+ 1902 0875 18       		.uleb128 0x18
+ 1903 0876 82000000 		.4byte	.LVL64
+ 1904 087a AE0E0000 		.4byte	0xeae
+ 1905 087e 89080000 		.4byte	0x889
+ 1906 0882 19       		.uleb128 0x19
+ 1907 0883 01       		.uleb128 0x1
+ 1908 0884 50       		.byte	0x50
+ 1909 0885 02       		.uleb128 0x2
+ 1910 0886 74       		.byte	0x74
+ 1911 0887 00       		.sleb128 0
+ 1912 0888 00       		.byte	0
+ 1913 0889 18       		.uleb128 0x18
+ 1914 088a 88000000 		.4byte	.LVL65
+ 1915 088e AE0E0000 		.4byte	0xeae
+ 1916 0892 A0080000 		.4byte	0x8a0
+ 1917 0896 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 40
+
+
+ 1918 0897 01       		.uleb128 0x1
+ 1919 0898 50       		.byte	0x50
+ 1920 0899 05       		.uleb128 0x5
+ 1921 089a 03       		.byte	0x3
+ 1922 089b 1D000000 		.4byte	.LC8
+ 1923 089f 00       		.byte	0
+ 1924 08a0 16       		.uleb128 0x16
+ 1925 08a1 8C000000 		.4byte	.LVL66
+ 1926 08a5 D10E0000 		.4byte	0xed1
+ 1927 08a9 18       		.uleb128 0x18
+ 1928 08aa 92000000 		.4byte	.LVL67
+ 1929 08ae 930E0000 		.4byte	0xe93
+ 1930 08b2 BC080000 		.4byte	0x8bc
+ 1931 08b6 19       		.uleb128 0x19
+ 1932 08b7 01       		.uleb128 0x1
+ 1933 08b8 50       		.byte	0x50
+ 1934 08b9 01       		.uleb128 0x1
+ 1935 08ba 30       		.byte	0x30
+ 1936 08bb 00       		.byte	0
+ 1937 08bc 18       		.uleb128 0x18
+ 1938 08bd 9A000000 		.4byte	.LVL68
+ 1939 08c1 E20E0000 		.4byte	0xee2
+ 1940 08c5 D1080000 		.4byte	0x8d1
+ 1941 08c9 19       		.uleb128 0x19
+ 1942 08ca 01       		.uleb128 0x1
+ 1943 08cb 50       		.byte	0x50
+ 1944 08cc 03       		.uleb128 0x3
+ 1945 08cd 91       		.byte	0x91
+ 1946 08ce B47F     		.sleb128 -76
+ 1947 08d0 00       		.byte	0
+ 1948 08d1 18       		.uleb128 0x18
+ 1949 08d2 A2000000 		.4byte	.LVL69
+ 1950 08d6 AE0E0000 		.4byte	0xeae
+ 1951 08da E8080000 		.4byte	0x8e8
+ 1952 08de 19       		.uleb128 0x19
+ 1953 08df 01       		.uleb128 0x1
+ 1954 08e0 50       		.byte	0x50
+ 1955 08e1 05       		.uleb128 0x5
+ 1956 08e2 03       		.byte	0x3
+ 1957 08e3 29000000 		.4byte	.LC10
+ 1958 08e7 00       		.byte	0
+ 1959 08e8 16       		.uleb128 0x16
+ 1960 08e9 A6000000 		.4byte	.LVL70
+ 1961 08ed 67040000 		.4byte	0x467
+ 1962 08f1 18       		.uleb128 0x18
+ 1963 08f2 AC000000 		.4byte	.LVL71
+ 1964 08f6 020F0000 		.4byte	0xf02
+ 1965 08fa 05090000 		.4byte	0x905
+ 1966 08fe 19       		.uleb128 0x19
+ 1967 08ff 01       		.uleb128 0x1
+ 1968 0900 50       		.byte	0x50
+ 1969 0901 02       		.uleb128 0x2
+ 1970 0902 91       		.byte	0x91
+ 1971 0903 58       		.sleb128 -40
+ 1972 0904 00       		.byte	0
+ 1973 0905 18       		.uleb128 0x18
+ 1974 0906 B6000000 		.4byte	.LVL72
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 41
+
+
+ 1975 090a AE0E0000 		.4byte	0xeae
+ 1976 090e 1C090000 		.4byte	0x91c
+ 1977 0912 19       		.uleb128 0x19
+ 1978 0913 01       		.uleb128 0x1
+ 1979 0914 50       		.byte	0x50
+ 1980 0915 05       		.uleb128 0x5
+ 1981 0916 03       		.byte	0x3
+ 1982 0917 33000000 		.4byte	.LC12
+ 1983 091b 00       		.byte	0
+ 1984 091c 18       		.uleb128 0x18
+ 1985 091d BE000000 		.4byte	.LVL73
+ 1986 0921 C00E0000 		.4byte	0xec0
+ 1987 0925 31090000 		.4byte	0x931
+ 1988 0929 19       		.uleb128 0x19
+ 1989 092a 01       		.uleb128 0x1
+ 1990 092b 50       		.byte	0x50
+ 1991 092c 03       		.uleb128 0x3
+ 1992 092d 0A       		.byte	0xa
+ 1993 092e E803     		.2byte	0x3e8
+ 1994 0930 00       		.byte	0
+ 1995 0931 16       		.uleb128 0x16
+ 1996 0932 C4000000 		.4byte	.LVL74
+ 1997 0936 67040000 		.4byte	0x467
+ 1998 093a 18       		.uleb128 0x18
+ 1999 093b CC000000 		.4byte	.LVL75
+ 2000 093f 1D0F0000 		.4byte	0xf1d
+ 2001 0943 55090000 		.4byte	0x955
+ 2002 0947 19       		.uleb128 0x19
+ 2003 0948 01       		.uleb128 0x1
+ 2004 0949 51       		.byte	0x51
+ 2005 094a 03       		.uleb128 0x3
+ 2006 094b 91       		.byte	0x91
+ 2007 094c AC7F     		.sleb128 -84
+ 2008 094e 19       		.uleb128 0x19
+ 2009 094f 01       		.uleb128 0x1
+ 2010 0950 50       		.byte	0x50
+ 2011 0951 02       		.uleb128 0x2
+ 2012 0952 91       		.byte	0x91
+ 2013 0953 58       		.sleb128 -40
+ 2014 0954 00       		.byte	0
+ 2015 0955 18       		.uleb128 0x18
+ 2016 0956 D6000000 		.4byte	.LVL76
+ 2017 095a AE0E0000 		.4byte	0xeae
+ 2018 095e 6C090000 		.4byte	0x96c
+ 2019 0962 19       		.uleb128 0x19
+ 2020 0963 01       		.uleb128 0x1
+ 2021 0964 50       		.byte	0x50
+ 2022 0965 05       		.uleb128 0x5
+ 2023 0966 03       		.byte	0x3
+ 2024 0967 51000000 		.4byte	.LC14
+ 2025 096b 00       		.byte	0
+ 2026 096c 18       		.uleb128 0x18
+ 2027 096d DE000000 		.4byte	.LVL77
+ 2028 0971 C00E0000 		.4byte	0xec0
+ 2029 0975 81090000 		.4byte	0x981
+ 2030 0979 19       		.uleb128 0x19
+ 2031 097a 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 42
+
+
+ 2032 097b 50       		.byte	0x50
+ 2033 097c 03       		.uleb128 0x3
+ 2034 097d 0A       		.byte	0xa
+ 2035 097e E803     		.2byte	0x3e8
+ 2036 0980 00       		.byte	0
+ 2037 0981 16       		.uleb128 0x16
+ 2038 0982 E4000000 		.4byte	.LVL78
+ 2039 0986 67040000 		.4byte	0x467
+ 2040 098a 18       		.uleb128 0x18
+ 2041 098b EA000000 		.4byte	.LVL79
+ 2042 098f AE0E0000 		.4byte	0xeae
+ 2043 0993 A1090000 		.4byte	0x9a1
+ 2044 0997 19       		.uleb128 0x19
+ 2045 0998 01       		.uleb128 0x1
+ 2046 0999 50       		.byte	0x50
+ 2047 099a 05       		.uleb128 0x5
+ 2048 099b 03       		.byte	0x3
+ 2049 099c 6B000000 		.4byte	.LC16
+ 2050 09a0 00       		.byte	0
+ 2051 09a1 18       		.uleb128 0x18
+ 2052 09a2 F2000000 		.4byte	.LVL80
+ 2053 09a6 3D0F0000 		.4byte	0xf3d
+ 2054 09aa BB090000 		.4byte	0x9bb
+ 2055 09ae 19       		.uleb128 0x19
+ 2056 09af 01       		.uleb128 0x1
+ 2057 09b0 51       		.byte	0x51
+ 2058 09b1 02       		.uleb128 0x2
+ 2059 09b2 91       		.byte	0x91
+ 2060 09b3 44       		.sleb128 -60
+ 2061 09b4 19       		.uleb128 0x19
+ 2062 09b5 01       		.uleb128 0x1
+ 2063 09b6 50       		.byte	0x50
+ 2064 09b7 02       		.uleb128 0x2
+ 2065 09b8 91       		.byte	0x91
+ 2066 09b9 58       		.sleb128 -40
+ 2067 09ba 00       		.byte	0
+ 2068 09bb 18       		.uleb128 0x18
+ 2069 09bc FC000000 		.4byte	.LVL81
+ 2070 09c0 AE0E0000 		.4byte	0xeae
+ 2071 09c4 D2090000 		.4byte	0x9d2
+ 2072 09c8 19       		.uleb128 0x19
+ 2073 09c9 01       		.uleb128 0x1
+ 2074 09ca 50       		.byte	0x50
+ 2075 09cb 05       		.uleb128 0x5
+ 2076 09cc 03       		.byte	0x3
+ 2077 09cd 7A000000 		.4byte	.LC18
+ 2078 09d1 00       		.byte	0
+ 2079 09d2 18       		.uleb128 0x18
+ 2080 09d3 04010000 		.4byte	.LVL82
+ 2081 09d7 C00E0000 		.4byte	0xec0
+ 2082 09db E7090000 		.4byte	0x9e7
+ 2083 09df 19       		.uleb128 0x19
+ 2084 09e0 01       		.uleb128 0x1
+ 2085 09e1 50       		.byte	0x50
+ 2086 09e2 03       		.uleb128 0x3
+ 2087 09e3 0A       		.byte	0xa
+ 2088 09e4 E803     		.2byte	0x3e8
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 43
+
+
+ 2089 09e6 00       		.byte	0
+ 2090 09e7 18       		.uleb128 0x18
+ 2091 09e8 0C010000 		.4byte	.LVL83
+ 2092 09ec AE0E0000 		.4byte	0xeae
+ 2093 09f0 FE090000 		.4byte	0x9fe
+ 2094 09f4 19       		.uleb128 0x19
+ 2095 09f5 01       		.uleb128 0x1
+ 2096 09f6 50       		.byte	0x50
+ 2097 09f7 05       		.uleb128 0x5
+ 2098 09f8 03       		.byte	0x3
+ 2099 09f9 97000000 		.4byte	.LC20
+ 2100 09fd 00       		.byte	0
+ 2101 09fe 18       		.uleb128 0x18
+ 2102 09ff 12010000 		.4byte	.LVL84
+ 2103 0a03 08060000 		.4byte	0x608
+ 2104 0a07 130A0000 		.4byte	0xa13
+ 2105 0a0b 19       		.uleb128 0x19
+ 2106 0a0c 01       		.uleb128 0x1
+ 2107 0a0d 50       		.byte	0x50
+ 2108 0a0e 03       		.uleb128 0x3
+ 2109 0a0f 91       		.byte	0x91
+ 2110 0a10 BC7F     		.sleb128 -68
+ 2111 0a12 00       		.byte	0
+ 2112 0a13 16       		.uleb128 0x16
+ 2113 0a14 16010000 		.4byte	.LVL85
+ 2114 0a18 67040000 		.4byte	0x467
+ 2115 0a1c 18       		.uleb128 0x18
+ 2116 0a1d 1E010000 		.4byte	.LVL86
+ 2117 0a21 570F0000 		.4byte	0xf57
+ 2118 0a25 370A0000 		.4byte	0xa37
+ 2119 0a29 19       		.uleb128 0x19
+ 2120 0a2a 01       		.uleb128 0x1
+ 2121 0a2b 51       		.byte	0x51
+ 2122 0a2c 03       		.uleb128 0x3
+ 2123 0a2d 91       		.byte	0x91
+ 2124 0a2e BC7F     		.sleb128 -68
+ 2125 0a30 19       		.uleb128 0x19
+ 2126 0a31 01       		.uleb128 0x1
+ 2127 0a32 50       		.byte	0x50
+ 2128 0a33 02       		.uleb128 0x2
+ 2129 0a34 91       		.byte	0x91
+ 2130 0a35 44       		.sleb128 -60
+ 2131 0a36 00       		.byte	0
+ 2132 0a37 18       		.uleb128 0x18
+ 2133 0a38 28010000 		.4byte	.LVL87
+ 2134 0a3c AE0E0000 		.4byte	0xeae
+ 2135 0a40 4E0A0000 		.4byte	0xa4e
+ 2136 0a44 19       		.uleb128 0x19
+ 2137 0a45 01       		.uleb128 0x1
+ 2138 0a46 50       		.byte	0x50
+ 2139 0a47 05       		.uleb128 0x5
+ 2140 0a48 03       		.byte	0x3
+ 2141 0a49 A6000000 		.4byte	.LC22
+ 2142 0a4d 00       		.byte	0
+ 2143 0a4e 18       		.uleb128 0x18
+ 2144 0a4f 30010000 		.4byte	.LVL88
+ 2145 0a53 C00E0000 		.4byte	0xec0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 44
+
+
+ 2146 0a57 630A0000 		.4byte	0xa63
+ 2147 0a5b 19       		.uleb128 0x19
+ 2148 0a5c 01       		.uleb128 0x1
+ 2149 0a5d 50       		.byte	0x50
+ 2150 0a5e 03       		.uleb128 0x3
+ 2151 0a5f 0A       		.byte	0xa
+ 2152 0a60 E803     		.2byte	0x3e8
+ 2153 0a62 00       		.byte	0
+ 2154 0a63 18       		.uleb128 0x18
+ 2155 0a64 38010000 		.4byte	.LVL89
+ 2156 0a68 AE0E0000 		.4byte	0xeae
+ 2157 0a6c 7A0A0000 		.4byte	0xa7a
+ 2158 0a70 19       		.uleb128 0x19
+ 2159 0a71 01       		.uleb128 0x1
+ 2160 0a72 50       		.byte	0x50
+ 2161 0a73 05       		.uleb128 0x5
+ 2162 0a74 03       		.byte	0x3
+ 2163 0a75 BA000000 		.4byte	.LC24
+ 2164 0a79 00       		.byte	0
+ 2165 0a7a 16       		.uleb128 0x16
+ 2166 0a7b 3C010000 		.4byte	.LVL90
+ 2167 0a7f 67040000 		.4byte	0x467
+ 2168 0a83 18       		.uleb128 0x18
+ 2169 0a84 46010000 		.4byte	.LVL91
+ 2170 0a88 710F0000 		.4byte	0xf71
+ 2171 0a8c A40A0000 		.4byte	0xaa4
+ 2172 0a90 19       		.uleb128 0x19
+ 2173 0a91 01       		.uleb128 0x1
+ 2174 0a92 52       		.byte	0x52
+ 2175 0a93 03       		.uleb128 0x3
+ 2176 0a94 91       		.byte	0x91
+ 2177 0a95 AC7F     		.sleb128 -84
+ 2178 0a97 19       		.uleb128 0x19
+ 2179 0a98 01       		.uleb128 0x1
+ 2180 0a99 51       		.byte	0x51
+ 2181 0a9a 02       		.uleb128 0x2
+ 2182 0a9b 91       		.byte	0x91
+ 2183 0a9c 44       		.sleb128 -60
+ 2184 0a9d 19       		.uleb128 0x19
+ 2185 0a9e 01       		.uleb128 0x1
+ 2186 0a9f 50       		.byte	0x50
+ 2187 0aa0 02       		.uleb128 0x2
+ 2188 0aa1 91       		.byte	0x91
+ 2189 0aa2 58       		.sleb128 -40
+ 2190 0aa3 00       		.byte	0
+ 2191 0aa4 18       		.uleb128 0x18
+ 2192 0aa5 52010000 		.4byte	.LVL92
+ 2193 0aa9 C00E0000 		.4byte	0xec0
+ 2194 0aad B90A0000 		.4byte	0xab9
+ 2195 0ab1 19       		.uleb128 0x19
+ 2196 0ab2 01       		.uleb128 0x1
+ 2197 0ab3 50       		.byte	0x50
+ 2198 0ab4 03       		.uleb128 0x3
+ 2199 0ab5 0A       		.byte	0xa
+ 2200 0ab6 E803     		.2byte	0x3e8
+ 2201 0ab8 00       		.byte	0
+ 2202 0ab9 18       		.uleb128 0x18
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 45
+
+
+ 2203 0aba 5A010000 		.4byte	.LVL93
+ 2204 0abe AE0E0000 		.4byte	0xeae
+ 2205 0ac2 D00A0000 		.4byte	0xad0
+ 2206 0ac6 19       		.uleb128 0x19
+ 2207 0ac7 01       		.uleb128 0x1
+ 2208 0ac8 50       		.byte	0x50
+ 2209 0ac9 05       		.uleb128 0x5
+ 2210 0aca 03       		.byte	0x3
+ 2211 0acb CD000000 		.4byte	.LC26
+ 2212 0acf 00       		.byte	0
+ 2213 0ad0 16       		.uleb128 0x16
+ 2214 0ad1 62010000 		.4byte	.LVL94
+ 2215 0ad5 67040000 		.4byte	0x467
+ 2216 0ad9 18       		.uleb128 0x18
+ 2217 0ada 68010000 		.4byte	.LVL95
+ 2218 0ade 08060000 		.4byte	0x608
+ 2219 0ae2 EE0A0000 		.4byte	0xaee
+ 2220 0ae6 19       		.uleb128 0x19
+ 2221 0ae7 01       		.uleb128 0x1
+ 2222 0ae8 50       		.byte	0x50
+ 2223 0ae9 03       		.uleb128 0x3
+ 2224 0aea 91       		.byte	0x91
+ 2225 0aeb BC7F     		.sleb128 -68
+ 2226 0aed 00       		.byte	0
+ 2227 0aee 18       		.uleb128 0x18
+ 2228 0aef 74010000 		.4byte	.LVL96
+ 2229 0af3 900F0000 		.4byte	0xf90
+ 2230 0af7 060B0000 		.4byte	0xb06
+ 2231 0afb 19       		.uleb128 0x19
+ 2232 0afc 01       		.uleb128 0x1
+ 2233 0afd 50       		.byte	0x50
+ 2234 0afe 06       		.uleb128 0x6
+ 2235 0aff 91       		.byte	0x91
+ 2236 0b00 B87F     		.sleb128 -72
+ 2237 0b02 06       		.byte	0x6
+ 2238 0b03 31       		.byte	0x31
+ 2239 0b04 1C       		.byte	0x1c
+ 2240 0b05 00       		.byte	0
+ 2241 0b06 18       		.uleb128 0x18
+ 2242 0b07 7A010000 		.4byte	.LVL97
+ 2243 0b0b A10F0000 		.4byte	0xfa1
+ 2244 0b0f 1D0B0000 		.4byte	0xb1d
+ 2245 0b13 19       		.uleb128 0x19
+ 2246 0b14 01       		.uleb128 0x1
+ 2247 0b15 50       		.byte	0x50
+ 2248 0b16 05       		.uleb128 0x5
+ 2249 0b17 03       		.byte	0x3
+ 2250 0b18 E7000000 		.4byte	.LC28
+ 2251 0b1c 00       		.byte	0
+ 2252 0b1d 16       		.uleb128 0x16
+ 2253 0b1e 7E010000 		.4byte	.LVL98
+ 2254 0b22 BD0F0000 		.4byte	0xfbd
+ 2255 0b26 18       		.uleb128 0x18
+ 2256 0b27 86010000 		.4byte	.LVL99
+ 2257 0b2b C40F0000 		.4byte	0xfc4
+ 2258 0b2f 410B0000 		.4byte	0xb41
+ 2259 0b33 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 46
+
+
+ 2260 0b34 01       		.uleb128 0x1
+ 2261 0b35 51       		.byte	0x51
+ 2262 0b36 03       		.uleb128 0x3
+ 2263 0b37 91       		.byte	0x91
+ 2264 0b38 BC7F     		.sleb128 -68
+ 2265 0b3a 19       		.uleb128 0x19
+ 2266 0b3b 01       		.uleb128 0x1
+ 2267 0b3c 50       		.byte	0x50
+ 2268 0b3d 02       		.uleb128 0x2
+ 2269 0b3e 91       		.byte	0x91
+ 2270 0b3f 44       		.sleb128 -60
+ 2271 0b40 00       		.byte	0
+ 2272 0b41 18       		.uleb128 0x18
+ 2273 0b42 90010000 		.4byte	.LVL100
+ 2274 0b46 AE0E0000 		.4byte	0xeae
+ 2275 0b4a 580B0000 		.4byte	0xb58
+ 2276 0b4e 19       		.uleb128 0x19
+ 2277 0b4f 01       		.uleb128 0x1
+ 2278 0b50 50       		.byte	0x50
+ 2279 0b51 05       		.uleb128 0x5
+ 2280 0b52 03       		.byte	0x3
+ 2281 0b53 EA000000 		.4byte	.LC30
+ 2282 0b57 00       		.byte	0
+ 2283 0b58 16       		.uleb128 0x16
+ 2284 0b59 94010000 		.4byte	.LVL101
+ 2285 0b5d DE0F0000 		.4byte	0xfde
+ 2286 0b61 18       		.uleb128 0x18
+ 2287 0b62 9E010000 		.4byte	.LVL102
+ 2288 0b66 710F0000 		.4byte	0xf71
+ 2289 0b6a 820B0000 		.4byte	0xb82
+ 2290 0b6e 19       		.uleb128 0x19
+ 2291 0b6f 01       		.uleb128 0x1
+ 2292 0b70 52       		.byte	0x52
+ 2293 0b71 03       		.uleb128 0x3
+ 2294 0b72 91       		.byte	0x91
+ 2295 0b73 AC7F     		.sleb128 -84
+ 2296 0b75 19       		.uleb128 0x19
+ 2297 0b76 01       		.uleb128 0x1
+ 2298 0b77 51       		.byte	0x51
+ 2299 0b78 02       		.uleb128 0x2
+ 2300 0b79 91       		.byte	0x91
+ 2301 0b7a 44       		.sleb128 -60
+ 2302 0b7b 19       		.uleb128 0x19
+ 2303 0b7c 01       		.uleb128 0x1
+ 2304 0b7d 50       		.byte	0x50
+ 2305 0b7e 02       		.uleb128 0x2
+ 2306 0b7f 91       		.byte	0x91
+ 2307 0b80 58       		.sleb128 -40
+ 2308 0b81 00       		.byte	0
+ 2309 0b82 18       		.uleb128 0x18
+ 2310 0b83 AA010000 		.4byte	.LVL103
+ 2311 0b87 C00E0000 		.4byte	0xec0
+ 2312 0b8b 970B0000 		.4byte	0xb97
+ 2313 0b8f 19       		.uleb128 0x19
+ 2314 0b90 01       		.uleb128 0x1
+ 2315 0b91 50       		.byte	0x50
+ 2316 0b92 03       		.uleb128 0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 47
+
+
+ 2317 0b93 0A       		.byte	0xa
+ 2318 0b94 E803     		.2byte	0x3e8
+ 2319 0b96 00       		.byte	0
+ 2320 0b97 18       		.uleb128 0x18
+ 2321 0b98 B2010000 		.4byte	.LVL104
+ 2322 0b9c AE0E0000 		.4byte	0xeae
+ 2323 0ba0 AE0B0000 		.4byte	0xbae
+ 2324 0ba4 19       		.uleb128 0x19
+ 2325 0ba5 01       		.uleb128 0x1
+ 2326 0ba6 50       		.byte	0x50
+ 2327 0ba7 05       		.uleb128 0x5
+ 2328 0ba8 03       		.byte	0x3
+ 2329 0ba9 02010000 		.4byte	.LC32
+ 2330 0bad 00       		.byte	0
+ 2331 0bae 16       		.uleb128 0x16
+ 2332 0baf B6010000 		.4byte	.LVL105
+ 2333 0bb3 67040000 		.4byte	0x467
+ 2334 0bb7 18       		.uleb128 0x18
+ 2335 0bb8 BC010000 		.4byte	.LVL106
+ 2336 0bbc 300D0000 		.4byte	0xd30
+ 2337 0bc0 CA0B0000 		.4byte	0xbca
+ 2338 0bc4 19       		.uleb128 0x19
+ 2339 0bc5 01       		.uleb128 0x1
+ 2340 0bc6 50       		.byte	0x50
+ 2341 0bc7 01       		.uleb128 0x1
+ 2342 0bc8 31       		.byte	0x31
+ 2343 0bc9 00       		.byte	0
+ 2344 0bca 18       		.uleb128 0x18
+ 2345 0bcb C2010000 		.4byte	.LVL107
+ 2346 0bcf C00E0000 		.4byte	0xec0
+ 2347 0bd3 DF0B0000 		.4byte	0xbdf
+ 2348 0bd7 19       		.uleb128 0x19
+ 2349 0bd8 01       		.uleb128 0x1
+ 2350 0bd9 50       		.byte	0x50
+ 2351 0bda 03       		.uleb128 0x3
+ 2352 0bdb 0A       		.byte	0xa
+ 2353 0bdc 8813     		.2byte	0x1388
+ 2354 0bde 00       		.byte	0
+ 2355 0bdf 1B       		.uleb128 0x1b
+ 2356 0be0 C8010000 		.4byte	.LVL108
+ 2357 0be4 300D0000 		.4byte	0xd30
+ 2358 0be8 19       		.uleb128 0x19
+ 2359 0be9 01       		.uleb128 0x1
+ 2360 0bea 50       		.byte	0x50
+ 2361 0beb 01       		.uleb128 0x1
+ 2362 0bec 30       		.byte	0x30
+ 2363 0bed 00       		.byte	0
+ 2364 0bee 00       		.byte	0
+ 2365 0bef 05       		.uleb128 0x5
+ 2366 0bf0 57020000 		.4byte	0x257
+ 2367 0bf4 05       		.uleb128 0x5
+ 2368 0bf5 5D000000 		.4byte	0x5d
+ 2369 0bf9 1E       		.uleb128 0x1e
+ 2370 0bfa 92020000 		.4byte	.LASF69
+ 2371 0bfe 01       		.byte	0x1
+ 2372 0bff 1E       		.byte	0x1e
+ 2373 0c00 5D000000 		.4byte	0x5d
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 48
+
+
+ 2374 0c04 05       		.uleb128 0x5
+ 2375 0c05 03       		.byte	0x3
+ 2376 0c06 00000000 		.4byte	counter
+ 2377 0c0a 20       		.uleb128 0x20
+ 2378 0c0b 39030000 		.4byte	.LASF71
+ 2379 0c0f 08       		.byte	0x8
+ 2380 0c10 5501     		.2byte	0x155
+ 2381 0c12 21       		.uleb128 0x21
+ 2382 0c13 53050000 		.4byte	.LASF73
+ 2383 0c17 09       		.byte	0x9
+ 2384 0c18 41       		.byte	0x41
+ 2385 0c19 83000000 		.4byte	0x83
+ 2386 0c1d 22       		.uleb128 0x22
+ 2387 0c1e AA020000 		.4byte	.LASF75
+ 2388 0c22 09       		.byte	0x9
+ 2389 0c23 42       		.byte	0x42
+ 2390 0c24 2E0C0000 		.4byte	0xc2e
+ 2391 0c28 23       		.uleb128 0x23
+ 2392 0c29 83000000 		.4byte	0x83
+ 2393 0c2d 00       		.byte	0
+ 2394 0c2e 24       		.uleb128 0x24
+ 2395 0c2f D1010000 		.4byte	.LASF72
+ 2396 0c33 09       		.byte	0x9
+ 2397 0c34 32       		.byte	0x32
+ 2398 0c35 21       		.uleb128 0x21
+ 2399 0c36 A8040000 		.4byte	.LASF74
+ 2400 0c3a 0A       		.byte	0xa
+ 2401 0c3b 20       		.byte	0x20
+ 2402 0c3c 6B000000 		.4byte	0x6b
+ 2403 0c40 22       		.uleb128 0x22
+ 2404 0c41 9D010000 		.4byte	.LASF76
+ 2405 0c45 0A       		.byte	0xa
+ 2406 0c46 1D       		.byte	0x1d
+ 2407 0c47 510C0000 		.4byte	0xc51
+ 2408 0c4b 23       		.uleb128 0x23
+ 2409 0c4c 6B000000 		.4byte	0x6b
+ 2410 0c50 00       		.byte	0
+ 2411 0c51 22       		.uleb128 0x22
+ 2412 0c52 75010000 		.4byte	.LASF77
+ 2413 0c56 09       		.byte	0x9
+ 2414 0c57 39       		.byte	0x39
+ 2415 0c58 620C0000 		.4byte	0xc62
+ 2416 0c5c 23       		.uleb128 0x23
+ 2417 0c5d 83000000 		.4byte	0x83
+ 2418 0c61 00       		.byte	0
+ 2419 0c62 22       		.uleb128 0x22
+ 2420 0c63 23070000 		.4byte	.LASF78
+ 2421 0c67 09       		.byte	0x9
+ 2422 0c68 33       		.byte	0x33
+ 2423 0c69 780C0000 		.4byte	0xc78
+ 2424 0c6d 23       		.uleb128 0x23
+ 2425 0c6e 83000000 		.4byte	0x83
+ 2426 0c72 23       		.uleb128 0x23
+ 2427 0c73 83000000 		.4byte	0x83
+ 2428 0c77 00       		.byte	0
+ 2429 0c78 22       		.uleb128 0x22
+ 2430 0c79 6E050000 		.4byte	.LASF79
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 49
+
+
+ 2431 0c7d 09       		.byte	0x9
+ 2432 0c7e 3C       		.byte	0x3c
+ 2433 0c7f 8E0C0000 		.4byte	0xc8e
+ 2434 0c83 23       		.uleb128 0x23
+ 2435 0c84 83000000 		.4byte	0x83
+ 2436 0c88 23       		.uleb128 0x23
+ 2437 0c89 83000000 		.4byte	0x83
+ 2438 0c8d 00       		.byte	0
+ 2439 0c8e 22       		.uleb128 0x22
+ 2440 0c8f 76040000 		.4byte	.LASF80
+ 2441 0c93 09       		.byte	0x9
+ 2442 0c94 36       		.byte	0x36
+ 2443 0c95 A40C0000 		.4byte	0xca4
+ 2444 0c99 23       		.uleb128 0x23
+ 2445 0c9a 83000000 		.4byte	0x83
+ 2446 0c9e 23       		.uleb128 0x23
+ 2447 0c9f 83000000 		.4byte	0x83
+ 2448 0ca3 00       		.byte	0
+ 2449 0ca4 22       		.uleb128 0x22
+ 2450 0ca5 1D050000 		.4byte	.LASF81
+ 2451 0ca9 09       		.byte	0x9
+ 2452 0caa 38       		.byte	0x38
+ 2453 0cab B50C0000 		.4byte	0xcb5
+ 2454 0caf 23       		.uleb128 0x23
+ 2455 0cb0 83000000 		.4byte	0x83
+ 2456 0cb4 00       		.byte	0
+ 2457 0cb5 24       		.uleb128 0x24
+ 2458 0cb6 3C000000 		.4byte	.LASF82
+ 2459 0cba 09       		.byte	0x9
+ 2460 0cbb 31       		.byte	0x31
+ 2461 0cbc 22       		.uleb128 0x22
+ 2462 0cbd DD050000 		.4byte	.LASF83
+ 2463 0cc1 09       		.byte	0x9
+ 2464 0cc2 48       		.byte	0x48
+ 2465 0cc3 CD0C0000 		.4byte	0xccd
+ 2466 0cc7 23       		.uleb128 0x23
+ 2467 0cc8 83000000 		.4byte	0x83
+ 2468 0ccc 00       		.byte	0
+ 2469 0ccd 22       		.uleb128 0x22
+ 2470 0cce 09040000 		.4byte	.LASF84
+ 2471 0cd2 09       		.byte	0x9
+ 2472 0cd3 43       		.byte	0x43
+ 2473 0cd4 DE0C0000 		.4byte	0xcde
+ 2474 0cd8 23       		.uleb128 0x23
+ 2475 0cd9 83000000 		.4byte	0x83
+ 2476 0cdd 00       		.byte	0
+ 2477 0cde 22       		.uleb128 0x22
+ 2478 0cdf 08000000 		.4byte	.LASF85
+ 2479 0ce3 0B       		.byte	0xb
+ 2480 0ce4 4C       		.byte	0x4c
+ 2481 0ce5 F40C0000 		.4byte	0xcf4
+ 2482 0ce9 23       		.uleb128 0x23
+ 2483 0cea 6B000000 		.4byte	0x6b
+ 2484 0cee 23       		.uleb128 0x23
+ 2485 0cef 6B000000 		.4byte	0x6b
+ 2486 0cf3 00       		.byte	0
+ 2487 0cf4 22       		.uleb128 0x22
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 50
+
+
+ 2488 0cf5 A9060000 		.4byte	.LASF86
+ 2489 0cf9 0B       		.byte	0xb
+ 2490 0cfa 4F       		.byte	0x4f
+ 2491 0cfb 050D0000 		.4byte	0xd05
+ 2492 0cff 23       		.uleb128 0x23
+ 2493 0d00 6B000000 		.4byte	0x6b
+ 2494 0d04 00       		.byte	0
+ 2495 0d05 25       		.uleb128 0x25
+ 2496 0d06 7D030000 		.4byte	.LASF95
+ 2497 0d0a 0B       		.byte	0xb
+ 2498 0d0b 49       		.byte	0x49
+ 2499 0d0c E5000000 		.4byte	0xe5
+ 2500 0d10 1F0D0000 		.4byte	0xd1f
+ 2501 0d14 23       		.uleb128 0x23
+ 2502 0d15 6B000000 		.4byte	0x6b
+ 2503 0d19 23       		.uleb128 0x23
+ 2504 0d1a E5000000 		.4byte	0xe5
+ 2505 0d1e 00       		.byte	0
+ 2506 0d1f 22       		.uleb128 0x22
+ 2507 0d20 6F000000 		.4byte	.LASF87
+ 2508 0d24 0C       		.byte	0xc
+ 2509 0d25 1D       		.byte	0x1d
+ 2510 0d26 300D0000 		.4byte	0xd30
+ 2511 0d2a 23       		.uleb128 0x23
+ 2512 0d2b 6B000000 		.4byte	0x6b
+ 2513 0d2f 00       		.byte	0
+ 2514 0d30 22       		.uleb128 0x22
+ 2515 0d31 AF050000 		.4byte	.LASF88
+ 2516 0d35 0D       		.byte	0xd
+ 2517 0d36 1D       		.byte	0x1d
+ 2518 0d37 410D0000 		.4byte	0xd41
+ 2519 0d3b 23       		.uleb128 0x23
+ 2520 0d3c 6B000000 		.4byte	0x6b
+ 2521 0d40 00       		.byte	0
+ 2522 0d41 22       		.uleb128 0x22
+ 2523 0d42 4B040000 		.4byte	.LASF89
+ 2524 0d46 0E       		.byte	0xe
+ 2525 0d47 1D       		.byte	0x1d
+ 2526 0d48 520D0000 		.4byte	0xd52
+ 2527 0d4c 23       		.uleb128 0x23
+ 2528 0d4d 6B000000 		.4byte	0x6b
+ 2529 0d51 00       		.byte	0
+ 2530 0d52 22       		.uleb128 0x22
+ 2531 0d53 F6000000 		.4byte	.LASF90
+ 2532 0d57 0F       		.byte	0xf
+ 2533 0d58 1D       		.byte	0x1d
+ 2534 0d59 630D0000 		.4byte	0xd63
+ 2535 0d5d 23       		.uleb128 0x23
+ 2536 0d5e 6B000000 		.4byte	0x6b
+ 2537 0d62 00       		.byte	0
+ 2538 0d63 24       		.uleb128 0x24
+ 2539 0d64 6A030000 		.4byte	.LASF91
+ 2540 0d68 10       		.byte	0x10
+ 2541 0d69 1F       		.byte	0x1f
+ 2542 0d6a 24       		.uleb128 0x24
+ 2543 0d6b 61060000 		.4byte	.LASF92
+ 2544 0d6f 11       		.byte	0x11
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 51
+
+
+ 2545 0d70 68       		.byte	0x68
+ 2546 0d71 24       		.uleb128 0x24
+ 2547 0d72 D1050000 		.4byte	.LASF93
+ 2548 0d76 11       		.byte	0x11
+ 2549 0d77 67       		.byte	0x67
+ 2550 0d78 21       		.uleb128 0x21
+ 2551 0d79 49030000 		.4byte	.LASF94
+ 2552 0d7d 12       		.byte	0x12
+ 2553 0d7e 2E       		.byte	0x2e
+ 2554 0d7f 5D000000 		.4byte	0x5d
+ 2555 0d83 25       		.uleb128 0x25
+ 2556 0d84 F6060000 		.4byte	.LASF96
+ 2557 0d88 12       		.byte	0x12
+ 2558 0d89 31       		.byte	0x31
+ 2559 0d8a 5D000000 		.4byte	0x5d
+ 2560 0d8e 980D0000 		.4byte	0xd98
+ 2561 0d92 23       		.uleb128 0x23
+ 2562 0d93 BD060000 		.4byte	0x6bd
+ 2563 0d97 00       		.byte	0
+ 2564 0d98 21       		.uleb128 0x21
+ 2565 0d99 FB020000 		.4byte	.LASF97
+ 2566 0d9d 12       		.byte	0x12
+ 2567 0d9e 2F       		.byte	0x2f
+ 2568 0d9f 5D000000 		.4byte	0x5d
+ 2569 0da3 25       		.uleb128 0x25
+ 2570 0da4 2C060000 		.4byte	.LASF98
+ 2571 0da8 12       		.byte	0x12
+ 2572 0da9 32       		.byte	0x32
+ 2573 0daa 5D000000 		.4byte	0x5d
+ 2574 0dae B80D0000 		.4byte	0xdb8
+ 2575 0db2 23       		.uleb128 0x23
+ 2576 0db3 BD060000 		.4byte	0x6bd
+ 2577 0db7 00       		.byte	0
+ 2578 0db8 25       		.uleb128 0x25
+ 2579 0db9 8E040000 		.4byte	.LASF99
+ 2580 0dbd 12       		.byte	0x12
+ 2581 0dbe 33       		.byte	0x33
+ 2582 0dbf 5D000000 		.4byte	0x5d
+ 2583 0dc3 CD0D0000 		.4byte	0xdcd
+ 2584 0dc7 23       		.uleb128 0x23
+ 2585 0dc8 BD060000 		.4byte	0x6bd
+ 2586 0dcc 00       		.byte	0
+ 2587 0dcd 21       		.uleb128 0x21
+ 2588 0dce DE020000 		.4byte	.LASF100
+ 2589 0dd2 13       		.byte	0x13
+ 2590 0dd3 20       		.byte	0x20
+ 2591 0dd4 6B000000 		.4byte	0x6b
+ 2592 0dd8 24       		.uleb128 0x24
+ 2593 0dd9 62040000 		.4byte	.LASF101
+ 2594 0ddd 0B       		.byte	0xb
+ 2595 0dde 6C       		.byte	0x6c
+ 2596 0ddf 24       		.uleb128 0x24
+ 2597 0de0 CB030000 		.4byte	.LASF102
+ 2598 0de4 14       		.byte	0x14
+ 2599 0de5 23       		.byte	0x23
+ 2600 0de6 22       		.uleb128 0x22
+ 2601 0de7 9A020000 		.4byte	.LASF103
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 52
+
+
+ 2602 0deb 14       		.byte	0x14
+ 2603 0dec 18       		.byte	0x18
+ 2604 0ded F70D0000 		.4byte	0xdf7
+ 2605 0df1 23       		.uleb128 0x23
+ 2606 0df2 E5000000 		.4byte	0xe5
+ 2607 0df6 00       		.byte	0
+ 2608 0df7 24       		.uleb128 0x24
+ 2609 0df8 C3010000 		.4byte	.LASF104
+ 2610 0dfc 15       		.byte	0x15
+ 2611 0dfd 5A       		.byte	0x5a
+ 2612 0dfe 20       		.uleb128 0x20
+ 2613 0dff D3000000 		.4byte	.LASF105
+ 2614 0e03 08       		.byte	0x8
+ 2615 0e04 3C01     		.2byte	0x13c
+ 2616 0e06 26       		.uleb128 0x26
+ 2617 0e07 94050000 		.4byte	.LASF106
+ 2618 0e0b 16       		.byte	0x16
+ 2619 0e0c 2C       		.byte	0x2c
+ 2620 0e0d 57020000 		.4byte	0x257
+ 2621 0e11 170E0000 		.4byte	0xe17
+ 2622 0e15 27       		.uleb128 0x27
+ 2623 0e16 00       		.byte	0
+ 2624 0e17 28       		.uleb128 0x28
+ 2625 0e18 5F010000 		.4byte	.LASF107
+ 2626 0e1c 08       		.byte	0x8
+ 2627 0e1d 3F01     		.2byte	0x13f
+ 2628 0e1f 290E0000 		.4byte	0xe29
+ 2629 0e23 23       		.uleb128 0x23
+ 2630 0e24 B5000000 		.4byte	0xb5
+ 2631 0e28 00       		.byte	0
+ 2632 0e29 28       		.uleb128 0x28
+ 2633 0e2a 3D040000 		.4byte	.LASF108
+ 2634 0e2e 08       		.byte	0x8
+ 2635 0e2f 4101     		.2byte	0x141
+ 2636 0e31 400E0000 		.4byte	0xe40
+ 2637 0e35 23       		.uleb128 0x23
+ 2638 0e36 83000000 		.4byte	0x83
+ 2639 0e3a 23       		.uleb128 0x23
+ 2640 0e3b 83000000 		.4byte	0x83
+ 2641 0e3f 00       		.byte	0
+ 2642 0e40 22       		.uleb128 0x22
+ 2643 0e41 BF050000 		.4byte	.LASF109
+ 2644 0e45 04       		.byte	0x4
+ 2645 0e46 1D       		.byte	0x1d
+ 2646 0e47 510E0000 		.4byte	0xe51
+ 2647 0e4b 23       		.uleb128 0x23
+ 2648 0e4c 510E0000 		.4byte	0xe51
+ 2649 0e50 00       		.byte	0
+ 2650 0e51 06       		.uleb128 0x6
+ 2651 0e52 04       		.byte	0x4
+ 2652 0e53 4C020000 		.4byte	0x24c
+ 2653 0e57 22       		.uleb128 0x22
+ 2654 0e58 DA030000 		.4byte	.LASF110
+ 2655 0e5c 04       		.byte	0x4
+ 2656 0e5d 29       		.byte	0x29
+ 2657 0e5e 6D0E0000 		.4byte	0xe6d
+ 2658 0e62 23       		.uleb128 0x23
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 53
+
+
+ 2659 0e63 510E0000 		.4byte	0xe51
+ 2660 0e67 23       		.uleb128 0x23
+ 2661 0e68 07010000 		.4byte	0x107
+ 2662 0e6c 00       		.byte	0
+ 2663 0e6d 22       		.uleb128 0x22
+ 2664 0e6e 1F040000 		.4byte	.LASF111
+ 2665 0e72 12       		.byte	0x12
+ 2666 0e73 27       		.byte	0x27
+ 2667 0e74 7E0E0000 		.4byte	0xe7e
+ 2668 0e78 23       		.uleb128 0x23
+ 2669 0e79 BD060000 		.4byte	0x6bd
+ 2670 0e7d 00       		.byte	0
+ 2671 0e7e 25       		.uleb128 0x25
+ 2672 0e7f 8C030000 		.4byte	.LASF112
+ 2673 0e83 12       		.byte	0x12
+ 2674 0e84 28       		.byte	0x28
+ 2675 0e85 5D000000 		.4byte	0x5d
+ 2676 0e89 930E0000 		.4byte	0xe93
+ 2677 0e8d 23       		.uleb128 0x23
+ 2678 0e8e BD060000 		.4byte	0x6bd
+ 2679 0e92 00       		.byte	0
+ 2680 0e93 25       		.uleb128 0x25
+ 2681 0e94 98010000 		.4byte	.LASF113
+ 2682 0e98 17       		.byte	0x17
+ 2683 0e99 35       		.byte	0x35
+ 2684 0e9a 57020000 		.4byte	0x257
+ 2685 0e9e A80E0000 		.4byte	0xea8
+ 2686 0ea2 23       		.uleb128 0x23
+ 2687 0ea3 A80E0000 		.4byte	0xea8
+ 2688 0ea7 00       		.byte	0
+ 2689 0ea8 06       		.uleb128 0x6
+ 2690 0ea9 04       		.byte	0x4
+ 2691 0eaa 57020000 		.4byte	0x257
+ 2692 0eae 22       		.uleb128 0x22
+ 2693 0eaf E8060000 		.4byte	.LASF114
+ 2694 0eb3 18       		.byte	0x18
+ 2695 0eb4 07       		.byte	0x7
+ 2696 0eb5 C00E0000 		.4byte	0xec0
+ 2697 0eb9 23       		.uleb128 0x23
+ 2698 0eba 07010000 		.4byte	0x107
+ 2699 0ebe 27       		.uleb128 0x27
+ 2700 0ebf 00       		.byte	0
+ 2701 0ec0 22       		.uleb128 0x22
+ 2702 0ec1 00000000 		.4byte	.LASF115
+ 2703 0ec5 0B       		.byte	0xb
+ 2704 0ec6 5A       		.byte	0x5a
+ 2705 0ec7 D10E0000 		.4byte	0xed1
+ 2706 0ecb 23       		.uleb128 0x23
+ 2707 0ecc 83000000 		.4byte	0x83
+ 2708 0ed0 00       		.byte	0
+ 2709 0ed1 26       		.uleb128 0x26
+ 2710 0ed2 15030000 		.4byte	.LASF116
+ 2711 0ed6 19       		.byte	0x19
+ 2712 0ed7 19       		.byte	0x19
+ 2713 0ed8 5D000000 		.4byte	0x5d
+ 2714 0edc E20E0000 		.4byte	0xee2
+ 2715 0ee0 27       		.uleb128 0x27
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 54
+
+
+ 2716 0ee1 00       		.byte	0
+ 2717 0ee2 25       		.uleb128 0x25
+ 2718 0ee3 E0010000 		.4byte	.LASF117
+ 2719 0ee7 17       		.byte	0x17
+ 2720 0ee8 38       		.byte	0x38
+ 2721 0ee9 01010000 		.4byte	0x101
+ 2722 0eed F70E0000 		.4byte	0xef7
+ 2723 0ef1 23       		.uleb128 0x23
+ 2724 0ef2 F70E0000 		.4byte	0xef7
+ 2725 0ef6 00       		.byte	0
+ 2726 0ef7 06       		.uleb128 0x6
+ 2727 0ef8 04       		.byte	0x4
+ 2728 0ef9 FD0E0000 		.4byte	0xefd
+ 2729 0efd 09       		.uleb128 0x9
+ 2730 0efe 57020000 		.4byte	0x257
+ 2731 0f02 25       		.uleb128 0x25
+ 2732 0f03 3C010000 		.4byte	.LASF118
+ 2733 0f07 1A       		.byte	0x1a
+ 2734 0f08 1C       		.byte	0x1c
+ 2735 0f09 5D000000 		.4byte	0x5d
+ 2736 0f0d 170F0000 		.4byte	0xf17
+ 2737 0f11 23       		.uleb128 0x23
+ 2738 0f12 170F0000 		.4byte	0xf17
+ 2739 0f16 00       		.byte	0
+ 2740 0f17 06       		.uleb128 0x6
+ 2741 0f18 04       		.byte	0x4
+ 2742 0f19 26030000 		.4byte	0x326
+ 2743 0f1d 25       		.uleb128 0x25
+ 2744 0f1e 3D050000 		.4byte	.LASF119
+ 2745 0f22 1A       		.byte	0x1a
+ 2746 0f23 18       		.byte	0x18
+ 2747 0f24 5D000000 		.4byte	0x5d
+ 2748 0f28 370F0000 		.4byte	0xf37
+ 2749 0f2c 23       		.uleb128 0x23
+ 2750 0f2d 170F0000 		.4byte	0xf17
+ 2751 0f31 23       		.uleb128 0x23
+ 2752 0f32 370F0000 		.4byte	0xf37
+ 2753 0f36 00       		.byte	0
+ 2754 0f37 06       		.uleb128 0x6
+ 2755 0f38 04       		.byte	0x4
+ 2756 0f39 46030000 		.4byte	0x346
+ 2757 0f3d 25       		.uleb128 0x25
+ 2758 0f3e AD030000 		.4byte	.LASF120
+ 2759 0f42 1A       		.byte	0x1a
+ 2760 0f43 1D       		.byte	0x1d
+ 2761 0f44 5D000000 		.4byte	0x5d
+ 2762 0f48 570F0000 		.4byte	0xf57
+ 2763 0f4c 23       		.uleb128 0x23
+ 2764 0f4d 170F0000 		.4byte	0xf17
+ 2765 0f51 23       		.uleb128 0x23
+ 2766 0f52 510E0000 		.4byte	0xe51
+ 2767 0f56 00       		.byte	0
+ 2768 0f57 25       		.uleb128 0x25
+ 2769 0f58 E6010000 		.4byte	.LASF121
+ 2770 0f5c 1A       		.byte	0x1a
+ 2771 0f5d 1A       		.byte	0x1a
+ 2772 0f5e 5D000000 		.4byte	0x5d
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 55
+
+
+ 2773 0f62 710F0000 		.4byte	0xf71
+ 2774 0f66 23       		.uleb128 0x23
+ 2775 0f67 510E0000 		.4byte	0xe51
+ 2776 0f6b 23       		.uleb128 0x23
+ 2777 0f6c FF000000 		.4byte	0xff
+ 2778 0f70 00       		.byte	0
+ 2779 0f71 25       		.uleb128 0x25
+ 2780 0f72 D1020000 		.4byte	.LASF122
+ 2781 0f76 1B       		.byte	0x1b
+ 2782 0f77 0F       		.byte	0xf
+ 2783 0f78 5D000000 		.4byte	0x5d
+ 2784 0f7c 900F0000 		.4byte	0xf90
+ 2785 0f80 23       		.uleb128 0x23
+ 2786 0f81 170F0000 		.4byte	0xf17
+ 2787 0f85 23       		.uleb128 0x23
+ 2788 0f86 510E0000 		.4byte	0xe51
+ 2789 0f8a 23       		.uleb128 0x23
+ 2790 0f8b 370F0000 		.4byte	0xf37
+ 2791 0f8f 00       		.byte	0
+ 2792 0f90 22       		.uleb128 0x22
+ 2793 0f91 58000000 		.4byte	.LASF123
+ 2794 0f95 10       		.byte	0x10
+ 2795 0f96 29       		.byte	0x29
+ 2796 0f97 A10F0000 		.4byte	0xfa1
+ 2797 0f9b 23       		.uleb128 0x23
+ 2798 0f9c 77000000 		.4byte	0x77
+ 2799 0fa0 00       		.byte	0
+ 2800 0fa1 22       		.uleb128 0x22
+ 2801 0fa2 B6040000 		.4byte	.LASF124
+ 2802 0fa6 10       		.byte	0x10
+ 2803 0fa7 26       		.byte	0x26
+ 2804 0fa8 B20F0000 		.4byte	0xfb2
+ 2805 0fac 23       		.uleb128 0x23
+ 2806 0fad B20F0000 		.4byte	0xfb2
+ 2807 0fb1 00       		.byte	0
+ 2808 0fb2 06       		.uleb128 0x6
+ 2809 0fb3 04       		.byte	0x4
+ 2810 0fb4 B80F0000 		.4byte	0xfb8
+ 2811 0fb8 09       		.uleb128 0x9
+ 2812 0fb9 C1000000 		.4byte	0xc1
+ 2813 0fbd 24       		.uleb128 0x24
+ 2814 0fbe 7F050000 		.4byte	.LASF125
+ 2815 0fc2 10       		.byte	0x10
+ 2816 0fc3 2A       		.byte	0x2a
+ 2817 0fc4 25       		.uleb128 0x25
+ 2818 0fc5 71060000 		.4byte	.LASF126
+ 2819 0fc9 1B       		.byte	0x1b
+ 2820 0fca 15       		.byte	0x15
+ 2821 0fcb 5D000000 		.4byte	0x5d
+ 2822 0fcf DE0F0000 		.4byte	0xfde
+ 2823 0fd3 23       		.uleb128 0x23
+ 2824 0fd4 510E0000 		.4byte	0xe51
+ 2825 0fd8 23       		.uleb128 0x23
+ 2826 0fd9 FF000000 		.4byte	0xff
+ 2827 0fdd 00       		.byte	0
+ 2828 0fde 29       		.uleb128 0x29
+ 2829 0fdf 89060000 		.4byte	.LASF130
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 56
+
+
+ 2830 0fe3 1B       		.byte	0x1b
+ 2831 0fe4 12       		.byte	0x12
+ 2832 0fe5 27       		.uleb128 0x27
+ 2833 0fe6 00       		.byte	0
+ 2834 0fe7 00       		.byte	0
+ 2835              		.section	.debug_abbrev,"",%progbits
+ 2836              	.Ldebug_abbrev0:
+ 2837 0000 01       		.uleb128 0x1
+ 2838 0001 11       		.uleb128 0x11
+ 2839 0002 01       		.byte	0x1
+ 2840 0003 25       		.uleb128 0x25
+ 2841 0004 0E       		.uleb128 0xe
+ 2842 0005 13       		.uleb128 0x13
+ 2843 0006 0B       		.uleb128 0xb
+ 2844 0007 03       		.uleb128 0x3
+ 2845 0008 0E       		.uleb128 0xe
+ 2846 0009 1B       		.uleb128 0x1b
+ 2847 000a 0E       		.uleb128 0xe
+ 2848 000b 55       		.uleb128 0x55
+ 2849 000c 17       		.uleb128 0x17
+ 2850 000d 11       		.uleb128 0x11
+ 2851 000e 01       		.uleb128 0x1
+ 2852 000f 10       		.uleb128 0x10
+ 2853 0010 17       		.uleb128 0x17
+ 2854 0011 00       		.byte	0
+ 2855 0012 00       		.byte	0
+ 2856 0013 02       		.uleb128 0x2
+ 2857 0014 24       		.uleb128 0x24
+ 2858 0015 00       		.byte	0
+ 2859 0016 0B       		.uleb128 0xb
+ 2860 0017 0B       		.uleb128 0xb
+ 2861 0018 3E       		.uleb128 0x3e
+ 2862 0019 0B       		.uleb128 0xb
+ 2863 001a 03       		.uleb128 0x3
+ 2864 001b 0E       		.uleb128 0xe
+ 2865 001c 00       		.byte	0
+ 2866 001d 00       		.byte	0
+ 2867 001e 03       		.uleb128 0x3
+ 2868 001f 24       		.uleb128 0x24
+ 2869 0020 00       		.byte	0
+ 2870 0021 0B       		.uleb128 0xb
+ 2871 0022 0B       		.uleb128 0xb
+ 2872 0023 3E       		.uleb128 0x3e
+ 2873 0024 0B       		.uleb128 0xb
+ 2874 0025 03       		.uleb128 0x3
+ 2875 0026 08       		.uleb128 0x8
+ 2876 0027 00       		.byte	0
+ 2877 0028 00       		.byte	0
+ 2878 0029 04       		.uleb128 0x4
+ 2879 002a 16       		.uleb128 0x16
+ 2880 002b 00       		.byte	0
+ 2881 002c 03       		.uleb128 0x3
+ 2882 002d 0E       		.uleb128 0xe
+ 2883 002e 3A       		.uleb128 0x3a
+ 2884 002f 0B       		.uleb128 0xb
+ 2885 0030 3B       		.uleb128 0x3b
+ 2886 0031 05       		.uleb128 0x5
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 57
+
+
+ 2887 0032 49       		.uleb128 0x49
+ 2888 0033 13       		.uleb128 0x13
+ 2889 0034 00       		.byte	0
+ 2890 0035 00       		.byte	0
+ 2891 0036 05       		.uleb128 0x5
+ 2892 0037 35       		.uleb128 0x35
+ 2893 0038 00       		.byte	0
+ 2894 0039 49       		.uleb128 0x49
+ 2895 003a 13       		.uleb128 0x13
+ 2896 003b 00       		.byte	0
+ 2897 003c 00       		.byte	0
+ 2898 003d 06       		.uleb128 0x6
+ 2899 003e 0F       		.uleb128 0xf
+ 2900 003f 00       		.byte	0
+ 2901 0040 0B       		.uleb128 0xb
+ 2902 0041 0B       		.uleb128 0xb
+ 2903 0042 49       		.uleb128 0x49
+ 2904 0043 13       		.uleb128 0x13
+ 2905 0044 00       		.byte	0
+ 2906 0045 00       		.byte	0
+ 2907 0046 07       		.uleb128 0x7
+ 2908 0047 15       		.uleb128 0x15
+ 2909 0048 00       		.byte	0
+ 2910 0049 27       		.uleb128 0x27
+ 2911 004a 19       		.uleb128 0x19
+ 2912 004b 00       		.byte	0
+ 2913 004c 00       		.byte	0
+ 2914 004d 08       		.uleb128 0x8
+ 2915 004e 0F       		.uleb128 0xf
+ 2916 004f 00       		.byte	0
+ 2917 0050 0B       		.uleb128 0xb
+ 2918 0051 0B       		.uleb128 0xb
+ 2919 0052 00       		.byte	0
+ 2920 0053 00       		.byte	0
+ 2921 0054 09       		.uleb128 0x9
+ 2922 0055 26       		.uleb128 0x26
+ 2923 0056 00       		.byte	0
+ 2924 0057 49       		.uleb128 0x49
+ 2925 0058 13       		.uleb128 0x13
+ 2926 0059 00       		.byte	0
+ 2927 005a 00       		.byte	0
+ 2928 005b 0A       		.uleb128 0xa
+ 2929 005c 04       		.uleb128 0x4
+ 2930 005d 01       		.byte	0x1
+ 2931 005e 0B       		.uleb128 0xb
+ 2932 005f 0B       		.uleb128 0xb
+ 2933 0060 3A       		.uleb128 0x3a
+ 2934 0061 0B       		.uleb128 0xb
+ 2935 0062 3B       		.uleb128 0x3b
+ 2936 0063 0B       		.uleb128 0xb
+ 2937 0064 01       		.uleb128 0x1
+ 2938 0065 13       		.uleb128 0x13
+ 2939 0066 00       		.byte	0
+ 2940 0067 00       		.byte	0
+ 2941 0068 0B       		.uleb128 0xb
+ 2942 0069 28       		.uleb128 0x28
+ 2943 006a 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 58
+
+
+ 2944 006b 03       		.uleb128 0x3
+ 2945 006c 0E       		.uleb128 0xe
+ 2946 006d 1C       		.uleb128 0x1c
+ 2947 006e 0D       		.uleb128 0xd
+ 2948 006f 00       		.byte	0
+ 2949 0070 00       		.byte	0
+ 2950 0071 0C       		.uleb128 0xc
+ 2951 0072 16       		.uleb128 0x16
+ 2952 0073 00       		.byte	0
+ 2953 0074 03       		.uleb128 0x3
+ 2954 0075 0E       		.uleb128 0xe
+ 2955 0076 3A       		.uleb128 0x3a
+ 2956 0077 0B       		.uleb128 0xb
+ 2957 0078 3B       		.uleb128 0x3b
+ 2958 0079 0B       		.uleb128 0xb
+ 2959 007a 49       		.uleb128 0x49
+ 2960 007b 13       		.uleb128 0x13
+ 2961 007c 00       		.byte	0
+ 2962 007d 00       		.byte	0
+ 2963 007e 0D       		.uleb128 0xd
+ 2964 007f 13       		.uleb128 0x13
+ 2965 0080 01       		.byte	0x1
+ 2966 0081 03       		.uleb128 0x3
+ 2967 0082 0E       		.uleb128 0xe
+ 2968 0083 0B       		.uleb128 0xb
+ 2969 0084 0B       		.uleb128 0xb
+ 2970 0085 3A       		.uleb128 0x3a
+ 2971 0086 0B       		.uleb128 0xb
+ 2972 0087 3B       		.uleb128 0x3b
+ 2973 0088 0B       		.uleb128 0xb
+ 2974 0089 01       		.uleb128 0x1
+ 2975 008a 13       		.uleb128 0x13
+ 2976 008b 00       		.byte	0
+ 2977 008c 00       		.byte	0
+ 2978 008d 0E       		.uleb128 0xe
+ 2979 008e 0D       		.uleb128 0xd
+ 2980 008f 00       		.byte	0
+ 2981 0090 03       		.uleb128 0x3
+ 2982 0091 0E       		.uleb128 0xe
+ 2983 0092 3A       		.uleb128 0x3a
+ 2984 0093 0B       		.uleb128 0xb
+ 2985 0094 3B       		.uleb128 0x3b
+ 2986 0095 0B       		.uleb128 0xb
+ 2987 0096 49       		.uleb128 0x49
+ 2988 0097 13       		.uleb128 0x13
+ 2989 0098 38       		.uleb128 0x38
+ 2990 0099 0B       		.uleb128 0xb
+ 2991 009a 00       		.byte	0
+ 2992 009b 00       		.byte	0
+ 2993 009c 0F       		.uleb128 0xf
+ 2994 009d 0D       		.uleb128 0xd
+ 2995 009e 00       		.byte	0
+ 2996 009f 03       		.uleb128 0x3
+ 2997 00a0 08       		.uleb128 0x8
+ 2998 00a1 3A       		.uleb128 0x3a
+ 2999 00a2 0B       		.uleb128 0xb
+ 3000 00a3 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 59
+
+
+ 3001 00a4 0B       		.uleb128 0xb
+ 3002 00a5 49       		.uleb128 0x49
+ 3003 00a6 13       		.uleb128 0x13
+ 3004 00a7 38       		.uleb128 0x38
+ 3005 00a8 0B       		.uleb128 0xb
+ 3006 00a9 00       		.byte	0
+ 3007 00aa 00       		.byte	0
+ 3008 00ab 10       		.uleb128 0x10
+ 3009 00ac 0D       		.uleb128 0xd
+ 3010 00ad 00       		.byte	0
+ 3011 00ae 49       		.uleb128 0x49
+ 3012 00af 13       		.uleb128 0x13
+ 3013 00b0 38       		.uleb128 0x38
+ 3014 00b1 0B       		.uleb128 0xb
+ 3015 00b2 00       		.byte	0
+ 3016 00b3 00       		.byte	0
+ 3017 00b4 11       		.uleb128 0x11
+ 3018 00b5 13       		.uleb128 0x13
+ 3019 00b6 01       		.byte	0x1
+ 3020 00b7 0B       		.uleb128 0xb
+ 3021 00b8 0B       		.uleb128 0xb
+ 3022 00b9 3A       		.uleb128 0x3a
+ 3023 00ba 0B       		.uleb128 0xb
+ 3024 00bb 3B       		.uleb128 0x3b
+ 3025 00bc 0B       		.uleb128 0xb
+ 3026 00bd 01       		.uleb128 0x1
+ 3027 00be 13       		.uleb128 0x13
+ 3028 00bf 00       		.byte	0
+ 3029 00c0 00       		.byte	0
+ 3030 00c1 12       		.uleb128 0x12
+ 3031 00c2 17       		.uleb128 0x17
+ 3032 00c3 01       		.byte	0x1
+ 3033 00c4 0B       		.uleb128 0xb
+ 3034 00c5 0B       		.uleb128 0xb
+ 3035 00c6 3A       		.uleb128 0x3a
+ 3036 00c7 0B       		.uleb128 0xb
+ 3037 00c8 3B       		.uleb128 0x3b
+ 3038 00c9 0B       		.uleb128 0xb
+ 3039 00ca 01       		.uleb128 0x1
+ 3040 00cb 13       		.uleb128 0x13
+ 3041 00cc 00       		.byte	0
+ 3042 00cd 00       		.byte	0
+ 3043 00ce 13       		.uleb128 0x13
+ 3044 00cf 0D       		.uleb128 0xd
+ 3045 00d0 00       		.byte	0
+ 3046 00d1 03       		.uleb128 0x3
+ 3047 00d2 0E       		.uleb128 0xe
+ 3048 00d3 3A       		.uleb128 0x3a
+ 3049 00d4 0B       		.uleb128 0xb
+ 3050 00d5 3B       		.uleb128 0x3b
+ 3051 00d6 0B       		.uleb128 0xb
+ 3052 00d7 49       		.uleb128 0x49
+ 3053 00d8 13       		.uleb128 0x13
+ 3054 00d9 00       		.byte	0
+ 3055 00da 00       		.byte	0
+ 3056 00db 14       		.uleb128 0x14
+ 3057 00dc 2E       		.uleb128 0x2e
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 60
+
+
+ 3058 00dd 00       		.byte	0
+ 3059 00de 3F       		.uleb128 0x3f
+ 3060 00df 19       		.uleb128 0x19
+ 3061 00e0 03       		.uleb128 0x3
+ 3062 00e1 0E       		.uleb128 0xe
+ 3063 00e2 3A       		.uleb128 0x3a
+ 3064 00e3 0B       		.uleb128 0xb
+ 3065 00e4 3B       		.uleb128 0x3b
+ 3066 00e5 0B       		.uleb128 0xb
+ 3067 00e6 27       		.uleb128 0x27
+ 3068 00e7 19       		.uleb128 0x19
+ 3069 00e8 20       		.uleb128 0x20
+ 3070 00e9 0B       		.uleb128 0xb
+ 3071 00ea 00       		.byte	0
+ 3072 00eb 00       		.byte	0
+ 3073 00ec 15       		.uleb128 0x15
+ 3074 00ed 2E       		.uleb128 0x2e
+ 3075 00ee 01       		.byte	0x1
+ 3076 00ef 3F       		.uleb128 0x3f
+ 3077 00f0 19       		.uleb128 0x19
+ 3078 00f1 03       		.uleb128 0x3
+ 3079 00f2 0E       		.uleb128 0xe
+ 3080 00f3 3A       		.uleb128 0x3a
+ 3081 00f4 0B       		.uleb128 0xb
+ 3082 00f5 3B       		.uleb128 0x3b
+ 3083 00f6 0B       		.uleb128 0xb
+ 3084 00f7 27       		.uleb128 0x27
+ 3085 00f8 19       		.uleb128 0x19
+ 3086 00f9 11       		.uleb128 0x11
+ 3087 00fa 01       		.uleb128 0x1
+ 3088 00fb 12       		.uleb128 0x12
+ 3089 00fc 06       		.uleb128 0x6
+ 3090 00fd 40       		.uleb128 0x40
+ 3091 00fe 18       		.uleb128 0x18
+ 3092 00ff 9742     		.uleb128 0x2117
+ 3093 0101 19       		.uleb128 0x19
+ 3094 0102 01       		.uleb128 0x1
+ 3095 0103 13       		.uleb128 0x13
+ 3096 0104 00       		.byte	0
+ 3097 0105 00       		.byte	0
+ 3098 0106 16       		.uleb128 0x16
+ 3099 0107 898201   		.uleb128 0x4109
+ 3100 010a 00       		.byte	0
+ 3101 010b 11       		.uleb128 0x11
+ 3102 010c 01       		.uleb128 0x1
+ 3103 010d 31       		.uleb128 0x31
+ 3104 010e 13       		.uleb128 0x13
+ 3105 010f 00       		.byte	0
+ 3106 0110 00       		.byte	0
+ 3107 0111 17       		.uleb128 0x17
+ 3108 0112 2E       		.uleb128 0x2e
+ 3109 0113 01       		.byte	0x1
+ 3110 0114 31       		.uleb128 0x31
+ 3111 0115 13       		.uleb128 0x13
+ 3112 0116 11       		.uleb128 0x11
+ 3113 0117 01       		.uleb128 0x1
+ 3114 0118 12       		.uleb128 0x12
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 61
+
+
+ 3115 0119 06       		.uleb128 0x6
+ 3116 011a 40       		.uleb128 0x40
+ 3117 011b 18       		.uleb128 0x18
+ 3118 011c 9742     		.uleb128 0x2117
+ 3119 011e 19       		.uleb128 0x19
+ 3120 011f 01       		.uleb128 0x1
+ 3121 0120 13       		.uleb128 0x13
+ 3122 0121 00       		.byte	0
+ 3123 0122 00       		.byte	0
+ 3124 0123 18       		.uleb128 0x18
+ 3125 0124 898201   		.uleb128 0x4109
+ 3126 0127 01       		.byte	0x1
+ 3127 0128 11       		.uleb128 0x11
+ 3128 0129 01       		.uleb128 0x1
+ 3129 012a 31       		.uleb128 0x31
+ 3130 012b 13       		.uleb128 0x13
+ 3131 012c 01       		.uleb128 0x1
+ 3132 012d 13       		.uleb128 0x13
+ 3133 012e 00       		.byte	0
+ 3134 012f 00       		.byte	0
+ 3135 0130 19       		.uleb128 0x19
+ 3136 0131 8A8201   		.uleb128 0x410a
+ 3137 0134 00       		.byte	0
+ 3138 0135 02       		.uleb128 0x2
+ 3139 0136 18       		.uleb128 0x18
+ 3140 0137 9142     		.uleb128 0x2111
+ 3141 0139 18       		.uleb128 0x18
+ 3142 013a 00       		.byte	0
+ 3143 013b 00       		.byte	0
+ 3144 013c 1A       		.uleb128 0x1a
+ 3145 013d 2E       		.uleb128 0x2e
+ 3146 013e 01       		.byte	0x1
+ 3147 013f 3F       		.uleb128 0x3f
+ 3148 0140 19       		.uleb128 0x19
+ 3149 0141 03       		.uleb128 0x3
+ 3150 0142 0E       		.uleb128 0xe
+ 3151 0143 3A       		.uleb128 0x3a
+ 3152 0144 0B       		.uleb128 0xb
+ 3153 0145 3B       		.uleb128 0x3b
+ 3154 0146 0B       		.uleb128 0xb
+ 3155 0147 11       		.uleb128 0x11
+ 3156 0148 01       		.uleb128 0x1
+ 3157 0149 12       		.uleb128 0x12
+ 3158 014a 06       		.uleb128 0x6
+ 3159 014b 40       		.uleb128 0x40
+ 3160 014c 18       		.uleb128 0x18
+ 3161 014d 9742     		.uleb128 0x2117
+ 3162 014f 19       		.uleb128 0x19
+ 3163 0150 01       		.uleb128 0x1
+ 3164 0151 13       		.uleb128 0x13
+ 3165 0152 00       		.byte	0
+ 3166 0153 00       		.byte	0
+ 3167 0154 1B       		.uleb128 0x1b
+ 3168 0155 898201   		.uleb128 0x4109
+ 3169 0158 01       		.byte	0x1
+ 3170 0159 11       		.uleb128 0x11
+ 3171 015a 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 62
+
+
+ 3172 015b 31       		.uleb128 0x31
+ 3173 015c 13       		.uleb128 0x13
+ 3174 015d 00       		.byte	0
+ 3175 015e 00       		.byte	0
+ 3176 015f 1C       		.uleb128 0x1c
+ 3177 0160 05       		.uleb128 0x5
+ 3178 0161 00       		.byte	0
+ 3179 0162 03       		.uleb128 0x3
+ 3180 0163 0E       		.uleb128 0xe
+ 3181 0164 3A       		.uleb128 0x3a
+ 3182 0165 0B       		.uleb128 0xb
+ 3183 0166 3B       		.uleb128 0x3b
+ 3184 0167 0B       		.uleb128 0xb
+ 3185 0168 49       		.uleb128 0x49
+ 3186 0169 13       		.uleb128 0x13
+ 3187 016a 02       		.uleb128 0x2
+ 3188 016b 17       		.uleb128 0x17
+ 3189 016c 00       		.byte	0
+ 3190 016d 00       		.byte	0
+ 3191 016e 1D       		.uleb128 0x1d
+ 3192 016f 2E       		.uleb128 0x2e
+ 3193 0170 01       		.byte	0x1
+ 3194 0171 3F       		.uleb128 0x3f
+ 3195 0172 19       		.uleb128 0x19
+ 3196 0173 03       		.uleb128 0x3
+ 3197 0174 0E       		.uleb128 0xe
+ 3198 0175 3A       		.uleb128 0x3a
+ 3199 0176 0B       		.uleb128 0xb
+ 3200 0177 3B       		.uleb128 0x3b
+ 3201 0178 0B       		.uleb128 0xb
+ 3202 0179 49       		.uleb128 0x49
+ 3203 017a 13       		.uleb128 0x13
+ 3204 017b 11       		.uleb128 0x11
+ 3205 017c 01       		.uleb128 0x1
+ 3206 017d 12       		.uleb128 0x12
+ 3207 017e 06       		.uleb128 0x6
+ 3208 017f 40       		.uleb128 0x40
+ 3209 0180 18       		.uleb128 0x18
+ 3210 0181 9742     		.uleb128 0x2117
+ 3211 0183 19       		.uleb128 0x19
+ 3212 0184 01       		.uleb128 0x1
+ 3213 0185 13       		.uleb128 0x13
+ 3214 0186 00       		.byte	0
+ 3215 0187 00       		.byte	0
+ 3216 0188 1E       		.uleb128 0x1e
+ 3217 0189 34       		.uleb128 0x34
+ 3218 018a 00       		.byte	0
+ 3219 018b 03       		.uleb128 0x3
+ 3220 018c 0E       		.uleb128 0xe
+ 3221 018d 3A       		.uleb128 0x3a
+ 3222 018e 0B       		.uleb128 0xb
+ 3223 018f 3B       		.uleb128 0x3b
+ 3224 0190 0B       		.uleb128 0xb
+ 3225 0191 49       		.uleb128 0x49
+ 3226 0192 13       		.uleb128 0x13
+ 3227 0193 02       		.uleb128 0x2
+ 3228 0194 18       		.uleb128 0x18
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 63
+
+
+ 3229 0195 00       		.byte	0
+ 3230 0196 00       		.byte	0
+ 3231 0197 1F       		.uleb128 0x1f
+ 3232 0198 34       		.uleb128 0x34
+ 3233 0199 00       		.byte	0
+ 3234 019a 03       		.uleb128 0x3
+ 3235 019b 08       		.uleb128 0x8
+ 3236 019c 3A       		.uleb128 0x3a
+ 3237 019d 0B       		.uleb128 0xb
+ 3238 019e 3B       		.uleb128 0x3b
+ 3239 019f 0B       		.uleb128 0xb
+ 3240 01a0 49       		.uleb128 0x49
+ 3241 01a1 13       		.uleb128 0x13
+ 3242 01a2 02       		.uleb128 0x2
+ 3243 01a3 18       		.uleb128 0x18
+ 3244 01a4 00       		.byte	0
+ 3245 01a5 00       		.byte	0
+ 3246 01a6 20       		.uleb128 0x20
+ 3247 01a7 2E       		.uleb128 0x2e
+ 3248 01a8 00       		.byte	0
+ 3249 01a9 3F       		.uleb128 0x3f
+ 3250 01aa 19       		.uleb128 0x19
+ 3251 01ab 03       		.uleb128 0x3
+ 3252 01ac 0E       		.uleb128 0xe
+ 3253 01ad 3A       		.uleb128 0x3a
+ 3254 01ae 0B       		.uleb128 0xb
+ 3255 01af 3B       		.uleb128 0x3b
+ 3256 01b0 05       		.uleb128 0x5
+ 3257 01b1 27       		.uleb128 0x27
+ 3258 01b2 19       		.uleb128 0x19
+ 3259 01b3 3C       		.uleb128 0x3c
+ 3260 01b4 19       		.uleb128 0x19
+ 3261 01b5 00       		.byte	0
+ 3262 01b6 00       		.byte	0
+ 3263 01b7 21       		.uleb128 0x21
+ 3264 01b8 2E       		.uleb128 0x2e
+ 3265 01b9 00       		.byte	0
+ 3266 01ba 3F       		.uleb128 0x3f
+ 3267 01bb 19       		.uleb128 0x19
+ 3268 01bc 03       		.uleb128 0x3
+ 3269 01bd 0E       		.uleb128 0xe
+ 3270 01be 3A       		.uleb128 0x3a
+ 3271 01bf 0B       		.uleb128 0xb
+ 3272 01c0 3B       		.uleb128 0x3b
+ 3273 01c1 0B       		.uleb128 0xb
+ 3274 01c2 27       		.uleb128 0x27
+ 3275 01c3 19       		.uleb128 0x19
+ 3276 01c4 49       		.uleb128 0x49
+ 3277 01c5 13       		.uleb128 0x13
+ 3278 01c6 3C       		.uleb128 0x3c
+ 3279 01c7 19       		.uleb128 0x19
+ 3280 01c8 00       		.byte	0
+ 3281 01c9 00       		.byte	0
+ 3282 01ca 22       		.uleb128 0x22
+ 3283 01cb 2E       		.uleb128 0x2e
+ 3284 01cc 01       		.byte	0x1
+ 3285 01cd 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 64
+
+
+ 3286 01ce 19       		.uleb128 0x19
+ 3287 01cf 03       		.uleb128 0x3
+ 3288 01d0 0E       		.uleb128 0xe
+ 3289 01d1 3A       		.uleb128 0x3a
+ 3290 01d2 0B       		.uleb128 0xb
+ 3291 01d3 3B       		.uleb128 0x3b
+ 3292 01d4 0B       		.uleb128 0xb
+ 3293 01d5 27       		.uleb128 0x27
+ 3294 01d6 19       		.uleb128 0x19
+ 3295 01d7 3C       		.uleb128 0x3c
+ 3296 01d8 19       		.uleb128 0x19
+ 3297 01d9 01       		.uleb128 0x1
+ 3298 01da 13       		.uleb128 0x13
+ 3299 01db 00       		.byte	0
+ 3300 01dc 00       		.byte	0
+ 3301 01dd 23       		.uleb128 0x23
+ 3302 01de 05       		.uleb128 0x5
+ 3303 01df 00       		.byte	0
+ 3304 01e0 49       		.uleb128 0x49
+ 3305 01e1 13       		.uleb128 0x13
+ 3306 01e2 00       		.byte	0
+ 3307 01e3 00       		.byte	0
+ 3308 01e4 24       		.uleb128 0x24
+ 3309 01e5 2E       		.uleb128 0x2e
+ 3310 01e6 00       		.byte	0
+ 3311 01e7 3F       		.uleb128 0x3f
+ 3312 01e8 19       		.uleb128 0x19
+ 3313 01e9 03       		.uleb128 0x3
+ 3314 01ea 0E       		.uleb128 0xe
+ 3315 01eb 3A       		.uleb128 0x3a
+ 3316 01ec 0B       		.uleb128 0xb
+ 3317 01ed 3B       		.uleb128 0x3b
+ 3318 01ee 0B       		.uleb128 0xb
+ 3319 01ef 27       		.uleb128 0x27
+ 3320 01f0 19       		.uleb128 0x19
+ 3321 01f1 3C       		.uleb128 0x3c
+ 3322 01f2 19       		.uleb128 0x19
+ 3323 01f3 00       		.byte	0
+ 3324 01f4 00       		.byte	0
+ 3325 01f5 25       		.uleb128 0x25
+ 3326 01f6 2E       		.uleb128 0x2e
+ 3327 01f7 01       		.byte	0x1
+ 3328 01f8 3F       		.uleb128 0x3f
+ 3329 01f9 19       		.uleb128 0x19
+ 3330 01fa 03       		.uleb128 0x3
+ 3331 01fb 0E       		.uleb128 0xe
+ 3332 01fc 3A       		.uleb128 0x3a
+ 3333 01fd 0B       		.uleb128 0xb
+ 3334 01fe 3B       		.uleb128 0x3b
+ 3335 01ff 0B       		.uleb128 0xb
+ 3336 0200 27       		.uleb128 0x27
+ 3337 0201 19       		.uleb128 0x19
+ 3338 0202 49       		.uleb128 0x49
+ 3339 0203 13       		.uleb128 0x13
+ 3340 0204 3C       		.uleb128 0x3c
+ 3341 0205 19       		.uleb128 0x19
+ 3342 0206 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 65
+
+
+ 3343 0207 13       		.uleb128 0x13
+ 3344 0208 00       		.byte	0
+ 3345 0209 00       		.byte	0
+ 3346 020a 26       		.uleb128 0x26
+ 3347 020b 2E       		.uleb128 0x2e
+ 3348 020c 01       		.byte	0x1
+ 3349 020d 3F       		.uleb128 0x3f
+ 3350 020e 19       		.uleb128 0x19
+ 3351 020f 03       		.uleb128 0x3
+ 3352 0210 0E       		.uleb128 0xe
+ 3353 0211 3A       		.uleb128 0x3a
+ 3354 0212 0B       		.uleb128 0xb
+ 3355 0213 3B       		.uleb128 0x3b
+ 3356 0214 0B       		.uleb128 0xb
+ 3357 0215 49       		.uleb128 0x49
+ 3358 0216 13       		.uleb128 0x13
+ 3359 0217 3C       		.uleb128 0x3c
+ 3360 0218 19       		.uleb128 0x19
+ 3361 0219 01       		.uleb128 0x1
+ 3362 021a 13       		.uleb128 0x13
+ 3363 021b 00       		.byte	0
+ 3364 021c 00       		.byte	0
+ 3365 021d 27       		.uleb128 0x27
+ 3366 021e 18       		.uleb128 0x18
+ 3367 021f 00       		.byte	0
+ 3368 0220 00       		.byte	0
+ 3369 0221 00       		.byte	0
+ 3370 0222 28       		.uleb128 0x28
+ 3371 0223 2E       		.uleb128 0x2e
+ 3372 0224 01       		.byte	0x1
+ 3373 0225 3F       		.uleb128 0x3f
+ 3374 0226 19       		.uleb128 0x19
+ 3375 0227 03       		.uleb128 0x3
+ 3376 0228 0E       		.uleb128 0xe
+ 3377 0229 3A       		.uleb128 0x3a
+ 3378 022a 0B       		.uleb128 0xb
+ 3379 022b 3B       		.uleb128 0x3b
+ 3380 022c 05       		.uleb128 0x5
+ 3381 022d 27       		.uleb128 0x27
+ 3382 022e 19       		.uleb128 0x19
+ 3383 022f 3C       		.uleb128 0x3c
+ 3384 0230 19       		.uleb128 0x19
+ 3385 0231 01       		.uleb128 0x1
+ 3386 0232 13       		.uleb128 0x13
+ 3387 0233 00       		.byte	0
+ 3388 0234 00       		.byte	0
+ 3389 0235 29       		.uleb128 0x29
+ 3390 0236 2E       		.uleb128 0x2e
+ 3391 0237 01       		.byte	0x1
+ 3392 0238 3F       		.uleb128 0x3f
+ 3393 0239 19       		.uleb128 0x19
+ 3394 023a 03       		.uleb128 0x3
+ 3395 023b 0E       		.uleb128 0xe
+ 3396 023c 3A       		.uleb128 0x3a
+ 3397 023d 0B       		.uleb128 0xb
+ 3398 023e 3B       		.uleb128 0x3b
+ 3399 023f 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 66
+
+
+ 3400 0240 3C       		.uleb128 0x3c
+ 3401 0241 19       		.uleb128 0x19
+ 3402 0242 00       		.byte	0
+ 3403 0243 00       		.byte	0
+ 3404 0244 00       		.byte	0
+ 3405              		.section	.debug_loc,"",%progbits
+ 3406              	.Ldebug_loc0:
+ 3407              	.LLST0:
+ 3408 0000 00000000 		.4byte	.LVL34
+ 3409 0004 0D000000 		.4byte	.LVL35-1
+ 3410 0008 0100     		.2byte	0x1
+ 3411 000a 50       		.byte	0x50
+ 3412 000b 0D000000 		.4byte	.LVL35-1
+ 3413 000f 5A000000 		.4byte	.LVL44
+ 3414 0013 0100     		.2byte	0x1
+ 3415 0015 54       		.byte	0x54
+ 3416 0016 5A000000 		.4byte	.LVL44
+ 3417 001a 5C000000 		.4byte	.LFE68
+ 3418 001e 0400     		.2byte	0x4
+ 3419 0020 F3       		.byte	0xf3
+ 3420 0021 01       		.uleb128 0x1
+ 3421 0022 50       		.byte	0x50
+ 3422 0023 9F       		.byte	0x9f
+ 3423 0024 00000000 		.4byte	0
+ 3424 0028 00000000 		.4byte	0
+ 3425              		.section	.debug_aranges,"",%progbits
+ 3426 0000 4C000000 		.4byte	0x4c
+ 3427 0004 0200     		.2byte	0x2
+ 3428 0006 00000000 		.4byte	.Ldebug_info0
+ 3429 000a 04       		.byte	0x4
+ 3430 000b 00       		.byte	0
+ 3431 000c 0000     		.2byte	0
+ 3432 000e 0000     		.2byte	0
+ 3433 0010 00000000 		.4byte	.LFB66
+ 3434 0014 10000000 		.4byte	.LFE66-.LFB66
+ 3435 0018 00000000 		.4byte	.LFB63
+ 3436 001c 70000000 		.4byte	.LFE63-.LFB63
+ 3437 0020 00000000 		.4byte	.LFB64
+ 3438 0024 1C000000 		.4byte	.LFE64-.LFB64
+ 3439 0028 00000000 		.4byte	.LFB65
+ 3440 002c 48000000 		.4byte	.LFE65-.LFB65
+ 3441 0030 00000000 		.4byte	.LFB67
+ 3442 0034 34000000 		.4byte	.LFE67-.LFB67
+ 3443 0038 00000000 		.4byte	.LFB68
+ 3444 003c 5C000000 		.4byte	.LFE68-.LFB68
+ 3445 0040 00000000 		.4byte	.LFB69
+ 3446 0044 10020000 		.4byte	.LFE69-.LFB69
+ 3447 0048 00000000 		.4byte	0
+ 3448 004c 00000000 		.4byte	0
+ 3449              		.section	.debug_ranges,"",%progbits
+ 3450              	.Ldebug_ranges0:
+ 3451 0000 00000000 		.4byte	.LFB66
+ 3452 0004 10000000 		.4byte	.LFE66
+ 3453 0008 00000000 		.4byte	.LFB63
+ 3454 000c 70000000 		.4byte	.LFE63
+ 3455 0010 00000000 		.4byte	.LFB64
+ 3456 0014 1C000000 		.4byte	.LFE64
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 67
+
+
+ 3457 0018 00000000 		.4byte	.LFB65
+ 3458 001c 48000000 		.4byte	.LFE65
+ 3459 0020 00000000 		.4byte	.LFB67
+ 3460 0024 34000000 		.4byte	.LFE67
+ 3461 0028 00000000 		.4byte	.LFB68
+ 3462 002c 5C000000 		.4byte	.LFE68
+ 3463 0030 00000000 		.4byte	.LFB69
+ 3464 0034 10020000 		.4byte	.LFE69
+ 3465 0038 00000000 		.4byte	0
+ 3466 003c 00000000 		.4byte	0
+ 3467              		.section	.debug_line,"",%progbits
+ 3468              	.Ldebug_line0:
+ 3469 0000 FA030000 		.section	.debug_str,"MS",%progbits,1
+ 3469      0200E802 
+ 3469      00000201 
+ 3469      FB0E0D00 
+ 3469      01010101 
+ 3470              	.LASF115:
+ 3471 0000 43794465 		.ascii	"CyDelay\000"
+ 3471      6C617900 
+ 3472              	.LASF85:
+ 3473 0008 4379496E 		.ascii	"CyIntSetPriority\000"
+ 3473      74536574 
+ 3473      5072696F 
+ 3473      72697479 
+ 3473      00
+ 3474              	.LASF63:
+ 3475 0019 72656164 		.ascii	"read_sensor\000"
+ 3475      5F73656E 
+ 3475      736F7200 
+ 3476              	.LASF58:
+ 3477 0025 6172726F 		.ascii	"arrow_gateway_config_t\000"
+ 3477      775F6761 
+ 3477      74657761 
+ 3477      795F636F 
+ 3477      6E666967 
+ 3478              	.LASF82:
+ 3479 003c 43795379 		.ascii	"CySysWdtLock\000"
+ 3479      73576474 
+ 3479      4C6F636B 
+ 3479      00
+ 3480              	.LASF35:
+ 3481 0049 626F6F6C 		.ascii	"bool_\000"
+ 3481      5F00
+ 3482              	.LASF29:
+ 3483 004f 4A736F6E 		.ascii	"JsonNode\000"
+ 3483      4E6F6465 
+ 3483      00
+ 3484              	.LASF123:
+ 3485 0058 53575F54 		.ascii	"SW_Tx_UART_1_PutHexInt\000"
+ 3485      785F5541 
+ 3485      52545F31 
+ 3485      5F507574 
+ 3485      48657849 
+ 3486              	.LASF87:
+ 3487 006f 5245445F 		.ascii	"RED_LED_Write\000"
+ 3487      4C45445F 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 68
+
+
+ 3487      57726974 
+ 3487      6500
+ 3488              	.LASF27:
+ 3489 007d 4A534F4E 		.ascii	"JSON_OBJECT\000"
+ 3489      5F4F424A 
+ 3489      45435400 
+ 3490              	.LASF8:
+ 3491 0089 756E7369 		.ascii	"unsigned int\000"
+ 3491      676E6564 
+ 3491      20696E74 
+ 3491      00
+ 3492              	.LASF32:
+ 3493 0096 6E657874 		.ascii	"next\000"
+ 3493      00
+ 3494              	.LASF45:
+ 3495 009b 53746174 		.ascii	"Status\000"
+ 3495      757300
+ 3496              	.LASF33:
+ 3497 00a2 68656164 		.ascii	"head\000"
+ 3497      00
+ 3498              	.LASF13:
+ 3499 00a7 696E7431 		.ascii	"int16\000"
+ 3499      3600
+ 3500              	.LASF19:
+ 3501 00ad 72656738 		.ascii	"reg8\000"
+ 3501      00
+ 3502              	.LASF62:
+ 3503 00b2 5254435F 		.ascii	"RTC_PPS_InterruptHandler\000"
+ 3503      5050535F 
+ 3503      496E7465 
+ 3503      72727570 
+ 3503      7448616E 
+ 3504              	.LASF36:
+ 3505 00cb 73747269 		.ascii	"string_\000"
+ 3505      6E675F00 
+ 3506              	.LASF105:
+ 3507 00d3 5254435F 		.ascii	"RTC_Start\000"
+ 3507      53746172 
+ 3507      7400
+ 3508              	.LASF50:
+ 3509 00dd 4169725F 		.ascii	"Air_Flow\000"
+ 3509      466C6F77 
+ 3509      00
+ 3510              	.LASF48:
+ 3511 00e6 4D61676E 		.ascii	"Magnetic_Switch\000"
+ 3511      65746963 
+ 3511      5F537769 
+ 3511      74636800 
+ 3512              	.LASF90:
+ 3513 00f6 5348445F 		.ascii	"SHD_LED_2_Write\000"
+ 3513      4C45445F 
+ 3513      325F5772 
+ 3513      69746500 
+ 3514              	.LASF54:
+ 3515 0106 736F6674 		.ascii	"software_name\000"
+ 3515      77617265 
+ 3515      5F6E616D 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 69
+
+
+ 3515      6500
+ 3516              	.LASF31:
+ 3517 0114 70726576 		.ascii	"prev\000"
+ 3517      00
+ 3518              	.LASF65:
+ 3519 0119 67617465 		.ascii	"gateway\000"
+ 3519      77617900 
+ 3520              	.LASF43:
+ 3521 0121 6172726F 		.ascii	"arrow_device_t\000"
+ 3521      775F6465 
+ 3521      76696365 
+ 3521      5F7400
+ 3522              	.LASF24:
+ 3523 0130 4A534F4E 		.ascii	"JSON_STRING\000"
+ 3523      5F535452 
+ 3523      494E4700 
+ 3524              	.LASF118:
+ 3525 013c 6172726F 		.ascii	"arrow_connect_gateway\000"
+ 3525      775F636F 
+ 3525      6E6E6563 
+ 3525      745F6761 
+ 3525      74657761 
+ 3526              	.LASF67:
+ 3527 0152 64657669 		.ascii	"device\000"
+ 3527      636500
+ 3528              	.LASF68:
+ 3529 0159 6E6F775F 		.ascii	"now_s\000"
+ 3529      7300
+ 3530              	.LASF107:
+ 3531 015f 5254435F 		.ascii	"RTC_SetUnixTime\000"
+ 3531      53657455 
+ 3531      6E697854 
+ 3531      696D6500 
+ 3532              	.LASF14:
+ 3533 016f 666C6F61 		.ascii	"float\000"
+ 3533      7400
+ 3534              	.LASF77:
+ 3535 0175 43795379 		.ascii	"CySysWdtDisable\000"
+ 3535      73576474 
+ 3535      44697361 
+ 3535      626C6500 
+ 3536              	.LASF38:
+ 3537 0185 6368696C 		.ascii	"children\000"
+ 3537      6472656E 
+ 3537      00
+ 3538              	.LASF23:
+ 3539 018e 4A534F4E 		.ascii	"JSON_BOOL\000"
+ 3539      5F424F4F 
+ 3539      4C00
+ 3540              	.LASF113:
+ 3541 0198 74696D65 		.ascii	"time\000"
+ 3541      00
+ 3542              	.LASF76:
+ 3543 019d 424C5545 		.ascii	"BLUE_LED_Write\000"
+ 3543      5F4C4544 
+ 3543      5F577269 
+ 3543      746500
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 70
+
+
+ 3544              	.LASF7:
+ 3545 01ac 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 3545      206C6F6E 
+ 3545      6720756E 
+ 3545      7369676E 
+ 3545      65642069 
+ 3546              	.LASF104:
+ 3547 01c3 5254435F 		.ascii	"RTC_PPS_Start\000"
+ 3547      5050535F 
+ 3547      53746172 
+ 3547      7400
+ 3548              	.LASF72:
+ 3549 01d1 43795379 		.ascii	"CySysWdtUnlock\000"
+ 3549      73576474 
+ 3549      556E6C6F 
+ 3549      636B00
+ 3550              	.LASF117:
+ 3551 01e0 6374696D 		.ascii	"ctime\000"
+ 3551      6500
+ 3552              	.LASF121:
+ 3553 01e6 6172726F 		.ascii	"arrow_send_telemetry\000"
+ 3553      775F7365 
+ 3553      6E645F74 
+ 3553      656C656D 
+ 3553      65747279 
+ 3554              	.LASF47:
+ 3555 01fb 48756D69 		.ascii	"Humidity\000"
+ 3555      64697479 
+ 3555      00
+ 3556              	.LASF127:
+ 3557 0204 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 3557      4320342E 
+ 3557      392E3320 
+ 3557      32303135 
+ 3557      30333033 
+ 3558 0237 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 3558      20726576 
+ 3558      6973696F 
+ 3558      6E203232 
+ 3558      31323230 
+ 3559 026a 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 3559      66756E63 
+ 3559      74696F6E 
+ 3559      2D736563 
+ 3559      74696F6E 
+ 3560              	.LASF69:
+ 3561 0292 636F756E 		.ascii	"counter\000"
+ 3561      74657200 
+ 3562              	.LASF103:
+ 3563 029a 5050535F 		.ascii	"PPS_ISR_StartEx\000"
+ 3563      4953525F 
+ 3563      53746172 
+ 3563      74457800 
+ 3564              	.LASF75:
+ 3565 02aa 43795379 		.ascii	"CySysWdtClearInterrupt\000"
+ 3565      73576474 
+ 3565      436C6561 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 71
+
+
+ 3565      72496E74 
+ 3565      65727275 
+ 3566              	.LASF22:
+ 3567 02c1 4A534F4E 		.ascii	"JSON_NULL\000"
+ 3567      5F4E554C 
+ 3567      4C00
+ 3568              	.LASF39:
+ 3569 02cb 5F426F6F 		.ascii	"_Bool\000"
+ 3569      6C00
+ 3570              	.LASF122:
+ 3571 02d1 6D717474 		.ascii	"mqtt_connect\000"
+ 3571      5F636F6E 
+ 3571      6E656374 
+ 3571      00
+ 3572              	.LASF100:
+ 3573 02de 4D41475F 		.ascii	"MAG_SW_IN_Read\000"
+ 3573      53575F49 
+ 3573      4E5F5265 
+ 3573      616400
+ 3574              	.LASF51:
+ 3575 02ed 53656E73 		.ascii	"Sensor_Data_t\000"
+ 3575      6F725F44 
+ 3575      6174615F 
+ 3575      7400
+ 3576              	.LASF97:
+ 3577 02fb 53746172 		.ascii	"Start_Airflow_Measurement\000"
+ 3577      745F4169 
+ 3577      72666C6F 
+ 3577      775F4D65 
+ 3577      61737572 
+ 3578              	.LASF116:
+ 3579 0315 6E74705F 		.ascii	"ntp_set_time_cycle\000"
+ 3579      7365745F 
+ 3579      74696D65 
+ 3579      5F637963 
+ 3579      6C6500
+ 3580              	.LASF55:
+ 3581 0328 736F6674 		.ascii	"software_version\000"
+ 3581      77617265 
+ 3581      5F766572 
+ 3581      73696F6E 
+ 3581      00
+ 3582              	.LASF71:
+ 3583 0339 5254435F 		.ascii	"RTC_Update\000"
+ 3583      55706461 
+ 3583      746500
+ 3584              	.LASF18:
+ 3585 0344 63686172 		.ascii	"char\000"
+ 3585      00
+ 3586              	.LASF94:
+ 3587 0349 53746172 		.ascii	"Start_TH_Measurement\000"
+ 3587      745F5448 
+ 3587      5F4D6561 
+ 3587      73757265 
+ 3587      6D656E74 
+ 3588              	.LASF10:
+ 3589 035e 75696E74 		.ascii	"uint16\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 72
+
+
+ 3589      313600
+ 3590              	.LASF12:
+ 3591 0365 696E7438 		.ascii	"int8\000"
+ 3591      00
+ 3592              	.LASF91:
+ 3593 036a 53575F54 		.ascii	"SW_Tx_UART_1_Start\000"
+ 3593      785F5541 
+ 3593      52545F31 
+ 3593      5F537461 
+ 3593      727400
+ 3594              	.LASF95:
+ 3595 037d 4379496E 		.ascii	"CyIntSetVector\000"
+ 3595      74536574 
+ 3595      56656374 
+ 3595      6F7200
+ 3596              	.LASF112:
+ 3597 038c 53656E73 		.ascii	"Sensor_Present_Test\000"
+ 3597      6F725F50 
+ 3597      72657365 
+ 3597      6E745F54 
+ 3597      65737400 
+ 3598              	.LASF17:
+ 3599 03a0 63686172 		.ascii	"char8\000"
+ 3599      3800
+ 3600              	.LASF44:
+ 3601 03a6 74696D65 		.ascii	"time_t\000"
+ 3601      5F7400
+ 3602              	.LASF120:
+ 3603 03ad 6172726F 		.ascii	"arrow_connect_device\000"
+ 3603      775F636F 
+ 3603      6E6E6563 
+ 3603      745F6465 
+ 3603      76696365 
+ 3604              	.LASF49:
+ 3605 03c2 50726573 		.ascii	"Pressure\000"
+ 3605      73757265 
+ 3605      00
+ 3606              	.LASF102:
+ 3607 03cb 5050535F 		.ascii	"PPS_ISR_Enable\000"
+ 3607      4953525F 
+ 3607      456E6162 
+ 3607      6C6500
+ 3608              	.LASF110:
+ 3609 03da 6172726F 		.ascii	"arrow_device_set_hid\000"
+ 3609      775F6465 
+ 3609      76696365 
+ 3609      5F736574 
+ 3609      5F686964 
+ 3610              	.LASF25:
+ 3611 03ef 4A534F4E 		.ascii	"JSON_NUMBER\000"
+ 3611      5F4E554D 
+ 3611      42455200 
+ 3612              	.LASF6:
+ 3613 03fb 6C6F6E67 		.ascii	"long long int\000"
+ 3613      206C6F6E 
+ 3613      6720696E 
+ 3613      7400
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 73
+
+
+ 3614              	.LASF84:
+ 3615 0409 43795379 		.ascii	"CySysWdtResetCounters\000"
+ 3615      73576474 
+ 3615      52657365 
+ 3615      74436F75 
+ 3615      6E746572 
+ 3616              	.LASF111:
+ 3617 041f 53656E73 		.ascii	"Sensor_Data_init\000"
+ 3617      6F725F44 
+ 3617      6174615F 
+ 3617      696E6974 
+ 3617      00
+ 3618              	.LASF20:
+ 3619 0430 63796973 		.ascii	"cyisraddress\000"
+ 3619      72616464 
+ 3619      72657373 
+ 3619      00
+ 3620              	.LASF108:
+ 3621 043d 5254435F 		.ascii	"RTC_SetPeriod\000"
+ 3621      53657450 
+ 3621      6572696F 
+ 3621      6400
+ 3622              	.LASF89:
+ 3623 044b 5348445F 		.ascii	"SHD_LED_1_Write\000"
+ 3623      4C45445F 
+ 3623      315F5772 
+ 3623      69746500 
+ 3624              	.LASF11:
+ 3625 045b 75696E74 		.ascii	"uint32\000"
+ 3625      333200
+ 3626              	.LASF101:
+ 3627 0462 43795379 		.ascii	"CySysTickStart\000"
+ 3627      73546963 
+ 3627      6B537461 
+ 3627      727400
+ 3628              	.LASF41:
+ 3629 0471 696E666F 		.ascii	"info\000"
+ 3629      00
+ 3630              	.LASF80:
+ 3631 0476 43795379 		.ascii	"CySysWdtSetClearOnMatch\000"
+ 3631      73576474 
+ 3631      53657443 
+ 3631      6C656172 
+ 3631      4F6E4D61 
+ 3632              	.LASF99:
+ 3633 048e 52656164 		.ascii	"Read_Pressure\000"
+ 3633      5F507265 
+ 3633      73737572 
+ 3633      6500
+ 3634              	.LASF46:
+ 3635 049c 54656D70 		.ascii	"Temperature\000"
+ 3635      65726174 
+ 3635      75726500 
+ 3636              	.LASF74:
+ 3637 04a8 424C5545 		.ascii	"BLUE_LED_Read\000"
+ 3637      5F4C4544 
+ 3637      5F526561 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 74
+
+
+ 3637      6400
+ 3638              	.LASF124:
+ 3639 04b6 53575F54 		.ascii	"SW_Tx_UART_1_PutString\000"
+ 3639      785F5541 
+ 3639      52545F31 
+ 3639      5F507574 
+ 3639      53747269 
+ 3640              	.LASF129:
+ 3641 04cd 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 3641      73657273 
+ 3641      5C646465 
+ 3641      6D69646F 
+ 3641      765C446F 
+ 3642 04fb 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 3642      6530315C 
+ 3642      53656E73 
+ 3642      65416269 
+ 3642      6C697479 
+ 3643              	.LASF66:
+ 3644 0516 636F6E66 		.ascii	"config\000"
+ 3644      696700
+ 3645              	.LASF81:
+ 3646 051d 43795379 		.ascii	"CySysWdtEnable\000"
+ 3646      73576474 
+ 3646      456E6162 
+ 3646      6C6500
+ 3647              	.LASF30:
+ 3648 052c 70617265 		.ascii	"parent\000"
+ 3648      6E7400
+ 3649              	.LASF2:
+ 3650 0533 73686F72 		.ascii	"short int\000"
+ 3650      7420696E 
+ 3650      7400
+ 3651              	.LASF119:
+ 3652 053d 6172726F 		.ascii	"arrow_config\000"
+ 3652      775F636F 
+ 3652      6E666967 
+ 3652      00
+ 3653              	.LASF4:
+ 3654 054a 6C6F6E67 		.ascii	"long int\000"
+ 3654      20696E74 
+ 3654      00
+ 3655              	.LASF73:
+ 3656 0553 43795379 		.ascii	"CySysWdtGetInterruptSource\000"
+ 3656      73576474 
+ 3656      47657449 
+ 3656      6E746572 
+ 3656      72757074 
+ 3657              	.LASF79:
+ 3658 056e 43795379 		.ascii	"CySysWdtSetMatch\000"
+ 3658      73576474 
+ 3658      5365744D 
+ 3658      61746368 
+ 3658      00
+ 3659              	.LASF125:
+ 3660 057f 53575F54 		.ascii	"SW_Tx_UART_1_PutCRLF\000"
+ 3660      785F5541 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 75
+
+
+ 3660      52545F31 
+ 3660      5F507574 
+ 3660      43524C46 
+ 3661              	.LASF106:
+ 3662 0594 6275696C 		.ascii	"build_time\000"
+ 3662      645F7469 
+ 3662      6D6500
+ 3663              	.LASF70:
+ 3664 059f 5744545F 		.ascii	"WDT_INT_Handler\000"
+ 3664      494E545F 
+ 3664      48616E64 
+ 3664      6C657200 
+ 3665              	.LASF88:
+ 3666 05af 47524545 		.ascii	"GREEN_LED_Write\000"
+ 3666      4E5F4C45 
+ 3666      445F5772 
+ 3666      69746500 
+ 3667              	.LASF109:
+ 3668 05bf 6172726F 		.ascii	"arrow_device_init\000"
+ 3668      775F6465 
+ 3668      76696365 
+ 3668      5F696E69 
+ 3668      7400
+ 3669              	.LASF93:
+ 3670 05d1 4932434D 		.ascii	"I2CM_Enable\000"
+ 3670      5F456E61 
+ 3670      626C6500 
+ 3671              	.LASF83:
+ 3672 05dd 43795379 		.ascii	"CySysWatchdogFeed\000"
+ 3672      73576174 
+ 3672      6368646F 
+ 3672      67466565 
+ 3672      6400
+ 3673              	.LASF52:
+ 3674 05ef 6E616D65 		.ascii	"name\000"
+ 3674      00
+ 3675              	.LASF16:
+ 3676 05f4 75696E74 		.ascii	"uint64\000"
+ 3676      363400
+ 3677              	.LASF60:
+ 3678 05fb 7764745F 		.ascii	"wdt_init\000"
+ 3678      696E6974 
+ 3678      00
+ 3679              	.LASF21:
+ 3680 0604 73697A65 		.ascii	"sizetype\000"
+ 3680      74797065 
+ 3680      00
+ 3681              	.LASF37:
+ 3682 060d 6E756D62 		.ascii	"number_\000"
+ 3682      65725F00 
+ 3683              	.LASF5:
+ 3684 0615 6C6F6E67 		.ascii	"long unsigned int\000"
+ 3684      20756E73 
+ 3684      69676E65 
+ 3684      6420696E 
+ 3684      7400
+ 3685              	.LASF42:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 76
+
+
+ 3686 0627 70726F70 		.ascii	"prop\000"
+ 3686      00
+ 3687              	.LASF98:
+ 3688 062c 52656164 		.ascii	"Read_Airflow\000"
+ 3688      5F416972 
+ 3688      666C6F77 
+ 3688      00
+ 3689              	.LASF56:
+ 3690 0639 73646B56 		.ascii	"sdkVersion\000"
+ 3690      65727369 
+ 3690      6F6E00
+ 3691              	.LASF61:
+ 3692 0644 75736572 		.ascii	"user_init\000"
+ 3692      5F696E69 
+ 3692      7400
+ 3693              	.LASF53:
+ 3694 064e 74797065 		.ascii	"type\000"
+ 3694      00
+ 3695              	.LASF1:
+ 3696 0653 756E7369 		.ascii	"unsigned char\000"
+ 3696      676E6564 
+ 3696      20636861 
+ 3696      7200
+ 3697              	.LASF92:
+ 3698 0661 4932434D 		.ascii	"I2CM_Start\000"
+ 3698      5F537461 
+ 3698      727400
+ 3699              	.LASF34:
+ 3700 066c 7461696C 		.ascii	"tail\000"
+ 3700      00
+ 3701              	.LASF126:
+ 3702 0671 6D717474 		.ascii	"mqtt_publish\000"
+ 3702      5F707562 
+ 3702      6C697368 
+ 3702      00
+ 3703              	.LASF26:
+ 3704 067e 4A534F4E 		.ascii	"JSON_ARRAY\000"
+ 3704      5F415252 
+ 3704      415900
+ 3705              	.LASF130:
+ 3706 0689 6D717474 		.ascii	"mqtt_disconnect\000"
+ 3706      5F646973 
+ 3706      636F6E6E 
+ 3706      65637400 
+ 3707              	.LASF57:
+ 3708 0699 6172726F 		.ascii	"arrow_gateway_t\000"
+ 3708      775F6761 
+ 3708      74657761 
+ 3708      795F7400 
+ 3709              	.LASF86:
+ 3710 06a9 4379496E 		.ascii	"CyIntEnable\000"
+ 3710      74456E61 
+ 3710      626C6500 
+ 3711              	.LASF28:
+ 3712 06b5 4A736F6E 		.ascii	"JsonTag\000"
+ 3712      54616700 
+ 3713              	.LASF64:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccRiQIZu.s 			page 77
+
+
+ 3714 06bd 73656E73 		.ascii	"sensor_data\000"
+ 3714      6F725F64 
+ 3714      61746100 
+ 3715              	.LASF0:
+ 3716 06c9 7369676E 		.ascii	"signed char\000"
+ 3716      65642063 
+ 3716      68617200 
+ 3717              	.LASF3:
+ 3718 06d5 73686F72 		.ascii	"short unsigned int\000"
+ 3718      7420756E 
+ 3718      7369676E 
+ 3718      65642069 
+ 3718      6E7400
+ 3719              	.LASF114:
+ 3720 06e8 6462675F 		.ascii	"dbg_line\000"
+ 3720      6C696E65 
+ 3720      00
+ 3721              	.LASF40:
+ 3722 06f1 6D61696E 		.ascii	"main\000"
+ 3722      00
+ 3723              	.LASF96:
+ 3724 06f6 52656164 		.ascii	"Read_Temp_and_Humidity\000"
+ 3724      5F54656D 
+ 3724      705F616E 
+ 3724      645F4875 
+ 3724      6D696469 
+ 3725              	.LASF9:
+ 3726 070d 75696E74 		.ascii	"uint8\000"
+ 3726      3800
+ 3727              	.LASF15:
+ 3728 0713 646F7562 		.ascii	"double\000"
+ 3728      6C6500
+ 3729              	.LASF59:
+ 3730 071a 5744545F 		.ascii	"WDT_Feed\000"
+ 3730      46656564 
+ 3730      00
+ 3731              	.LASF78:
+ 3732 0723 43795379 		.ascii	"CySysWdtSetMode\000"
+ 3732      73576474 
+ 3732      5365744D 
+ 3732      6F646500 
+ 3733              	.LASF128:
+ 3734 0733 2E5C6D61 		.ascii	".\\main.c\000"
+ 3734      696E2E63 
+ 3734      00
+ 3735              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

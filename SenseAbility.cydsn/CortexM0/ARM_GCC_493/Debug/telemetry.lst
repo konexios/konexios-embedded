@@ -1,0 +1,1648 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"telemetry.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	__aeabi_i2d
+  18              		.global	__aeabi_ui2d
+  19              		.section	.text.telemetry_serialize,"ax",%progbits
+  20              		.align	1
+  21              		.global	telemetry_serialize
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	telemetry_serialize, %function
+  25              	telemetry_serialize:
+  26              	.LFB0:
+  27              		.file 1 "..\\acn-sdk-c\\platforms\\senseability\\json\\telemetry.c"
+   1:..\acn-sdk-c\platforms\senseability\json/telemetry.c **** #include "json/telemetry.h"
+   2:..\acn-sdk-c\platforms\senseability\json/telemetry.c **** #include <config.h>
+   3:..\acn-sdk-c\platforms\senseability\json/telemetry.c **** #include <json/json.h>
+   4:..\acn-sdk-c\platforms\senseability\json/telemetry.c **** 
+   5:..\acn-sdk-c\platforms\senseability\json/telemetry.c **** 
+   6:..\acn-sdk-c\platforms\senseability\json/telemetry.c **** char *telemetry_serialize(arrow_device_t *device, sensor_data_t *data) {
+  28              		.loc 1 6 0
+  29              		.cfi_startproc
+  30              	.LVL0:
+  31 0000 70B5     		push	{r4, r5, r6, lr}
+  32              		.cfi_def_cfa_offset 16
+  33              		.cfi_offset 4, -16
+  34              		.cfi_offset 5, -12
+  35              		.cfi_offset 6, -8
+  36              		.cfi_offset 14, -4
+  37              		.loc 1 6 0
+  38 0002 0C1C     		mov	r4, r1
+  39 0004 061C     		mov	r6, r0
+   7:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     JsonNode *_node = json_mkobject();
+  40              		.loc 1 7 0
+  41 0006 FFF7FEFF 		bl	json_mkobject
+  42              	.LVL1:
+  43 000a 051C     		mov	r5, r0
+  44              	.LVL2:
+   8:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     Sensor_Data_t *sens_data = (Sensor_Data_t *)data;
+   9:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
+  45              		.loc 1 9 0
+  46 000c F068     		ldr	r0, [r6, #12]
+  47              	.LVL3:
+  48 000e FFF7FEFF 		bl	json_mkstring
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 2
+
+
+  49              	.LVL4:
+  50 0012 2849     		ldr	r1, .L19
+  51 0014 021C     		mov	r2, r0
+  52 0016 281C     		mov	r0, r5
+  53 0018 FFF7FEFF 		bl	json_append_member
+  54              	.LVL5:
+  10:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     if ( (sens_data->Status & HUMIDICON_PRESENT_MASK) == 1) {
+  55              		.loc 1 10 0
+  56 001c 2378     		ldrb	r3, [r4]
+  57 001e DB07     		lsl	r3, r3, #31
+  58 0020 14D5     		bpl	.L2
+  11:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****         json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(sens_data->Temperature));
+  59              		.loc 1 11 0
+  60 0022 0120     		mov	r0, #1
+  61 0024 2056     		ldrsb	r0, [r4, r0]
+  62 0026 FFF7FEFF 		bl	__aeabi_i2d
+  63              	.LVL6:
+  64 002a FFF7FEFF 		bl	json_mknumber
+  65              	.LVL7:
+  66 002e 2249     		ldr	r1, .L19+4
+  67 0030 021C     		mov	r2, r0
+  68 0032 281C     		mov	r0, r5
+  69 0034 FFF7FEFF 		bl	json_append_member
+  70              	.LVL8:
+  12:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****         json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(sens_data->Humidity));
+  71              		.loc 1 12 0
+  72 0038 A078     		ldrb	r0, [r4, #2]
+  73 003a FFF7FEFF 		bl	__aeabi_ui2d
+  74              	.LVL9:
+  75 003e FFF7FEFF 		bl	json_mknumber
+  76              	.LVL10:
+  77 0042 1E49     		ldr	r1, .L19+8
+  78 0044 021C     		mov	r2, r0
+  79 0046 281C     		mov	r0, r5
+  80 0048 FFF7FEFF 		bl	json_append_member
+  81              	.LVL11:
+  82              	.L2:
+  13:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     }
+  14:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     if ( sens_data->Status & PRESSURE_PRESENT_MASK) {
+  83              		.loc 1 14 0
+  84 004c 2378     		ldrb	r3, [r4]
+  85 004e 5B07     		lsl	r3, r3, #29
+  86 0050 0AD5     		bpl	.L3
+  15:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****         json_append_member(_node, TELEMETRY_BAROMETER, json_mknumber(sens_data->Pressure));
+  87              		.loc 1 15 0
+  88 0052 0423     		mov	r3, #4
+  89 0054 E05E     		ldrsh	r0, [r4, r3]
+  90 0056 FFF7FEFF 		bl	__aeabi_i2d
+  91              	.LVL12:
+  92 005a FFF7FEFF 		bl	json_mknumber
+  93              	.LVL13:
+  94 005e 1849     		ldr	r1, .L19+12
+  95 0060 021C     		mov	r2, r0
+  96 0062 281C     		mov	r0, r5
+  97 0064 FFF7FEFF 		bl	json_append_member
+  98              	.LVL14:
+  99              	.L3:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 3
+
+
+  16:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     }
+  17:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     if ( sens_data->Status & AIRFLOW_PRESENT_MASK) {
+ 100              		.loc 1 17 0
+ 101 0068 2378     		ldrb	r3, [r4]
+ 102 006a 9B07     		lsl	r3, r3, #30
+ 103 006c 0AD5     		bpl	.L4
+  18:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****         json_append_member(_node, "i|airflow", json_mknumber(sens_data->Air_Flow));
+ 104              		.loc 1 18 0
+ 105 006e 0623     		mov	r3, #6
+ 106 0070 E05E     		ldrsh	r0, [r4, r3]
+ 107 0072 FFF7FEFF 		bl	__aeabi_i2d
+ 108              	.LVL15:
+ 109 0076 FFF7FEFF 		bl	json_mknumber
+ 110              	.LVL16:
+ 111 007a 1249     		ldr	r1, .L19+16
+ 112 007c 021C     		mov	r2, r0
+ 113 007e 281C     		mov	r0, r5
+ 114 0080 FFF7FEFF 		bl	json_append_member
+ 115              	.LVL17:
+ 116              	.L4:
+  19:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     }
+  20:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     if ( sens_data->Status & PRESSURE_PRESENT_MASK) {
+ 117              		.loc 1 20 0
+ 118 0084 2378     		ldrb	r3, [r4]
+ 119 0086 5B07     		lsl	r3, r3, #29
+ 120 0088 0AD5     		bpl	.L5
+  21:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****         json_append_member(_node, "b|magnetic", json_mkbool(sens_data->Magnetic_Switch));
+ 121              		.loc 1 21 0
+ 122 008a E078     		ldrb	r0, [r4, #3]
+ 123 008c 431E     		sub	r3, r0, #1
+ 124 008e 9841     		sbc	r0, r0, r3
+ 125 0090 C0B2     		uxtb	r0, r0
+ 126 0092 FFF7FEFF 		bl	json_mkbool
+ 127              	.LVL18:
+ 128 0096 0C49     		ldr	r1, .L19+20
+ 129 0098 021C     		mov	r2, r0
+ 130 009a 281C     		mov	r0, r5
+ 131 009c FFF7FEFF 		bl	json_append_member
+ 132              	.LVL19:
+ 133              	.L5:
+  22:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     }
+  23:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     char *tmp = json_encode(_node);
+ 134              		.loc 1 23 0
+ 135 00a0 281C     		mov	r0, r5
+ 136 00a2 FFF7FEFF 		bl	json_encode
+ 137              	.LVL20:
+ 138 00a6 041C     		mov	r4, r0
+ 139              	.LVL21:
+  24:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     json_delete(_node);
+ 140              		.loc 1 24 0
+ 141 00a8 281C     		mov	r0, r5
+ 142              	.LVL22:
+ 143 00aa FFF7FEFF 		bl	json_delete
+ 144              	.LVL23:
+  25:..\acn-sdk-c\platforms\senseability\json/telemetry.c ****     return tmp;
+  26:..\acn-sdk-c\platforms\senseability\json/telemetry.c **** }
+ 145              		.loc 1 26 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 4
+
+
+ 146              		@ sp needed
+ 147 00ae 201C     		mov	r0, r4
+ 148              	.LVL24:
+ 149              	.LVL25:
+ 150              	.LVL26:
+ 151 00b0 70BD     		pop	{r4, r5, r6, pc}
+ 152              	.L20:
+ 153 00b2 C046     		.align	2
+ 154              	.L19:
+ 155 00b4 00000000 		.word	.LC0
+ 156 00b8 0C000000 		.word	.LC2
+ 157 00bc 1A000000 		.word	.LC4
+ 158 00c0 25000000 		.word	.LC6
+ 159 00c4 31000000 		.word	.LC8
+ 160 00c8 3B000000 		.word	.LC10
+ 161              		.cfi_endproc
+ 162              	.LFE0:
+ 163              		.size	telemetry_serialize, .-telemetry_serialize
+ 164              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 165              	.LC0:
+ 166 0000 5F7C6465 		.ascii	"_|deviceHid\000"
+ 166      76696365 
+ 166      48696400 
+ 167              	.LC2:
+ 168 000c 667C7465 		.ascii	"f|temperature\000"
+ 168      6D706572 
+ 168      61747572 
+ 168      6500
+ 169              	.LC4:
+ 170 001a 667C6875 		.ascii	"f|humidity\000"
+ 170      6D696469 
+ 170      747900
+ 171              	.LC6:
+ 172 0025 667C6261 		.ascii	"f|barometer\000"
+ 172      726F6D65 
+ 172      74657200 
+ 173              	.LC8:
+ 174 0031 697C6169 		.ascii	"i|airflow\000"
+ 174      72666C6F 
+ 174      7700
+ 175              	.LC10:
+ 176 003b 627C6D61 		.ascii	"b|magnetic\000"
+ 176      676E6574 
+ 176      696300
+ 177              		.text
+ 178              	.Letext0:
+ 179              		.file 2 "..\\acn-sdk-c\\include/json/json.h"
+ 180              		.file 3 "..\\acn-sdk-c\\include/arrow/device.h"
+ 181              		.file 4 "Generated_Source\\PSoC4/cytypes.h"
+ 182              		.file 5 "..\\acn-sdk-c\\include/json/telemetry.h"
+ 183              		.section	.debug_info,"",%progbits
+ 184              	.Ldebug_info0:
+ 185 0000 7B040000 		.4byte	0x47b
+ 186 0004 0400     		.2byte	0x4
+ 187 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 188 000a 04       		.byte	0x4
+ 189 000b 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 5
+
+
+ 190 000c 5A000000 		.4byte	.LASF53
+ 191 0010 01       		.byte	0x1
+ 192 0011 E9010000 		.4byte	.LASF54
+ 193 0015 10030000 		.4byte	.LASF55
+ 194 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 195 001d 00000000 		.4byte	0
+ 196 0021 00000000 		.4byte	.Ldebug_line0
+ 197 0025 02       		.uleb128 0x2
+ 198 0026 04       		.byte	0x4
+ 199 0027 05       		.byte	0x5
+ 200 0028 696E7400 		.ascii	"int\000"
+ 201 002c 03       		.uleb128 0x3
+ 202 002d 04       		.byte	0x4
+ 203 002e 07       		.byte	0x7
+ 204 002f 30020000 		.4byte	.LASF0
+ 205 0033 04       		.uleb128 0x4
+ 206 0034 01       		.byte	0x1
+ 207 0035 02       		.byte	0x2
+ 208 0036 2C       		.byte	0x2c
+ 209 0037 60000000 		.4byte	0x60
+ 210 003b 05       		.uleb128 0x5
+ 211 003c F4020000 		.4byte	.LASF1
+ 212 0040 00       		.sleb128 0
+ 213 0041 05       		.uleb128 0x5
+ 214 0042 45010000 		.4byte	.LASF2
+ 215 0046 01       		.sleb128 1
+ 216 0047 05       		.uleb128 0x5
+ 217 0048 5C010000 		.4byte	.LASF3
+ 218 004c 02       		.sleb128 2
+ 219 004d 05       		.uleb128 0x5
+ 220 004e D3020000 		.4byte	.LASF4
+ 221 0052 03       		.sleb128 3
+ 222 0053 05       		.uleb128 0x5
+ 223 0054 0E000000 		.4byte	.LASF5
+ 224 0058 04       		.sleb128 4
+ 225 0059 05       		.uleb128 0x5
+ 226 005a 19000000 		.4byte	.LASF6
+ 227 005e 05       		.sleb128 5
+ 228 005f 00       		.byte	0
+ 229 0060 06       		.uleb128 0x6
+ 230 0061 B5010000 		.4byte	.LASF7
+ 231 0065 02       		.byte	0x2
+ 232 0066 33       		.byte	0x33
+ 233 0067 33000000 		.4byte	0x33
+ 234 006b 06       		.uleb128 0x6
+ 235 006c 2E010000 		.4byte	.LASF8
+ 236 0070 02       		.byte	0x2
+ 237 0071 35       		.byte	0x35
+ 238 0072 76000000 		.4byte	0x76
+ 239 0076 07       		.uleb128 0x7
+ 240 0077 2E010000 		.4byte	.LASF8
+ 241 007b 20       		.byte	0x20
+ 242 007c 02       		.byte	0x2
+ 243 007d 37       		.byte	0x37
+ 244 007e C5000000 		.4byte	0xc5
+ 245 0082 08       		.uleb128 0x8
+ 246 0083 18010000 		.4byte	.LASF9
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 6
+
+
+ 247 0087 02       		.byte	0x2
+ 248 0088 3A       		.byte	0x3a
+ 249 0089 E6000000 		.4byte	0xe6
+ 250 008d 00       		.byte	0
+ 251 008e 08       		.uleb128 0x8
+ 252 008f FE020000 		.4byte	.LASF10
+ 253 0093 02       		.byte	0x2
+ 254 0094 3B       		.byte	0x3b
+ 255 0095 E6000000 		.4byte	0xe6
+ 256 0099 04       		.byte	0x4
+ 257 009a 08       		.uleb128 0x8
+ 258 009b 0B030000 		.4byte	.LASF11
+ 259 009f 02       		.byte	0x2
+ 260 00a0 3B       		.byte	0x3b
+ 261 00a1 E6000000 		.4byte	0xe6
+ 262 00a5 08       		.byte	0x8
+ 263 00a6 09       		.uleb128 0x9
+ 264 00a7 6B657900 		.ascii	"key\000"
+ 265 00ab 02       		.byte	0x2
+ 266 00ac 3E       		.byte	0x3e
+ 267 00ad 28010000 		.4byte	0x128
+ 268 00b1 0C       		.byte	0xc
+ 269 00b2 09       		.uleb128 0x9
+ 270 00b3 74616700 		.ascii	"tag\000"
+ 271 00b7 02       		.byte	0x2
+ 272 00b8 40       		.byte	0x40
+ 273 00b9 60000000 		.4byte	0x60
+ 274 00bd 10       		.byte	0x10
+ 275 00be 0A       		.uleb128 0xa
+ 276 00bf EC000000 		.4byte	0xec
+ 277 00c3 18       		.byte	0x18
+ 278 00c4 00       		.byte	0
+ 279 00c5 0B       		.uleb128 0xb
+ 280 00c6 08       		.byte	0x8
+ 281 00c7 02       		.byte	0x2
+ 282 00c8 4D       		.byte	0x4d
+ 283 00c9 E6000000 		.4byte	0xe6
+ 284 00cd 08       		.uleb128 0x8
+ 285 00ce 0D010000 		.4byte	.LASF12
+ 286 00d2 02       		.byte	0x2
+ 287 00d3 4E       		.byte	0x4e
+ 288 00d4 E6000000 		.4byte	0xe6
+ 289 00d8 00       		.byte	0
+ 290 00d9 08       		.uleb128 0x8
+ 291 00da C6010000 		.4byte	.LASF13
+ 292 00de 02       		.byte	0x2
+ 293 00df 4E       		.byte	0x4e
+ 294 00e0 E6000000 		.4byte	0xe6
+ 295 00e4 04       		.byte	0x4
+ 296 00e5 00       		.byte	0
+ 297 00e6 0C       		.uleb128 0xc
+ 298 00e7 04       		.byte	0x4
+ 299 00e8 6B000000 		.4byte	0x6b
+ 300 00ec 0D       		.uleb128 0xd
+ 301 00ed 08       		.byte	0x8
+ 302 00ee 02       		.byte	0x2
+ 303 00ef 41       		.byte	0x41
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 7
+
+
+ 304 00f0 21010000 		.4byte	0x121
+ 305 00f4 0E       		.uleb128 0xe
+ 306 00f5 2A020000 		.4byte	.LASF14
+ 307 00f9 02       		.byte	0x2
+ 308 00fa 43       		.byte	0x43
+ 309 00fb 21010000 		.4byte	0x121
+ 310 00ff 0E       		.uleb128 0xe
+ 311 0100 03030000 		.4byte	.LASF15
+ 312 0104 02       		.byte	0x2
+ 313 0105 46       		.byte	0x46
+ 314 0106 28010000 		.4byte	0x128
+ 315 010a 0E       		.uleb128 0xe
+ 316 010b F7000000 		.4byte	.LASF16
+ 317 010f 02       		.byte	0x2
+ 318 0110 49       		.byte	0x49
+ 319 0111 35010000 		.4byte	0x135
+ 320 0115 0E       		.uleb128 0xe
+ 321 0116 BD010000 		.4byte	.LASF17
+ 322 011a 02       		.byte	0x2
+ 323 011b 4F       		.byte	0x4f
+ 324 011c C5000000 		.4byte	0xc5
+ 325 0120 00       		.byte	0
+ 326 0121 03       		.uleb128 0x3
+ 327 0122 01       		.byte	0x1
+ 328 0123 02       		.byte	0x2
+ 329 0124 7A020000 		.4byte	.LASF18
+ 330 0128 0C       		.uleb128 0xc
+ 331 0129 04       		.byte	0x4
+ 332 012a 2E010000 		.4byte	0x12e
+ 333 012e 03       		.uleb128 0x3
+ 334 012f 01       		.byte	0x1
+ 335 0130 08       		.byte	0x8
+ 336 0131 69020000 		.4byte	.LASF19
+ 337 0135 03       		.uleb128 0x3
+ 338 0136 08       		.byte	0x8
+ 339 0137 04       		.byte	0x4
+ 340 0138 B4020000 		.4byte	.LASF20
+ 341 013c 0B       		.uleb128 0xb
+ 342 013d 14       		.byte	0x14
+ 343 013e 03       		.byte	0x3
+ 344 013f 0E       		.byte	0xe
+ 345 0140 81010000 		.4byte	0x181
+ 346 0144 08       		.uleb128 0x8
+ 347 0145 FF000000 		.4byte	.LASF21
+ 348 0149 03       		.byte	0x3
+ 349 014a 14       		.byte	0x14
+ 350 014b E6000000 		.4byte	0xe6
+ 351 014f 00       		.byte	0
+ 352 0150 08       		.uleb128 0x8
+ 353 0151 C7020000 		.4byte	.LASF22
+ 354 0155 03       		.byte	0x3
+ 355 0156 15       		.byte	0x15
+ 356 0157 E6000000 		.4byte	0xe6
+ 357 015b 04       		.byte	0x4
+ 358 015c 08       		.uleb128 0x8
+ 359 015d 3D020000 		.4byte	.LASF23
+ 360 0161 03       		.byte	0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 8
+
+
+ 361 0162 16       		.byte	0x16
+ 362 0163 E6000000 		.4byte	0xe6
+ 363 0167 08       		.byte	0x8
+ 364 0168 09       		.uleb128 0x9
+ 365 0169 68696400 		.ascii	"hid\000"
+ 366 016d 03       		.byte	0x3
+ 367 016e 18       		.byte	0x18
+ 368 016f 28010000 		.4byte	0x128
+ 369 0173 0C       		.byte	0xc
+ 370 0174 09       		.uleb128 0x9
+ 371 0175 65696400 		.ascii	"eid\000"
+ 372 0179 03       		.byte	0x3
+ 373 017a 19       		.byte	0x19
+ 374 017b 28010000 		.4byte	0x128
+ 375 017f 10       		.byte	0x10
+ 376 0180 00       		.byte	0
+ 377 0181 06       		.uleb128 0x6
+ 378 0182 93020000 		.4byte	.LASF24
+ 379 0186 03       		.byte	0x3
+ 380 0187 1A       		.byte	0x1a
+ 381 0188 3C010000 		.4byte	0x13c
+ 382 018c 03       		.uleb128 0x3
+ 383 018d 01       		.byte	0x1
+ 384 018e 06       		.byte	0x6
+ 385 018f 1E020000 		.4byte	.LASF25
+ 386 0193 03       		.uleb128 0x3
+ 387 0194 01       		.byte	0x1
+ 388 0195 08       		.byte	0x8
+ 389 0196 CB010000 		.4byte	.LASF26
+ 390 019a 03       		.uleb128 0x3
+ 391 019b 02       		.byte	0x2
+ 392 019c 05       		.byte	0x5
+ 393 019d 50000000 		.4byte	.LASF27
+ 394 01a1 03       		.uleb128 0x3
+ 395 01a2 02       		.byte	0x2
+ 396 01a3 07       		.byte	0x7
+ 397 01a4 56020000 		.4byte	.LASF28
+ 398 01a8 03       		.uleb128 0x3
+ 399 01a9 04       		.byte	0x4
+ 400 01aa 05       		.byte	0x5
+ 401 01ab AC010000 		.4byte	.LASF29
+ 402 01af 03       		.uleb128 0x3
+ 403 01b0 04       		.byte	0x4
+ 404 01b1 07       		.byte	0x7
+ 405 01b2 A2020000 		.4byte	.LASF30
+ 406 01b6 03       		.uleb128 0x3
+ 407 01b7 08       		.byte	0x8
+ 408 01b8 05       		.byte	0x5
+ 409 01b9 82010000 		.4byte	.LASF31
+ 410 01bd 03       		.uleb128 0x3
+ 411 01be 08       		.byte	0x8
+ 412 01bf 07       		.byte	0x7
+ 413 01c0 90010000 		.4byte	.LASF32
+ 414 01c4 0F       		.uleb128 0xf
+ 415 01c5 1F010000 		.4byte	.LASF33
+ 416 01c9 04       		.byte	0x4
+ 417 01ca 3801     		.2byte	0x138
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 9
+
+
+ 418 01cc 93010000 		.4byte	0x193
+ 419 01d0 0F       		.uleb128 0xf
+ 420 01d1 A7010000 		.4byte	.LASF34
+ 421 01d5 04       		.byte	0x4
+ 422 01d6 3B01     		.2byte	0x13b
+ 423 01d8 8C010000 		.4byte	0x18c
+ 424 01dc 0F       		.uleb128 0xf
+ 425 01dd 12010000 		.4byte	.LASF35
+ 426 01e1 04       		.byte	0x4
+ 427 01e2 3C01     		.2byte	0x13c
+ 428 01e4 9A010000 		.4byte	0x19a
+ 429 01e8 03       		.uleb128 0x3
+ 430 01e9 04       		.byte	0x4
+ 431 01ea 04       		.byte	0x4
+ 432 01eb 56010000 		.4byte	.LASF36
+ 433 01ef 03       		.uleb128 0x3
+ 434 01f0 04       		.byte	0x4
+ 435 01f1 07       		.byte	0x7
+ 436 01f2 E8000000 		.4byte	.LASF37
+ 437 01f6 10       		.uleb128 0x10
+ 438 01f7 42000000 		.4byte	.LASF56
+ 439 01fb 05       		.byte	0x5
+ 440 01fc 12       		.byte	0x12
+ 441 01fd 0B       		.uleb128 0xb
+ 442 01fe 08       		.byte	0x8
+ 443 01ff 05       		.byte	0x5
+ 444 0200 20       		.byte	0x20
+ 445 0201 4E020000 		.4byte	0x24e
+ 446 0205 08       		.uleb128 0x8
+ 447 0206 CC020000 		.4byte	.LASF38
+ 448 020a 05       		.byte	0x5
+ 449 020b 21       		.byte	0x21
+ 450 020c C4010000 		.4byte	0x1c4
+ 451 0210 00       		.byte	0
+ 452 0211 08       		.uleb128 0x8
+ 453 0212 E8020000 		.4byte	.LASF39
+ 454 0216 05       		.byte	0x5
+ 455 0217 2A       		.byte	0x2a
+ 456 0218 D0010000 		.4byte	0x1d0
+ 457 021c 01       		.byte	0x1
+ 458 021d 08       		.uleb128 0x8
+ 459 021e 04010000 		.4byte	.LASF40
+ 460 0222 05       		.byte	0x5
+ 461 0223 2B       		.byte	0x2b
+ 462 0224 C4010000 		.4byte	0x1c4
+ 463 0228 02       		.byte	0x2
+ 464 0229 08       		.uleb128 0x8
+ 465 022a D9010000 		.4byte	.LASF41
+ 466 022e 05       		.byte	0x5
+ 467 022f 2C       		.byte	0x2c
+ 468 0230 C4010000 		.4byte	0x1c4
+ 469 0234 03       		.byte	0x3
+ 470 0235 08       		.uleb128 0x8
+ 471 0236 DF020000 		.4byte	.LASF42
+ 472 023a 05       		.byte	0x5
+ 473 023b 2D       		.byte	0x2d
+ 474 023c DC010000 		.4byte	0x1dc
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 10
+
+
+ 475 0240 04       		.byte	0x4
+ 476 0241 08       		.uleb128 0x8
+ 477 0242 25010000 		.4byte	.LASF43
+ 478 0246 05       		.byte	0x5
+ 479 0247 2E       		.byte	0x2e
+ 480 0248 DC010000 		.4byte	0x1dc
+ 481 024c 06       		.byte	0x6
+ 482 024d 00       		.byte	0
+ 483 024e 06       		.uleb128 0x6
+ 484 024f 85020000 		.4byte	.LASF44
+ 485 0253 05       		.byte	0x5
+ 486 0254 2F       		.byte	0x2f
+ 487 0255 FD010000 		.4byte	0x1fd
+ 488 0259 11       		.uleb128 0x11
+ 489 025a 42020000 		.4byte	.LASF57
+ 490 025e 01       		.byte	0x1
+ 491 025f 06       		.byte	0x6
+ 492 0260 28010000 		.4byte	0x128
+ 493 0264 00000000 		.4byte	.LFB0
+ 494 0268 CC000000 		.4byte	.LFE0-.LFB0
+ 495 026c 01       		.uleb128 0x1
+ 496 026d 9C       		.byte	0x9c
+ 497 026e CF030000 		.4byte	0x3cf
+ 498 0272 12       		.uleb128 0x12
+ 499 0273 4F010000 		.4byte	.LASF45
+ 500 0277 01       		.byte	0x1
+ 501 0278 06       		.byte	0x6
+ 502 0279 CF030000 		.4byte	0x3cf
+ 503 027d 00000000 		.4byte	.LLST0
+ 504 0281 12       		.uleb128 0x12
+ 505 0282 80020000 		.4byte	.LASF46
+ 506 0286 01       		.byte	0x1
+ 507 0287 06       		.byte	0x6
+ 508 0288 D5030000 		.4byte	0x3d5
+ 509 028c 2C000000 		.4byte	.LLST1
+ 510 0290 13       		.uleb128 0x13
+ 511 0291 F1000000 		.4byte	.LASF47
+ 512 0295 01       		.byte	0x1
+ 513 0296 07       		.byte	0x7
+ 514 0297 E6000000 		.4byte	0xe6
+ 515 029b 58000000 		.4byte	.LLST2
+ 516 029f 13       		.uleb128 0x13
+ 517 02a0 25000000 		.4byte	.LASF48
+ 518 02a4 01       		.byte	0x1
+ 519 02a5 08       		.byte	0x8
+ 520 02a6 DB030000 		.4byte	0x3db
+ 521 02aa 76000000 		.4byte	.LLST3
+ 522 02ae 14       		.uleb128 0x14
+ 523 02af 746D7000 		.ascii	"tmp\000"
+ 524 02b3 01       		.byte	0x1
+ 525 02b4 17       		.byte	0x17
+ 526 02b5 28010000 		.4byte	0x128
+ 527 02b9 97000000 		.4byte	.LLST4
+ 528 02bd 15       		.uleb128 0x15
+ 529 02be 0A000000 		.4byte	.LVL1
+ 530 02c2 E1030000 		.4byte	0x3e1
+ 531 02c6 15       		.uleb128 0x15
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 11
+
+
+ 532 02c7 12000000 		.4byte	.LVL4
+ 533 02cb EC030000 		.4byte	0x3ec
+ 534 02cf 16       		.uleb128 0x16
+ 535 02d0 1C000000 		.4byte	.LVL5
+ 536 02d4 0C040000 		.4byte	0x40c
+ 537 02d8 EC020000 		.4byte	0x2ec
+ 538 02dc 17       		.uleb128 0x17
+ 539 02dd 01       		.uleb128 0x1
+ 540 02de 51       		.byte	0x51
+ 541 02df 05       		.uleb128 0x5
+ 542 02e0 03       		.byte	0x3
+ 543 02e1 00000000 		.4byte	.LC0
+ 544 02e5 17       		.uleb128 0x17
+ 545 02e6 01       		.uleb128 0x1
+ 546 02e7 50       		.byte	0x50
+ 547 02e8 02       		.uleb128 0x2
+ 548 02e9 75       		.byte	0x75
+ 549 02ea 00       		.sleb128 0
+ 550 02eb 00       		.byte	0
+ 551 02ec 15       		.uleb128 0x15
+ 552 02ed 2E000000 		.4byte	.LVL7
+ 553 02f1 27040000 		.4byte	0x427
+ 554 02f5 16       		.uleb128 0x16
+ 555 02f6 38000000 		.4byte	.LVL8
+ 556 02fa 0C040000 		.4byte	0x40c
+ 557 02fe 12030000 		.4byte	0x312
+ 558 0302 17       		.uleb128 0x17
+ 559 0303 01       		.uleb128 0x1
+ 560 0304 51       		.byte	0x51
+ 561 0305 05       		.uleb128 0x5
+ 562 0306 03       		.byte	0x3
+ 563 0307 0C000000 		.4byte	.LC2
+ 564 030b 17       		.uleb128 0x17
+ 565 030c 01       		.uleb128 0x1
+ 566 030d 50       		.byte	0x50
+ 567 030e 02       		.uleb128 0x2
+ 568 030f 75       		.byte	0x75
+ 569 0310 00       		.sleb128 0
+ 570 0311 00       		.byte	0
+ 571 0312 15       		.uleb128 0x15
+ 572 0313 42000000 		.4byte	.LVL10
+ 573 0317 27040000 		.4byte	0x427
+ 574 031b 16       		.uleb128 0x16
+ 575 031c 4C000000 		.4byte	.LVL11
+ 576 0320 0C040000 		.4byte	0x40c
+ 577 0324 38030000 		.4byte	0x338
+ 578 0328 17       		.uleb128 0x17
+ 579 0329 01       		.uleb128 0x1
+ 580 032a 51       		.byte	0x51
+ 581 032b 05       		.uleb128 0x5
+ 582 032c 03       		.byte	0x3
+ 583 032d 1A000000 		.4byte	.LC4
+ 584 0331 17       		.uleb128 0x17
+ 585 0332 01       		.uleb128 0x1
+ 586 0333 50       		.byte	0x50
+ 587 0334 02       		.uleb128 0x2
+ 588 0335 75       		.byte	0x75
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 12
+
+
+ 589 0336 00       		.sleb128 0
+ 590 0337 00       		.byte	0
+ 591 0338 15       		.uleb128 0x15
+ 592 0339 5E000000 		.4byte	.LVL13
+ 593 033d 27040000 		.4byte	0x427
+ 594 0341 16       		.uleb128 0x16
+ 595 0342 68000000 		.4byte	.LVL14
+ 596 0346 0C040000 		.4byte	0x40c
+ 597 034a 5E030000 		.4byte	0x35e
+ 598 034e 17       		.uleb128 0x17
+ 599 034f 01       		.uleb128 0x1
+ 600 0350 51       		.byte	0x51
+ 601 0351 05       		.uleb128 0x5
+ 602 0352 03       		.byte	0x3
+ 603 0353 25000000 		.4byte	.LC6
+ 604 0357 17       		.uleb128 0x17
+ 605 0358 01       		.uleb128 0x1
+ 606 0359 50       		.byte	0x50
+ 607 035a 02       		.uleb128 0x2
+ 608 035b 75       		.byte	0x75
+ 609 035c 00       		.sleb128 0
+ 610 035d 00       		.byte	0
+ 611 035e 15       		.uleb128 0x15
+ 612 035f 7A000000 		.4byte	.LVL16
+ 613 0363 27040000 		.4byte	0x427
+ 614 0367 16       		.uleb128 0x16
+ 615 0368 84000000 		.4byte	.LVL17
+ 616 036c 0C040000 		.4byte	0x40c
+ 617 0370 84030000 		.4byte	0x384
+ 618 0374 17       		.uleb128 0x17
+ 619 0375 01       		.uleb128 0x1
+ 620 0376 51       		.byte	0x51
+ 621 0377 05       		.uleb128 0x5
+ 622 0378 03       		.byte	0x3
+ 623 0379 31000000 		.4byte	.LC8
+ 624 037d 17       		.uleb128 0x17
+ 625 037e 01       		.uleb128 0x1
+ 626 037f 50       		.byte	0x50
+ 627 0380 02       		.uleb128 0x2
+ 628 0381 75       		.byte	0x75
+ 629 0382 00       		.sleb128 0
+ 630 0383 00       		.byte	0
+ 631 0384 15       		.uleb128 0x15
+ 632 0385 96000000 		.4byte	.LVL18
+ 633 0389 3C040000 		.4byte	0x43c
+ 634 038d 16       		.uleb128 0x16
+ 635 038e A0000000 		.4byte	.LVL19
+ 636 0392 0C040000 		.4byte	0x40c
+ 637 0396 AA030000 		.4byte	0x3aa
+ 638 039a 17       		.uleb128 0x17
+ 639 039b 01       		.uleb128 0x1
+ 640 039c 51       		.byte	0x51
+ 641 039d 05       		.uleb128 0x5
+ 642 039e 03       		.byte	0x3
+ 643 039f 3B000000 		.4byte	.LC10
+ 644 03a3 17       		.uleb128 0x17
+ 645 03a4 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 13
+
+
+ 646 03a5 50       		.byte	0x50
+ 647 03a6 02       		.uleb128 0x2
+ 648 03a7 75       		.byte	0x75
+ 649 03a8 00       		.sleb128 0
+ 650 03a9 00       		.byte	0
+ 651 03aa 16       		.uleb128 0x16
+ 652 03ab A6000000 		.4byte	.LVL20
+ 653 03af 51040000 		.4byte	0x451
+ 654 03b3 BE030000 		.4byte	0x3be
+ 655 03b7 17       		.uleb128 0x17
+ 656 03b8 01       		.uleb128 0x1
+ 657 03b9 50       		.byte	0x50
+ 658 03ba 02       		.uleb128 0x2
+ 659 03bb 75       		.byte	0x75
+ 660 03bc 00       		.sleb128 0
+ 661 03bd 00       		.byte	0
+ 662 03be 18       		.uleb128 0x18
+ 663 03bf AE000000 		.4byte	.LVL23
+ 664 03c3 71040000 		.4byte	0x471
+ 665 03c7 17       		.uleb128 0x17
+ 666 03c8 01       		.uleb128 0x1
+ 667 03c9 50       		.byte	0x50
+ 668 03ca 02       		.uleb128 0x2
+ 669 03cb 75       		.byte	0x75
+ 670 03cc 00       		.sleb128 0
+ 671 03cd 00       		.byte	0
+ 672 03ce 00       		.byte	0
+ 673 03cf 0C       		.uleb128 0xc
+ 674 03d0 04       		.byte	0x4
+ 675 03d1 81010000 		.4byte	0x181
+ 676 03d5 0C       		.uleb128 0xc
+ 677 03d6 04       		.byte	0x4
+ 678 03d7 F6010000 		.4byte	0x1f6
+ 679 03db 0C       		.uleb128 0xc
+ 680 03dc 04       		.byte	0x4
+ 681 03dd 4E020000 		.4byte	0x24e
+ 682 03e1 19       		.uleb128 0x19
+ 683 03e2 00000000 		.4byte	.LASF58
+ 684 03e6 02       		.byte	0x2
+ 685 03e7 70       		.byte	0x70
+ 686 03e8 E6000000 		.4byte	0xe6
+ 687 03ec 1A       		.uleb128 0x1a
+ 688 03ed 37010000 		.4byte	.LASF49
+ 689 03f1 02       		.byte	0x2
+ 690 03f2 6D       		.byte	0x6d
+ 691 03f3 E6000000 		.4byte	0xe6
+ 692 03f7 01040000 		.4byte	0x401
+ 693 03fb 1B       		.uleb128 0x1b
+ 694 03fc 01040000 		.4byte	0x401
+ 695 0400 00       		.byte	0
+ 696 0401 0C       		.uleb128 0xc
+ 697 0402 04       		.byte	0x4
+ 698 0403 07040000 		.4byte	0x407
+ 699 0407 1C       		.uleb128 0x1c
+ 700 0408 2E010000 		.4byte	0x12e
+ 701 040c 1D       		.uleb128 0x1d
+ 702 040d 2F000000 		.4byte	.LASF59
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 14
+
+
+ 703 0411 02       		.byte	0x2
+ 704 0412 74       		.byte	0x74
+ 705 0413 27040000 		.4byte	0x427
+ 706 0417 1B       		.uleb128 0x1b
+ 707 0418 E6000000 		.4byte	0xe6
+ 708 041c 1B       		.uleb128 0x1b
+ 709 041d 01040000 		.4byte	0x401
+ 710 0421 1B       		.uleb128 0x1b
+ 711 0422 E6000000 		.4byte	0xe6
+ 712 0426 00       		.byte	0
+ 713 0427 1A       		.uleb128 0x1a
+ 714 0428 74010000 		.4byte	.LASF50
+ 715 042c 02       		.byte	0x2
+ 716 042d 6E       		.byte	0x6e
+ 717 042e E6000000 		.4byte	0xe6
+ 718 0432 3C040000 		.4byte	0x43c
+ 719 0436 1B       		.uleb128 0x1b
+ 720 0437 35010000 		.4byte	0x135
+ 721 043b 00       		.byte	0
+ 722 043c 1A       		.uleb128 0x1a
+ 723 043d 68010000 		.4byte	.LASF51
+ 724 0441 02       		.byte	0x2
+ 725 0442 6C       		.byte	0x6c
+ 726 0443 E6000000 		.4byte	0xe6
+ 727 0447 51040000 		.4byte	0x451
+ 728 044b 1B       		.uleb128 0x1b
+ 729 044c 21010000 		.4byte	0x121
+ 730 0450 00       		.byte	0
+ 731 0451 1A       		.uleb128 0x1a
+ 732 0452 6E020000 		.4byte	.LASF52
+ 733 0456 02       		.byte	0x2
+ 734 0457 56       		.byte	0x56
+ 735 0458 28010000 		.4byte	0x128
+ 736 045c 66040000 		.4byte	0x466
+ 737 0460 1B       		.uleb128 0x1b
+ 738 0461 66040000 		.4byte	0x466
+ 739 0465 00       		.byte	0
+ 740 0466 0C       		.uleb128 0xc
+ 741 0467 04       		.byte	0x4
+ 742 0468 6C040000 		.4byte	0x46c
+ 743 046c 1C       		.uleb128 0x1c
+ 744 046d 6B000000 		.4byte	0x6b
+ 745 0471 1E       		.uleb128 0x1e
+ 746 0472 BB020000 		.4byte	.LASF60
+ 747 0476 02       		.byte	0x2
+ 748 0477 59       		.byte	0x59
+ 749 0478 1B       		.uleb128 0x1b
+ 750 0479 E6000000 		.4byte	0xe6
+ 751 047d 00       		.byte	0
+ 752 047e 00       		.byte	0
+ 753              		.section	.debug_abbrev,"",%progbits
+ 754              	.Ldebug_abbrev0:
+ 755 0000 01       		.uleb128 0x1
+ 756 0001 11       		.uleb128 0x11
+ 757 0002 01       		.byte	0x1
+ 758 0003 25       		.uleb128 0x25
+ 759 0004 0E       		.uleb128 0xe
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 15
+
+
+ 760 0005 13       		.uleb128 0x13
+ 761 0006 0B       		.uleb128 0xb
+ 762 0007 03       		.uleb128 0x3
+ 763 0008 0E       		.uleb128 0xe
+ 764 0009 1B       		.uleb128 0x1b
+ 765 000a 0E       		.uleb128 0xe
+ 766 000b 55       		.uleb128 0x55
+ 767 000c 17       		.uleb128 0x17
+ 768 000d 11       		.uleb128 0x11
+ 769 000e 01       		.uleb128 0x1
+ 770 000f 10       		.uleb128 0x10
+ 771 0010 17       		.uleb128 0x17
+ 772 0011 00       		.byte	0
+ 773 0012 00       		.byte	0
+ 774 0013 02       		.uleb128 0x2
+ 775 0014 24       		.uleb128 0x24
+ 776 0015 00       		.byte	0
+ 777 0016 0B       		.uleb128 0xb
+ 778 0017 0B       		.uleb128 0xb
+ 779 0018 3E       		.uleb128 0x3e
+ 780 0019 0B       		.uleb128 0xb
+ 781 001a 03       		.uleb128 0x3
+ 782 001b 08       		.uleb128 0x8
+ 783 001c 00       		.byte	0
+ 784 001d 00       		.byte	0
+ 785 001e 03       		.uleb128 0x3
+ 786 001f 24       		.uleb128 0x24
+ 787 0020 00       		.byte	0
+ 788 0021 0B       		.uleb128 0xb
+ 789 0022 0B       		.uleb128 0xb
+ 790 0023 3E       		.uleb128 0x3e
+ 791 0024 0B       		.uleb128 0xb
+ 792 0025 03       		.uleb128 0x3
+ 793 0026 0E       		.uleb128 0xe
+ 794 0027 00       		.byte	0
+ 795 0028 00       		.byte	0
+ 796 0029 04       		.uleb128 0x4
+ 797 002a 04       		.uleb128 0x4
+ 798 002b 01       		.byte	0x1
+ 799 002c 0B       		.uleb128 0xb
+ 800 002d 0B       		.uleb128 0xb
+ 801 002e 3A       		.uleb128 0x3a
+ 802 002f 0B       		.uleb128 0xb
+ 803 0030 3B       		.uleb128 0x3b
+ 804 0031 0B       		.uleb128 0xb
+ 805 0032 01       		.uleb128 0x1
+ 806 0033 13       		.uleb128 0x13
+ 807 0034 00       		.byte	0
+ 808 0035 00       		.byte	0
+ 809 0036 05       		.uleb128 0x5
+ 810 0037 28       		.uleb128 0x28
+ 811 0038 00       		.byte	0
+ 812 0039 03       		.uleb128 0x3
+ 813 003a 0E       		.uleb128 0xe
+ 814 003b 1C       		.uleb128 0x1c
+ 815 003c 0D       		.uleb128 0xd
+ 816 003d 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 16
+
+
+ 817 003e 00       		.byte	0
+ 818 003f 06       		.uleb128 0x6
+ 819 0040 16       		.uleb128 0x16
+ 820 0041 00       		.byte	0
+ 821 0042 03       		.uleb128 0x3
+ 822 0043 0E       		.uleb128 0xe
+ 823 0044 3A       		.uleb128 0x3a
+ 824 0045 0B       		.uleb128 0xb
+ 825 0046 3B       		.uleb128 0x3b
+ 826 0047 0B       		.uleb128 0xb
+ 827 0048 49       		.uleb128 0x49
+ 828 0049 13       		.uleb128 0x13
+ 829 004a 00       		.byte	0
+ 830 004b 00       		.byte	0
+ 831 004c 07       		.uleb128 0x7
+ 832 004d 13       		.uleb128 0x13
+ 833 004e 01       		.byte	0x1
+ 834 004f 03       		.uleb128 0x3
+ 835 0050 0E       		.uleb128 0xe
+ 836 0051 0B       		.uleb128 0xb
+ 837 0052 0B       		.uleb128 0xb
+ 838 0053 3A       		.uleb128 0x3a
+ 839 0054 0B       		.uleb128 0xb
+ 840 0055 3B       		.uleb128 0x3b
+ 841 0056 0B       		.uleb128 0xb
+ 842 0057 01       		.uleb128 0x1
+ 843 0058 13       		.uleb128 0x13
+ 844 0059 00       		.byte	0
+ 845 005a 00       		.byte	0
+ 846 005b 08       		.uleb128 0x8
+ 847 005c 0D       		.uleb128 0xd
+ 848 005d 00       		.byte	0
+ 849 005e 03       		.uleb128 0x3
+ 850 005f 0E       		.uleb128 0xe
+ 851 0060 3A       		.uleb128 0x3a
+ 852 0061 0B       		.uleb128 0xb
+ 853 0062 3B       		.uleb128 0x3b
+ 854 0063 0B       		.uleb128 0xb
+ 855 0064 49       		.uleb128 0x49
+ 856 0065 13       		.uleb128 0x13
+ 857 0066 38       		.uleb128 0x38
+ 858 0067 0B       		.uleb128 0xb
+ 859 0068 00       		.byte	0
+ 860 0069 00       		.byte	0
+ 861 006a 09       		.uleb128 0x9
+ 862 006b 0D       		.uleb128 0xd
+ 863 006c 00       		.byte	0
+ 864 006d 03       		.uleb128 0x3
+ 865 006e 08       		.uleb128 0x8
+ 866 006f 3A       		.uleb128 0x3a
+ 867 0070 0B       		.uleb128 0xb
+ 868 0071 3B       		.uleb128 0x3b
+ 869 0072 0B       		.uleb128 0xb
+ 870 0073 49       		.uleb128 0x49
+ 871 0074 13       		.uleb128 0x13
+ 872 0075 38       		.uleb128 0x38
+ 873 0076 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 17
+
+
+ 874 0077 00       		.byte	0
+ 875 0078 00       		.byte	0
+ 876 0079 0A       		.uleb128 0xa
+ 877 007a 0D       		.uleb128 0xd
+ 878 007b 00       		.byte	0
+ 879 007c 49       		.uleb128 0x49
+ 880 007d 13       		.uleb128 0x13
+ 881 007e 38       		.uleb128 0x38
+ 882 007f 0B       		.uleb128 0xb
+ 883 0080 00       		.byte	0
+ 884 0081 00       		.byte	0
+ 885 0082 0B       		.uleb128 0xb
+ 886 0083 13       		.uleb128 0x13
+ 887 0084 01       		.byte	0x1
+ 888 0085 0B       		.uleb128 0xb
+ 889 0086 0B       		.uleb128 0xb
+ 890 0087 3A       		.uleb128 0x3a
+ 891 0088 0B       		.uleb128 0xb
+ 892 0089 3B       		.uleb128 0x3b
+ 893 008a 0B       		.uleb128 0xb
+ 894 008b 01       		.uleb128 0x1
+ 895 008c 13       		.uleb128 0x13
+ 896 008d 00       		.byte	0
+ 897 008e 00       		.byte	0
+ 898 008f 0C       		.uleb128 0xc
+ 899 0090 0F       		.uleb128 0xf
+ 900 0091 00       		.byte	0
+ 901 0092 0B       		.uleb128 0xb
+ 902 0093 0B       		.uleb128 0xb
+ 903 0094 49       		.uleb128 0x49
+ 904 0095 13       		.uleb128 0x13
+ 905 0096 00       		.byte	0
+ 906 0097 00       		.byte	0
+ 907 0098 0D       		.uleb128 0xd
+ 908 0099 17       		.uleb128 0x17
+ 909 009a 01       		.byte	0x1
+ 910 009b 0B       		.uleb128 0xb
+ 911 009c 0B       		.uleb128 0xb
+ 912 009d 3A       		.uleb128 0x3a
+ 913 009e 0B       		.uleb128 0xb
+ 914 009f 3B       		.uleb128 0x3b
+ 915 00a0 0B       		.uleb128 0xb
+ 916 00a1 01       		.uleb128 0x1
+ 917 00a2 13       		.uleb128 0x13
+ 918 00a3 00       		.byte	0
+ 919 00a4 00       		.byte	0
+ 920 00a5 0E       		.uleb128 0xe
+ 921 00a6 0D       		.uleb128 0xd
+ 922 00a7 00       		.byte	0
+ 923 00a8 03       		.uleb128 0x3
+ 924 00a9 0E       		.uleb128 0xe
+ 925 00aa 3A       		.uleb128 0x3a
+ 926 00ab 0B       		.uleb128 0xb
+ 927 00ac 3B       		.uleb128 0x3b
+ 928 00ad 0B       		.uleb128 0xb
+ 929 00ae 49       		.uleb128 0x49
+ 930 00af 13       		.uleb128 0x13
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 18
+
+
+ 931 00b0 00       		.byte	0
+ 932 00b1 00       		.byte	0
+ 933 00b2 0F       		.uleb128 0xf
+ 934 00b3 16       		.uleb128 0x16
+ 935 00b4 00       		.byte	0
+ 936 00b5 03       		.uleb128 0x3
+ 937 00b6 0E       		.uleb128 0xe
+ 938 00b7 3A       		.uleb128 0x3a
+ 939 00b8 0B       		.uleb128 0xb
+ 940 00b9 3B       		.uleb128 0x3b
+ 941 00ba 05       		.uleb128 0x5
+ 942 00bb 49       		.uleb128 0x49
+ 943 00bc 13       		.uleb128 0x13
+ 944 00bd 00       		.byte	0
+ 945 00be 00       		.byte	0
+ 946 00bf 10       		.uleb128 0x10
+ 947 00c0 16       		.uleb128 0x16
+ 948 00c1 00       		.byte	0
+ 949 00c2 03       		.uleb128 0x3
+ 950 00c3 0E       		.uleb128 0xe
+ 951 00c4 3A       		.uleb128 0x3a
+ 952 00c5 0B       		.uleb128 0xb
+ 953 00c6 3B       		.uleb128 0x3b
+ 954 00c7 0B       		.uleb128 0xb
+ 955 00c8 00       		.byte	0
+ 956 00c9 00       		.byte	0
+ 957 00ca 11       		.uleb128 0x11
+ 958 00cb 2E       		.uleb128 0x2e
+ 959 00cc 01       		.byte	0x1
+ 960 00cd 3F       		.uleb128 0x3f
+ 961 00ce 19       		.uleb128 0x19
+ 962 00cf 03       		.uleb128 0x3
+ 963 00d0 0E       		.uleb128 0xe
+ 964 00d1 3A       		.uleb128 0x3a
+ 965 00d2 0B       		.uleb128 0xb
+ 966 00d3 3B       		.uleb128 0x3b
+ 967 00d4 0B       		.uleb128 0xb
+ 968 00d5 27       		.uleb128 0x27
+ 969 00d6 19       		.uleb128 0x19
+ 970 00d7 49       		.uleb128 0x49
+ 971 00d8 13       		.uleb128 0x13
+ 972 00d9 11       		.uleb128 0x11
+ 973 00da 01       		.uleb128 0x1
+ 974 00db 12       		.uleb128 0x12
+ 975 00dc 06       		.uleb128 0x6
+ 976 00dd 40       		.uleb128 0x40
+ 977 00de 18       		.uleb128 0x18
+ 978 00df 9642     		.uleb128 0x2116
+ 979 00e1 19       		.uleb128 0x19
+ 980 00e2 01       		.uleb128 0x1
+ 981 00e3 13       		.uleb128 0x13
+ 982 00e4 00       		.byte	0
+ 983 00e5 00       		.byte	0
+ 984 00e6 12       		.uleb128 0x12
+ 985 00e7 05       		.uleb128 0x5
+ 986 00e8 00       		.byte	0
+ 987 00e9 03       		.uleb128 0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 19
+
+
+ 988 00ea 0E       		.uleb128 0xe
+ 989 00eb 3A       		.uleb128 0x3a
+ 990 00ec 0B       		.uleb128 0xb
+ 991 00ed 3B       		.uleb128 0x3b
+ 992 00ee 0B       		.uleb128 0xb
+ 993 00ef 49       		.uleb128 0x49
+ 994 00f0 13       		.uleb128 0x13
+ 995 00f1 02       		.uleb128 0x2
+ 996 00f2 17       		.uleb128 0x17
+ 997 00f3 00       		.byte	0
+ 998 00f4 00       		.byte	0
+ 999 00f5 13       		.uleb128 0x13
+ 1000 00f6 34       		.uleb128 0x34
+ 1001 00f7 00       		.byte	0
+ 1002 00f8 03       		.uleb128 0x3
+ 1003 00f9 0E       		.uleb128 0xe
+ 1004 00fa 3A       		.uleb128 0x3a
+ 1005 00fb 0B       		.uleb128 0xb
+ 1006 00fc 3B       		.uleb128 0x3b
+ 1007 00fd 0B       		.uleb128 0xb
+ 1008 00fe 49       		.uleb128 0x49
+ 1009 00ff 13       		.uleb128 0x13
+ 1010 0100 02       		.uleb128 0x2
+ 1011 0101 17       		.uleb128 0x17
+ 1012 0102 00       		.byte	0
+ 1013 0103 00       		.byte	0
+ 1014 0104 14       		.uleb128 0x14
+ 1015 0105 34       		.uleb128 0x34
+ 1016 0106 00       		.byte	0
+ 1017 0107 03       		.uleb128 0x3
+ 1018 0108 08       		.uleb128 0x8
+ 1019 0109 3A       		.uleb128 0x3a
+ 1020 010a 0B       		.uleb128 0xb
+ 1021 010b 3B       		.uleb128 0x3b
+ 1022 010c 0B       		.uleb128 0xb
+ 1023 010d 49       		.uleb128 0x49
+ 1024 010e 13       		.uleb128 0x13
+ 1025 010f 02       		.uleb128 0x2
+ 1026 0110 17       		.uleb128 0x17
+ 1027 0111 00       		.byte	0
+ 1028 0112 00       		.byte	0
+ 1029 0113 15       		.uleb128 0x15
+ 1030 0114 898201   		.uleb128 0x4109
+ 1031 0117 00       		.byte	0
+ 1032 0118 11       		.uleb128 0x11
+ 1033 0119 01       		.uleb128 0x1
+ 1034 011a 31       		.uleb128 0x31
+ 1035 011b 13       		.uleb128 0x13
+ 1036 011c 00       		.byte	0
+ 1037 011d 00       		.byte	0
+ 1038 011e 16       		.uleb128 0x16
+ 1039 011f 898201   		.uleb128 0x4109
+ 1040 0122 01       		.byte	0x1
+ 1041 0123 11       		.uleb128 0x11
+ 1042 0124 01       		.uleb128 0x1
+ 1043 0125 31       		.uleb128 0x31
+ 1044 0126 13       		.uleb128 0x13
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 20
+
+
+ 1045 0127 01       		.uleb128 0x1
+ 1046 0128 13       		.uleb128 0x13
+ 1047 0129 00       		.byte	0
+ 1048 012a 00       		.byte	0
+ 1049 012b 17       		.uleb128 0x17
+ 1050 012c 8A8201   		.uleb128 0x410a
+ 1051 012f 00       		.byte	0
+ 1052 0130 02       		.uleb128 0x2
+ 1053 0131 18       		.uleb128 0x18
+ 1054 0132 9142     		.uleb128 0x2111
+ 1055 0134 18       		.uleb128 0x18
+ 1056 0135 00       		.byte	0
+ 1057 0136 00       		.byte	0
+ 1058 0137 18       		.uleb128 0x18
+ 1059 0138 898201   		.uleb128 0x4109
+ 1060 013b 01       		.byte	0x1
+ 1061 013c 11       		.uleb128 0x11
+ 1062 013d 01       		.uleb128 0x1
+ 1063 013e 31       		.uleb128 0x31
+ 1064 013f 13       		.uleb128 0x13
+ 1065 0140 00       		.byte	0
+ 1066 0141 00       		.byte	0
+ 1067 0142 19       		.uleb128 0x19
+ 1068 0143 2E       		.uleb128 0x2e
+ 1069 0144 00       		.byte	0
+ 1070 0145 3F       		.uleb128 0x3f
+ 1071 0146 19       		.uleb128 0x19
+ 1072 0147 03       		.uleb128 0x3
+ 1073 0148 0E       		.uleb128 0xe
+ 1074 0149 3A       		.uleb128 0x3a
+ 1075 014a 0B       		.uleb128 0xb
+ 1076 014b 3B       		.uleb128 0x3b
+ 1077 014c 0B       		.uleb128 0xb
+ 1078 014d 27       		.uleb128 0x27
+ 1079 014e 19       		.uleb128 0x19
+ 1080 014f 49       		.uleb128 0x49
+ 1081 0150 13       		.uleb128 0x13
+ 1082 0151 3C       		.uleb128 0x3c
+ 1083 0152 19       		.uleb128 0x19
+ 1084 0153 00       		.byte	0
+ 1085 0154 00       		.byte	0
+ 1086 0155 1A       		.uleb128 0x1a
+ 1087 0156 2E       		.uleb128 0x2e
+ 1088 0157 01       		.byte	0x1
+ 1089 0158 3F       		.uleb128 0x3f
+ 1090 0159 19       		.uleb128 0x19
+ 1091 015a 03       		.uleb128 0x3
+ 1092 015b 0E       		.uleb128 0xe
+ 1093 015c 3A       		.uleb128 0x3a
+ 1094 015d 0B       		.uleb128 0xb
+ 1095 015e 3B       		.uleb128 0x3b
+ 1096 015f 0B       		.uleb128 0xb
+ 1097 0160 27       		.uleb128 0x27
+ 1098 0161 19       		.uleb128 0x19
+ 1099 0162 49       		.uleb128 0x49
+ 1100 0163 13       		.uleb128 0x13
+ 1101 0164 3C       		.uleb128 0x3c
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 21
+
+
+ 1102 0165 19       		.uleb128 0x19
+ 1103 0166 01       		.uleb128 0x1
+ 1104 0167 13       		.uleb128 0x13
+ 1105 0168 00       		.byte	0
+ 1106 0169 00       		.byte	0
+ 1107 016a 1B       		.uleb128 0x1b
+ 1108 016b 05       		.uleb128 0x5
+ 1109 016c 00       		.byte	0
+ 1110 016d 49       		.uleb128 0x49
+ 1111 016e 13       		.uleb128 0x13
+ 1112 016f 00       		.byte	0
+ 1113 0170 00       		.byte	0
+ 1114 0171 1C       		.uleb128 0x1c
+ 1115 0172 26       		.uleb128 0x26
+ 1116 0173 00       		.byte	0
+ 1117 0174 49       		.uleb128 0x49
+ 1118 0175 13       		.uleb128 0x13
+ 1119 0176 00       		.byte	0
+ 1120 0177 00       		.byte	0
+ 1121 0178 1D       		.uleb128 0x1d
+ 1122 0179 2E       		.uleb128 0x2e
+ 1123 017a 01       		.byte	0x1
+ 1124 017b 3F       		.uleb128 0x3f
+ 1125 017c 19       		.uleb128 0x19
+ 1126 017d 03       		.uleb128 0x3
+ 1127 017e 0E       		.uleb128 0xe
+ 1128 017f 3A       		.uleb128 0x3a
+ 1129 0180 0B       		.uleb128 0xb
+ 1130 0181 3B       		.uleb128 0x3b
+ 1131 0182 0B       		.uleb128 0xb
+ 1132 0183 27       		.uleb128 0x27
+ 1133 0184 19       		.uleb128 0x19
+ 1134 0185 3C       		.uleb128 0x3c
+ 1135 0186 19       		.uleb128 0x19
+ 1136 0187 01       		.uleb128 0x1
+ 1137 0188 13       		.uleb128 0x13
+ 1138 0189 00       		.byte	0
+ 1139 018a 00       		.byte	0
+ 1140 018b 1E       		.uleb128 0x1e
+ 1141 018c 2E       		.uleb128 0x2e
+ 1142 018d 01       		.byte	0x1
+ 1143 018e 3F       		.uleb128 0x3f
+ 1144 018f 19       		.uleb128 0x19
+ 1145 0190 03       		.uleb128 0x3
+ 1146 0191 0E       		.uleb128 0xe
+ 1147 0192 3A       		.uleb128 0x3a
+ 1148 0193 0B       		.uleb128 0xb
+ 1149 0194 3B       		.uleb128 0x3b
+ 1150 0195 0B       		.uleb128 0xb
+ 1151 0196 27       		.uleb128 0x27
+ 1152 0197 19       		.uleb128 0x19
+ 1153 0198 3C       		.uleb128 0x3c
+ 1154 0199 19       		.uleb128 0x19
+ 1155 019a 00       		.byte	0
+ 1156 019b 00       		.byte	0
+ 1157 019c 00       		.byte	0
+ 1158              		.section	.debug_loc,"",%progbits
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 22
+
+
+ 1159              	.Ldebug_loc0:
+ 1160              	.LLST0:
+ 1161 0000 00000000 		.4byte	.LVL0
+ 1162 0004 09000000 		.4byte	.LVL1-1
+ 1163 0008 0100     		.2byte	0x1
+ 1164 000a 50       		.byte	0x50
+ 1165 000b 09000000 		.4byte	.LVL1-1
+ 1166 000f B0000000 		.4byte	.LVL26
+ 1167 0013 0100     		.2byte	0x1
+ 1168 0015 56       		.byte	0x56
+ 1169 0016 B0000000 		.4byte	.LVL26
+ 1170 001a CC000000 		.4byte	.LFE0
+ 1171 001e 0400     		.2byte	0x4
+ 1172 0020 F3       		.byte	0xf3
+ 1173 0021 01       		.uleb128 0x1
+ 1174 0022 50       		.byte	0x50
+ 1175 0023 9F       		.byte	0x9f
+ 1176 0024 00000000 		.4byte	0
+ 1177 0028 00000000 		.4byte	0
+ 1178              	.LLST1:
+ 1179 002c 00000000 		.4byte	.LVL0
+ 1180 0030 09000000 		.4byte	.LVL1-1
+ 1181 0034 0100     		.2byte	0x1
+ 1182 0036 51       		.byte	0x51
+ 1183 0037 09000000 		.4byte	.LVL1-1
+ 1184 003b A8000000 		.4byte	.LVL21
+ 1185 003f 0100     		.2byte	0x1
+ 1186 0041 54       		.byte	0x54
+ 1187 0042 A8000000 		.4byte	.LVL21
+ 1188 0046 CC000000 		.4byte	.LFE0
+ 1189 004a 0400     		.2byte	0x4
+ 1190 004c F3       		.byte	0xf3
+ 1191 004d 01       		.uleb128 0x1
+ 1192 004e 51       		.byte	0x51
+ 1193 004f 9F       		.byte	0x9f
+ 1194 0050 00000000 		.4byte	0
+ 1195 0054 00000000 		.4byte	0
+ 1196              	.LLST2:
+ 1197 0058 0C000000 		.4byte	.LVL2
+ 1198 005c 0E000000 		.4byte	.LVL3
+ 1199 0060 0100     		.2byte	0x1
+ 1200 0062 50       		.byte	0x50
+ 1201 0063 0E000000 		.4byte	.LVL3
+ 1202 0067 B0000000 		.4byte	.LVL25
+ 1203 006b 0100     		.2byte	0x1
+ 1204 006d 55       		.byte	0x55
+ 1205 006e 00000000 		.4byte	0
+ 1206 0072 00000000 		.4byte	0
+ 1207              	.LLST3:
+ 1208 0076 0C000000 		.4byte	.LVL2
+ 1209 007a A8000000 		.4byte	.LVL21
+ 1210 007e 0100     		.2byte	0x1
+ 1211 0080 54       		.byte	0x54
+ 1212 0081 A8000000 		.4byte	.LVL21
+ 1213 0085 CC000000 		.4byte	.LFE0
+ 1214 0089 0400     		.2byte	0x4
+ 1215 008b F3       		.byte	0xf3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 23
+
+
+ 1216 008c 01       		.uleb128 0x1
+ 1217 008d 51       		.byte	0x51
+ 1218 008e 9F       		.byte	0x9f
+ 1219 008f 00000000 		.4byte	0
+ 1220 0093 00000000 		.4byte	0
+ 1221              	.LLST4:
+ 1222 0097 A8000000 		.4byte	.LVL21
+ 1223 009b AA000000 		.4byte	.LVL22
+ 1224 009f 0100     		.2byte	0x1
+ 1225 00a1 50       		.byte	0x50
+ 1226 00a2 AA000000 		.4byte	.LVL22
+ 1227 00a6 B0000000 		.4byte	.LVL24
+ 1228 00aa 0100     		.2byte	0x1
+ 1229 00ac 54       		.byte	0x54
+ 1230 00ad B0000000 		.4byte	.LVL24
+ 1231 00b1 CC000000 		.4byte	.LFE0
+ 1232 00b5 0100     		.2byte	0x1
+ 1233 00b7 50       		.byte	0x50
+ 1234 00b8 00000000 		.4byte	0
+ 1235 00bc 00000000 		.4byte	0
+ 1236              		.section	.debug_aranges,"",%progbits
+ 1237 0000 1C000000 		.4byte	0x1c
+ 1238 0004 0200     		.2byte	0x2
+ 1239 0006 00000000 		.4byte	.Ldebug_info0
+ 1240 000a 04       		.byte	0x4
+ 1241 000b 00       		.byte	0
+ 1242 000c 0000     		.2byte	0
+ 1243 000e 0000     		.2byte	0
+ 1244 0010 00000000 		.4byte	.LFB0
+ 1245 0014 CC000000 		.4byte	.LFE0-.LFB0
+ 1246 0018 00000000 		.4byte	0
+ 1247 001c 00000000 		.4byte	0
+ 1248              		.section	.debug_ranges,"",%progbits
+ 1249              	.Ldebug_ranges0:
+ 1250 0000 00000000 		.4byte	.LFB0
+ 1251 0004 CC000000 		.4byte	.LFE0
+ 1252 0008 00000000 		.4byte	0
+ 1253 000c 00000000 		.4byte	0
+ 1254              		.section	.debug_line,"",%progbits
+ 1255              	.Ldebug_line0:
+ 1256 0000 EB000000 		.section	.debug_str,"MS",%progbits,1
+ 1256      0200C900 
+ 1256      00000201 
+ 1256      FB0E0D00 
+ 1256      01010101 
+ 1257              	.LASF58:
+ 1258 0000 6A736F6E 		.ascii	"json_mkobject\000"
+ 1258      5F6D6B6F 
+ 1258      626A6563 
+ 1258      7400
+ 1259              	.LASF5:
+ 1260 000e 4A534F4E 		.ascii	"JSON_ARRAY\000"
+ 1260      5F415252 
+ 1260      415900
+ 1261              	.LASF6:
+ 1262 0019 4A534F4E 		.ascii	"JSON_OBJECT\000"
+ 1262      5F4F424A 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 24
+
+
+ 1262      45435400 
+ 1263              	.LASF48:
+ 1264 0025 73656E73 		.ascii	"sens_data\000"
+ 1264      5F646174 
+ 1264      6100
+ 1265              	.LASF59:
+ 1266 002f 6A736F6E 		.ascii	"json_append_member\000"
+ 1266      5F617070 
+ 1266      656E645F 
+ 1266      6D656D62 
+ 1266      657200
+ 1267              	.LASF56:
+ 1268 0042 73656E73 		.ascii	"sensor_data_t\000"
+ 1268      6F725F64 
+ 1268      6174615F 
+ 1268      7400
+ 1269              	.LASF27:
+ 1270 0050 73686F72 		.ascii	"short int\000"
+ 1270      7420696E 
+ 1270      7400
+ 1271              	.LASF53:
+ 1272 005a 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1272      4320342E 
+ 1272      392E3320 
+ 1272      32303135 
+ 1272      30333033 
+ 1273 008d 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 1273      20726576 
+ 1273      6973696F 
+ 1273      6E203232 
+ 1273      31323230 
+ 1274 00c0 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 1274      66756E63 
+ 1274      74696F6E 
+ 1274      2D736563 
+ 1274      74696F6E 
+ 1275              	.LASF37:
+ 1276 00e8 73697A65 		.ascii	"sizetype\000"
+ 1276      74797065 
+ 1276      00
+ 1277              	.LASF47:
+ 1278 00f1 5F6E6F64 		.ascii	"_node\000"
+ 1278      6500
+ 1279              	.LASF16:
+ 1280 00f7 6E756D62 		.ascii	"number_\000"
+ 1280      65725F00 
+ 1281              	.LASF21:
+ 1282 00ff 6D61696E 		.ascii	"main\000"
+ 1282      00
+ 1283              	.LASF40:
+ 1284 0104 48756D69 		.ascii	"Humidity\000"
+ 1284      64697479 
+ 1284      00
+ 1285              	.LASF12:
+ 1286 010d 68656164 		.ascii	"head\000"
+ 1286      00
+ 1287              	.LASF35:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 25
+
+
+ 1288 0112 696E7431 		.ascii	"int16\000"
+ 1288      3600
+ 1289              	.LASF9:
+ 1290 0118 70617265 		.ascii	"parent\000"
+ 1290      6E7400
+ 1291              	.LASF33:
+ 1292 011f 75696E74 		.ascii	"uint8\000"
+ 1292      3800
+ 1293              	.LASF43:
+ 1294 0125 4169725F 		.ascii	"Air_Flow\000"
+ 1294      466C6F77 
+ 1294      00
+ 1295              	.LASF8:
+ 1296 012e 4A736F6E 		.ascii	"JsonNode\000"
+ 1296      4E6F6465 
+ 1296      00
+ 1297              	.LASF49:
+ 1298 0137 6A736F6E 		.ascii	"json_mkstring\000"
+ 1298      5F6D6B73 
+ 1298      7472696E 
+ 1298      6700
+ 1299              	.LASF2:
+ 1300 0145 4A534F4E 		.ascii	"JSON_BOOL\000"
+ 1300      5F424F4F 
+ 1300      4C00
+ 1301              	.LASF45:
+ 1302 014f 64657669 		.ascii	"device\000"
+ 1302      636500
+ 1303              	.LASF36:
+ 1304 0156 666C6F61 		.ascii	"float\000"
+ 1304      7400
+ 1305              	.LASF3:
+ 1306 015c 4A534F4E 		.ascii	"JSON_STRING\000"
+ 1306      5F535452 
+ 1306      494E4700 
+ 1307              	.LASF51:
+ 1308 0168 6A736F6E 		.ascii	"json_mkbool\000"
+ 1308      5F6D6B62 
+ 1308      6F6F6C00 
+ 1309              	.LASF50:
+ 1310 0174 6A736F6E 		.ascii	"json_mknumber\000"
+ 1310      5F6D6B6E 
+ 1310      756D6265 
+ 1310      7200
+ 1311              	.LASF31:
+ 1312 0182 6C6F6E67 		.ascii	"long long int\000"
+ 1312      206C6F6E 
+ 1312      6720696E 
+ 1312      7400
+ 1313              	.LASF32:
+ 1314 0190 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1314      206C6F6E 
+ 1314      6720756E 
+ 1314      7369676E 
+ 1314      65642069 
+ 1315              	.LASF34:
+ 1316 01a7 696E7438 		.ascii	"int8\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 26
+
+
+ 1316      00
+ 1317              	.LASF29:
+ 1318 01ac 6C6F6E67 		.ascii	"long int\000"
+ 1318      20696E74 
+ 1318      00
+ 1319              	.LASF7:
+ 1320 01b5 4A736F6E 		.ascii	"JsonTag\000"
+ 1320      54616700 
+ 1321              	.LASF17:
+ 1322 01bd 6368696C 		.ascii	"children\000"
+ 1322      6472656E 
+ 1322      00
+ 1323              	.LASF13:
+ 1324 01c6 7461696C 		.ascii	"tail\000"
+ 1324      00
+ 1325              	.LASF26:
+ 1326 01cb 756E7369 		.ascii	"unsigned char\000"
+ 1326      676E6564 
+ 1326      20636861 
+ 1326      7200
+ 1327              	.LASF41:
+ 1328 01d9 4D61676E 		.ascii	"Magnetic_Switch\000"
+ 1328      65746963 
+ 1328      5F537769 
+ 1328      74636800 
+ 1329              	.LASF54:
+ 1330 01e9 2E2E5C61 		.ascii	"..\\acn-sdk-c\\platforms\\senseability\\json\\telem"
+ 1330      636E2D73 
+ 1330      646B2D63 
+ 1330      5C706C61 
+ 1330      74666F72 
+ 1331 0217 65747279 		.ascii	"etry.c\000"
+ 1331      2E6300
+ 1332              	.LASF25:
+ 1333 021e 7369676E 		.ascii	"signed char\000"
+ 1333      65642063 
+ 1333      68617200 
+ 1334              	.LASF14:
+ 1335 022a 626F6F6C 		.ascii	"bool_\000"
+ 1335      5F00
+ 1336              	.LASF0:
+ 1337 0230 756E7369 		.ascii	"unsigned int\000"
+ 1337      676E6564 
+ 1337      20696E74 
+ 1337      00
+ 1338              	.LASF23:
+ 1339 023d 70726F70 		.ascii	"prop\000"
+ 1339      00
+ 1340              	.LASF57:
+ 1341 0242 74656C65 		.ascii	"telemetry_serialize\000"
+ 1341      6D657472 
+ 1341      795F7365 
+ 1341      7269616C 
+ 1341      697A6500 
+ 1342              	.LASF28:
+ 1343 0256 73686F72 		.ascii	"short unsigned int\000"
+ 1343      7420756E 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 27
+
+
+ 1343      7369676E 
+ 1343      65642069 
+ 1343      6E7400
+ 1344              	.LASF19:
+ 1345 0269 63686172 		.ascii	"char\000"
+ 1345      00
+ 1346              	.LASF52:
+ 1347 026e 6A736F6E 		.ascii	"json_encode\000"
+ 1347      5F656E63 
+ 1347      6F646500 
+ 1348              	.LASF18:
+ 1349 027a 5F426F6F 		.ascii	"_Bool\000"
+ 1349      6C00
+ 1350              	.LASF46:
+ 1351 0280 64617461 		.ascii	"data\000"
+ 1351      00
+ 1352              	.LASF44:
+ 1353 0285 53656E73 		.ascii	"Sensor_Data_t\000"
+ 1353      6F725F44 
+ 1353      6174615F 
+ 1353      7400
+ 1354              	.LASF24:
+ 1355 0293 6172726F 		.ascii	"arrow_device_t\000"
+ 1355      775F6465 
+ 1355      76696365 
+ 1355      5F7400
+ 1356              	.LASF30:
+ 1357 02a2 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1357      20756E73 
+ 1357      69676E65 
+ 1357      6420696E 
+ 1357      7400
+ 1358              	.LASF20:
+ 1359 02b4 646F7562 		.ascii	"double\000"
+ 1359      6C6500
+ 1360              	.LASF60:
+ 1361 02bb 6A736F6E 		.ascii	"json_delete\000"
+ 1361      5F64656C 
+ 1361      65746500 
+ 1362              	.LASF22:
+ 1363 02c7 696E666F 		.ascii	"info\000"
+ 1363      00
+ 1364              	.LASF38:
+ 1365 02cc 53746174 		.ascii	"Status\000"
+ 1365      757300
+ 1366              	.LASF4:
+ 1367 02d3 4A534F4E 		.ascii	"JSON_NUMBER\000"
+ 1367      5F4E554D 
+ 1367      42455200 
+ 1368              	.LASF42:
+ 1369 02df 50726573 		.ascii	"Pressure\000"
+ 1369      73757265 
+ 1369      00
+ 1370              	.LASF39:
+ 1371 02e8 54656D70 		.ascii	"Temperature\000"
+ 1371      65726174 
+ 1371      75726500 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccASyWgj.s 			page 28
+
+
+ 1372              	.LASF1:
+ 1373 02f4 4A534F4E 		.ascii	"JSON_NULL\000"
+ 1373      5F4E554C 
+ 1373      4C00
+ 1374              	.LASF10:
+ 1375 02fe 70726576 		.ascii	"prev\000"
+ 1375      00
+ 1376              	.LASF15:
+ 1377 0303 73747269 		.ascii	"string_\000"
+ 1377      6E675F00 
+ 1378              	.LASF11:
+ 1379 030b 6E657874 		.ascii	"next\000"
+ 1379      00
+ 1380              	.LASF55:
+ 1381 0310 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 1381      73657273 
+ 1381      5C646465 
+ 1381      6D69646F 
+ 1381      765C446F 
+ 1382 033e 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 1382      6530315C 
+ 1382      53656E73 
+ 1382      65416269 
+ 1382      6C697479 
+ 1383              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

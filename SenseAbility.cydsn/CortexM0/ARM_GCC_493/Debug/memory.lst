@@ -1,0 +1,2360 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"memory.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.wolfSSL_SetAllocators,"ax",%progbits
+  18              		.align	1
+  19              		.global	wolfSSL_SetAllocators
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	wolfSSL_SetAllocators, %function
+  23              	wolfSSL_SetAllocators:
+  24              	.LFB0:
+  25              		.file 1 "..\\acn-sdk-c\\src\\wolfSSL\\wolfcrypt\\src\\memory.c"
+   1:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** /* memory.c
+   2:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  *
+   3:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * Copyright (C) 2006-2016 wolfSSL Inc.
+   4:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  *
+   5:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * This file is part of wolfSSL.
+   6:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  *
+   7:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * wolfSSL is free software; you can redistribute it and/or modify
+   8:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * it under the terms of the GNU General Public License as published by
+   9:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * the Free Software Foundation; either version 2 of the License, or
+  10:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * (at your option) any later version.
+  11:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  *
+  12:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * wolfSSL is distributed in the hope that it will be useful,
+  13:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * GNU General Public License for more details.
+  16:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  *
+  17:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * You should have received a copy of the GNU General Public License
+  18:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * along with this program; if not, write to the Free Software
+  19:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+  20:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****  */
+  21:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  22:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  23:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #ifdef HAVE_CONFIG_H
+  24:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     #include <config.h>
+  25:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #endif
+  26:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  27:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #include <wolfssl/wolfcrypt/settings.h>
+  28:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  29:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** /* check old macros @wc_fips */
+  30:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #if defined(USE_CYASSL_MEMORY) && !defined(USE_WOLFSSL_MEMORY)
+  31:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     #define USE_WOLFSSL_MEMORY
+  32:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #endif
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 2
+
+
+  33:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #if defined(CYASSL_MALLOC_CHECK) && !defined(WOLFSSL_MALLOC_CHECK)
+  34:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     #define WOLFSSL_MALLOC_CHECK
+  35:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #endif
+  36:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  37:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #ifdef USE_WOLFSSL_MEMORY
+  38:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  39:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #include <wolfssl/wolfcrypt/memory.h>
+  40:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #include <wolfssl/wolfcrypt/error-crypt.h>
+  41:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  42:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #ifdef WOLFSSL_MALLOC_CHECK
+  43:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     #include <stdio.h>
+  44:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** #endif
+  45:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  46:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** /* Set these to default values initially. */
+  47:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** static wolfSSL_Malloc_cb  malloc_function = 0;
+  48:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** static wolfSSL_Free_cb    free_function = 0;
+  49:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** static wolfSSL_Realloc_cb realloc_function = 0;
+  50:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  51:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** int wolfSSL_SetAllocators(wolfSSL_Malloc_cb  mf,
+  52:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****                           wolfSSL_Free_cb    ff,
+  53:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****                           wolfSSL_Realloc_cb rf)
+  54:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** {
+  26              		.loc 1 54 0
+  27              		.cfi_startproc
+  28              	.LVL0:
+  55:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     int res = 0;
+  56:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  57:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     if (mf)
+  29              		.loc 1 57 0
+  30 0000 0028     		cmp	r0, #0
+  31 0002 03D0     		beq	.L5
+  58:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         malloc_function = mf;
+  32              		.loc 1 58 0
+  33 0004 0A4B     		ldr	r3, .L9
+  34 0006 1860     		str	r0, [r3]
+  55:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     int res = 0;
+  35              		.loc 1 55 0
+  36 0008 0020     		mov	r0, #0
+  37              	.LVL1:
+  38 000a 01E0     		b	.L2
+  39              	.LVL2:
+  40              	.L5:
+  59:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     else
+  60:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         res = BAD_FUNC_ARG;
+  41              		.loc 1 60 0
+  42 000c AD20     		mov	r0, #173
+  43              	.LVL3:
+  44 000e 4042     		neg	r0, r0
+  45              	.L2:
+  46              	.LVL4:
+  61:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  62:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     if (ff)
+  47              		.loc 1 62 0
+  48 0010 0029     		cmp	r1, #0
+  49 0012 02D0     		beq	.L6
+  63:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         free_function = ff;
+  50              		.loc 1 63 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 3
+
+
+  51 0014 064B     		ldr	r3, .L9
+  52 0016 5960     		str	r1, [r3, #4]
+  53 0018 01E0     		b	.L3
+  54              	.L6:
+  64:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     else
+  65:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         res = BAD_FUNC_ARG;
+  55              		.loc 1 65 0
+  56 001a AD20     		mov	r0, #173
+  57              	.LVL5:
+  58 001c 4042     		neg	r0, r0
+  59              	.L3:
+  60              	.LVL6:
+  66:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  67:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     if (rf)
+  61              		.loc 1 67 0
+  62 001e 002A     		cmp	r2, #0
+  63 0020 02D0     		beq	.L7
+  68:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         realloc_function = rf;
+  64              		.loc 1 68 0
+  65 0022 034B     		ldr	r3, .L9
+  66 0024 9A60     		str	r2, [r3, #8]
+  67 0026 01E0     		b	.L4
+  68              	.L7:
+  69:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     else
+  70:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         res = BAD_FUNC_ARG;
+  69              		.loc 1 70 0
+  70 0028 AD20     		mov	r0, #173
+  71              	.LVL7:
+  72 002a 4042     		neg	r0, r0
+  73              	.L4:
+  74              	.LVL8:
+  71:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  72:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     return res;
+  73:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** }
+  75              		.loc 1 73 0
+  76              		@ sp needed
+  77 002c 7047     		bx	lr
+  78              	.L10:
+  79 002e C046     		.align	2
+  80              	.L9:
+  81 0030 00000000 		.word	.LANCHOR0
+  82              		.cfi_endproc
+  83              	.LFE0:
+  84              		.size	wolfSSL_SetAllocators, .-wolfSSL_SetAllocators
+  85              		.section	.text.wolfSSL_Malloc,"ax",%progbits
+  86              		.align	1
+  87              		.global	wolfSSL_Malloc
+  88              		.code	16
+  89              		.thumb_func
+  90              		.type	wolfSSL_Malloc, %function
+  91              	wolfSSL_Malloc:
+  92              	.LFB1:
+  74:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  75:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  76:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** void* wolfSSL_Malloc(size_t size)
+  77:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** {
+  93              		.loc 1 77 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 4
+
+
+  94              		.cfi_startproc
+  95              	.LVL9:
+  96 0000 08B5     		push	{r3, lr}
+  97              		.cfi_def_cfa_offset 8
+  98              		.cfi_offset 3, -8
+  99              		.cfi_offset 14, -4
+  78:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     void* res = 0;
+  79:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  80:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     if (malloc_function)
+ 100              		.loc 1 80 0
+ 101 0002 044B     		ldr	r3, .L14
+ 102 0004 1B68     		ldr	r3, [r3]
+ 103 0006 002B     		cmp	r3, #0
+ 104 0008 01D0     		beq	.L12
+  81:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         res = malloc_function(size);
+ 105              		.loc 1 81 0
+ 106 000a 9847     		blx	r3
+ 107              	.LVL10:
+ 108 000c 01E0     		b	.L13
+ 109              	.LVL11:
+ 110              	.L12:
+  82:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     else
+  83:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         res = malloc(size);
+ 111              		.loc 1 83 0
+ 112 000e FFF7FEFF 		bl	malloc
+ 113              	.LVL12:
+ 114              	.L13:
+  84:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  85:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     #ifdef WOLFSSL_MALLOC_CHECK
+  86:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         if (res == NULL)
+  87:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****             puts("wolfSSL_malloc failed");
+  88:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     #endif
+  89:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****                 
+  90:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     return res;
+  91:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** }
+ 115              		.loc 1 91 0
+ 116              		@ sp needed
+ 117 0012 08BD     		pop	{r3, pc}
+ 118              	.L15:
+ 119              		.align	2
+ 120              	.L14:
+ 121 0014 00000000 		.word	.LANCHOR0
+ 122              		.cfi_endproc
+ 123              	.LFE1:
+ 124              		.size	wolfSSL_Malloc, .-wolfSSL_Malloc
+ 125              		.section	.text.wolfSSL_Free,"ax",%progbits
+ 126              		.align	1
+ 127              		.global	wolfSSL_Free
+ 128              		.code	16
+ 129              		.thumb_func
+ 130              		.type	wolfSSL_Free, %function
+ 131              	wolfSSL_Free:
+ 132              	.LFB2:
+  92:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+  93:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** void wolfSSL_Free(void *ptr)
+  94:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** {
+ 133              		.loc 1 94 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 5
+
+
+ 134              		.cfi_startproc
+ 135              	.LVL13:
+ 136 0000 08B5     		push	{r3, lr}
+ 137              		.cfi_def_cfa_offset 8
+ 138              		.cfi_offset 3, -8
+ 139              		.cfi_offset 14, -4
+  95:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     if (free_function)
+ 140              		.loc 1 95 0
+ 141 0002 044B     		ldr	r3, .L19
+ 142 0004 5B68     		ldr	r3, [r3, #4]
+ 143 0006 002B     		cmp	r3, #0
+ 144 0008 01D0     		beq	.L17
+  96:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         free_function(ptr);
+ 145              		.loc 1 96 0
+ 146 000a 9847     		blx	r3
+ 147              	.LVL14:
+ 148 000c 01E0     		b	.L16
+ 149              	.LVL15:
+ 150              	.L17:
+  97:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     else
+  98:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         free(ptr);
+ 151              		.loc 1 98 0
+ 152 000e FFF7FEFF 		bl	free
+ 153              	.LVL16:
+ 154              	.L16:
+  99:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** }
+ 155              		.loc 1 99 0
+ 156              		@ sp needed
+ 157 0012 08BD     		pop	{r3, pc}
+ 158              	.L20:
+ 159              		.align	2
+ 160              	.L19:
+ 161 0014 00000000 		.word	.LANCHOR0
+ 162              		.cfi_endproc
+ 163              	.LFE2:
+ 164              		.size	wolfSSL_Free, .-wolfSSL_Free
+ 165              		.section	.text.wolfSSL_Realloc,"ax",%progbits
+ 166              		.align	1
+ 167              		.global	wolfSSL_Realloc
+ 168              		.code	16
+ 169              		.thumb_func
+ 170              		.type	wolfSSL_Realloc, %function
+ 171              	wolfSSL_Realloc:
+ 172              	.LFB3:
+ 100:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+ 101:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** void* wolfSSL_Realloc(void *ptr, size_t size)
+ 102:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** {
+ 173              		.loc 1 102 0
+ 174              		.cfi_startproc
+ 175              	.LVL17:
+ 176 0000 08B5     		push	{r3, lr}
+ 177              		.cfi_def_cfa_offset 8
+ 178              		.cfi_offset 3, -8
+ 179              		.cfi_offset 14, -4
+ 103:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     void* res = 0;
+ 104:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+ 105:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     if (realloc_function)
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 6
+
+
+ 180              		.loc 1 105 0
+ 181 0002 044B     		ldr	r3, .L24
+ 182 0004 9B68     		ldr	r3, [r3, #8]
+ 183 0006 002B     		cmp	r3, #0
+ 184 0008 01D0     		beq	.L22
+ 106:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         res = realloc_function(ptr, size);
+ 185              		.loc 1 106 0
+ 186 000a 9847     		blx	r3
+ 187              	.LVL18:
+ 188 000c 01E0     		b	.L23
+ 189              	.LVL19:
+ 190              	.L22:
+ 107:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     else
+ 108:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****         res = realloc(ptr, size);
+ 191              		.loc 1 108 0
+ 192 000e FFF7FEFF 		bl	realloc
+ 193              	.LVL20:
+ 194              	.L23:
+ 109:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** 
+ 110:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c ****     return res;
+ 111:..\acn-sdk-c\src\wolfSSL\wolfcrypt\src/memory.c **** }
+ 195              		.loc 1 111 0
+ 196              		@ sp needed
+ 197 0012 08BD     		pop	{r3, pc}
+ 198              	.L25:
+ 199              		.align	2
+ 200              	.L24:
+ 201 0014 00000000 		.word	.LANCHOR0
+ 202              		.cfi_endproc
+ 203              	.LFE3:
+ 204              		.size	wolfSSL_Realloc, .-wolfSSL_Realloc
+ 205              		.bss
+ 206              		.align	2
+ 207              		.set	.LANCHOR0,. + 0
+ 208              		.type	malloc_function, %object
+ 209              		.size	malloc_function, 4
+ 210              	malloc_function:
+ 211 0000 00000000 		.space	4
+ 212              		.type	free_function, %object
+ 213              		.size	free_function, 4
+ 214              	free_function:
+ 215 0004 00000000 		.space	4
+ 216              		.type	realloc_function, %object
+ 217              		.size	realloc_function, 4
+ 218              	realloc_function:
+ 219 0008 00000000 		.space	4
+ 220              		.text
+ 221              	.Letext0:
+ 222              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 223              		.file 3 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/memory.h"
+ 224              		.file 4 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 225              		.file 5 "..\\acn-sdk-c\\src\\wolfSSL/wolfssl/wolfcrypt/error-crypt.h"
+ 226              		.section	.debug_info,"",%progbits
+ 227              	.Ldebug_info0:
+ 228 0000 B4050000 		.4byte	0x5b4
+ 229 0004 0400     		.2byte	0x4
+ 230 0006 00000000 		.4byte	.Ldebug_abbrev0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 7
+
+
+ 231 000a 04       		.byte	0x4
+ 232 000b 01       		.uleb128 0x1
+ 233 000c 00000000 		.4byte	.LASF136
+ 234 0010 01       		.byte	0x1
+ 235 0011 F4030000 		.4byte	.LASF137
+ 236 0015 D4050000 		.4byte	.LASF138
+ 237 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 238 001d 00000000 		.4byte	0
+ 239 0021 00000000 		.4byte	.Ldebug_line0
+ 240 0025 02       		.uleb128 0x2
+ 241 0026 AB000000 		.4byte	.LASF11
+ 242 002a 02       		.byte	0x2
+ 243 002b D4       		.byte	0xd4
+ 244 002c 30000000 		.4byte	0x30
+ 245 0030 03       		.uleb128 0x3
+ 246 0031 04       		.byte	0x4
+ 247 0032 07       		.byte	0x7
+ 248 0033 31030000 		.4byte	.LASF0
+ 249 0037 04       		.uleb128 0x4
+ 250 0038 04       		.byte	0x4
+ 251 0039 05       		.byte	0x5
+ 252 003a 696E7400 		.ascii	"int\000"
+ 253 003e 03       		.uleb128 0x3
+ 254 003f 01       		.byte	0x1
+ 255 0040 06       		.byte	0x6
+ 256 0041 12020000 		.4byte	.LASF1
+ 257 0045 03       		.uleb128 0x3
+ 258 0046 01       		.byte	0x1
+ 259 0047 08       		.byte	0x8
+ 260 0048 71050000 		.4byte	.LASF2
+ 261 004c 03       		.uleb128 0x3
+ 262 004d 02       		.byte	0x2
+ 263 004e 05       		.byte	0x5
+ 264 004f 8B050000 		.4byte	.LASF3
+ 265 0053 03       		.uleb128 0x3
+ 266 0054 02       		.byte	0x2
+ 267 0055 07       		.byte	0x7
+ 268 0056 D5030000 		.4byte	.LASF4
+ 269 005a 03       		.uleb128 0x3
+ 270 005b 04       		.byte	0x4
+ 271 005c 05       		.byte	0x5
+ 272 005d 72020000 		.4byte	.LASF5
+ 273 0061 03       		.uleb128 0x3
+ 274 0062 04       		.byte	0x4
+ 275 0063 07       		.byte	0x7
+ 276 0064 68030000 		.4byte	.LASF6
+ 277 0068 03       		.uleb128 0x3
+ 278 0069 08       		.byte	0x8
+ 279 006a 05       		.byte	0x5
+ 280 006b 04020000 		.4byte	.LASF7
+ 281 006f 03       		.uleb128 0x3
+ 282 0070 08       		.byte	0x8
+ 283 0071 07       		.byte	0x7
+ 284 0072 2C010000 		.4byte	.LASF8
+ 285 0076 03       		.uleb128 0x3
+ 286 0077 04       		.byte	0x4
+ 287 0078 07       		.byte	0x7
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 8
+
+
+ 288 0079 BF040000 		.4byte	.LASF9
+ 289 007d 05       		.uleb128 0x5
+ 290 007e 04       		.byte	0x4
+ 291 007f 03       		.uleb128 0x3
+ 292 0080 01       		.byte	0x1
+ 293 0081 08       		.byte	0x8
+ 294 0082 59060000 		.4byte	.LASF10
+ 295 0086 02       		.uleb128 0x2
+ 296 0087 56030000 		.4byte	.LASF12
+ 297 008b 03       		.byte	0x3
+ 298 008c 24       		.byte	0x24
+ 299 008d 91000000 		.4byte	0x91
+ 300 0091 06       		.uleb128 0x6
+ 301 0092 04       		.byte	0x4
+ 302 0093 97000000 		.4byte	0x97
+ 303 0097 07       		.uleb128 0x7
+ 304 0098 7D000000 		.4byte	0x7d
+ 305 009c A6000000 		.4byte	0xa6
+ 306 00a0 08       		.uleb128 0x8
+ 307 00a1 25000000 		.4byte	0x25
+ 308 00a5 00       		.byte	0
+ 309 00a6 02       		.uleb128 0x2
+ 310 00a7 B9010000 		.4byte	.LASF13
+ 311 00ab 03       		.byte	0x3
+ 312 00ac 25       		.byte	0x25
+ 313 00ad B1000000 		.4byte	0xb1
+ 314 00b1 06       		.uleb128 0x6
+ 315 00b2 04       		.byte	0x4
+ 316 00b3 B7000000 		.4byte	0xb7
+ 317 00b7 09       		.uleb128 0x9
+ 318 00b8 C2000000 		.4byte	0xc2
+ 319 00bc 08       		.uleb128 0x8
+ 320 00bd 7D000000 		.4byte	0x7d
+ 321 00c1 00       		.byte	0
+ 322 00c2 02       		.uleb128 0x2
+ 323 00c3 E5000000 		.4byte	.LASF14
+ 324 00c7 03       		.byte	0x3
+ 325 00c8 26       		.byte	0x26
+ 326 00c9 CD000000 		.4byte	0xcd
+ 327 00cd 06       		.uleb128 0x6
+ 328 00ce 04       		.byte	0x4
+ 329 00cf D3000000 		.4byte	0xd3
+ 330 00d3 07       		.uleb128 0x7
+ 331 00d4 7D000000 		.4byte	0x7d
+ 332 00d8 E7000000 		.4byte	0xe7
+ 333 00dc 08       		.uleb128 0x8
+ 334 00dd 7D000000 		.4byte	0x7d
+ 335 00e1 08       		.uleb128 0x8
+ 336 00e2 25000000 		.4byte	0x25
+ 337 00e6 00       		.byte	0
+ 338 00e7 0A       		.uleb128 0xa
+ 339 00e8 02       		.byte	0x2
+ 340 00e9 05       		.byte	0x5
+ 341 00ea 27       		.byte	0x27
+ 342 00eb 00040000 		.4byte	0x400
+ 343 00ef 0B       		.uleb128 0xb
+ 344 00f0 48050000 		.4byte	.LASF15
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 9
+
+
+ 345 00f4 9C7F     		.sleb128 -100
+ 346 00f6 0B       		.uleb128 0xb
+ 347 00f7 AA030000 		.4byte	.LASF16
+ 348 00fb 9B7F     		.sleb128 -101
+ 349 00fd 0B       		.uleb128 0xb
+ 350 00fe C8040000 		.4byte	.LASF17
+ 351 0102 9A7F     		.sleb128 -102
+ 352 0104 0B       		.uleb128 0xb
+ 353 0105 16070000 		.4byte	.LASF18
+ 354 0109 997F     		.sleb128 -103
+ 355 010b 0B       		.uleb128 0xb
+ 356 010c AD070000 		.4byte	.LASF19
+ 357 0110 987F     		.sleb128 -104
+ 358 0112 0B       		.uleb128 0xb
+ 359 0113 3C050000 		.4byte	.LASF20
+ 360 0117 977F     		.sleb128 -105
+ 361 0119 0B       		.uleb128 0xb
+ 362 011a FD070000 		.4byte	.LASF21
+ 363 011e 967F     		.sleb128 -106
+ 364 0120 0B       		.uleb128 0xb
+ 365 0121 7B020000 		.4byte	.LASF22
+ 366 0125 927F     		.sleb128 -110
+ 367 0127 0B       		.uleb128 0xb
+ 368 0128 C0020000 		.4byte	.LASF23
+ 369 012c 917F     		.sleb128 -111
+ 370 012e 0B       		.uleb128 0xb
+ 371 012f 44040000 		.4byte	.LASF24
+ 372 0133 907F     		.sleb128 -112
+ 373 0135 0B       		.uleb128 0xb
+ 374 0136 06010000 		.4byte	.LASF25
+ 375 013a 8F7F     		.sleb128 -113
+ 376 013c 0B       		.uleb128 0xb
+ 377 013d B2000000 		.4byte	.LASF26
+ 378 0141 8E7F     		.sleb128 -114
+ 379 0143 0B       		.uleb128 0xb
+ 380 0144 B7020000 		.4byte	.LASF27
+ 381 0148 8D7F     		.sleb128 -115
+ 382 014a 0B       		.uleb128 0xb
+ 383 014b 6D040000 		.4byte	.LASF28
+ 384 014f 8C7F     		.sleb128 -116
+ 385 0151 0B       		.uleb128 0xb
+ 386 0152 7F050000 		.4byte	.LASF29
+ 387 0156 8B7F     		.sleb128 -117
+ 388 0158 0B       		.uleb128 0xb
+ 389 0159 1D050000 		.4byte	.LASF30
+ 390 015d 8A7F     		.sleb128 -118
+ 391 015f 0B       		.uleb128 0xb
+ 392 0160 B5030000 		.4byte	.LASF31
+ 393 0164 897F     		.sleb128 -119
+ 394 0166 0B       		.uleb128 0xb
+ 395 0167 3E030000 		.4byte	.LASF32
+ 396 016b 887F     		.sleb128 -120
+ 397 016d 0B       		.uleb128 0xb
+ 398 016e C9000000 		.4byte	.LASF33
+ 399 0172 877F     		.sleb128 -121
+ 400 0174 0B       		.uleb128 0xb
+ 401 0175 A2000000 		.4byte	.LASF34
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 10
+
+
+ 402 0179 837F     		.sleb128 -125
+ 403 017b 0B       		.uleb128 0xb
+ 404 017c 76040000 		.4byte	.LASF35
+ 405 0180 FE7E     		.sleb128 -130
+ 406 0182 0B       		.uleb128 0xb
+ 407 0183 EB060000 		.4byte	.LASF36
+ 408 0187 FD7E     		.sleb128 -131
+ 409 0189 0B       		.uleb128 0xb
+ 410 018a 6C070000 		.4byte	.LASF37
+ 411 018e FC7E     		.sleb128 -132
+ 412 0190 0B       		.uleb128 0xb
+ 413 0191 32050000 		.4byte	.LASF38
+ 414 0195 FB7E     		.sleb128 -133
+ 415 0197 0B       		.uleb128 0xb
+ 416 0198 C9010000 		.4byte	.LASF39
+ 417 019c FA7E     		.sleb128 -134
+ 418 019e 0B       		.uleb128 0xb
+ 419 019f A0040000 		.4byte	.LASF40
+ 420 01a3 F97E     		.sleb128 -135
+ 421 01a5 0B       		.uleb128 0xb
+ 422 01a6 87040000 		.4byte	.LASF41
+ 423 01aa F87E     		.sleb128 -136
+ 424 01ac 0B       		.uleb128 0xb
+ 425 01ad CA020000 		.4byte	.LASF42
+ 426 01b1 F77E     		.sleb128 -137
+ 427 01b3 0B       		.uleb128 0xb
+ 428 01b4 AA060000 		.4byte	.LASF43
+ 429 01b8 F67E     		.sleb128 -138
+ 430 01ba 0B       		.uleb128 0xb
+ 431 01bb B8070000 		.4byte	.LASF44
+ 432 01bf F57E     		.sleb128 -139
+ 433 01c1 0B       		.uleb128 0xb
+ 434 01c2 E8030000 		.4byte	.LASF45
+ 435 01c6 F47E     		.sleb128 -140
+ 436 01c8 0B       		.uleb128 0xb
+ 437 01c9 BB000000 		.4byte	.LASF46
+ 438 01cd F37E     		.sleb128 -141
+ 439 01cf 0B       		.uleb128 0xb
+ 440 01d0 1F080000 		.4byte	.LASF47
+ 441 01d4 F27E     		.sleb128 -142
+ 442 01d6 0B       		.uleb128 0xb
+ 443 01d7 B4060000 		.4byte	.LASF48
+ 444 01db F17E     		.sleb128 -143
+ 445 01dd 0B       		.uleb128 0xb
+ 446 01de 9D070000 		.4byte	.LASF49
+ 447 01e2 F07E     		.sleb128 -144
+ 448 01e4 0B       		.uleb128 0xb
+ 449 01e5 F5010000 		.4byte	.LASF50
+ 450 01e9 EF7E     		.sleb128 -145
+ 451 01eb 0B       		.uleb128 0xb
+ 452 01ec 91040000 		.4byte	.LASF51
+ 453 01f0 EE7E     		.sleb128 -146
+ 454 01f2 0B       		.uleb128 0xb
+ 455 01f3 FA040000 		.4byte	.LASF52
+ 456 01f7 ED7E     		.sleb128 -147
+ 457 01f9 0B       		.uleb128 0xb
+ 458 01fa E3020000 		.4byte	.LASF53
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 11
+
+
+ 459 01fe EC7E     		.sleb128 -148
+ 460 0200 0B       		.uleb128 0xb
+ 461 0201 8F070000 		.4byte	.LASF54
+ 462 0205 EB7E     		.sleb128 -149
+ 463 0207 0B       		.uleb128 0xb
+ 464 0208 D3000000 		.4byte	.LASF55
+ 465 020c EA7E     		.sleb128 -150
+ 466 020e 0B       		.uleb128 0xb
+ 467 020f A3050000 		.4byte	.LASF56
+ 468 0213 E97E     		.sleb128 -151
+ 469 0215 0B       		.uleb128 0xb
+ 470 0216 63050000 		.4byte	.LASF57
+ 471 021a E87E     		.sleb128 -152
+ 472 021c 0B       		.uleb128 0xb
+ 473 021d 8E010000 		.4byte	.LASF58
+ 474 0221 E77E     		.sleb128 -153
+ 475 0223 0B       		.uleb128 0xb
+ 476 0224 4F010000 		.4byte	.LASF59
+ 477 0228 E67E     		.sleb128 -154
+ 478 022a 0B       		.uleb128 0xb
+ 479 022b 89060000 		.4byte	.LASF60
+ 480 022f E57E     		.sleb128 -155
+ 481 0231 0B       		.uleb128 0xb
+ 482 0232 8B030000 		.4byte	.LASF61
+ 483 0236 E47E     		.sleb128 -156
+ 484 0238 0B       		.uleb128 0xb
+ 485 0239 6C060000 		.4byte	.LASF62
+ 486 023d E37E     		.sleb128 -157
+ 487 023f 0B       		.uleb128 0xb
+ 488 0240 95000000 		.4byte	.LASF63
+ 489 0244 E27E     		.sleb128 -158
+ 490 0246 0B       		.uleb128 0xb
+ 491 0247 9B060000 		.4byte	.LASF64
+ 492 024b E17E     		.sleb128 -159
+ 493 024d 0B       		.uleb128 0xb
+ 494 024e C5050000 		.4byte	.LASF65
+ 495 0252 E07E     		.sleb128 -160
+ 496 0254 0B       		.uleb128 0xb
+ 497 0255 2F070000 		.4byte	.LASF66
+ 498 0259 D67E     		.sleb128 -170
+ 499 025b 0B       		.uleb128 0xb
+ 500 025c D6010000 		.4byte	.LASF67
+ 501 0260 D57E     		.sleb128 -171
+ 502 0262 0B       		.uleb128 0xb
+ 503 0263 04030000 		.4byte	.LASF68
+ 504 0267 D47E     		.sleb128 -172
+ 505 0269 0B       		.uleb128 0xb
+ 506 026a 24030000 		.4byte	.LASF69
+ 507 026e D37E     		.sleb128 -173
+ 508 0270 0B       		.uleb128 0xb
+ 509 0271 1D060000 		.4byte	.LASF70
+ 510 0275 D27E     		.sleb128 -174
+ 511 0277 0B       		.uleb128 0xb
+ 512 0278 09080000 		.4byte	.LASF71
+ 513 027c D17E     		.sleb128 -175
+ 514 027e 0B       		.uleb128 0xb
+ 515 027f 43010000 		.4byte	.LASF72
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 12
+
+
+ 516 0283 D07E     		.sleb128 -176
+ 517 0285 0B       		.uleb128 0xb
+ 518 0286 4B020000 		.4byte	.LASF73
+ 519 028a CF7E     		.sleb128 -177
+ 520 028c 0B       		.uleb128 0xb
+ 521 028d 7A060000 		.4byte	.LASF74
+ 522 0291 CC7E     		.sleb128 -180
+ 523 0293 0B       		.uleb128 0xb
+ 524 0294 4A060000 		.4byte	.LASF75
+ 525 0298 CB7E     		.sleb128 -181
+ 526 029a 0B       		.uleb128 0xb
+ 527 029b B1040000 		.4byte	.LASF76
+ 528 029f CA7E     		.sleb128 -182
+ 529 02a1 0B       		.uleb128 0xb
+ 530 02a2 D3020000 		.4byte	.LASF77
+ 531 02a6 C97E     		.sleb128 -183
+ 532 02a8 0B       		.uleb128 0xb
+ 533 02a9 12050000 		.4byte	.LASF78
+ 534 02ad C87E     		.sleb128 -184
+ 535 02af 0B       		.uleb128 0xb
+ 536 02b0 C5070000 		.4byte	.LASF79
+ 537 02b4 C77E     		.sleb128 -185
+ 538 02b6 0B       		.uleb128 0xb
+ 539 02b7 3E020000 		.4byte	.LASF80
+ 540 02bb C67E     		.sleb128 -186
+ 541 02bd 0B       		.uleb128 0xb
+ 542 02be 66020000 		.4byte	.LASF81
+ 543 02c2 C57E     		.sleb128 -187
+ 544 02c4 0B       		.uleb128 0xb
+ 545 02c5 93020000 		.4byte	.LASF82
+ 546 02c9 C47E     		.sleb128 -188
+ 547 02cb 0B       		.uleb128 0xb
+ 548 02cc F8060000 		.4byte	.LASF83
+ 549 02d0 C37E     		.sleb128 -189
+ 550 02d2 0B       		.uleb128 0xb
+ 551 02d3 A3020000 		.4byte	.LASF84
+ 552 02d7 C27E     		.sleb128 -190
+ 553 02d9 0B       		.uleb128 0xb
+ 554 02da 31040000 		.4byte	.LASF85
+ 555 02de C17E     		.sleb128 -191
+ 556 02e0 0B       		.uleb128 0xb
+ 557 02e1 53050000 		.4byte	.LASF86
+ 558 02e5 C07E     		.sleb128 -192
+ 559 02e7 0B       		.uleb128 0xb
+ 560 02e8 85020000 		.4byte	.LASF87
+ 561 02ec BF7E     		.sleb128 -193
+ 562 02ee 0B       		.uleb128 0xb
+ 563 02ef 51040000 		.4byte	.LASF88
+ 564 02f3 BE7E     		.sleb128 -194
+ 565 02f5 0B       		.uleb128 0xb
+ 566 02f6 83070000 		.4byte	.LASF89
+ 567 02fa BD7E     		.sleb128 -195
+ 568 02fc 0B       		.uleb128 0xb
+ 569 02fd 95050000 		.4byte	.LASF90
+ 570 0301 BC7E     		.sleb128 -196
+ 571 0303 0B       		.uleb128 0xb
+ 572 0304 2D060000 		.4byte	.LASF91
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 13
+
+
+ 573 0308 BB7E     		.sleb128 -197
+ 574 030a 0B       		.uleb128 0xb
+ 575 030b E2070000 		.4byte	.LASF92
+ 576 030f BA7E     		.sleb128 -198
+ 577 0311 0B       		.uleb128 0xb
+ 578 0312 F8000000 		.4byte	.LASF93
+ 579 0316 B97E     		.sleb128 -199
+ 580 0318 0B       		.uleb128 0xb
+ 581 0319 3D070000 		.4byte	.LASF94
+ 582 031d B87E     		.sleb128 -200
+ 583 031f 0B       		.uleb128 0xb
+ 584 0320 E1060000 		.4byte	.LASF95
+ 585 0324 B77E     		.sleb128 -201
+ 586 0326 0B       		.uleb128 0xb
+ 587 0327 5E060000 		.4byte	.LASF96
+ 588 032b B67E     		.sleb128 -202
+ 589 032d 0B       		.uleb128 0xb
+ 590 032e C1030000 		.4byte	.LASF97
+ 591 0332 B57E     		.sleb128 -203
+ 592 0334 0B       		.uleb128 0xb
+ 593 0335 2C080000 		.4byte	.LASF98
+ 594 0339 B47E     		.sleb128 -204
+ 595 033b 0B       		.uleb128 0xb
+ 596 033c 4F070000 		.4byte	.LASF99
+ 597 0340 B37E     		.sleb128 -205
+ 598 0342 0B       		.uleb128 0xb
+ 599 0343 14030000 		.4byte	.LASF100
+ 600 0347 B27E     		.sleb128 -206
+ 601 0349 0B       		.uleb128 0xb
+ 602 034a F5020000 		.4byte	.LASF101
+ 603 034e B17E     		.sleb128 -207
+ 604 0350 0B       		.uleb128 0xb
+ 605 0351 56020000 		.4byte	.LASF102
+ 606 0355 B07E     		.sleb128 -208
+ 607 0357 0B       		.uleb128 0xb
+ 608 0358 B4050000 		.4byte	.LASF103
+ 609 035c AF7E     		.sleb128 -209
+ 610 035e 0B       		.uleb128 0xb
+ 611 035f 5B010000 		.4byte	.LASF104
+ 612 0363 AE7E     		.sleb128 -210
+ 613 0365 0B       		.uleb128 0xb
+ 614 0366 1E020000 		.4byte	.LASF105
+ 615 036a AD7E     		.sleb128 -211
+ 616 036c 0B       		.uleb128 0xb
+ 617 036d 0E010000 		.4byte	.LASF106
+ 618 0371 AC7E     		.sleb128 -212
+ 619 0373 0B       		.uleb128 0xb
+ 620 0374 7A030000 		.4byte	.LASF107
+ 621 0378 AB7E     		.sleb128 -213
+ 622 037a 0B       		.uleb128 0xb
+ 623 037b 07050000 		.4byte	.LASF108
+ 624 037f AA7E     		.sleb128 -214
+ 625 0381 0B       		.uleb128 0xb
+ 626 0382 40060000 		.4byte	.LASF109
+ 627 0386 A97E     		.sleb128 -215
+ 628 0388 0B       		.uleb128 0xb
+ 629 0389 47030000 		.4byte	.LASF110
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 14
+
+
+ 630 038d A87E     		.sleb128 -216
+ 631 038f 0B       		.uleb128 0xb
+ 632 0390 E4010000 		.4byte	.LASF111
+ 633 0394 A77E     		.sleb128 -217
+ 634 0396 0B       		.uleb128 0xb
+ 635 0397 24040000 		.4byte	.LASF112
+ 636 039b A67E     		.sleb128 -218
+ 637 039d 0B       		.uleb128 0xb
+ 638 039e 21070000 		.4byte	.LASF113
+ 639 03a2 A57E     		.sleb128 -219
+ 640 03a4 0B       		.uleb128 0xb
+ 641 03a5 0A070000 		.4byte	.LASF114
+ 642 03a9 A47E     		.sleb128 -220
+ 643 03ab 0B       		.uleb128 0xb
+ 644 03ac 61040000 		.4byte	.LASF115
+ 645 03b0 A37E     		.sleb128 -221
+ 646 03b2 0B       		.uleb128 0xb
+ 647 03b3 C2060000 		.4byte	.LASF116
+ 648 03b7 A17E     		.sleb128 -223
+ 649 03b9 0B       		.uleb128 0xb
+ 650 03ba D3040000 		.4byte	.LASF117
+ 651 03be A07E     		.sleb128 -224
+ 652 03c0 0B       		.uleb128 0xb
+ 653 03c1 18080000 		.4byte	.LASF118
+ 654 03c5 9F7E     		.sleb128 -225
+ 655 03c7 0B       		.uleb128 0xb
+ 656 03c8 21010000 		.4byte	.LASF119
+ 657 03cc 9E7E     		.sleb128 -226
+ 658 03ce 0B       		.uleb128 0xb
+ 659 03cf D2060000 		.4byte	.LASF120
+ 660 03d3 9D7E     		.sleb128 -227
+ 661 03d5 0B       		.uleb128 0xb
+ 662 03d6 A7040000 		.4byte	.LASF121
+ 663 03da 9C7E     		.sleb128 -228
+ 664 03dc 0B       		.uleb128 0xb
+ 665 03dd 31020000 		.4byte	.LASF122
+ 666 03e1 9B7E     		.sleb128 -229
+ 667 03e3 0B       		.uleb128 0xb
+ 668 03e4 6D010000 		.4byte	.LASF123
+ 669 03e8 9A7E     		.sleb128 -230
+ 670 03ea 0B       		.uleb128 0xb
+ 671 03eb D7070000 		.4byte	.LASF124
+ 672 03ef 997E     		.sleb128 -231
+ 673 03f1 0B       		.uleb128 0xb
+ 674 03f2 26050000 		.4byte	.LASF125
+ 675 03f6 987E     		.sleb128 -232
+ 676 03f8 0B       		.uleb128 0xb
+ 677 03f9 DA040000 		.4byte	.LASF126
+ 678 03fd D47D     		.sleb128 -300
+ 679 03ff 00       		.byte	0
+ 680 0400 0C       		.uleb128 0xc
+ 681 0401 78010000 		.4byte	.LASF127
+ 682 0405 01       		.byte	0x1
+ 683 0406 33       		.byte	0x33
+ 684 0407 37000000 		.4byte	0x37
+ 685 040b 00000000 		.4byte	.LFB0
+ 686 040f 34000000 		.4byte	.LFE0-.LFB0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 15
+
+
+ 687 0413 01       		.uleb128 0x1
+ 688 0414 9C       		.byte	0x9c
+ 689 0415 4F040000 		.4byte	0x44f
+ 690 0419 0D       		.uleb128 0xd
+ 691 041a 6D6600   		.ascii	"mf\000"
+ 692 041d 01       		.byte	0x1
+ 693 041e 33       		.byte	0x33
+ 694 041f 86000000 		.4byte	0x86
+ 695 0423 00000000 		.4byte	.LLST0
+ 696 0427 0E       		.uleb128 0xe
+ 697 0428 666600   		.ascii	"ff\000"
+ 698 042b 01       		.byte	0x1
+ 699 042c 34       		.byte	0x34
+ 700 042d A6000000 		.4byte	0xa6
+ 701 0431 01       		.uleb128 0x1
+ 702 0432 51       		.byte	0x51
+ 703 0433 0E       		.uleb128 0xe
+ 704 0434 726600   		.ascii	"rf\000"
+ 705 0437 01       		.byte	0x1
+ 706 0438 35       		.byte	0x35
+ 707 0439 C2000000 		.4byte	0xc2
+ 708 043d 01       		.uleb128 0x1
+ 709 043e 52       		.byte	0x52
+ 710 043f 0F       		.uleb128 0xf
+ 711 0440 72657300 		.ascii	"res\000"
+ 712 0444 01       		.byte	0x1
+ 713 0445 37       		.byte	0x37
+ 714 0446 37000000 		.4byte	0x37
+ 715 044a 3B000000 		.4byte	.LLST1
+ 716 044e 00       		.byte	0
+ 717 044f 0C       		.uleb128 0xc
+ 718 0450 AA010000 		.4byte	.LASF128
+ 719 0454 01       		.byte	0x1
+ 720 0455 4C       		.byte	0x4c
+ 721 0456 7D000000 		.4byte	0x7d
+ 722 045a 00000000 		.4byte	.LFB1
+ 723 045e 18000000 		.4byte	.LFE1-.LFB1
+ 724 0462 01       		.uleb128 0x1
+ 725 0463 9C       		.byte	0x9c
+ 726 0464 A1040000 		.4byte	0x4a1
+ 727 0468 10       		.uleb128 0x10
+ 728 0469 D0030000 		.4byte	.LASF129
+ 729 046d 01       		.byte	0x1
+ 730 046e 4C       		.byte	0x4c
+ 731 046f 25000000 		.4byte	0x25
+ 732 0473 70000000 		.4byte	.LLST2
+ 733 0477 0F       		.uleb128 0xf
+ 734 0478 72657300 		.ascii	"res\000"
+ 735 047c 01       		.byte	0x1
+ 736 047d 4E       		.byte	0x4e
+ 737 047e 7D000000 		.4byte	0x7d
+ 738 0482 AA000000 		.4byte	.LLST3
+ 739 0486 11       		.uleb128 0x11
+ 740 0487 0C000000 		.4byte	.LVL10
+ 741 048b 97040000 		.4byte	0x497
+ 742 048f 12       		.uleb128 0x12
+ 743 0490 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 16
+
+
+ 744 0491 50       		.byte	0x50
+ 745 0492 03       		.uleb128 0x3
+ 746 0493 F3       		.byte	0xf3
+ 747 0494 01       		.uleb128 0x1
+ 748 0495 50       		.byte	0x50
+ 749 0496 00       		.byte	0
+ 750 0497 13       		.uleb128 0x13
+ 751 0498 12000000 		.4byte	.LVL12
+ 752 049c 7B050000 		.4byte	0x57b
+ 753 04a0 00       		.byte	0
+ 754 04a1 14       		.uleb128 0x14
+ 755 04a2 5F070000 		.4byte	.LASF139
+ 756 04a6 01       		.byte	0x1
+ 757 04a7 5D       		.byte	0x5d
+ 758 04a8 00000000 		.4byte	.LFB2
+ 759 04ac 18000000 		.4byte	.LFE2-.LFB2
+ 760 04b0 01       		.uleb128 0x1
+ 761 04b1 9C       		.byte	0x9c
+ 762 04b2 E0040000 		.4byte	0x4e0
+ 763 04b6 0D       		.uleb128 0xd
+ 764 04b7 70747200 		.ascii	"ptr\000"
+ 765 04bb 01       		.byte	0x1
+ 766 04bc 5D       		.byte	0x5d
+ 767 04bd 7D000000 		.4byte	0x7d
+ 768 04c1 E0000000 		.4byte	.LLST4
+ 769 04c5 11       		.uleb128 0x11
+ 770 04c6 0C000000 		.4byte	.LVL14
+ 771 04ca D6040000 		.4byte	0x4d6
+ 772 04ce 12       		.uleb128 0x12
+ 773 04cf 01       		.uleb128 0x1
+ 774 04d0 50       		.byte	0x50
+ 775 04d1 03       		.uleb128 0x3
+ 776 04d2 F3       		.byte	0xf3
+ 777 04d3 01       		.uleb128 0x1
+ 778 04d4 50       		.byte	0x50
+ 779 04d5 00       		.byte	0
+ 780 04d6 13       		.uleb128 0x13
+ 781 04d7 12000000 		.4byte	.LVL16
+ 782 04db 90050000 		.4byte	0x590
+ 783 04df 00       		.byte	0
+ 784 04e0 0C       		.uleb128 0xc
+ 785 04e1 9A030000 		.4byte	.LASF130
+ 786 04e5 01       		.byte	0x1
+ 787 04e6 65       		.byte	0x65
+ 788 04e7 7D000000 		.4byte	0x7d
+ 789 04eb 00000000 		.4byte	.LFB3
+ 790 04ef 18000000 		.4byte	.LFE3-.LFB3
+ 791 04f3 01       		.uleb128 0x1
+ 792 04f4 9C       		.byte	0x9c
+ 793 04f5 48050000 		.4byte	0x548
+ 794 04f9 0D       		.uleb128 0xd
+ 795 04fa 70747200 		.ascii	"ptr\000"
+ 796 04fe 01       		.byte	0x1
+ 797 04ff 65       		.byte	0x65
+ 798 0500 7D000000 		.4byte	0x7d
+ 799 0504 1A010000 		.4byte	.LLST5
+ 800 0508 10       		.uleb128 0x10
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 17
+
+
+ 801 0509 D0030000 		.4byte	.LASF129
+ 802 050d 01       		.byte	0x1
+ 803 050e 65       		.byte	0x65
+ 804 050f 25000000 		.4byte	0x25
+ 805 0513 54010000 		.4byte	.LLST6
+ 806 0517 0F       		.uleb128 0xf
+ 807 0518 72657300 		.ascii	"res\000"
+ 808 051c 01       		.byte	0x1
+ 809 051d 67       		.byte	0x67
+ 810 051e 7D000000 		.4byte	0x7d
+ 811 0522 8E010000 		.4byte	.LLST7
+ 812 0526 11       		.uleb128 0x11
+ 813 0527 0C000000 		.4byte	.LVL18
+ 814 052b 3E050000 		.4byte	0x53e
+ 815 052f 12       		.uleb128 0x12
+ 816 0530 01       		.uleb128 0x1
+ 817 0531 51       		.byte	0x51
+ 818 0532 03       		.uleb128 0x3
+ 819 0533 F3       		.byte	0xf3
+ 820 0534 01       		.uleb128 0x1
+ 821 0535 51       		.byte	0x51
+ 822 0536 12       		.uleb128 0x12
+ 823 0537 01       		.uleb128 0x1
+ 824 0538 50       		.byte	0x50
+ 825 0539 03       		.uleb128 0x3
+ 826 053a F3       		.byte	0xf3
+ 827 053b 01       		.uleb128 0x1
+ 828 053c 50       		.byte	0x50
+ 829 053d 00       		.byte	0
+ 830 053e 13       		.uleb128 0x13
+ 831 053f 12000000 		.4byte	.LVL20
+ 832 0543 A1050000 		.4byte	0x5a1
+ 833 0547 00       		.byte	0
+ 834 0548 15       		.uleb128 0x15
+ 835 0549 E5040000 		.4byte	.LASF131
+ 836 054d 01       		.byte	0x1
+ 837 054e 2F       		.byte	0x2f
+ 838 054f 86000000 		.4byte	0x86
+ 839 0553 05       		.uleb128 0x5
+ 840 0554 03       		.byte	0x3
+ 841 0555 00000000 		.4byte	malloc_function
+ 842 0559 15       		.uleb128 0x15
+ 843 055a 75070000 		.4byte	.LASF132
+ 844 055e 01       		.byte	0x1
+ 845 055f 30       		.byte	0x30
+ 846 0560 A6000000 		.4byte	0xa6
+ 847 0564 05       		.uleb128 0x5
+ 848 0565 03       		.byte	0x3
+ 849 0566 04000000 		.4byte	free_function
+ 850 056a 15       		.uleb128 0x15
+ 851 056b 99010000 		.4byte	.LASF133
+ 852 056f 01       		.byte	0x1
+ 853 0570 31       		.byte	0x31
+ 854 0571 C2000000 		.4byte	0xc2
+ 855 0575 05       		.uleb128 0x5
+ 856 0576 03       		.byte	0x3
+ 857 0577 08000000 		.4byte	realloc_function
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 18
+
+
+ 858 057b 16       		.uleb128 0x16
+ 859 057c 8E000000 		.4byte	.LASF140
+ 860 0580 04       		.byte	0x4
+ 861 0581 61       		.byte	0x61
+ 862 0582 7D000000 		.4byte	0x7d
+ 863 0586 90050000 		.4byte	0x590
+ 864 058a 08       		.uleb128 0x8
+ 865 058b 25000000 		.4byte	0x25
+ 866 058f 00       		.byte	0
+ 867 0590 17       		.uleb128 0x17
+ 868 0591 F5040000 		.4byte	.LASF134
+ 869 0595 04       		.byte	0x4
+ 870 0596 56       		.byte	0x56
+ 871 0597 A1050000 		.4byte	0x5a1
+ 872 059b 08       		.uleb128 0x8
+ 873 059c 7D000000 		.4byte	0x7d
+ 874 05a0 00       		.byte	0
+ 875 05a1 18       		.uleb128 0x18
+ 876 05a2 F5070000 		.4byte	.LASF135
+ 877 05a6 04       		.byte	0x4
+ 878 05a7 7E       		.byte	0x7e
+ 879 05a8 7D000000 		.4byte	0x7d
+ 880 05ac 08       		.uleb128 0x8
+ 881 05ad 7D000000 		.4byte	0x7d
+ 882 05b1 08       		.uleb128 0x8
+ 883 05b2 25000000 		.4byte	0x25
+ 884 05b6 00       		.byte	0
+ 885 05b7 00       		.byte	0
+ 886              		.section	.debug_abbrev,"",%progbits
+ 887              	.Ldebug_abbrev0:
+ 888 0000 01       		.uleb128 0x1
+ 889 0001 11       		.uleb128 0x11
+ 890 0002 01       		.byte	0x1
+ 891 0003 25       		.uleb128 0x25
+ 892 0004 0E       		.uleb128 0xe
+ 893 0005 13       		.uleb128 0x13
+ 894 0006 0B       		.uleb128 0xb
+ 895 0007 03       		.uleb128 0x3
+ 896 0008 0E       		.uleb128 0xe
+ 897 0009 1B       		.uleb128 0x1b
+ 898 000a 0E       		.uleb128 0xe
+ 899 000b 55       		.uleb128 0x55
+ 900 000c 17       		.uleb128 0x17
+ 901 000d 11       		.uleb128 0x11
+ 902 000e 01       		.uleb128 0x1
+ 903 000f 10       		.uleb128 0x10
+ 904 0010 17       		.uleb128 0x17
+ 905 0011 00       		.byte	0
+ 906 0012 00       		.byte	0
+ 907 0013 02       		.uleb128 0x2
+ 908 0014 16       		.uleb128 0x16
+ 909 0015 00       		.byte	0
+ 910 0016 03       		.uleb128 0x3
+ 911 0017 0E       		.uleb128 0xe
+ 912 0018 3A       		.uleb128 0x3a
+ 913 0019 0B       		.uleb128 0xb
+ 914 001a 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 19
+
+
+ 915 001b 0B       		.uleb128 0xb
+ 916 001c 49       		.uleb128 0x49
+ 917 001d 13       		.uleb128 0x13
+ 918 001e 00       		.byte	0
+ 919 001f 00       		.byte	0
+ 920 0020 03       		.uleb128 0x3
+ 921 0021 24       		.uleb128 0x24
+ 922 0022 00       		.byte	0
+ 923 0023 0B       		.uleb128 0xb
+ 924 0024 0B       		.uleb128 0xb
+ 925 0025 3E       		.uleb128 0x3e
+ 926 0026 0B       		.uleb128 0xb
+ 927 0027 03       		.uleb128 0x3
+ 928 0028 0E       		.uleb128 0xe
+ 929 0029 00       		.byte	0
+ 930 002a 00       		.byte	0
+ 931 002b 04       		.uleb128 0x4
+ 932 002c 24       		.uleb128 0x24
+ 933 002d 00       		.byte	0
+ 934 002e 0B       		.uleb128 0xb
+ 935 002f 0B       		.uleb128 0xb
+ 936 0030 3E       		.uleb128 0x3e
+ 937 0031 0B       		.uleb128 0xb
+ 938 0032 03       		.uleb128 0x3
+ 939 0033 08       		.uleb128 0x8
+ 940 0034 00       		.byte	0
+ 941 0035 00       		.byte	0
+ 942 0036 05       		.uleb128 0x5
+ 943 0037 0F       		.uleb128 0xf
+ 944 0038 00       		.byte	0
+ 945 0039 0B       		.uleb128 0xb
+ 946 003a 0B       		.uleb128 0xb
+ 947 003b 00       		.byte	0
+ 948 003c 00       		.byte	0
+ 949 003d 06       		.uleb128 0x6
+ 950 003e 0F       		.uleb128 0xf
+ 951 003f 00       		.byte	0
+ 952 0040 0B       		.uleb128 0xb
+ 953 0041 0B       		.uleb128 0xb
+ 954 0042 49       		.uleb128 0x49
+ 955 0043 13       		.uleb128 0x13
+ 956 0044 00       		.byte	0
+ 957 0045 00       		.byte	0
+ 958 0046 07       		.uleb128 0x7
+ 959 0047 15       		.uleb128 0x15
+ 960 0048 01       		.byte	0x1
+ 961 0049 27       		.uleb128 0x27
+ 962 004a 19       		.uleb128 0x19
+ 963 004b 49       		.uleb128 0x49
+ 964 004c 13       		.uleb128 0x13
+ 965 004d 01       		.uleb128 0x1
+ 966 004e 13       		.uleb128 0x13
+ 967 004f 00       		.byte	0
+ 968 0050 00       		.byte	0
+ 969 0051 08       		.uleb128 0x8
+ 970 0052 05       		.uleb128 0x5
+ 971 0053 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 20
+
+
+ 972 0054 49       		.uleb128 0x49
+ 973 0055 13       		.uleb128 0x13
+ 974 0056 00       		.byte	0
+ 975 0057 00       		.byte	0
+ 976 0058 09       		.uleb128 0x9
+ 977 0059 15       		.uleb128 0x15
+ 978 005a 01       		.byte	0x1
+ 979 005b 27       		.uleb128 0x27
+ 980 005c 19       		.uleb128 0x19
+ 981 005d 01       		.uleb128 0x1
+ 982 005e 13       		.uleb128 0x13
+ 983 005f 00       		.byte	0
+ 984 0060 00       		.byte	0
+ 985 0061 0A       		.uleb128 0xa
+ 986 0062 04       		.uleb128 0x4
+ 987 0063 01       		.byte	0x1
+ 988 0064 0B       		.uleb128 0xb
+ 989 0065 0B       		.uleb128 0xb
+ 990 0066 3A       		.uleb128 0x3a
+ 991 0067 0B       		.uleb128 0xb
+ 992 0068 3B       		.uleb128 0x3b
+ 993 0069 0B       		.uleb128 0xb
+ 994 006a 01       		.uleb128 0x1
+ 995 006b 13       		.uleb128 0x13
+ 996 006c 00       		.byte	0
+ 997 006d 00       		.byte	0
+ 998 006e 0B       		.uleb128 0xb
+ 999 006f 28       		.uleb128 0x28
+ 1000 0070 00       		.byte	0
+ 1001 0071 03       		.uleb128 0x3
+ 1002 0072 0E       		.uleb128 0xe
+ 1003 0073 1C       		.uleb128 0x1c
+ 1004 0074 0D       		.uleb128 0xd
+ 1005 0075 00       		.byte	0
+ 1006 0076 00       		.byte	0
+ 1007 0077 0C       		.uleb128 0xc
+ 1008 0078 2E       		.uleb128 0x2e
+ 1009 0079 01       		.byte	0x1
+ 1010 007a 3F       		.uleb128 0x3f
+ 1011 007b 19       		.uleb128 0x19
+ 1012 007c 03       		.uleb128 0x3
+ 1013 007d 0E       		.uleb128 0xe
+ 1014 007e 3A       		.uleb128 0x3a
+ 1015 007f 0B       		.uleb128 0xb
+ 1016 0080 3B       		.uleb128 0x3b
+ 1017 0081 0B       		.uleb128 0xb
+ 1018 0082 27       		.uleb128 0x27
+ 1019 0083 19       		.uleb128 0x19
+ 1020 0084 49       		.uleb128 0x49
+ 1021 0085 13       		.uleb128 0x13
+ 1022 0086 11       		.uleb128 0x11
+ 1023 0087 01       		.uleb128 0x1
+ 1024 0088 12       		.uleb128 0x12
+ 1025 0089 06       		.uleb128 0x6
+ 1026 008a 40       		.uleb128 0x40
+ 1027 008b 18       		.uleb128 0x18
+ 1028 008c 9742     		.uleb128 0x2117
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 21
+
+
+ 1029 008e 19       		.uleb128 0x19
+ 1030 008f 01       		.uleb128 0x1
+ 1031 0090 13       		.uleb128 0x13
+ 1032 0091 00       		.byte	0
+ 1033 0092 00       		.byte	0
+ 1034 0093 0D       		.uleb128 0xd
+ 1035 0094 05       		.uleb128 0x5
+ 1036 0095 00       		.byte	0
+ 1037 0096 03       		.uleb128 0x3
+ 1038 0097 08       		.uleb128 0x8
+ 1039 0098 3A       		.uleb128 0x3a
+ 1040 0099 0B       		.uleb128 0xb
+ 1041 009a 3B       		.uleb128 0x3b
+ 1042 009b 0B       		.uleb128 0xb
+ 1043 009c 49       		.uleb128 0x49
+ 1044 009d 13       		.uleb128 0x13
+ 1045 009e 02       		.uleb128 0x2
+ 1046 009f 17       		.uleb128 0x17
+ 1047 00a0 00       		.byte	0
+ 1048 00a1 00       		.byte	0
+ 1049 00a2 0E       		.uleb128 0xe
+ 1050 00a3 05       		.uleb128 0x5
+ 1051 00a4 00       		.byte	0
+ 1052 00a5 03       		.uleb128 0x3
+ 1053 00a6 08       		.uleb128 0x8
+ 1054 00a7 3A       		.uleb128 0x3a
+ 1055 00a8 0B       		.uleb128 0xb
+ 1056 00a9 3B       		.uleb128 0x3b
+ 1057 00aa 0B       		.uleb128 0xb
+ 1058 00ab 49       		.uleb128 0x49
+ 1059 00ac 13       		.uleb128 0x13
+ 1060 00ad 02       		.uleb128 0x2
+ 1061 00ae 18       		.uleb128 0x18
+ 1062 00af 00       		.byte	0
+ 1063 00b0 00       		.byte	0
+ 1064 00b1 0F       		.uleb128 0xf
+ 1065 00b2 34       		.uleb128 0x34
+ 1066 00b3 00       		.byte	0
+ 1067 00b4 03       		.uleb128 0x3
+ 1068 00b5 08       		.uleb128 0x8
+ 1069 00b6 3A       		.uleb128 0x3a
+ 1070 00b7 0B       		.uleb128 0xb
+ 1071 00b8 3B       		.uleb128 0x3b
+ 1072 00b9 0B       		.uleb128 0xb
+ 1073 00ba 49       		.uleb128 0x49
+ 1074 00bb 13       		.uleb128 0x13
+ 1075 00bc 02       		.uleb128 0x2
+ 1076 00bd 17       		.uleb128 0x17
+ 1077 00be 00       		.byte	0
+ 1078 00bf 00       		.byte	0
+ 1079 00c0 10       		.uleb128 0x10
+ 1080 00c1 05       		.uleb128 0x5
+ 1081 00c2 00       		.byte	0
+ 1082 00c3 03       		.uleb128 0x3
+ 1083 00c4 0E       		.uleb128 0xe
+ 1084 00c5 3A       		.uleb128 0x3a
+ 1085 00c6 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 22
+
+
+ 1086 00c7 3B       		.uleb128 0x3b
+ 1087 00c8 0B       		.uleb128 0xb
+ 1088 00c9 49       		.uleb128 0x49
+ 1089 00ca 13       		.uleb128 0x13
+ 1090 00cb 02       		.uleb128 0x2
+ 1091 00cc 17       		.uleb128 0x17
+ 1092 00cd 00       		.byte	0
+ 1093 00ce 00       		.byte	0
+ 1094 00cf 11       		.uleb128 0x11
+ 1095 00d0 898201   		.uleb128 0x4109
+ 1096 00d3 01       		.byte	0x1
+ 1097 00d4 11       		.uleb128 0x11
+ 1098 00d5 01       		.uleb128 0x1
+ 1099 00d6 01       		.uleb128 0x1
+ 1100 00d7 13       		.uleb128 0x13
+ 1101 00d8 00       		.byte	0
+ 1102 00d9 00       		.byte	0
+ 1103 00da 12       		.uleb128 0x12
+ 1104 00db 8A8201   		.uleb128 0x410a
+ 1105 00de 00       		.byte	0
+ 1106 00df 02       		.uleb128 0x2
+ 1107 00e0 18       		.uleb128 0x18
+ 1108 00e1 9142     		.uleb128 0x2111
+ 1109 00e3 18       		.uleb128 0x18
+ 1110 00e4 00       		.byte	0
+ 1111 00e5 00       		.byte	0
+ 1112 00e6 13       		.uleb128 0x13
+ 1113 00e7 898201   		.uleb128 0x4109
+ 1114 00ea 00       		.byte	0
+ 1115 00eb 11       		.uleb128 0x11
+ 1116 00ec 01       		.uleb128 0x1
+ 1117 00ed 31       		.uleb128 0x31
+ 1118 00ee 13       		.uleb128 0x13
+ 1119 00ef 00       		.byte	0
+ 1120 00f0 00       		.byte	0
+ 1121 00f1 14       		.uleb128 0x14
+ 1122 00f2 2E       		.uleb128 0x2e
+ 1123 00f3 01       		.byte	0x1
+ 1124 00f4 3F       		.uleb128 0x3f
+ 1125 00f5 19       		.uleb128 0x19
+ 1126 00f6 03       		.uleb128 0x3
+ 1127 00f7 0E       		.uleb128 0xe
+ 1128 00f8 3A       		.uleb128 0x3a
+ 1129 00f9 0B       		.uleb128 0xb
+ 1130 00fa 3B       		.uleb128 0x3b
+ 1131 00fb 0B       		.uleb128 0xb
+ 1132 00fc 27       		.uleb128 0x27
+ 1133 00fd 19       		.uleb128 0x19
+ 1134 00fe 11       		.uleb128 0x11
+ 1135 00ff 01       		.uleb128 0x1
+ 1136 0100 12       		.uleb128 0x12
+ 1137 0101 06       		.uleb128 0x6
+ 1138 0102 40       		.uleb128 0x40
+ 1139 0103 18       		.uleb128 0x18
+ 1140 0104 9742     		.uleb128 0x2117
+ 1141 0106 19       		.uleb128 0x19
+ 1142 0107 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 23
+
+
+ 1143 0108 13       		.uleb128 0x13
+ 1144 0109 00       		.byte	0
+ 1145 010a 00       		.byte	0
+ 1146 010b 15       		.uleb128 0x15
+ 1147 010c 34       		.uleb128 0x34
+ 1148 010d 00       		.byte	0
+ 1149 010e 03       		.uleb128 0x3
+ 1150 010f 0E       		.uleb128 0xe
+ 1151 0110 3A       		.uleb128 0x3a
+ 1152 0111 0B       		.uleb128 0xb
+ 1153 0112 3B       		.uleb128 0x3b
+ 1154 0113 0B       		.uleb128 0xb
+ 1155 0114 49       		.uleb128 0x49
+ 1156 0115 13       		.uleb128 0x13
+ 1157 0116 02       		.uleb128 0x2
+ 1158 0117 18       		.uleb128 0x18
+ 1159 0118 00       		.byte	0
+ 1160 0119 00       		.byte	0
+ 1161 011a 16       		.uleb128 0x16
+ 1162 011b 2E       		.uleb128 0x2e
+ 1163 011c 01       		.byte	0x1
+ 1164 011d 3F       		.uleb128 0x3f
+ 1165 011e 19       		.uleb128 0x19
+ 1166 011f 03       		.uleb128 0x3
+ 1167 0120 0E       		.uleb128 0xe
+ 1168 0121 3A       		.uleb128 0x3a
+ 1169 0122 0B       		.uleb128 0xb
+ 1170 0123 3B       		.uleb128 0x3b
+ 1171 0124 0B       		.uleb128 0xb
+ 1172 0125 27       		.uleb128 0x27
+ 1173 0126 19       		.uleb128 0x19
+ 1174 0127 49       		.uleb128 0x49
+ 1175 0128 13       		.uleb128 0x13
+ 1176 0129 3C       		.uleb128 0x3c
+ 1177 012a 19       		.uleb128 0x19
+ 1178 012b 01       		.uleb128 0x1
+ 1179 012c 13       		.uleb128 0x13
+ 1180 012d 00       		.byte	0
+ 1181 012e 00       		.byte	0
+ 1182 012f 17       		.uleb128 0x17
+ 1183 0130 2E       		.uleb128 0x2e
+ 1184 0131 01       		.byte	0x1
+ 1185 0132 3F       		.uleb128 0x3f
+ 1186 0133 19       		.uleb128 0x19
+ 1187 0134 03       		.uleb128 0x3
+ 1188 0135 0E       		.uleb128 0xe
+ 1189 0136 3A       		.uleb128 0x3a
+ 1190 0137 0B       		.uleb128 0xb
+ 1191 0138 3B       		.uleb128 0x3b
+ 1192 0139 0B       		.uleb128 0xb
+ 1193 013a 27       		.uleb128 0x27
+ 1194 013b 19       		.uleb128 0x19
+ 1195 013c 3C       		.uleb128 0x3c
+ 1196 013d 19       		.uleb128 0x19
+ 1197 013e 01       		.uleb128 0x1
+ 1198 013f 13       		.uleb128 0x13
+ 1199 0140 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 24
+
+
+ 1200 0141 00       		.byte	0
+ 1201 0142 18       		.uleb128 0x18
+ 1202 0143 2E       		.uleb128 0x2e
+ 1203 0144 01       		.byte	0x1
+ 1204 0145 3F       		.uleb128 0x3f
+ 1205 0146 19       		.uleb128 0x19
+ 1206 0147 03       		.uleb128 0x3
+ 1207 0148 0E       		.uleb128 0xe
+ 1208 0149 3A       		.uleb128 0x3a
+ 1209 014a 0B       		.uleb128 0xb
+ 1210 014b 3B       		.uleb128 0x3b
+ 1211 014c 0B       		.uleb128 0xb
+ 1212 014d 27       		.uleb128 0x27
+ 1213 014e 19       		.uleb128 0x19
+ 1214 014f 49       		.uleb128 0x49
+ 1215 0150 13       		.uleb128 0x13
+ 1216 0151 3C       		.uleb128 0x3c
+ 1217 0152 19       		.uleb128 0x19
+ 1218 0153 00       		.byte	0
+ 1219 0154 00       		.byte	0
+ 1220 0155 00       		.byte	0
+ 1221              		.section	.debug_loc,"",%progbits
+ 1222              	.Ldebug_loc0:
+ 1223              	.LLST0:
+ 1224 0000 00000000 		.4byte	.LVL0
+ 1225 0004 0A000000 		.4byte	.LVL1
+ 1226 0008 0100     		.2byte	0x1
+ 1227 000a 50       		.byte	0x50
+ 1228 000b 0A000000 		.4byte	.LVL1
+ 1229 000f 0C000000 		.4byte	.LVL2
+ 1230 0013 0500     		.2byte	0x5
+ 1231 0015 03       		.byte	0x3
+ 1232 0016 00000000 		.4byte	malloc_function
+ 1233 001a 0C000000 		.4byte	.LVL2
+ 1234 001e 0E000000 		.4byte	.LVL3
+ 1235 0022 0100     		.2byte	0x1
+ 1236 0024 50       		.byte	0x50
+ 1237 0025 0E000000 		.4byte	.LVL3
+ 1238 0029 34000000 		.4byte	.LFE0
+ 1239 002d 0400     		.2byte	0x4
+ 1240 002f F3       		.byte	0xf3
+ 1241 0030 01       		.uleb128 0x1
+ 1242 0031 50       		.byte	0x50
+ 1243 0032 9F       		.byte	0x9f
+ 1244 0033 00000000 		.4byte	0
+ 1245 0037 00000000 		.4byte	0
+ 1246              	.LLST1:
+ 1247 003b 00000000 		.4byte	.LVL0
+ 1248 003f 10000000 		.4byte	.LVL4
+ 1249 0043 0200     		.2byte	0x2
+ 1250 0045 30       		.byte	0x30
+ 1251 0046 9F       		.byte	0x9f
+ 1252 0047 10000000 		.4byte	.LVL4
+ 1253 004b 1C000000 		.4byte	.LVL5
+ 1254 004f 0100     		.2byte	0x1
+ 1255 0051 50       		.byte	0x50
+ 1256 0052 1E000000 		.4byte	.LVL6
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 25
+
+
+ 1257 0056 2A000000 		.4byte	.LVL7
+ 1258 005a 0100     		.2byte	0x1
+ 1259 005c 50       		.byte	0x50
+ 1260 005d 2C000000 		.4byte	.LVL8
+ 1261 0061 34000000 		.4byte	.LFE0
+ 1262 0065 0100     		.2byte	0x1
+ 1263 0067 50       		.byte	0x50
+ 1264 0068 00000000 		.4byte	0
+ 1265 006c 00000000 		.4byte	0
+ 1266              	.LLST2:
+ 1267 0070 00000000 		.4byte	.LVL9
+ 1268 0074 0B000000 		.4byte	.LVL10-1
+ 1269 0078 0100     		.2byte	0x1
+ 1270 007a 50       		.byte	0x50
+ 1271 007b 0B000000 		.4byte	.LVL10-1
+ 1272 007f 0E000000 		.4byte	.LVL11
+ 1273 0083 0400     		.2byte	0x4
+ 1274 0085 F3       		.byte	0xf3
+ 1275 0086 01       		.uleb128 0x1
+ 1276 0087 50       		.byte	0x50
+ 1277 0088 9F       		.byte	0x9f
+ 1278 0089 0E000000 		.4byte	.LVL11
+ 1279 008d 11000000 		.4byte	.LVL12-1
+ 1280 0091 0100     		.2byte	0x1
+ 1281 0093 50       		.byte	0x50
+ 1282 0094 11000000 		.4byte	.LVL12-1
+ 1283 0098 18000000 		.4byte	.LFE1
+ 1284 009c 0400     		.2byte	0x4
+ 1285 009e F3       		.byte	0xf3
+ 1286 009f 01       		.uleb128 0x1
+ 1287 00a0 50       		.byte	0x50
+ 1288 00a1 9F       		.byte	0x9f
+ 1289 00a2 00000000 		.4byte	0
+ 1290 00a6 00000000 		.4byte	0
+ 1291              	.LLST3:
+ 1292 00aa 00000000 		.4byte	.LVL9
+ 1293 00ae 0C000000 		.4byte	.LVL10
+ 1294 00b2 0200     		.2byte	0x2
+ 1295 00b4 30       		.byte	0x30
+ 1296 00b5 9F       		.byte	0x9f
+ 1297 00b6 0C000000 		.4byte	.LVL10
+ 1298 00ba 0E000000 		.4byte	.LVL11
+ 1299 00be 0100     		.2byte	0x1
+ 1300 00c0 50       		.byte	0x50
+ 1301 00c1 0E000000 		.4byte	.LVL11
+ 1302 00c5 12000000 		.4byte	.LVL12
+ 1303 00c9 0200     		.2byte	0x2
+ 1304 00cb 30       		.byte	0x30
+ 1305 00cc 9F       		.byte	0x9f
+ 1306 00cd 12000000 		.4byte	.LVL12
+ 1307 00d1 18000000 		.4byte	.LFE1
+ 1308 00d5 0100     		.2byte	0x1
+ 1309 00d7 50       		.byte	0x50
+ 1310 00d8 00000000 		.4byte	0
+ 1311 00dc 00000000 		.4byte	0
+ 1312              	.LLST4:
+ 1313 00e0 00000000 		.4byte	.LVL13
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 26
+
+
+ 1314 00e4 0B000000 		.4byte	.LVL14-1
+ 1315 00e8 0100     		.2byte	0x1
+ 1316 00ea 50       		.byte	0x50
+ 1317 00eb 0B000000 		.4byte	.LVL14-1
+ 1318 00ef 0E000000 		.4byte	.LVL15
+ 1319 00f3 0400     		.2byte	0x4
+ 1320 00f5 F3       		.byte	0xf3
+ 1321 00f6 01       		.uleb128 0x1
+ 1322 00f7 50       		.byte	0x50
+ 1323 00f8 9F       		.byte	0x9f
+ 1324 00f9 0E000000 		.4byte	.LVL15
+ 1325 00fd 11000000 		.4byte	.LVL16-1
+ 1326 0101 0100     		.2byte	0x1
+ 1327 0103 50       		.byte	0x50
+ 1328 0104 11000000 		.4byte	.LVL16-1
+ 1329 0108 18000000 		.4byte	.LFE2
+ 1330 010c 0400     		.2byte	0x4
+ 1331 010e F3       		.byte	0xf3
+ 1332 010f 01       		.uleb128 0x1
+ 1333 0110 50       		.byte	0x50
+ 1334 0111 9F       		.byte	0x9f
+ 1335 0112 00000000 		.4byte	0
+ 1336 0116 00000000 		.4byte	0
+ 1337              	.LLST5:
+ 1338 011a 00000000 		.4byte	.LVL17
+ 1339 011e 0B000000 		.4byte	.LVL18-1
+ 1340 0122 0100     		.2byte	0x1
+ 1341 0124 50       		.byte	0x50
+ 1342 0125 0B000000 		.4byte	.LVL18-1
+ 1343 0129 0E000000 		.4byte	.LVL19
+ 1344 012d 0400     		.2byte	0x4
+ 1345 012f F3       		.byte	0xf3
+ 1346 0130 01       		.uleb128 0x1
+ 1347 0131 50       		.byte	0x50
+ 1348 0132 9F       		.byte	0x9f
+ 1349 0133 0E000000 		.4byte	.LVL19
+ 1350 0137 11000000 		.4byte	.LVL20-1
+ 1351 013b 0100     		.2byte	0x1
+ 1352 013d 50       		.byte	0x50
+ 1353 013e 11000000 		.4byte	.LVL20-1
+ 1354 0142 18000000 		.4byte	.LFE3
+ 1355 0146 0400     		.2byte	0x4
+ 1356 0148 F3       		.byte	0xf3
+ 1357 0149 01       		.uleb128 0x1
+ 1358 014a 50       		.byte	0x50
+ 1359 014b 9F       		.byte	0x9f
+ 1360 014c 00000000 		.4byte	0
+ 1361 0150 00000000 		.4byte	0
+ 1362              	.LLST6:
+ 1363 0154 00000000 		.4byte	.LVL17
+ 1364 0158 0B000000 		.4byte	.LVL18-1
+ 1365 015c 0100     		.2byte	0x1
+ 1366 015e 51       		.byte	0x51
+ 1367 015f 0B000000 		.4byte	.LVL18-1
+ 1368 0163 0E000000 		.4byte	.LVL19
+ 1369 0167 0400     		.2byte	0x4
+ 1370 0169 F3       		.byte	0xf3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 27
+
+
+ 1371 016a 01       		.uleb128 0x1
+ 1372 016b 51       		.byte	0x51
+ 1373 016c 9F       		.byte	0x9f
+ 1374 016d 0E000000 		.4byte	.LVL19
+ 1375 0171 11000000 		.4byte	.LVL20-1
+ 1376 0175 0100     		.2byte	0x1
+ 1377 0177 51       		.byte	0x51
+ 1378 0178 11000000 		.4byte	.LVL20-1
+ 1379 017c 18000000 		.4byte	.LFE3
+ 1380 0180 0400     		.2byte	0x4
+ 1381 0182 F3       		.byte	0xf3
+ 1382 0183 01       		.uleb128 0x1
+ 1383 0184 51       		.byte	0x51
+ 1384 0185 9F       		.byte	0x9f
+ 1385 0186 00000000 		.4byte	0
+ 1386 018a 00000000 		.4byte	0
+ 1387              	.LLST7:
+ 1388 018e 00000000 		.4byte	.LVL17
+ 1389 0192 0C000000 		.4byte	.LVL18
+ 1390 0196 0200     		.2byte	0x2
+ 1391 0198 30       		.byte	0x30
+ 1392 0199 9F       		.byte	0x9f
+ 1393 019a 0C000000 		.4byte	.LVL18
+ 1394 019e 0E000000 		.4byte	.LVL19
+ 1395 01a2 0100     		.2byte	0x1
+ 1396 01a4 50       		.byte	0x50
+ 1397 01a5 0E000000 		.4byte	.LVL19
+ 1398 01a9 12000000 		.4byte	.LVL20
+ 1399 01ad 0200     		.2byte	0x2
+ 1400 01af 30       		.byte	0x30
+ 1401 01b0 9F       		.byte	0x9f
+ 1402 01b1 12000000 		.4byte	.LVL20
+ 1403 01b5 18000000 		.4byte	.LFE3
+ 1404 01b9 0100     		.2byte	0x1
+ 1405 01bb 50       		.byte	0x50
+ 1406 01bc 00000000 		.4byte	0
+ 1407 01c0 00000000 		.4byte	0
+ 1408              		.section	.debug_aranges,"",%progbits
+ 1409 0000 34000000 		.4byte	0x34
+ 1410 0004 0200     		.2byte	0x2
+ 1411 0006 00000000 		.4byte	.Ldebug_info0
+ 1412 000a 04       		.byte	0x4
+ 1413 000b 00       		.byte	0
+ 1414 000c 0000     		.2byte	0
+ 1415 000e 0000     		.2byte	0
+ 1416 0010 00000000 		.4byte	.LFB0
+ 1417 0014 34000000 		.4byte	.LFE0-.LFB0
+ 1418 0018 00000000 		.4byte	.LFB1
+ 1419 001c 18000000 		.4byte	.LFE1-.LFB1
+ 1420 0020 00000000 		.4byte	.LFB2
+ 1421 0024 18000000 		.4byte	.LFE2-.LFB2
+ 1422 0028 00000000 		.4byte	.LFB3
+ 1423 002c 18000000 		.4byte	.LFE3-.LFB3
+ 1424 0030 00000000 		.4byte	0
+ 1425 0034 00000000 		.4byte	0
+ 1426              		.section	.debug_ranges,"",%progbits
+ 1427              	.Ldebug_ranges0:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 28
+
+
+ 1428 0000 00000000 		.4byte	.LFB0
+ 1429 0004 34000000 		.4byte	.LFE0
+ 1430 0008 00000000 		.4byte	.LFB1
+ 1431 000c 18000000 		.4byte	.LFE1
+ 1432 0010 00000000 		.4byte	.LFB2
+ 1433 0014 18000000 		.4byte	.LFE2
+ 1434 0018 00000000 		.4byte	.LFB3
+ 1435 001c 18000000 		.4byte	.LFE3
+ 1436 0020 00000000 		.4byte	0
+ 1437 0024 00000000 		.4byte	0
+ 1438              		.section	.debug_line,"",%progbits
+ 1439              	.Ldebug_line0:
+ 1440 0000 E0010000 		.section	.debug_str,"MS",%progbits,1
+ 1440      02008401 
+ 1440      00000201 
+ 1440      FB0E0D00 
+ 1440      01010101 
+ 1441              	.LASF136:
+ 1442 0000 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1442      4320342E 
+ 1442      392E3320 
+ 1442      32303135 
+ 1442      30333033 
+ 1443 0033 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 1443      20726576 
+ 1443      6973696F 
+ 1443      6E203232 
+ 1443      31323230 
+ 1444 0066 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 1444      66756E63 
+ 1444      74696F6E 
+ 1444      2D736563 
+ 1444      74696F6E 
+ 1445              	.LASF140:
+ 1446 008e 6D616C6C 		.ascii	"malloc\000"
+ 1446      6F6300
+ 1447              	.LASF63:
+ 1448 0095 41534E5F 		.ascii	"ASN_DH_KEY_E\000"
+ 1448      44485F4B 
+ 1448      45595F45 
+ 1448      00
+ 1449              	.LASF34:
+ 1450 00a2 4D454D4F 		.ascii	"MEMORY_E\000"
+ 1450      52595F45 
+ 1450      00
+ 1451              	.LASF11:
+ 1452 00ab 73697A65 		.ascii	"size_t\000"
+ 1452      5F7400
+ 1453              	.LASF26:
+ 1454 00b2 4D505F53 		.ascii	"MP_SUB_E\000"
+ 1454      55425F45 
+ 1454      00
+ 1455              	.LASF46:
+ 1456 00bb 41534E5F 		.ascii	"ASN_VERSION_E\000"
+ 1456      56455253 
+ 1456      494F4E5F 
+ 1456      4500
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 29
+
+
+ 1457              	.LASF33:
+ 1458 00c9 4D505F5A 		.ascii	"MP_ZERO_E\000"
+ 1458      45524F5F 
+ 1458      4500
+ 1459              	.LASF55:
+ 1460 00d3 41534E5F 		.ascii	"ASN_BEFORE_DATE_E\000"
+ 1460      4245464F 
+ 1460      52455F44 
+ 1460      4154455F 
+ 1460      4500
+ 1461              	.LASF14:
+ 1462 00e5 776F6C66 		.ascii	"wolfSSL_Realloc_cb\000"
+ 1462      53534C5F 
+ 1462      5265616C 
+ 1462      6C6F635F 
+ 1462      636200
+ 1463              	.LASF93:
+ 1464 00f8 524E475F 		.ascii	"RNG_FAILURE_E\000"
+ 1464      4641494C 
+ 1464      5552455F 
+ 1464      4500
+ 1465              	.LASF25:
+ 1466 0106 4D505F54 		.ascii	"MP_TO_E\000"
+ 1466      4F5F4500 
+ 1467              	.LASF106:
+ 1468 010e 54485245 		.ascii	"THREAD_STORE_SET_E\000"
+ 1468      41445F53 
+ 1468      544F5245 
+ 1468      5F534554 
+ 1468      5F4500
+ 1469              	.LASF119:
+ 1470 0121 4B455955 		.ascii	"KEYUSAGE_E\000"
+ 1470      53414745 
+ 1470      5F4500
+ 1471              	.LASF8:
+ 1472 012c 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1472      206C6F6E 
+ 1472      6720756E 
+ 1472      7369676E 
+ 1472      65642069 
+ 1473              	.LASF72:
+ 1474 0143 4E4F5F50 		.ascii	"NO_PASSWORD\000"
+ 1474      41535357 
+ 1474      4F524400 
+ 1475              	.LASF59:
+ 1476 014f 41534E5F 		.ascii	"ASN_INPUT_E\000"
+ 1476      494E5055 
+ 1476      545F4500 
+ 1477              	.LASF104:
+ 1478 015b 41455347 		.ascii	"AESGCM_KAT_FIPS_E\000"
+ 1478      434D5F4B 
+ 1478      41545F46 
+ 1478      4950535F 
+ 1478      4500
+ 1479              	.LASF123:
+ 1480 016d 4241445F 		.ascii	"BAD_COND_E\000"
+ 1480      434F4E44 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 30
+
+
+ 1480      5F4500
+ 1481              	.LASF127:
+ 1482 0178 776F6C66 		.ascii	"wolfSSL_SetAllocators\000"
+ 1482      53534C5F 
+ 1482      53657441 
+ 1482      6C6C6F63 
+ 1482      61746F72 
+ 1483              	.LASF58:
+ 1484 018e 41534E5F 		.ascii	"ASN_TIME_E\000"
+ 1484      54494D45 
+ 1484      5F4500
+ 1485              	.LASF133:
+ 1486 0199 7265616C 		.ascii	"realloc_function\000"
+ 1486      6C6F635F 
+ 1486      66756E63 
+ 1486      74696F6E 
+ 1486      00
+ 1487              	.LASF128:
+ 1488 01aa 776F6C66 		.ascii	"wolfSSL_Malloc\000"
+ 1488      53534C5F 
+ 1488      4D616C6C 
+ 1488      6F6300
+ 1489              	.LASF13:
+ 1490 01b9 776F6C66 		.ascii	"wolfSSL_Free_cb\000"
+ 1490      53534C5F 
+ 1490      46726565 
+ 1490      5F636200 
+ 1491              	.LASF39:
+ 1492 01c9 5055424C 		.ascii	"PUBLIC_KEY_E\000"
+ 1492      49435F4B 
+ 1492      45595F45 
+ 1492      00
+ 1493              	.LASF67:
+ 1494 01d6 41534E5F 		.ascii	"ASN_ECC_KEY_E\000"
+ 1494      4543435F 
+ 1494      4B45595F 
+ 1494      4500
+ 1495              	.LASF111:
+ 1496 01e4 5352505F 		.ascii	"SRP_CALL_ORDER_E\000"
+ 1496      43414C4C 
+ 1496      5F4F5244 
+ 1496      45525F45 
+ 1496      00
+ 1497              	.LASF50:
+ 1498 01f5 41534E5F 		.ascii	"ASN_TAG_NULL_E\000"
+ 1498      5441475F 
+ 1498      4E554C4C 
+ 1498      5F4500
+ 1499              	.LASF7:
+ 1500 0204 6C6F6E67 		.ascii	"long long int\000"
+ 1500      206C6F6E 
+ 1500      6720696E 
+ 1500      7400
+ 1501              	.LASF1:
+ 1502 0212 7369676E 		.ascii	"signed char\000"
+ 1502      65642063 
+ 1502      68617200 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 31
+
+
+ 1503              	.LASF105:
+ 1504 021e 54485245 		.ascii	"THREAD_STORE_KEY_E\000"
+ 1504      41445F53 
+ 1504      544F5245 
+ 1504      5F4B4559 
+ 1504      5F4500
+ 1505              	.LASF122:
+ 1506 0231 5349475F 		.ascii	"SIG_VERIFY_E\000"
+ 1506      56455249 
+ 1506      46595F45 
+ 1506      00
+ 1507              	.LASF80:
+ 1508 023e 4445434F 		.ascii	"DECOMPRESS_E\000"
+ 1508      4D505245 
+ 1508      53535F45 
+ 1508      00
+ 1509              	.LASF73:
+ 1510 024b 414C545F 		.ascii	"ALT_NAME_E\000"
+ 1510      4E414D45 
+ 1510      5F4500
+ 1511              	.LASF102:
+ 1512 0256 44524247 		.ascii	"DRBG_KAT_FIPS_E\000"
+ 1512      5F4B4154 
+ 1512      5F464950 
+ 1512      535F4500 
+ 1513              	.LASF81:
+ 1514 0266 4241445F 		.ascii	"BAD_ALIGN_E\000"
+ 1514      414C4947 
+ 1514      4E5F4500 
+ 1515              	.LASF5:
+ 1516 0272 6C6F6E67 		.ascii	"long int\000"
+ 1516      20696E74 
+ 1516      00
+ 1517              	.LASF22:
+ 1518 027b 4D505F49 		.ascii	"MP_INIT_E\000"
+ 1518      4E49545F 
+ 1518      4500
+ 1519              	.LASF87:
+ 1520 0285 4241445F 		.ascii	"BAD_PADDING_E\000"
+ 1520      50414444 
+ 1520      494E475F 
+ 1520      4500
+ 1521              	.LASF82:
+ 1522 0293 41534E5F 		.ascii	"ASN_NO_SIGNER_E\000"
+ 1522      4E4F5F53 
+ 1522      49474E45 
+ 1522      525F4500 
+ 1523              	.LASF84:
+ 1524 02a3 41534E5F 		.ascii	"ASN_CRL_NO_SIGNER_E\000"
+ 1524      43524C5F 
+ 1524      4E4F5F53 
+ 1524      49474E45 
+ 1524      525F4500 
+ 1525              	.LASF27:
+ 1526 02b7 4D505F41 		.ascii	"MP_ADD_E\000"
+ 1526      44445F45 
+ 1526      00
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 32
+
+
+ 1527              	.LASF23:
+ 1528 02c0 4D505F52 		.ascii	"MP_READ_E\000"
+ 1528      4541445F 
+ 1528      4500
+ 1529              	.LASF42:
+ 1530 02ca 49535355 		.ascii	"ISSUER_E\000"
+ 1530      45525F45 
+ 1530      00
+ 1531              	.LASF77:
+ 1532 02d3 434F4D50 		.ascii	"COMPRESS_INIT_E\000"
+ 1532      52455353 
+ 1532      5F494E49 
+ 1532      545F4500 
+ 1533              	.LASF53:
+ 1534 02e3 41534E5F 		.ascii	"ASN_UNKNOWN_OID_E\000"
+ 1534      554E4B4E 
+ 1534      4F574E5F 
+ 1534      4F49445F 
+ 1534      4500
+ 1535              	.LASF101:
+ 1536 02f5 5253415F 		.ascii	"RSA_KAT_FIPS_E\000"
+ 1536      4B41545F 
+ 1536      46495053 
+ 1536      5F4500
+ 1537              	.LASF68:
+ 1538 0304 4543435F 		.ascii	"ECC_CURVE_OID_E\000"
+ 1538      43555256 
+ 1538      455F4F49 
+ 1538      445F4500 
+ 1539              	.LASF100:
+ 1540 0314 484D4143 		.ascii	"HMAC_KAT_FIPS_E\000"
+ 1540      5F4B4154 
+ 1540      5F464950 
+ 1540      535F4500 
+ 1541              	.LASF69:
+ 1542 0324 4241445F 		.ascii	"BAD_FUNC_ARG\000"
+ 1542      46554E43 
+ 1542      5F415247 
+ 1542      00
+ 1543              	.LASF0:
+ 1544 0331 756E7369 		.ascii	"unsigned int\000"
+ 1544      676E6564 
+ 1544      20696E74 
+ 1544      00
+ 1545              	.LASF32:
+ 1546 033e 4D505F43 		.ascii	"MP_CMP_E\000"
+ 1546      4D505F45 
+ 1546      00
+ 1547              	.LASF110:
+ 1548 0347 4543435F 		.ascii	"ECC_PRIV_KEY_E\000"
+ 1548      50524956 
+ 1548      5F4B4559 
+ 1548      5F4500
+ 1549              	.LASF12:
+ 1550 0356 776F6C66 		.ascii	"wolfSSL_Malloc_cb\000"
+ 1550      53534C5F 
+ 1550      4D616C6C 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 33
+
+
+ 1550      6F635F63 
+ 1550      6200
+ 1551              	.LASF6:
+ 1552 0368 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1552      20756E73 
+ 1552      69676E65 
+ 1552      6420696E 
+ 1552      7400
+ 1553              	.LASF107:
+ 1554 037a 4D41435F 		.ascii	"MAC_CMP_FAILED_E\000"
+ 1554      434D505F 
+ 1554      4641494C 
+ 1554      45445F45 
+ 1554      00
+ 1555              	.LASF61:
+ 1556 038b 41534E5F 		.ascii	"ASN_SIG_HASH_E\000"
+ 1556      5349475F 
+ 1556      48415348 
+ 1556      5F4500
+ 1557              	.LASF130:
+ 1558 039a 776F6C66 		.ascii	"wolfSSL_Realloc\000"
+ 1558      53534C5F 
+ 1558      5265616C 
+ 1558      6C6F6300 
+ 1559              	.LASF16:
+ 1560 03aa 4F50454E 		.ascii	"OPEN_RAN_E\000"
+ 1560      5F52414E 
+ 1560      5F4500
+ 1561              	.LASF31:
+ 1562 03b5 4D505F49 		.ascii	"MP_INVMOD_E\000"
+ 1562      4E564D4F 
+ 1562      445F4500 
+ 1563              	.LASF97:
+ 1564 03c1 494E5F43 		.ascii	"IN_CORE_FIPS_E\000"
+ 1564      4F52455F 
+ 1564      46495053 
+ 1564      5F4500
+ 1565              	.LASF129:
+ 1566 03d0 73697A65 		.ascii	"size\000"
+ 1566      00
+ 1567              	.LASF4:
+ 1568 03d5 73686F72 		.ascii	"short unsigned int\000"
+ 1568      7420756E 
+ 1568      7369676E 
+ 1568      65642069 
+ 1568      6E7400
+ 1569              	.LASF45:
+ 1570 03e8 41534E5F 		.ascii	"ASN_PARSE_E\000"
+ 1570      50415253 
+ 1570      455F4500 
+ 1571              	.LASF137:
+ 1572 03f4 2E2E5C61 		.ascii	"..\\acn-sdk-c\\src\\wolfSSL\\wolfcrypt\\src\\memory"
+ 1572      636E2D73 
+ 1572      646B2D63 
+ 1572      5C737263 
+ 1572      5C776F6C 
+ 1573 0421 2E6300   		.ascii	".c\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 34
+
+
+ 1574              	.LASF112:
+ 1575 0424 5352505F 		.ascii	"SRP_VERIFY_E\000"
+ 1575      56455249 
+ 1575      46595F45 
+ 1575      00
+ 1576              	.LASF85:
+ 1577 0431 41534E5F 		.ascii	"ASN_OCSP_CONFIRM_E\000"
+ 1577      4F435350 
+ 1577      5F434F4E 
+ 1577      4649524D 
+ 1577      5F4500
+ 1578              	.LASF24:
+ 1579 0444 4D505F45 		.ascii	"MP_EXPTMOD_E\000"
+ 1579      5850544D 
+ 1579      4F445F45 
+ 1579      00
+ 1580              	.LASF88:
+ 1581 0451 5245515F 		.ascii	"REQ_ATTRIBUTE_E\000"
+ 1581      41545452 
+ 1581      49425554 
+ 1581      455F4500 
+ 1582              	.LASF115:
+ 1583 0461 41534E5F 		.ascii	"ASN_NO_AKID\000"
+ 1583      4E4F5F41 
+ 1583      4B494400 
+ 1584              	.LASF28:
+ 1585 046d 4D505F4D 		.ascii	"MP_MUL_E\000"
+ 1585      554C5F45 
+ 1585      00
+ 1586              	.LASF35:
+ 1587 0476 5253415F 		.ascii	"RSA_WRONG_TYPE_E\000"
+ 1587      57524F4E 
+ 1587      475F5459 
+ 1587      50455F45 
+ 1587      00
+ 1588              	.LASF41:
+ 1589 0487 5355424A 		.ascii	"SUBJECT_E\000"
+ 1589      4543545F 
+ 1589      4500
+ 1590              	.LASF51:
+ 1591 0491 41534E5F 		.ascii	"ASN_EXPECT_0_E\000"
+ 1591      45585045 
+ 1591      43545F30 
+ 1591      5F4500
+ 1592              	.LASF40:
+ 1593 04a0 44415445 		.ascii	"DATE_E\000"
+ 1593      5F4500
+ 1594              	.LASF121:
+ 1595 04a7 57435F49 		.ascii	"WC_INIT_E\000"
+ 1595      4E49545F 
+ 1595      4500
+ 1596              	.LASF76:
+ 1597 04b1 43415649 		.ascii	"CAVIUM_INIT_E\000"
+ 1597      554D5F49 
+ 1597      4E49545F 
+ 1597      4500
+ 1598              	.LASF9:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 35
+
+
+ 1599 04bf 73697A65 		.ascii	"sizetype\000"
+ 1599      74797065 
+ 1599      00
+ 1600              	.LASF17:
+ 1601 04c8 52454144 		.ascii	"READ_RAN_E\000"
+ 1601      5F52414E 
+ 1601      5F4500
+ 1602              	.LASF117:
+ 1603 04d3 534B4944 		.ascii	"SKID_E\000"
+ 1603      5F4500
+ 1604              	.LASF126:
+ 1605 04da 4D494E5F 		.ascii	"MIN_CODE_E\000"
+ 1605      434F4445 
+ 1605      5F4500
+ 1606              	.LASF131:
+ 1607 04e5 6D616C6C 		.ascii	"malloc_function\000"
+ 1607      6F635F66 
+ 1607      756E6374 
+ 1607      696F6E00 
+ 1608              	.LASF134:
+ 1609 04f5 66726565 		.ascii	"free\000"
+ 1609      00
+ 1610              	.LASF52:
+ 1611 04fa 41534E5F 		.ascii	"ASN_BITSTR_E\000"
+ 1611      42495453 
+ 1611      54525F45 
+ 1611      00
+ 1612              	.LASF108:
+ 1613 0507 49535F50 		.ascii	"IS_POINT_E\000"
+ 1613      4F494E54 
+ 1613      5F4500
+ 1614              	.LASF78:
+ 1615 0512 434F4D50 		.ascii	"COMPRESS_E\000"
+ 1615      52455353 
+ 1615      5F4500
+ 1616              	.LASF30:
+ 1617 051d 4D505F4D 		.ascii	"MP_MOD_E\000"
+ 1617      4F445F45 
+ 1617      00
+ 1618              	.LASF125:
+ 1619 0526 48415348 		.ascii	"HASH_TYPE_E\000"
+ 1619      5F545950 
+ 1619      455F4500 
+ 1620              	.LASF38:
+ 1621 0532 414C474F 		.ascii	"ALGO_ID_E\000"
+ 1621      5F49445F 
+ 1621      4500
+ 1622              	.LASF20:
+ 1623 053c 52414E5F 		.ascii	"RAN_BLOCK_E\000"
+ 1623      424C4F43 
+ 1623      4B5F4500 
+ 1624              	.LASF15:
+ 1625 0548 4D41585F 		.ascii	"MAX_CODE_E\000"
+ 1625      434F4445 
+ 1625      5F4500
+ 1626              	.LASF86:
+ 1627 0553 4241445F 		.ascii	"BAD_ENC_STATE_E\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 36
+
+
+ 1627      454E435F 
+ 1627      53544154 
+ 1627      455F4500 
+ 1628              	.LASF57:
+ 1629 0563 41534E5F 		.ascii	"ASN_SIG_OID_E\000"
+ 1629      5349475F 
+ 1629      4F49445F 
+ 1629      4500
+ 1630              	.LASF2:
+ 1631 0571 756E7369 		.ascii	"unsigned char\000"
+ 1631      676E6564 
+ 1631      20636861 
+ 1631      7200
+ 1632              	.LASF29:
+ 1633 057f 4D505F4D 		.ascii	"MP_MULMOD_E\000"
+ 1633      554C4D4F 
+ 1633      445F4500 
+ 1634              	.LASF3:
+ 1635 058b 73686F72 		.ascii	"short int\000"
+ 1635      7420696E 
+ 1635      7400
+ 1636              	.LASF90:
+ 1637 0595 504B4353 		.ascii	"PKCS7_RECIP_E\000"
+ 1637      375F5245 
+ 1637      4349505F 
+ 1637      4500
+ 1638              	.LASF56:
+ 1639 05a3 41534E5F 		.ascii	"ASN_AFTER_DATE_E\000"
+ 1639      41465445 
+ 1639      525F4441 
+ 1639      54455F45 
+ 1639      00
+ 1640              	.LASF103:
+ 1641 05b4 44524247 		.ascii	"DRBG_CONT_FIPS_E\000"
+ 1641      5F434F4E 
+ 1641      545F4649 
+ 1641      50535F45 
+ 1641      00
+ 1642              	.LASF65:
+ 1643 05c5 41534E5F 		.ascii	"ASN_CRIT_EXT_E\000"
+ 1643      43524954 
+ 1643      5F455854 
+ 1643      5F4500
+ 1644              	.LASF138:
+ 1645 05d4 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 1645      73657273 
+ 1645      5C646465 
+ 1645      6D69646F 
+ 1645      765C446F 
+ 1646 0602 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 1646      6530315C 
+ 1646      53656E73 
+ 1646      65416269 
+ 1646      6C697479 
+ 1647              	.LASF70:
+ 1648 061d 4E4F545F 		.ascii	"NOT_COMPILED_IN\000"
+ 1648      434F4D50 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 37
+
+
+ 1648      494C4544 
+ 1648      5F494E00 
+ 1649              	.LASF91:
+ 1650 062d 46495053 		.ascii	"FIPS_NOT_ALLOWED_E\000"
+ 1650      5F4E4F54 
+ 1650      5F414C4C 
+ 1650      4F574544 
+ 1650      5F4500
+ 1651              	.LASF109:
+ 1652 0640 4543435F 		.ascii	"ECC_INF_E\000"
+ 1652      494E465F 
+ 1652      4500
+ 1653              	.LASF75:
+ 1654 064a 4145535F 		.ascii	"AES_CCM_AUTH_E\000"
+ 1654      43434D5F 
+ 1654      41555448 
+ 1654      5F4500
+ 1655              	.LASF10:
+ 1656 0659 63686172 		.ascii	"char\000"
+ 1656      00
+ 1657              	.LASF96:
+ 1658 065e 4C454E47 		.ascii	"LENGTH_ONLY_E\000"
+ 1658      54485F4F 
+ 1658      4E4C595F 
+ 1658      4500
+ 1659              	.LASF62:
+ 1660 066c 41534E5F 		.ascii	"ASN_SIG_KEY_E\000"
+ 1660      5349475F 
+ 1660      4B45595F 
+ 1660      4500
+ 1661              	.LASF74:
+ 1662 067a 4145535F 		.ascii	"AES_GCM_AUTH_E\000"
+ 1662      47434D5F 
+ 1662      41555448 
+ 1662      5F4500
+ 1663              	.LASF60:
+ 1664 0689 41534E5F 		.ascii	"ASN_SIG_CONFIRM_E\000"
+ 1664      5349475F 
+ 1664      434F4E46 
+ 1664      49524D5F 
+ 1664      4500
+ 1665              	.LASF64:
+ 1666 069b 41534E5F 		.ascii	"ASN_NTRU_KEY_E\000"
+ 1666      4E545255 
+ 1666      5F4B4559 
+ 1666      5F4500
+ 1667              	.LASF43:
+ 1668 06aa 43415F54 		.ascii	"CA_TRUE_E\000"
+ 1668      5255455F 
+ 1668      4500
+ 1669              	.LASF48:
+ 1670 06b4 41534E5F 		.ascii	"ASN_RSA_KEY_E\000"
+ 1670      5253415F 
+ 1670      4B45595F 
+ 1670      4500
+ 1671              	.LASF116:
+ 1672 06c2 41534E5F 		.ascii	"ASN_NO_KEYUSAGE\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 38
+
+
+ 1672      4E4F5F4B 
+ 1672      45595553 
+ 1672      41474500 
+ 1673              	.LASF120:
+ 1674 06d2 43455254 		.ascii	"CERTPOLICIES_E\000"
+ 1674      504F4C49 
+ 1674      43494553 
+ 1674      5F4500
+ 1675              	.LASF95:
+ 1676 06e1 5253415F 		.ascii	"RSA_PAD_E\000"
+ 1676      5041445F 
+ 1676      4500
+ 1677              	.LASF36:
+ 1678 06eb 5253415F 		.ascii	"RSA_BUFFER_E\000"
+ 1678      42554646 
+ 1678      45525F45 
+ 1678      00
+ 1679              	.LASF83:
+ 1680 06f8 41534E5F 		.ascii	"ASN_CRL_CONFIRM_E\000"
+ 1680      43524C5F 
+ 1680      434F4E46 
+ 1680      49524D5F 
+ 1680      4500
+ 1681              	.LASF114:
+ 1682 070a 41534E5F 		.ascii	"ASN_NO_SKID\000"
+ 1682      4E4F5F53 
+ 1682      4B494400 
+ 1683              	.LASF18:
+ 1684 0716 57494E43 		.ascii	"WINCRYPT_E\000"
+ 1684      52595054 
+ 1684      5F4500
+ 1685              	.LASF113:
+ 1686 0721 5352505F 		.ascii	"SRP_BAD_KEY_E\000"
+ 1686      4241445F 
+ 1686      4B45595F 
+ 1686      4500
+ 1687              	.LASF66:
+ 1688 072f 4543435F 		.ascii	"ECC_BAD_ARG_E\000"
+ 1688      4241445F 
+ 1688      4152475F 
+ 1688      4500
+ 1689              	.LASF94:
+ 1690 073d 484D4143 		.ascii	"HMAC_MIN_KEYLEN_E\000"
+ 1690      5F4D494E 
+ 1690      5F4B4559 
+ 1690      4C454E5F 
+ 1690      4500
+ 1691              	.LASF99:
+ 1692 074f 44455333 		.ascii	"DES3_KAT_FIPS_E\000"
+ 1692      5F4B4154 
+ 1692      5F464950 
+ 1692      535F4500 
+ 1693              	.LASF139:
+ 1694 075f 776F6C66 		.ascii	"wolfSSL_Free\000"
+ 1694      53534C5F 
+ 1694      46726565 
+ 1694      00
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 39
+
+
+ 1695              	.LASF37:
+ 1696 076c 42554646 		.ascii	"BUFFER_E\000"
+ 1696      45525F45 
+ 1696      00
+ 1697              	.LASF132:
+ 1698 0775 66726565 		.ascii	"free_function\000"
+ 1698      5F66756E 
+ 1698      6374696F 
+ 1698      6E00
+ 1699              	.LASF89:
+ 1700 0783 504B4353 		.ascii	"PKCS7_OID_E\000"
+ 1700      375F4F49 
+ 1700      445F4500 
+ 1701              	.LASF54:
+ 1702 078f 41534E5F 		.ascii	"ASN_DATE_SZ_E\000"
+ 1702      44415445 
+ 1702      5F535A5F 
+ 1702      4500
+ 1703              	.LASF49:
+ 1704 079d 41534E5F 		.ascii	"ASN_OBJECT_ID_E\000"
+ 1704      4F424A45 
+ 1704      43545F49 
+ 1704      445F4500 
+ 1705              	.LASF19:
+ 1706 07ad 43525950 		.ascii	"CRYPTGEN_E\000"
+ 1706      5447454E 
+ 1706      5F4500
+ 1707              	.LASF44:
+ 1708 07b8 45585445 		.ascii	"EXTENSIONS_E\000"
+ 1708      4E53494F 
+ 1708      4E535F45 
+ 1708      00
+ 1709              	.LASF79:
+ 1710 07c5 4445434F 		.ascii	"DECOMPRESS_INIT_E\000"
+ 1710      4D505245 
+ 1710      53535F49 
+ 1710      4E49545F 
+ 1710      4500
+ 1711              	.LASF124:
+ 1712 07d7 5349475F 		.ascii	"SIG_TYPE_E\000"
+ 1712      54595045 
+ 1712      5F4500
+ 1713              	.LASF92:
+ 1714 07e2 41534E5F 		.ascii	"ASN_NAME_INVALID_E\000"
+ 1714      4E414D45 
+ 1714      5F494E56 
+ 1714      414C4944 
+ 1714      5F4500
+ 1715              	.LASF135:
+ 1716 07f5 7265616C 		.ascii	"realloc\000"
+ 1716      6C6F6300 
+ 1717              	.LASF21:
+ 1718 07fd 4241445F 		.ascii	"BAD_MUTEX_E\000"
+ 1718      4D555445 
+ 1718      585F4500 
+ 1719              	.LASF71:
+ 1720 0809 554E4943 		.ascii	"UNICODE_SIZE_E\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclQ0vN6.s 			page 40
+
+
+ 1720      4F44455F 
+ 1720      53495A45 
+ 1720      5F4500
+ 1721              	.LASF118:
+ 1722 0818 414B4944 		.ascii	"AKID_E\000"
+ 1722      5F4500
+ 1723              	.LASF47:
+ 1724 081f 41534E5F 		.ascii	"ASN_GETINT_E\000"
+ 1724      47455449 
+ 1724      4E545F45 
+ 1724      00
+ 1725              	.LASF98:
+ 1726 082c 4145535F 		.ascii	"AES_KAT_FIPS_E\000"
+ 1726      4B41545F 
+ 1726      46495053 
+ 1726      5F4500
+ 1727              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

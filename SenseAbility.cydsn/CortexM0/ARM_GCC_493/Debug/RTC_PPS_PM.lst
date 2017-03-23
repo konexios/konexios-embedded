@@ -1,0 +1,1091 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"RTC_PPS_PM.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.RTC_PPS_SaveConfig,"ax",%progbits
+  18              		.align	1
+  19              		.global	RTC_PPS_SaveConfig
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	RTC_PPS_SaveConfig, %function
+  23              	RTC_PPS_SaveConfig:
+  24              	.LFB2:
+  25              		.file 1 ".\\Generated_Source\\PSoC4\\RTC_PPS_PM.c"
+   1:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** /*******************************************************************************
+   2:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * File Name: RTC_PPS_PM.c
+   3:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Version 2.70
+   4:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+   5:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  Description:
+   6:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *     This file provides the power management source code to API for the
+   7:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *     Timer.
+   8:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+   9:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *   Note:
+  10:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *     None
+  11:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  12:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *******************************************************************************
+  13:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Copyright 2008-2014, Cypress Semiconductor Corporation.  All rights reserved.
+  14:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * You may use this file only in accordance with the license, terms, conditions,
+  15:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * disclaimers, and limitations in the end user license agreement accompanying
+  16:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * the software package with which this file was provided.
+  17:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** ********************************************************************************/
+  18:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  19:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** #include "RTC_PPS.h"
+  20:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  21:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** static RTC_PPS_backupStruct RTC_PPS_backup;
+  22:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  23:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  24:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** /*******************************************************************************
+  25:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Function Name: RTC_PPS_SaveConfig
+  26:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** ********************************************************************************
+  27:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  28:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Summary:
+  29:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *     Save the current user configuration
+  30:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  31:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Parameters:
+  32:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 2
+
+
+  33:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  34:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Return:
+  35:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+  36:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  37:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Global variables:
+  38:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  RTC_PPS_backup:  Variables of this global structure are modified to
+  39:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  store the values of non retention configuration registers when Sleep() API is
+  40:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  called.
+  41:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  42:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *******************************************************************************/
+  43:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** void RTC_PPS_SaveConfig(void) 
+  44:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** {
+  26              		.loc 1 44 0
+  27              		.cfi_startproc
+  28 0000 10B5     		push	{r4, lr}
+  29              		.cfi_def_cfa_offset 8
+  30              		.cfi_offset 4, -8
+  31              		.cfi_offset 14, -4
+  45:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #if (!RTC_PPS_UsingFixedFunction)
+  46:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         RTC_PPS_backup.TimerUdb = RTC_PPS_ReadCounter();
+  32              		.loc 1 46 0
+  33 0002 FFF7FEFF 		bl	RTC_PPS_ReadCounter
+  34              	.LVL0:
+  35 0006 044C     		ldr	r4, .L2
+  47:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         RTC_PPS_backup.InterruptMaskValue = RTC_PPS_STATUS_MASK;
+  36              		.loc 1 47 0
+  37 0008 044B     		ldr	r3, .L2+4
+  46:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         RTC_PPS_backup.InterruptMaskValue = RTC_PPS_STATUS_MASK;
+  38              		.loc 1 46 0
+  39 000a 6060     		str	r0, [r4, #4]
+  40              		.loc 1 47 0
+  41 000c 1B78     		ldrb	r3, [r3]
+  48:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #if (RTC_PPS_UsingHWCaptureCounter)
+  49:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             RTC_PPS_backup.TimerCaptureCounter = RTC_PPS_ReadCaptureCount();
+  50:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #endif /* Back Up capture counter register  */
+  51:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  52:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #if(!RTC_PPS_UDB_CONTROL_REG_REMOVED)
+  53:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             RTC_PPS_backup.TimerControlRegister = RTC_PPS_ReadControlRegister();
+  54:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #endif /* Backup the enable state of the Timer component */
+  55:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #endif /* Backup non retention registers in UDB implementation. All fixed function registers ar
+  56:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** }
+  42              		.loc 1 56 0
+  43              		@ sp needed
+  47:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #if (RTC_PPS_UsingHWCaptureCounter)
+  44              		.loc 1 47 0
+  45 000e 2372     		strb	r3, [r4, #8]
+  53:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #endif /* Backup the enable state of the Timer component */
+  46              		.loc 1 53 0
+  47 0010 FFF7FEFF 		bl	RTC_PPS_ReadControlRegister
+  48              	.LVL1:
+  49 0014 6072     		strb	r0, [r4, #9]
+  50              		.loc 1 56 0
+  51 0016 10BD     		pop	{r4, pc}
+  52              	.L3:
+  53              		.align	2
+  54              	.L2:
+  55 0018 00000000 		.word	.LANCHOR0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 3
+
+
+  56 001c 83000F40 		.word	1074724995
+  57              		.cfi_endproc
+  58              	.LFE2:
+  59              		.size	RTC_PPS_SaveConfig, .-RTC_PPS_SaveConfig
+  60              		.section	.text.RTC_PPS_RestoreConfig,"ax",%progbits
+  61              		.align	1
+  62              		.global	RTC_PPS_RestoreConfig
+  63              		.code	16
+  64              		.thumb_func
+  65              		.type	RTC_PPS_RestoreConfig, %function
+  66              	RTC_PPS_RestoreConfig:
+  67              	.LFB3:
+  57:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  58:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  59:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** /*******************************************************************************
+  60:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Function Name: RTC_PPS_RestoreConfig
+  61:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** ********************************************************************************
+  62:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  63:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Summary:
+  64:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  Restores the current user configuration.
+  65:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  66:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Parameters:
+  67:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+  68:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  69:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Return:
+  70:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+  71:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  72:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Global variables:
+  73:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  RTC_PPS_backup:  Variables of this global structure are used to
+  74:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  restore the values of non retention registers on wakeup from sleep mode.
+  75:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  76:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *******************************************************************************/
+  77:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** void RTC_PPS_RestoreConfig(void) 
+  78:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** {   
+  68              		.loc 1 78 0
+  69              		.cfi_startproc
+  70 0000 10B5     		push	{r4, lr}
+  71              		.cfi_def_cfa_offset 8
+  72              		.cfi_offset 4, -8
+  73              		.cfi_offset 14, -4
+  79:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #if (!RTC_PPS_UsingFixedFunction)
+  80:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  81:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         RTC_PPS_WriteCounter(RTC_PPS_backup.TimerUdb);
+  74              		.loc 1 81 0
+  75 0002 054C     		ldr	r4, .L5
+  82:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         RTC_PPS_STATUS_MASK =RTC_PPS_backup.InterruptMaskValue;
+  83:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #if (RTC_PPS_UsingHWCaptureCounter)
+  84:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             RTC_PPS_SetCaptureCount(RTC_PPS_backup.TimerCaptureCounter);
+  85:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #endif /* Restore Capture counter register*/
+  86:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  87:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #if(!RTC_PPS_UDB_CONTROL_REG_REMOVED)
+  88:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             RTC_PPS_WriteControlRegister(RTC_PPS_backup.TimerControlRegister);
+  89:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #endif /* Restore the enable state of the Timer component */
+  90:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #endif /* Restore non retention registers in the UDB implementation only */
+  91:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** }
+  76              		.loc 1 91 0
+  77              		@ sp needed
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 4
+
+
+  81:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         RTC_PPS_STATUS_MASK =RTC_PPS_backup.InterruptMaskValue;
+  78              		.loc 1 81 0
+  79 0004 6068     		ldr	r0, [r4, #4]
+  80 0006 FFF7FEFF 		bl	RTC_PPS_WriteCounter
+  81              	.LVL2:
+  82:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         RTC_PPS_STATUS_MASK =RTC_PPS_backup.InterruptMaskValue;
+  82              		.loc 1 82 0
+  83 000a 227A     		ldrb	r2, [r4, #8]
+  84 000c 034B     		ldr	r3, .L5+4
+  85 000e 1A70     		strb	r2, [r3]
+  88:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         #endif /* Restore the enable state of the Timer component */
+  86              		.loc 1 88 0
+  87 0010 607A     		ldrb	r0, [r4, #9]
+  88 0012 FFF7FEFF 		bl	RTC_PPS_WriteControlRegister
+  89              	.LVL3:
+  90              		.loc 1 91 0
+  91 0016 10BD     		pop	{r4, pc}
+  92              	.L6:
+  93              		.align	2
+  94              	.L5:
+  95 0018 00000000 		.word	.LANCHOR0
+  96 001c 83000F40 		.word	1074724995
+  97              		.cfi_endproc
+  98              	.LFE3:
+  99              		.size	RTC_PPS_RestoreConfig, .-RTC_PPS_RestoreConfig
+ 100              		.section	.text.RTC_PPS_Sleep,"ax",%progbits
+ 101              		.align	1
+ 102              		.global	RTC_PPS_Sleep
+ 103              		.code	16
+ 104              		.thumb_func
+ 105              		.type	RTC_PPS_Sleep, %function
+ 106              	RTC_PPS_Sleep:
+ 107              	.LFB4:
+  92:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  93:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+  94:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** /*******************************************************************************
+  95:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Function Name: RTC_PPS_Sleep
+  96:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** ********************************************************************************
+  97:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+  98:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Summary:
+  99:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *     Stop and Save the user configuration
+ 100:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 101:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Parameters:
+ 102:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+ 103:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 104:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Return:
+ 105:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+ 106:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 107:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Global variables:
+ 108:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  RTC_PPS_backup.TimerEnableState:  Is modified depending on the
+ 109:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  enable state of the block before entering sleep mode.
+ 110:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 111:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *******************************************************************************/
+ 112:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** void RTC_PPS_Sleep(void) 
+ 113:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** {
+ 108              		.loc 1 113 0
+ 109              		.cfi_startproc
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 5
+
+
+ 110 0000 08B5     		push	{r3, lr}
+ 111              		.cfi_def_cfa_offset 8
+ 112              		.cfi_offset 3, -8
+ 113              		.cfi_offset 14, -4
+ 114:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #if(!RTC_PPS_UDB_CONTROL_REG_REMOVED)
+ 115:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         /* Save Counter's enable state */
+ 116:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         if(RTC_PPS_CTRL_ENABLE == (RTC_PPS_CONTROL & RTC_PPS_CTRL_ENABLE))
+ 114              		.loc 1 116 0
+ 115 0002 074B     		ldr	r3, .L12
+ 116 0004 074A     		ldr	r2, .L12+4
+ 117 0006 1B78     		ldrb	r3, [r3]
+ 118 0008 5BB2     		sxtb	r3, r3
+ 119 000a 002B     		cmp	r3, #0
+ 120 000c 01DA     		bge	.L8
+ 117:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         {
+ 118:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             /* Timer is enabled */
+ 119:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             RTC_PPS_backup.TimerEnableState = 1u;
+ 121              		.loc 1 119 0
+ 122 000e 0123     		mov	r3, #1
+ 123 0010 00E0     		b	.L10
+ 124              	.L8:
+ 120:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         }
+ 121:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         else
+ 122:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         {
+ 123:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             /* Timer is disabled */
+ 124:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****             RTC_PPS_backup.TimerEnableState = 0u;
+ 125              		.loc 1 124 0
+ 126 0012 0023     		mov	r3, #0
+ 127              	.L10:
+ 128 0014 1370     		strb	r3, [r2]
+ 125:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         }
+ 126:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #endif /* Back up enable state from the Timer control register */
+ 127:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     RTC_PPS_Stop();
+ 128:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     RTC_PPS_SaveConfig();
+ 129:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** }
+ 129              		.loc 1 129 0
+ 130              		@ sp needed
+ 127:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     RTC_PPS_SaveConfig();
+ 131              		.loc 1 127 0
+ 132 0016 FFF7FEFF 		bl	RTC_PPS_Stop
+ 133              	.LVL4:
+ 128:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** }
+ 134              		.loc 1 128 0
+ 135 001a FFF7FEFF 		bl	RTC_PPS_SaveConfig
+ 136              	.LVL5:
+ 137              		.loc 1 129 0
+ 138 001e 08BD     		pop	{r3, pc}
+ 139              	.L13:
+ 140              		.align	2
+ 141              	.L12:
+ 142 0020 70000F40 		.word	1074724976
+ 143 0024 00000000 		.word	.LANCHOR0
+ 144              		.cfi_endproc
+ 145              	.LFE4:
+ 146              		.size	RTC_PPS_Sleep, .-RTC_PPS_Sleep
+ 147              		.section	.text.RTC_PPS_Wakeup,"ax",%progbits
+ 148              		.align	1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 6
+
+
+ 149              		.global	RTC_PPS_Wakeup
+ 150              		.code	16
+ 151              		.thumb_func
+ 152              		.type	RTC_PPS_Wakeup, %function
+ 153              	RTC_PPS_Wakeup:
+ 154              	.LFB5:
+ 130:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+ 131:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** 
+ 132:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** /*******************************************************************************
+ 133:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Function Name: RTC_PPS_Wakeup
+ 134:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** ********************************************************************************
+ 135:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 136:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Summary:
+ 137:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  Restores and enables the user configuration
+ 138:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 139:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Parameters:
+ 140:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+ 141:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 142:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Return:
+ 143:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  void
+ 144:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 145:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** * Global variables:
+ 146:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  RTC_PPS_backup.enableState:  Is used to restore the enable state of
+ 147:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *  block on wakeup from sleep mode.
+ 148:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *
+ 149:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** *******************************************************************************/
+ 150:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** void RTC_PPS_Wakeup(void) 
+ 151:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** {
+ 155              		.loc 1 151 0
+ 156              		.cfi_startproc
+ 157 0000 08B5     		push	{r3, lr}
+ 158              		.cfi_def_cfa_offset 8
+ 159              		.cfi_offset 3, -8
+ 160              		.cfi_offset 14, -4
+ 152:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     RTC_PPS_RestoreConfig();
+ 161              		.loc 1 152 0
+ 162 0002 FFF7FEFF 		bl	RTC_PPS_RestoreConfig
+ 163              	.LVL6:
+ 153:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #if(!RTC_PPS_UDB_CONTROL_REG_REMOVED)
+ 154:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         if(RTC_PPS_backup.TimerEnableState == 1u)
+ 164              		.loc 1 154 0
+ 165 0006 034B     		ldr	r3, .L16
+ 166 0008 1B78     		ldrb	r3, [r3]
+ 167 000a 012B     		cmp	r3, #1
+ 168 000c 01D1     		bne	.L14
+ 155:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         {     /* Enable Timer's operation */
+ 156:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****                 RTC_PPS_Enable();
+ 169              		.loc 1 156 0
+ 170 000e FFF7FEFF 		bl	RTC_PPS_Enable
+ 171              	.LVL7:
+ 172              	.L14:
+ 157:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****         } /* Do nothing if Timer was disabled before */
+ 158:.\Generated_Source\PSoC4/RTC_PPS_PM.c ****     #endif /* Remove this code section if Control register is removed */
+ 159:.\Generated_Source\PSoC4/RTC_PPS_PM.c **** }
+ 173              		.loc 1 159 0
+ 174              		@ sp needed
+ 175 0012 08BD     		pop	{r3, pc}
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 7
+
+
+ 176              	.L17:
+ 177              		.align	2
+ 178              	.L16:
+ 179 0014 00000000 		.word	.LANCHOR0
+ 180              		.cfi_endproc
+ 181              	.LFE5:
+ 182              		.size	RTC_PPS_Wakeup, .-RTC_PPS_Wakeup
+ 183              		.bss
+ 184              		.align	2
+ 185              		.set	.LANCHOR0,. + 0
+ 186              		.type	RTC_PPS_backup, %object
+ 187              		.size	RTC_PPS_backup, 12
+ 188              	RTC_PPS_backup:
+ 189 0000 00000000 		.space	12
+ 189      00000000 
+ 189      00000000 
+ 190              		.text
+ 191              	.Letext0:
+ 192              		.file 2 ".\\Generated_Source\\PSoC4\\cytypes.h"
+ 193              		.file 3 ".\\Generated_Source\\PSoC4\\RTC_PPS.h"
+ 194              		.section	.debug_info,"",%progbits
+ 195              	.Ldebug_info0:
+ 196 0000 E8010000 		.4byte	0x1e8
+ 197 0004 0400     		.2byte	0x4
+ 198 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 199 000a 04       		.byte	0x4
+ 200 000b 01       		.uleb128 0x1
+ 201 000c 11000000 		.4byte	.LASF31
+ 202 0010 01       		.byte	0x1
+ 203 0011 72010000 		.4byte	.LASF32
+ 204 0015 FC010000 		.4byte	.LASF33
+ 205 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 206 001d 00000000 		.4byte	0
+ 207 0021 00000000 		.4byte	.Ldebug_line0
+ 208 0025 02       		.uleb128 0x2
+ 209 0026 01       		.byte	0x1
+ 210 0027 06       		.byte	0x6
+ 211 0028 A4020000 		.4byte	.LASF0
+ 212 002c 02       		.uleb128 0x2
+ 213 002d 01       		.byte	0x1
+ 214 002e 08       		.byte	0x8
+ 215 002f 0F010000 		.4byte	.LASF1
+ 216 0033 02       		.uleb128 0x2
+ 217 0034 02       		.byte	0x2
+ 218 0035 05       		.byte	0x5
+ 219 0036 61020000 		.4byte	.LASF2
+ 220 003a 02       		.uleb128 0x2
+ 221 003b 02       		.byte	0x2
+ 222 003c 07       		.byte	0x7
+ 223 003d C2000000 		.4byte	.LASF3
+ 224 0041 02       		.uleb128 0x2
+ 225 0042 04       		.byte	0x4
+ 226 0043 05       		.byte	0x5
+ 227 0044 9B020000 		.4byte	.LASF4
+ 228 0048 02       		.uleb128 0x2
+ 229 0049 04       		.byte	0x4
+ 230 004a 07       		.byte	0x7
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 8
+
+
+ 231 004b 35010000 		.4byte	.LASF5
+ 232 004f 02       		.uleb128 0x2
+ 233 0050 08       		.byte	0x8
+ 234 0051 05       		.byte	0x5
+ 235 0052 4E020000 		.4byte	.LASF6
+ 236 0056 02       		.uleb128 0x2
+ 237 0057 08       		.byte	0x8
+ 238 0058 07       		.byte	0x7
+ 239 0059 E5010000 		.4byte	.LASF7
+ 240 005d 03       		.uleb128 0x3
+ 241 005e 04       		.byte	0x4
+ 242 005f 05       		.byte	0x5
+ 243 0060 696E7400 		.ascii	"int\000"
+ 244 0064 02       		.uleb128 0x2
+ 245 0065 04       		.byte	0x4
+ 246 0066 07       		.byte	0x7
+ 247 0067 D8010000 		.4byte	.LASF8
+ 248 006b 04       		.uleb128 0x4
+ 249 006c 47010000 		.4byte	.LASF9
+ 250 0070 02       		.byte	0x2
+ 251 0071 3801     		.2byte	0x138
+ 252 0073 2C000000 		.4byte	0x2c
+ 253 0077 04       		.uleb128 0x4
+ 254 0078 D1010000 		.4byte	.LASF10
+ 255 007c 02       		.byte	0x2
+ 256 007d 3A01     		.2byte	0x13a
+ 257 007f 48000000 		.4byte	0x48
+ 258 0083 02       		.uleb128 0x2
+ 259 0084 04       		.byte	0x4
+ 260 0085 04       		.byte	0x4
+ 261 0086 09010000 		.4byte	.LASF11
+ 262 008a 02       		.uleb128 0x2
+ 263 008b 08       		.byte	0x8
+ 264 008c 04       		.byte	0x4
+ 265 008d B5010000 		.4byte	.LASF12
+ 266 0091 02       		.uleb128 0x2
+ 267 0092 01       		.byte	0x1
+ 268 0093 08       		.byte	0x8
+ 269 0094 5C020000 		.4byte	.LASF13
+ 270 0098 04       		.uleb128 0x4
+ 271 0099 30010000 		.4byte	.LASF14
+ 272 009d 02       		.byte	0x2
+ 273 009e E201     		.2byte	0x1e2
+ 274 00a0 A4000000 		.4byte	0xa4
+ 275 00a4 05       		.uleb128 0x5
+ 276 00a5 6B000000 		.4byte	0x6b
+ 277 00a9 02       		.uleb128 0x2
+ 278 00aa 04       		.byte	0x4
+ 279 00ab 07       		.byte	0x7
+ 280 00ac 45020000 		.4byte	.LASF15
+ 281 00b0 06       		.uleb128 0x6
+ 282 00b1 0C       		.byte	0xc
+ 283 00b2 03       		.byte	0x3
+ 284 00b3 43       		.byte	0x43
+ 285 00b4 E9000000 		.4byte	0xe9
+ 286 00b8 07       		.uleb128 0x7
+ 287 00b9 00000000 		.4byte	.LASF16
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 9
+
+
+ 288 00bd 03       		.byte	0x3
+ 289 00be 45       		.byte	0x45
+ 290 00bf 6B000000 		.4byte	0x6b
+ 291 00c3 00       		.byte	0
+ 292 00c4 07       		.uleb128 0x7
+ 293 00c5 E4000000 		.4byte	.LASF17
+ 294 00c9 03       		.byte	0x3
+ 295 00ca 48       		.byte	0x48
+ 296 00cb 77000000 		.4byte	0x77
+ 297 00cf 04       		.byte	0x4
+ 298 00d0 07       		.uleb128 0x7
+ 299 00d1 B0020000 		.4byte	.LASF18
+ 300 00d5 03       		.byte	0x3
+ 301 00d6 49       		.byte	0x49
+ 302 00d7 6B000000 		.4byte	0x6b
+ 303 00db 08       		.byte	0x8
+ 304 00dc 07       		.uleb128 0x7
+ 305 00dd C3020000 		.4byte	.LASF19
+ 306 00e1 03       		.byte	0x3
+ 307 00e2 4F       		.byte	0x4f
+ 308 00e3 6B000000 		.4byte	0x6b
+ 309 00e7 09       		.byte	0x9
+ 310 00e8 00       		.byte	0
+ 311 00e9 08       		.uleb128 0x8
+ 312 00ea BC010000 		.4byte	.LASF20
+ 313 00ee 03       		.byte	0x3
+ 314 00ef 53       		.byte	0x53
+ 315 00f0 B0000000 		.4byte	0xb0
+ 316 00f4 09       		.uleb128 0x9
+ 317 00f5 1D010000 		.4byte	.LASF21
+ 318 00f9 01       		.byte	0x1
+ 319 00fa 2B       		.byte	0x2b
+ 320 00fb 00000000 		.4byte	.LFB2
+ 321 00ff 20000000 		.4byte	.LFE2-.LFB2
+ 322 0103 01       		.uleb128 0x1
+ 323 0104 9C       		.byte	0x9c
+ 324 0105 1C010000 		.4byte	0x11c
+ 325 0109 0A       		.uleb128 0xa
+ 326 010a 06000000 		.4byte	.LVL0
+ 327 010e A5010000 		.4byte	0x1a5
+ 328 0112 0A       		.uleb128 0xa
+ 329 0113 14000000 		.4byte	.LVL1
+ 330 0117 B0010000 		.4byte	0x1b0
+ 331 011b 00       		.byte	0
+ 332 011c 09       		.uleb128 0x9
+ 333 011d 5C010000 		.4byte	.LASF22
+ 334 0121 01       		.byte	0x1
+ 335 0122 4D       		.byte	0x4d
+ 336 0123 00000000 		.4byte	.LFB3
+ 337 0127 20000000 		.4byte	.LFE3-.LFB3
+ 338 012b 01       		.uleb128 0x1
+ 339 012c 9C       		.byte	0x9c
+ 340 012d 44010000 		.4byte	0x144
+ 341 0131 0A       		.uleb128 0xa
+ 342 0132 0A000000 		.4byte	.LVL2
+ 343 0136 BB010000 		.4byte	0x1bb
+ 344 013a 0A       		.uleb128 0xa
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 10
+
+
+ 345 013b 16000000 		.4byte	.LVL3
+ 346 013f CC010000 		.4byte	0x1cc
+ 347 0143 00       		.byte	0
+ 348 0144 09       		.uleb128 0x9
+ 349 0145 B4000000 		.4byte	.LASF23
+ 350 0149 01       		.byte	0x1
+ 351 014a 70       		.byte	0x70
+ 352 014b 00000000 		.4byte	.LFB4
+ 353 014f 28000000 		.4byte	.LFE4-.LFB4
+ 354 0153 01       		.uleb128 0x1
+ 355 0154 9C       		.byte	0x9c
+ 356 0155 6C010000 		.4byte	0x16c
+ 357 0159 0A       		.uleb128 0xa
+ 358 015a 1A000000 		.4byte	.LVL4
+ 359 015e DD010000 		.4byte	0x1dd
+ 360 0162 0A       		.uleb128 0xa
+ 361 0163 1E000000 		.4byte	.LVL5
+ 362 0167 F4000000 		.4byte	0xf4
+ 363 016b 00       		.byte	0
+ 364 016c 09       		.uleb128 0x9
+ 365 016d 4D010000 		.4byte	.LASF24
+ 366 0171 01       		.byte	0x1
+ 367 0172 96       		.byte	0x96
+ 368 0173 00000000 		.4byte	.LFB5
+ 369 0177 18000000 		.4byte	.LFE5-.LFB5
+ 370 017b 01       		.uleb128 0x1
+ 371 017c 9C       		.byte	0x9c
+ 372 017d 94010000 		.4byte	0x194
+ 373 0181 0A       		.uleb128 0xa
+ 374 0182 06000000 		.4byte	.LVL6
+ 375 0186 1C010000 		.4byte	0x11c
+ 376 018a 0A       		.uleb128 0xa
+ 377 018b 12000000 		.4byte	.LVL7
+ 378 018f E4010000 		.4byte	0x1e4
+ 379 0193 00       		.byte	0
+ 380 0194 0B       		.uleb128 0xb
+ 381 0195 D5000000 		.4byte	.LASF34
+ 382 0199 01       		.byte	0x1
+ 383 019a 15       		.byte	0x15
+ 384 019b E9000000 		.4byte	0xe9
+ 385 019f 05       		.uleb128 0x5
+ 386 01a0 03       		.byte	0x3
+ 387 01a1 00000000 		.4byte	RTC_PPS_backup
+ 388 01a5 0C       		.uleb128 0xc
+ 389 01a6 87020000 		.4byte	.LASF25
+ 390 01aa 03       		.byte	0x3
+ 391 01ab 69       		.byte	0x69
+ 392 01ac 77000000 		.4byte	0x77
+ 393 01b0 0C       		.uleb128 0xc
+ 394 01b1 ED000000 		.4byte	.LASF26
+ 395 01b5 03       		.byte	0x3
+ 396 01b6 63       		.byte	0x63
+ 397 01b7 6B000000 		.4byte	0x6b
+ 398 01bb 0D       		.uleb128 0xd
+ 399 01bc 9F000000 		.4byte	.LASF27
+ 400 01c0 03       		.byte	0x3
+ 401 01c1 6A       		.byte	0x6a
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 11
+
+
+ 402 01c2 CC010000 		.4byte	0x1cc
+ 403 01c6 0E       		.uleb128 0xe
+ 404 01c7 77000000 		.4byte	0x77
+ 405 01cb 00       		.byte	0
+ 406 01cc 0D       		.uleb128 0xd
+ 407 01cd 98010000 		.4byte	.LASF28
+ 408 01d1 03       		.byte	0x3
+ 409 01d2 64       		.byte	0x64
+ 410 01d3 DD010000 		.4byte	0x1dd
+ 411 01d7 0E       		.uleb128 0xe
+ 412 01d8 6B000000 		.4byte	0x6b
+ 413 01dc 00       		.byte	0
+ 414 01dd 0F       		.uleb128 0xf
+ 415 01de 7A020000 		.4byte	.LASF29
+ 416 01e2 03       		.byte	0x3
+ 417 01e3 5B       		.byte	0x5b
+ 418 01e4 0F       		.uleb128 0xf
+ 419 01e5 6B020000 		.4byte	.LASF30
+ 420 01e9 03       		.byte	0x3
+ 421 01ea 8B       		.byte	0x8b
+ 422 01eb 00       		.byte	0
+ 423              		.section	.debug_abbrev,"",%progbits
+ 424              	.Ldebug_abbrev0:
+ 425 0000 01       		.uleb128 0x1
+ 426 0001 11       		.uleb128 0x11
+ 427 0002 01       		.byte	0x1
+ 428 0003 25       		.uleb128 0x25
+ 429 0004 0E       		.uleb128 0xe
+ 430 0005 13       		.uleb128 0x13
+ 431 0006 0B       		.uleb128 0xb
+ 432 0007 03       		.uleb128 0x3
+ 433 0008 0E       		.uleb128 0xe
+ 434 0009 1B       		.uleb128 0x1b
+ 435 000a 0E       		.uleb128 0xe
+ 436 000b 55       		.uleb128 0x55
+ 437 000c 17       		.uleb128 0x17
+ 438 000d 11       		.uleb128 0x11
+ 439 000e 01       		.uleb128 0x1
+ 440 000f 10       		.uleb128 0x10
+ 441 0010 17       		.uleb128 0x17
+ 442 0011 00       		.byte	0
+ 443 0012 00       		.byte	0
+ 444 0013 02       		.uleb128 0x2
+ 445 0014 24       		.uleb128 0x24
+ 446 0015 00       		.byte	0
+ 447 0016 0B       		.uleb128 0xb
+ 448 0017 0B       		.uleb128 0xb
+ 449 0018 3E       		.uleb128 0x3e
+ 450 0019 0B       		.uleb128 0xb
+ 451 001a 03       		.uleb128 0x3
+ 452 001b 0E       		.uleb128 0xe
+ 453 001c 00       		.byte	0
+ 454 001d 00       		.byte	0
+ 455 001e 03       		.uleb128 0x3
+ 456 001f 24       		.uleb128 0x24
+ 457 0020 00       		.byte	0
+ 458 0021 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 12
+
+
+ 459 0022 0B       		.uleb128 0xb
+ 460 0023 3E       		.uleb128 0x3e
+ 461 0024 0B       		.uleb128 0xb
+ 462 0025 03       		.uleb128 0x3
+ 463 0026 08       		.uleb128 0x8
+ 464 0027 00       		.byte	0
+ 465 0028 00       		.byte	0
+ 466 0029 04       		.uleb128 0x4
+ 467 002a 16       		.uleb128 0x16
+ 468 002b 00       		.byte	0
+ 469 002c 03       		.uleb128 0x3
+ 470 002d 0E       		.uleb128 0xe
+ 471 002e 3A       		.uleb128 0x3a
+ 472 002f 0B       		.uleb128 0xb
+ 473 0030 3B       		.uleb128 0x3b
+ 474 0031 05       		.uleb128 0x5
+ 475 0032 49       		.uleb128 0x49
+ 476 0033 13       		.uleb128 0x13
+ 477 0034 00       		.byte	0
+ 478 0035 00       		.byte	0
+ 479 0036 05       		.uleb128 0x5
+ 480 0037 35       		.uleb128 0x35
+ 481 0038 00       		.byte	0
+ 482 0039 49       		.uleb128 0x49
+ 483 003a 13       		.uleb128 0x13
+ 484 003b 00       		.byte	0
+ 485 003c 00       		.byte	0
+ 486 003d 06       		.uleb128 0x6
+ 487 003e 13       		.uleb128 0x13
+ 488 003f 01       		.byte	0x1
+ 489 0040 0B       		.uleb128 0xb
+ 490 0041 0B       		.uleb128 0xb
+ 491 0042 3A       		.uleb128 0x3a
+ 492 0043 0B       		.uleb128 0xb
+ 493 0044 3B       		.uleb128 0x3b
+ 494 0045 0B       		.uleb128 0xb
+ 495 0046 01       		.uleb128 0x1
+ 496 0047 13       		.uleb128 0x13
+ 497 0048 00       		.byte	0
+ 498 0049 00       		.byte	0
+ 499 004a 07       		.uleb128 0x7
+ 500 004b 0D       		.uleb128 0xd
+ 501 004c 00       		.byte	0
+ 502 004d 03       		.uleb128 0x3
+ 503 004e 0E       		.uleb128 0xe
+ 504 004f 3A       		.uleb128 0x3a
+ 505 0050 0B       		.uleb128 0xb
+ 506 0051 3B       		.uleb128 0x3b
+ 507 0052 0B       		.uleb128 0xb
+ 508 0053 49       		.uleb128 0x49
+ 509 0054 13       		.uleb128 0x13
+ 510 0055 38       		.uleb128 0x38
+ 511 0056 0B       		.uleb128 0xb
+ 512 0057 00       		.byte	0
+ 513 0058 00       		.byte	0
+ 514 0059 08       		.uleb128 0x8
+ 515 005a 16       		.uleb128 0x16
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 13
+
+
+ 516 005b 00       		.byte	0
+ 517 005c 03       		.uleb128 0x3
+ 518 005d 0E       		.uleb128 0xe
+ 519 005e 3A       		.uleb128 0x3a
+ 520 005f 0B       		.uleb128 0xb
+ 521 0060 3B       		.uleb128 0x3b
+ 522 0061 0B       		.uleb128 0xb
+ 523 0062 49       		.uleb128 0x49
+ 524 0063 13       		.uleb128 0x13
+ 525 0064 00       		.byte	0
+ 526 0065 00       		.byte	0
+ 527 0066 09       		.uleb128 0x9
+ 528 0067 2E       		.uleb128 0x2e
+ 529 0068 01       		.byte	0x1
+ 530 0069 3F       		.uleb128 0x3f
+ 531 006a 19       		.uleb128 0x19
+ 532 006b 03       		.uleb128 0x3
+ 533 006c 0E       		.uleb128 0xe
+ 534 006d 3A       		.uleb128 0x3a
+ 535 006e 0B       		.uleb128 0xb
+ 536 006f 3B       		.uleb128 0x3b
+ 537 0070 0B       		.uleb128 0xb
+ 538 0071 27       		.uleb128 0x27
+ 539 0072 19       		.uleb128 0x19
+ 540 0073 11       		.uleb128 0x11
+ 541 0074 01       		.uleb128 0x1
+ 542 0075 12       		.uleb128 0x12
+ 543 0076 06       		.uleb128 0x6
+ 544 0077 40       		.uleb128 0x40
+ 545 0078 18       		.uleb128 0x18
+ 546 0079 9742     		.uleb128 0x2117
+ 547 007b 19       		.uleb128 0x19
+ 548 007c 01       		.uleb128 0x1
+ 549 007d 13       		.uleb128 0x13
+ 550 007e 00       		.byte	0
+ 551 007f 00       		.byte	0
+ 552 0080 0A       		.uleb128 0xa
+ 553 0081 898201   		.uleb128 0x4109
+ 554 0084 00       		.byte	0
+ 555 0085 11       		.uleb128 0x11
+ 556 0086 01       		.uleb128 0x1
+ 557 0087 31       		.uleb128 0x31
+ 558 0088 13       		.uleb128 0x13
+ 559 0089 00       		.byte	0
+ 560 008a 00       		.byte	0
+ 561 008b 0B       		.uleb128 0xb
+ 562 008c 34       		.uleb128 0x34
+ 563 008d 00       		.byte	0
+ 564 008e 03       		.uleb128 0x3
+ 565 008f 0E       		.uleb128 0xe
+ 566 0090 3A       		.uleb128 0x3a
+ 567 0091 0B       		.uleb128 0xb
+ 568 0092 3B       		.uleb128 0x3b
+ 569 0093 0B       		.uleb128 0xb
+ 570 0094 49       		.uleb128 0x49
+ 571 0095 13       		.uleb128 0x13
+ 572 0096 02       		.uleb128 0x2
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 14
+
+
+ 573 0097 18       		.uleb128 0x18
+ 574 0098 00       		.byte	0
+ 575 0099 00       		.byte	0
+ 576 009a 0C       		.uleb128 0xc
+ 577 009b 2E       		.uleb128 0x2e
+ 578 009c 00       		.byte	0
+ 579 009d 3F       		.uleb128 0x3f
+ 580 009e 19       		.uleb128 0x19
+ 581 009f 03       		.uleb128 0x3
+ 582 00a0 0E       		.uleb128 0xe
+ 583 00a1 3A       		.uleb128 0x3a
+ 584 00a2 0B       		.uleb128 0xb
+ 585 00a3 3B       		.uleb128 0x3b
+ 586 00a4 0B       		.uleb128 0xb
+ 587 00a5 27       		.uleb128 0x27
+ 588 00a6 19       		.uleb128 0x19
+ 589 00a7 49       		.uleb128 0x49
+ 590 00a8 13       		.uleb128 0x13
+ 591 00a9 3C       		.uleb128 0x3c
+ 592 00aa 19       		.uleb128 0x19
+ 593 00ab 00       		.byte	0
+ 594 00ac 00       		.byte	0
+ 595 00ad 0D       		.uleb128 0xd
+ 596 00ae 2E       		.uleb128 0x2e
+ 597 00af 01       		.byte	0x1
+ 598 00b0 3F       		.uleb128 0x3f
+ 599 00b1 19       		.uleb128 0x19
+ 600 00b2 03       		.uleb128 0x3
+ 601 00b3 0E       		.uleb128 0xe
+ 602 00b4 3A       		.uleb128 0x3a
+ 603 00b5 0B       		.uleb128 0xb
+ 604 00b6 3B       		.uleb128 0x3b
+ 605 00b7 0B       		.uleb128 0xb
+ 606 00b8 27       		.uleb128 0x27
+ 607 00b9 19       		.uleb128 0x19
+ 608 00ba 3C       		.uleb128 0x3c
+ 609 00bb 19       		.uleb128 0x19
+ 610 00bc 01       		.uleb128 0x1
+ 611 00bd 13       		.uleb128 0x13
+ 612 00be 00       		.byte	0
+ 613 00bf 00       		.byte	0
+ 614 00c0 0E       		.uleb128 0xe
+ 615 00c1 05       		.uleb128 0x5
+ 616 00c2 00       		.byte	0
+ 617 00c3 49       		.uleb128 0x49
+ 618 00c4 13       		.uleb128 0x13
+ 619 00c5 00       		.byte	0
+ 620 00c6 00       		.byte	0
+ 621 00c7 0F       		.uleb128 0xf
+ 622 00c8 2E       		.uleb128 0x2e
+ 623 00c9 00       		.byte	0
+ 624 00ca 3F       		.uleb128 0x3f
+ 625 00cb 19       		.uleb128 0x19
+ 626 00cc 03       		.uleb128 0x3
+ 627 00cd 0E       		.uleb128 0xe
+ 628 00ce 3A       		.uleb128 0x3a
+ 629 00cf 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 15
+
+
+ 630 00d0 3B       		.uleb128 0x3b
+ 631 00d1 0B       		.uleb128 0xb
+ 632 00d2 27       		.uleb128 0x27
+ 633 00d3 19       		.uleb128 0x19
+ 634 00d4 3C       		.uleb128 0x3c
+ 635 00d5 19       		.uleb128 0x19
+ 636 00d6 00       		.byte	0
+ 637 00d7 00       		.byte	0
+ 638 00d8 00       		.byte	0
+ 639              		.section	.debug_aranges,"",%progbits
+ 640 0000 34000000 		.4byte	0x34
+ 641 0004 0200     		.2byte	0x2
+ 642 0006 00000000 		.4byte	.Ldebug_info0
+ 643 000a 04       		.byte	0x4
+ 644 000b 00       		.byte	0
+ 645 000c 0000     		.2byte	0
+ 646 000e 0000     		.2byte	0
+ 647 0010 00000000 		.4byte	.LFB2
+ 648 0014 20000000 		.4byte	.LFE2-.LFB2
+ 649 0018 00000000 		.4byte	.LFB3
+ 650 001c 20000000 		.4byte	.LFE3-.LFB3
+ 651 0020 00000000 		.4byte	.LFB4
+ 652 0024 28000000 		.4byte	.LFE4-.LFB4
+ 653 0028 00000000 		.4byte	.LFB5
+ 654 002c 18000000 		.4byte	.LFE5-.LFB5
+ 655 0030 00000000 		.4byte	0
+ 656 0034 00000000 		.4byte	0
+ 657              		.section	.debug_ranges,"",%progbits
+ 658              	.Ldebug_ranges0:
+ 659 0000 00000000 		.4byte	.LFB2
+ 660 0004 20000000 		.4byte	.LFE2
+ 661 0008 00000000 		.4byte	.LFB3
+ 662 000c 20000000 		.4byte	.LFE3
+ 663 0010 00000000 		.4byte	.LFB4
+ 664 0014 28000000 		.4byte	.LFE4
+ 665 0018 00000000 		.4byte	.LFB5
+ 666 001c 18000000 		.4byte	.LFE5
+ 667 0020 00000000 		.4byte	0
+ 668 0024 00000000 		.4byte	0
+ 669              		.section	.debug_line,"",%progbits
+ 670              	.Ldebug_line0:
+ 671 0000 BC000000 		.section	.debug_str,"MS",%progbits,1
+ 671      02005600 
+ 671      00000201 
+ 671      FB0E0D00 
+ 671      01010101 
+ 672              	.LASF16:
+ 673 0000 54696D65 		.ascii	"TimerEnableState\000"
+ 673      72456E61 
+ 673      626C6553 
+ 673      74617465 
+ 673      00
+ 674              	.LASF31:
+ 675 0011 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 675      4320342E 
+ 675      392E3320 
+ 675      32303135 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 16
+
+
+ 675      30333033 
+ 676 0044 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 676      20726576 
+ 676      6973696F 
+ 676      6E203232 
+ 676      31323230 
+ 677 0077 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 677      66756E63 
+ 677      74696F6E 
+ 677      2D736563 
+ 677      74696F6E 
+ 678              	.LASF27:
+ 679 009f 5254435F 		.ascii	"RTC_PPS_WriteCounter\000"
+ 679      5050535F 
+ 679      57726974 
+ 679      65436F75 
+ 679      6E746572 
+ 680              	.LASF23:
+ 681 00b4 5254435F 		.ascii	"RTC_PPS_Sleep\000"
+ 681      5050535F 
+ 681      536C6565 
+ 681      7000
+ 682              	.LASF3:
+ 683 00c2 73686F72 		.ascii	"short unsigned int\000"
+ 683      7420756E 
+ 683      7369676E 
+ 683      65642069 
+ 683      6E7400
+ 684              	.LASF34:
+ 685 00d5 5254435F 		.ascii	"RTC_PPS_backup\000"
+ 685      5050535F 
+ 685      6261636B 
+ 685      757000
+ 686              	.LASF17:
+ 687 00e4 54696D65 		.ascii	"TimerUdb\000"
+ 687      72556462 
+ 687      00
+ 688              	.LASF26:
+ 689 00ed 5254435F 		.ascii	"RTC_PPS_ReadControlRegister\000"
+ 689      5050535F 
+ 689      52656164 
+ 689      436F6E74 
+ 689      726F6C52 
+ 690              	.LASF11:
+ 691 0109 666C6F61 		.ascii	"float\000"
+ 691      7400
+ 692              	.LASF1:
+ 693 010f 756E7369 		.ascii	"unsigned char\000"
+ 693      676E6564 
+ 693      20636861 
+ 693      7200
+ 694              	.LASF21:
+ 695 011d 5254435F 		.ascii	"RTC_PPS_SaveConfig\000"
+ 695      5050535F 
+ 695      53617665 
+ 695      436F6E66 
+ 695      696700
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 17
+
+
+ 696              	.LASF14:
+ 697 0130 72656738 		.ascii	"reg8\000"
+ 697      00
+ 698              	.LASF5:
+ 699 0135 6C6F6E67 		.ascii	"long unsigned int\000"
+ 699      20756E73 
+ 699      69676E65 
+ 699      6420696E 
+ 699      7400
+ 700              	.LASF9:
+ 701 0147 75696E74 		.ascii	"uint8\000"
+ 701      3800
+ 702              	.LASF24:
+ 703 014d 5254435F 		.ascii	"RTC_PPS_Wakeup\000"
+ 703      5050535F 
+ 703      57616B65 
+ 703      757000
+ 704              	.LASF22:
+ 705 015c 5254435F 		.ascii	"RTC_PPS_RestoreConfig\000"
+ 705      5050535F 
+ 705      52657374 
+ 705      6F726543 
+ 705      6F6E6669 
+ 706              	.LASF32:
+ 707 0172 2E5C4765 		.ascii	".\\Generated_Source\\PSoC4\\RTC_PPS_PM.c\000"
+ 707      6E657261 
+ 707      7465645F 
+ 707      536F7572 
+ 707      63655C50 
+ 708              	.LASF28:
+ 709 0198 5254435F 		.ascii	"RTC_PPS_WriteControlRegister\000"
+ 709      5050535F 
+ 709      57726974 
+ 709      65436F6E 
+ 709      74726F6C 
+ 710              	.LASF12:
+ 711 01b5 646F7562 		.ascii	"double\000"
+ 711      6C6500
+ 712              	.LASF20:
+ 713 01bc 5254435F 		.ascii	"RTC_PPS_backupStruct\000"
+ 713      5050535F 
+ 713      6261636B 
+ 713      75705374 
+ 713      72756374 
+ 714              	.LASF10:
+ 715 01d1 75696E74 		.ascii	"uint32\000"
+ 715      333200
+ 716              	.LASF8:
+ 717 01d8 756E7369 		.ascii	"unsigned int\000"
+ 717      676E6564 
+ 717      20696E74 
+ 717      00
+ 718              	.LASF7:
+ 719 01e5 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 719      206C6F6E 
+ 719      6720756E 
+ 719      7369676E 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 18
+
+
+ 719      65642069 
+ 720              	.LASF33:
+ 721 01fc 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 721      73657273 
+ 721      5C646465 
+ 721      6D69646F 
+ 721      765C446F 
+ 722 022a 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 722      6530315C 
+ 722      53656E73 
+ 722      65416269 
+ 722      6C697479 
+ 723              	.LASF15:
+ 724 0245 73697A65 		.ascii	"sizetype\000"
+ 724      74797065 
+ 724      00
+ 725              	.LASF6:
+ 726 024e 6C6F6E67 		.ascii	"long long int\000"
+ 726      206C6F6E 
+ 726      6720696E 
+ 726      7400
+ 727              	.LASF13:
+ 728 025c 63686172 		.ascii	"char\000"
+ 728      00
+ 729              	.LASF2:
+ 730 0261 73686F72 		.ascii	"short int\000"
+ 730      7420696E 
+ 730      7400
+ 731              	.LASF30:
+ 732 026b 5254435F 		.ascii	"RTC_PPS_Enable\000"
+ 732      5050535F 
+ 732      456E6162 
+ 732      6C6500
+ 733              	.LASF29:
+ 734 027a 5254435F 		.ascii	"RTC_PPS_Stop\000"
+ 734      5050535F 
+ 734      53746F70 
+ 734      00
+ 735              	.LASF25:
+ 736 0287 5254435F 		.ascii	"RTC_PPS_ReadCounter\000"
+ 736      5050535F 
+ 736      52656164 
+ 736      436F756E 
+ 736      74657200 
+ 737              	.LASF4:
+ 738 029b 6C6F6E67 		.ascii	"long int\000"
+ 738      20696E74 
+ 738      00
+ 739              	.LASF0:
+ 740 02a4 7369676E 		.ascii	"signed char\000"
+ 740      65642063 
+ 740      68617200 
+ 741              	.LASF18:
+ 742 02b0 496E7465 		.ascii	"InterruptMaskValue\000"
+ 742      72727570 
+ 742      744D6173 
+ 742      6B56616C 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdXRezU.s 			page 19
+
+
+ 742      756500
+ 743              	.LASF19:
+ 744 02c3 54696D65 		.ascii	"TimerControlRegister\000"
+ 744      72436F6E 
+ 744      74726F6C 
+ 744      52656769 
+ 744      73746572 
+ 745              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

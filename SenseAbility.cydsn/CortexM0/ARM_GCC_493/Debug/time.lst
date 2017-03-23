@@ -1,0 +1,1016 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"time.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.build_time,"ax",%progbits
+  18              		.align	1
+  19              		.global	build_time
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	build_time, %function
+  23              	build_time:
+  24              	.LFB0:
+  25              		.file 1 "..\\acn-sdk-c\\src\\time\\time.c"
+   1:..\acn-sdk-c\src\time/time.c **** /* Copyright (c) 2017 Arrow Electronics, Inc.
+   2:..\acn-sdk-c\src\time/time.c ****  * All rights reserved. This program and the accompanying materials
+   3:..\acn-sdk-c\src\time/time.c ****  * are made available under the terms of the Apache License 2.0
+   4:..\acn-sdk-c\src\time/time.c ****  * which accompanies this distribution, and is available at
+   5:..\acn-sdk-c\src\time/time.c ****  * http://apache.org/licenses/LICENSE-2.0
+   6:..\acn-sdk-c\src\time/time.c ****  * Contributors: Arrow Electronics, Inc.
+   7:..\acn-sdk-c\src\time/time.c ****  */
+   8:..\acn-sdk-c\src\time/time.c **** 
+   9:..\acn-sdk-c\src\time/time.c **** #include "time/time.h"
+  10:..\acn-sdk-c\src\time/time.c **** #if defined (__XCC__)
+  11:..\acn-sdk-c\src\time/time.c **** #include <qcom/base.h>
+  12:..\acn-sdk-c\src\time/time.c **** #include <platforms/xtensa/time/xcctime.h>
+  13:..\acn-sdk-c\src\time/time.c **** #else
+  14:..\acn-sdk-c\src\time/time.c **** #include <stdio.h>
+  15:..\acn-sdk-c\src\time/time.c **** #endif
+  16:..\acn-sdk-c\src\time/time.c **** 
+  17:..\acn-sdk-c\src\time/time.c **** time_t build_time() {
+  26              		.loc 1 17 0
+  27              		.cfi_startproc
+  28 0000 00B5     		push	{lr}
+  29              		.cfi_def_cfa_offset 4
+  30              		.cfi_offset 14, -4
+  31 0002 8BB0     		sub	sp, sp, #44
+  32              		.cfi_def_cfa_offset 48
+  18:..\acn-sdk-c\src\time/time.c ****   static const char *built = __DATE__" "__TIME__;
+  19:..\acn-sdk-c\src\time/time.c ****   struct tm t;
+  20:..\acn-sdk-c\src\time/time.c ****   const char *ret = (const char *)strptime(built, "%b %d %Y %H:%M:%S", &t);
+  33              		.loc 1 20 0
+  34 0004 01AA     		add	r2, sp, #4
+  35 0006 0848     		ldr	r0, .L5
+  36 0008 0849     		ldr	r1, .L5+4
+  37 000a FFF7FEFF 		bl	strptime
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 2
+
+
+  38              	.LVL0:
+  39 000e 0023     		mov	r3, #0
+  40 0010 021E     		sub	r2, r0, #0
+  41              	.LVL1:
+  21:..\acn-sdk-c\src\time/time.c ****   if ( ret ) {
+  42              		.loc 1 21 0
+  43 0012 9A42     		cmp	r2, r3
+  44 0014 05D0     		beq	.L2
+  22:..\acn-sdk-c\src\time/time.c ****     t.tm_hour = 0;
+  23:..\acn-sdk-c\src\time/time.c ****     t.tm_min = 0;
+  24:..\acn-sdk-c\src\time/time.c ****     t.tm_sec = 0;
+  25:..\acn-sdk-c\src\time/time.c ****     return mktime(&t);
+  45              		.loc 1 25 0
+  46 0016 01A8     		add	r0, sp, #4
+  47              	.LVL2:
+  22:..\acn-sdk-c\src\time/time.c ****     t.tm_hour = 0;
+  48              		.loc 1 22 0
+  49 0018 0393     		str	r3, [sp, #12]
+  23:..\acn-sdk-c\src\time/time.c ****     t.tm_sec = 0;
+  50              		.loc 1 23 0
+  51 001a 0293     		str	r3, [sp, #8]
+  24:..\acn-sdk-c\src\time/time.c ****     return mktime(&t);
+  52              		.loc 1 24 0
+  53 001c 0193     		str	r3, [sp, #4]
+  54              		.loc 1 25 0
+  55 001e FFF7FEFF 		bl	mktime
+  56              	.LVL3:
+  57              	.L2:
+  26:..\acn-sdk-c\src\time/time.c ****   }
+  27:..\acn-sdk-c\src\time/time.c **** 
+  28:..\acn-sdk-c\src\time/time.c ****   return 0;
+  29:..\acn-sdk-c\src\time/time.c **** }
+  58              		.loc 1 29 0
+  59 0022 0BB0     		add	sp, sp, #44
+  60              		@ sp needed
+  61 0024 00BD     		pop	{pc}
+  62              	.L6:
+  63 0026 C046     		.align	2
+  64              	.L5:
+  65 0028 00000000 		.word	.LC0
+  66 002c 15000000 		.word	.LC2
+  67              		.cfi_endproc
+  68              	.LFE0:
+  69              		.size	build_time, .-build_time
+  70              		.section	.text.set_time,"ax",%progbits
+  71              		.align	1
+  72              		.global	set_time
+  73              		.code	16
+  74              		.thumb_func
+  75              		.type	set_time, %function
+  76              	set_time:
+  77              	.LFB1:
+  30:..\acn-sdk-c\src\time/time.c **** 
+  31:..\acn-sdk-c\src\time/time.c **** #if !defined(__MBED__)
+  32:..\acn-sdk-c\src\time/time.c **** void set_time(time_t t) {
+  78              		.loc 1 32 0
+  79              		.cfi_startproc
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 3
+
+
+  80              	.LVL4:
+  81 0000 07B5     		push	{r0, r1, r2, lr}
+  82              		.cfi_def_cfa_offset 16
+  83              		.cfi_offset 0, -16
+  84              		.cfi_offset 1, -12
+  85              		.cfi_offset 2, -8
+  86              		.cfi_offset 14, -4
+  87              		.loc 1 32 0
+  88 0002 0190     		str	r0, [sp, #4]
+  33:..\acn-sdk-c\src\time/time.c ****     stime(&t);
+  89              		.loc 1 33 0
+  90 0004 01A8     		add	r0, sp, #4
+  91              	.LVL5:
+  92 0006 FFF7FEFF 		bl	stime
+  93              	.LVL6:
+  34:..\acn-sdk-c\src\time/time.c **** }
+  94              		.loc 1 34 0
+  95              		@ sp needed
+  96 000a 07BD     		pop	{r0, r1, r2, pc}
+  97              		.cfi_endproc
+  98              	.LFE1:
+  99              		.size	set_time, .-set_time
+ 100              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 101              	.LC0:
+ 102 0000 4D617220 		.ascii	"Mar 23 2017 09:26:21\000"
+ 102      32332032 
+ 102      30313720 
+ 102      30393A32 
+ 102      363A3231 
+ 103              	.LC2:
+ 104 0015 25622025 		.ascii	"%b %d %Y %H:%M:%S\000"
+ 104      64202559 
+ 104      2025483A 
+ 104      254D3A25 
+ 104      5300
+ 105              		.text
+ 106              	.Letext0:
+ 107              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 108              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\3.3\\psoc creator\\import\\gnu\\arm\\4.9.
+ 109              		.section	.debug_info,"",%progbits
+ 110              	.Ldebug_info0:
+ 111 0000 30020000 		.4byte	0x230
+ 112 0004 0400     		.2byte	0x4
+ 113 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 114 000a 04       		.byte	0x4
+ 115 000b 01       		.uleb128 0x1
+ 116 000c 07000000 		.4byte	.LASF25
+ 117 0010 01       		.byte	0x1
+ 118 0011 71010000 		.4byte	.LASF26
+ 119 0015 28010000 		.4byte	.LASF27
+ 120 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 121 001d 00000000 		.4byte	0
+ 122 0021 00000000 		.4byte	.Ldebug_line0
+ 123 0025 02       		.uleb128 0x2
+ 124 0026 04       		.byte	0x4
+ 125 0027 05       		.byte	0x5
+ 126 0028 696E7400 		.ascii	"int\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 4
+
+
+ 127 002c 03       		.uleb128 0x3
+ 128 002d 04       		.byte	0x4
+ 129 002e 07       		.byte	0x7
+ 130 002f FD000000 		.4byte	.LASF0
+ 131 0033 03       		.uleb128 0x3
+ 132 0034 01       		.byte	0x1
+ 133 0035 06       		.byte	0x6
+ 134 0036 DE010000 		.4byte	.LASF1
+ 135 003a 03       		.uleb128 0x3
+ 136 003b 01       		.byte	0x1
+ 137 003c 08       		.byte	0x8
+ 138 003d AB000000 		.4byte	.LASF2
+ 139 0041 03       		.uleb128 0x3
+ 140 0042 02       		.byte	0x2
+ 141 0043 05       		.byte	0x5
+ 142 0044 BA010000 		.4byte	.LASF3
+ 143 0048 03       		.uleb128 0x3
+ 144 0049 02       		.byte	0x2
+ 145 004a 07       		.byte	0x7
+ 146 004b CB000000 		.4byte	.LASF4
+ 147 004f 03       		.uleb128 0x3
+ 148 0050 04       		.byte	0x4
+ 149 0051 05       		.byte	0x5
+ 150 0052 D5010000 		.4byte	.LASF5
+ 151 0056 03       		.uleb128 0x3
+ 152 0057 04       		.byte	0x4
+ 153 0058 07       		.byte	0x7
+ 154 0059 B9000000 		.4byte	.LASF6
+ 155 005d 03       		.uleb128 0x3
+ 156 005e 08       		.byte	0x8
+ 157 005f 05       		.byte	0x5
+ 158 0060 A0010000 		.4byte	.LASF7
+ 159 0064 03       		.uleb128 0x3
+ 160 0065 08       		.byte	0x8
+ 161 0066 07       		.byte	0x7
+ 162 0067 0A010000 		.4byte	.LASF8
+ 163 006b 03       		.uleb128 0x3
+ 164 006c 04       		.byte	0x4
+ 165 006d 07       		.byte	0x7
+ 166 006e 8E010000 		.4byte	.LASF9
+ 167 0072 04       		.uleb128 0x4
+ 168 0073 04       		.byte	0x4
+ 169 0074 78000000 		.4byte	0x78
+ 170 0078 03       		.uleb128 0x3
+ 171 0079 01       		.byte	0x1
+ 172 007a 08       		.byte	0x8
+ 173 007b AE010000 		.4byte	.LASF10
+ 174 007f 04       		.uleb128 0x4
+ 175 0080 04       		.byte	0x4
+ 176 0081 85000000 		.4byte	0x85
+ 177 0085 05       		.uleb128 0x5
+ 178 0086 78000000 		.4byte	0x78
+ 179 008a 06       		.uleb128 0x6
+ 180 008b DE000000 		.4byte	.LASF28
+ 181 008f 03       		.byte	0x3
+ 182 0090 7A       		.byte	0x7a
+ 183 0091 4F000000 		.4byte	0x4f
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 5
+
+
+ 184 0095 07       		.uleb128 0x7
+ 185 0096 746D00   		.ascii	"tm\000"
+ 186 0099 24       		.byte	0x24
+ 187 009a 02       		.byte	0x2
+ 188 009b 1F       		.byte	0x1f
+ 189 009c 0D010000 		.4byte	0x10d
+ 190 00a0 08       		.uleb128 0x8
+ 191 00a1 E5000000 		.4byte	.LASF11
+ 192 00a5 02       		.byte	0x2
+ 193 00a6 21       		.byte	0x21
+ 194 00a7 25000000 		.4byte	0x25
+ 195 00ab 00       		.byte	0
+ 196 00ac 08       		.uleb128 0x8
+ 197 00ad 21010000 		.4byte	.LASF12
+ 198 00b1 02       		.byte	0x2
+ 199 00b2 22       		.byte	0x22
+ 200 00b3 25000000 		.4byte	0x25
+ 201 00b7 04       		.byte	0x4
+ 202 00b8 08       		.uleb128 0x8
+ 203 00b9 A3000000 		.4byte	.LASF13
+ 204 00bd 02       		.byte	0x2
+ 205 00be 23       		.byte	0x23
+ 206 00bf 25000000 		.4byte	0x25
+ 207 00c3 08       		.byte	0x8
+ 208 00c4 08       		.uleb128 0x8
+ 209 00c5 F0010000 		.4byte	.LASF14
+ 210 00c9 02       		.byte	0x2
+ 211 00ca 24       		.byte	0x24
+ 212 00cb 25000000 		.4byte	0x25
+ 213 00cf 0C       		.byte	0xc
+ 214 00d0 08       		.uleb128 0x8
+ 215 00d1 B3010000 		.4byte	.LASF15
+ 216 00d5 02       		.byte	0x2
+ 217 00d6 25       		.byte	0x25
+ 218 00d7 25000000 		.4byte	0x25
+ 219 00db 10       		.byte	0x10
+ 220 00dc 08       		.uleb128 0x8
+ 221 00dd C4010000 		.4byte	.LASF16
+ 222 00e1 02       		.byte	0x2
+ 223 00e2 26       		.byte	0x26
+ 224 00e3 25000000 		.4byte	0x25
+ 225 00e7 14       		.byte	0x14
+ 226 00e8 08       		.uleb128 0x8
+ 227 00e9 95000000 		.4byte	.LASF17
+ 228 00ed 02       		.byte	0x2
+ 229 00ee 27       		.byte	0x27
+ 230 00ef 25000000 		.4byte	0x25
+ 231 00f3 18       		.byte	0x18
+ 232 00f4 08       		.uleb128 0x8
+ 233 00f5 F5000000 		.4byte	.LASF18
+ 234 00f9 02       		.byte	0x2
+ 235 00fa 28       		.byte	0x28
+ 236 00fb 25000000 		.4byte	0x25
+ 237 00ff 1C       		.byte	0x1c
+ 238 0100 08       		.uleb128 0x8
+ 239 0101 EC000000 		.4byte	.LASF19
+ 240 0105 02       		.byte	0x2
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 6
+
+
+ 241 0106 29       		.byte	0x29
+ 242 0107 25000000 		.4byte	0x25
+ 243 010b 20       		.byte	0x20
+ 244 010c 00       		.byte	0
+ 245 010d 09       		.uleb128 0x9
+ 246 010e F8010000 		.4byte	.LASF21
+ 247 0112 01       		.byte	0x1
+ 248 0113 11       		.byte	0x11
+ 249 0114 8A000000 		.4byte	0x8a
+ 250 0118 00000000 		.4byte	.LFB0
+ 251 011c 30000000 		.4byte	.LFE0-.LFB0
+ 252 0120 01       		.uleb128 0x1
+ 253 0121 9C       		.byte	0x9c
+ 254 0122 8A010000 		.4byte	0x18a
+ 255 0126 0A       		.uleb128 0xa
+ 256 0127 EA010000 		.4byte	.LASF20
+ 257 012b 01       		.byte	0x1
+ 258 012c 12       		.byte	0x12
+ 259 012d 8A010000 		.4byte	0x18a
+ 260 0131 06       		.uleb128 0x6
+ 261 0132 F2       		.byte	0xf2
+ 262 0133 D3010000 		.4byte	.Ldebug_info0+467
+ 263 0137 00       		.sleb128 0
+ 264 0138 0B       		.uleb128 0xb
+ 265 0139 7400     		.ascii	"t\000"
+ 266 013b 01       		.byte	0x1
+ 267 013c 13       		.byte	0x13
+ 268 013d 95000000 		.4byte	0x95
+ 269 0141 02       		.uleb128 0x2
+ 270 0142 91       		.byte	0x91
+ 271 0143 54       		.sleb128 -44
+ 272 0144 0C       		.uleb128 0xc
+ 273 0145 72657400 		.ascii	"ret\000"
+ 274 0149 01       		.byte	0x1
+ 275 014a 14       		.byte	0x14
+ 276 014b 7F000000 		.4byte	0x7f
+ 277 014f 00000000 		.4byte	.LLST0
+ 278 0153 0D       		.uleb128 0xd
+ 279 0154 0E000000 		.4byte	.LVL0
+ 280 0158 EC010000 		.4byte	0x1ec
+ 281 015c 79010000 		.4byte	0x179
+ 282 0160 0E       		.uleb128 0xe
+ 283 0161 01       		.uleb128 0x1
+ 284 0162 52       		.byte	0x52
+ 285 0163 02       		.uleb128 0x2
+ 286 0164 91       		.byte	0x91
+ 287 0165 54       		.sleb128 -44
+ 288 0166 0E       		.uleb128 0xe
+ 289 0167 01       		.uleb128 0x1
+ 290 0168 51       		.byte	0x51
+ 291 0169 05       		.uleb128 0x5
+ 292 016a 03       		.byte	0x3
+ 293 016b 15000000 		.4byte	.LC2
+ 294 016f 0E       		.uleb128 0xe
+ 295 0170 01       		.uleb128 0x1
+ 296 0171 50       		.byte	0x50
+ 297 0172 05       		.uleb128 0x5
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 7
+
+
+ 298 0173 03       		.byte	0x3
+ 299 0174 00000000 		.4byte	.LC0
+ 300 0178 00       		.byte	0
+ 301 0179 0F       		.uleb128 0xf
+ 302 017a 22000000 		.4byte	.LVL3
+ 303 017e 11020000 		.4byte	0x211
+ 304 0182 0E       		.uleb128 0xe
+ 305 0183 01       		.uleb128 0x1
+ 306 0184 50       		.byte	0x50
+ 307 0185 02       		.uleb128 0x2
+ 308 0186 91       		.byte	0x91
+ 309 0187 54       		.sleb128 -44
+ 310 0188 00       		.byte	0
+ 311 0189 00       		.byte	0
+ 312 018a 05       		.uleb128 0x5
+ 313 018b 7F000000 		.4byte	0x7f
+ 314 018f 10       		.uleb128 0x10
+ 315 0190 CC010000 		.4byte	.LASF22
+ 316 0194 01       		.byte	0x1
+ 317 0195 20       		.byte	0x20
+ 318 0196 00000000 		.4byte	.LFB1
+ 319 019a 0C000000 		.4byte	.LFE1-.LFB1
+ 320 019e 01       		.uleb128 0x1
+ 321 019f 9C       		.byte	0x9c
+ 322 01a0 D3010000 		.4byte	0x1d3
+ 323 01a4 11       		.uleb128 0x11
+ 324 01a5 7400     		.ascii	"t\000"
+ 325 01a7 01       		.byte	0x1
+ 326 01a8 20       		.byte	0x20
+ 327 01a9 8A000000 		.4byte	0x8a
+ 328 01ad 1E000000 		.4byte	.LLST1
+ 329 01b1 12       		.uleb128 0x12
+ 330 01b2 9D000000 		.4byte	.LASF29
+ 331 01b6 01       		.byte	0x1
+ 332 01b7 21       		.byte	0x21
+ 333 01b8 25000000 		.4byte	0x25
+ 334 01bc C2010000 		.4byte	0x1c2
+ 335 01c0 13       		.uleb128 0x13
+ 336 01c1 00       		.byte	0
+ 337 01c2 0F       		.uleb128 0xf
+ 338 01c3 0A000000 		.4byte	.LVL6
+ 339 01c7 26020000 		.4byte	0x226
+ 340 01cb 0E       		.uleb128 0xe
+ 341 01cc 01       		.uleb128 0x1
+ 342 01cd 50       		.byte	0x50
+ 343 01ce 02       		.uleb128 0x2
+ 344 01cf 91       		.byte	0x91
+ 345 01d0 74       		.sleb128 -12
+ 346 01d1 00       		.byte	0
+ 347 01d2 00       		.byte	0
+ 348 01d3 14       		.uleb128 0x14
+ 349 01d4 17       		.uleb128 0x17
+ 350 01d5 9E       		.byte	0x9e
+ 351 01d6 15       		.uleb128 0x15
+ 352 01d7 4D       		.byte	0x4d
+ 353 01d8 61       		.byte	0x61
+ 354 01d9 72       		.byte	0x72
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 8
+
+
+ 355 01da 20       		.byte	0x20
+ 356 01db 32       		.byte	0x32
+ 357 01dc 33       		.byte	0x33
+ 358 01dd 20       		.byte	0x20
+ 359 01de 32       		.byte	0x32
+ 360 01df 30       		.byte	0x30
+ 361 01e0 31       		.byte	0x31
+ 362 01e1 37       		.byte	0x37
+ 363 01e2 20       		.byte	0x20
+ 364 01e3 30       		.byte	0x30
+ 365 01e4 39       		.byte	0x39
+ 366 01e5 3A       		.byte	0x3a
+ 367 01e6 32       		.byte	0x32
+ 368 01e7 36       		.byte	0x36
+ 369 01e8 3A       		.byte	0x3a
+ 370 01e9 32       		.byte	0x32
+ 371 01ea 31       		.byte	0x31
+ 372 01eb 00       		.byte	0
+ 373 01ec 15       		.uleb128 0x15
+ 374 01ed 97010000 		.4byte	.LASF23
+ 375 01f1 02       		.byte	0x2
+ 376 01f2 4F       		.byte	0x4f
+ 377 01f3 72000000 		.4byte	0x72
+ 378 01f7 0B020000 		.4byte	0x20b
+ 379 01fb 16       		.uleb128 0x16
+ 380 01fc 7F000000 		.4byte	0x7f
+ 381 0200 16       		.uleb128 0x16
+ 382 0201 7F000000 		.4byte	0x7f
+ 383 0205 16       		.uleb128 0x16
+ 384 0206 0B020000 		.4byte	0x20b
+ 385 020a 00       		.byte	0
+ 386 020b 04       		.uleb128 0x4
+ 387 020c 04       		.byte	0x4
+ 388 020d 95000000 		.4byte	0x95
+ 389 0211 15       		.uleb128 0x15
+ 390 0212 00000000 		.4byte	.LASF24
+ 391 0216 02       		.byte	0x2
+ 392 0217 34       		.byte	0x34
+ 393 0218 8A000000 		.4byte	0x8a
+ 394 021c 26020000 		.4byte	0x226
+ 395 0220 16       		.uleb128 0x16
+ 396 0221 0B020000 		.4byte	0x20b
+ 397 0225 00       		.byte	0
+ 398 0226 17       		.uleb128 0x17
+ 399 0227 9D000000 		.4byte	.LASF29
+ 400 022b 01       		.byte	0x1
+ 401 022c 21       		.byte	0x21
+ 402 022d 25000000 		.4byte	0x25
+ 403 0231 13       		.uleb128 0x13
+ 404 0232 00       		.byte	0
+ 405 0233 00       		.byte	0
+ 406              		.section	.debug_abbrev,"",%progbits
+ 407              	.Ldebug_abbrev0:
+ 408 0000 01       		.uleb128 0x1
+ 409 0001 11       		.uleb128 0x11
+ 410 0002 01       		.byte	0x1
+ 411 0003 25       		.uleb128 0x25
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 9
+
+
+ 412 0004 0E       		.uleb128 0xe
+ 413 0005 13       		.uleb128 0x13
+ 414 0006 0B       		.uleb128 0xb
+ 415 0007 03       		.uleb128 0x3
+ 416 0008 0E       		.uleb128 0xe
+ 417 0009 1B       		.uleb128 0x1b
+ 418 000a 0E       		.uleb128 0xe
+ 419 000b 55       		.uleb128 0x55
+ 420 000c 17       		.uleb128 0x17
+ 421 000d 11       		.uleb128 0x11
+ 422 000e 01       		.uleb128 0x1
+ 423 000f 10       		.uleb128 0x10
+ 424 0010 17       		.uleb128 0x17
+ 425 0011 00       		.byte	0
+ 426 0012 00       		.byte	0
+ 427 0013 02       		.uleb128 0x2
+ 428 0014 24       		.uleb128 0x24
+ 429 0015 00       		.byte	0
+ 430 0016 0B       		.uleb128 0xb
+ 431 0017 0B       		.uleb128 0xb
+ 432 0018 3E       		.uleb128 0x3e
+ 433 0019 0B       		.uleb128 0xb
+ 434 001a 03       		.uleb128 0x3
+ 435 001b 08       		.uleb128 0x8
+ 436 001c 00       		.byte	0
+ 437 001d 00       		.byte	0
+ 438 001e 03       		.uleb128 0x3
+ 439 001f 24       		.uleb128 0x24
+ 440 0020 00       		.byte	0
+ 441 0021 0B       		.uleb128 0xb
+ 442 0022 0B       		.uleb128 0xb
+ 443 0023 3E       		.uleb128 0x3e
+ 444 0024 0B       		.uleb128 0xb
+ 445 0025 03       		.uleb128 0x3
+ 446 0026 0E       		.uleb128 0xe
+ 447 0027 00       		.byte	0
+ 448 0028 00       		.byte	0
+ 449 0029 04       		.uleb128 0x4
+ 450 002a 0F       		.uleb128 0xf
+ 451 002b 00       		.byte	0
+ 452 002c 0B       		.uleb128 0xb
+ 453 002d 0B       		.uleb128 0xb
+ 454 002e 49       		.uleb128 0x49
+ 455 002f 13       		.uleb128 0x13
+ 456 0030 00       		.byte	0
+ 457 0031 00       		.byte	0
+ 458 0032 05       		.uleb128 0x5
+ 459 0033 26       		.uleb128 0x26
+ 460 0034 00       		.byte	0
+ 461 0035 49       		.uleb128 0x49
+ 462 0036 13       		.uleb128 0x13
+ 463 0037 00       		.byte	0
+ 464 0038 00       		.byte	0
+ 465 0039 06       		.uleb128 0x6
+ 466 003a 16       		.uleb128 0x16
+ 467 003b 00       		.byte	0
+ 468 003c 03       		.uleb128 0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 10
+
+
+ 469 003d 0E       		.uleb128 0xe
+ 470 003e 3A       		.uleb128 0x3a
+ 471 003f 0B       		.uleb128 0xb
+ 472 0040 3B       		.uleb128 0x3b
+ 473 0041 0B       		.uleb128 0xb
+ 474 0042 49       		.uleb128 0x49
+ 475 0043 13       		.uleb128 0x13
+ 476 0044 00       		.byte	0
+ 477 0045 00       		.byte	0
+ 478 0046 07       		.uleb128 0x7
+ 479 0047 13       		.uleb128 0x13
+ 480 0048 01       		.byte	0x1
+ 481 0049 03       		.uleb128 0x3
+ 482 004a 08       		.uleb128 0x8
+ 483 004b 0B       		.uleb128 0xb
+ 484 004c 0B       		.uleb128 0xb
+ 485 004d 3A       		.uleb128 0x3a
+ 486 004e 0B       		.uleb128 0xb
+ 487 004f 3B       		.uleb128 0x3b
+ 488 0050 0B       		.uleb128 0xb
+ 489 0051 01       		.uleb128 0x1
+ 490 0052 13       		.uleb128 0x13
+ 491 0053 00       		.byte	0
+ 492 0054 00       		.byte	0
+ 493 0055 08       		.uleb128 0x8
+ 494 0056 0D       		.uleb128 0xd
+ 495 0057 00       		.byte	0
+ 496 0058 03       		.uleb128 0x3
+ 497 0059 0E       		.uleb128 0xe
+ 498 005a 3A       		.uleb128 0x3a
+ 499 005b 0B       		.uleb128 0xb
+ 500 005c 3B       		.uleb128 0x3b
+ 501 005d 0B       		.uleb128 0xb
+ 502 005e 49       		.uleb128 0x49
+ 503 005f 13       		.uleb128 0x13
+ 504 0060 38       		.uleb128 0x38
+ 505 0061 0B       		.uleb128 0xb
+ 506 0062 00       		.byte	0
+ 507 0063 00       		.byte	0
+ 508 0064 09       		.uleb128 0x9
+ 509 0065 2E       		.uleb128 0x2e
+ 510 0066 01       		.byte	0x1
+ 511 0067 3F       		.uleb128 0x3f
+ 512 0068 19       		.uleb128 0x19
+ 513 0069 03       		.uleb128 0x3
+ 514 006a 0E       		.uleb128 0xe
+ 515 006b 3A       		.uleb128 0x3a
+ 516 006c 0B       		.uleb128 0xb
+ 517 006d 3B       		.uleb128 0x3b
+ 518 006e 0B       		.uleb128 0xb
+ 519 006f 49       		.uleb128 0x49
+ 520 0070 13       		.uleb128 0x13
+ 521 0071 11       		.uleb128 0x11
+ 522 0072 01       		.uleb128 0x1
+ 523 0073 12       		.uleb128 0x12
+ 524 0074 06       		.uleb128 0x6
+ 525 0075 40       		.uleb128 0x40
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 11
+
+
+ 526 0076 18       		.uleb128 0x18
+ 527 0077 9742     		.uleb128 0x2117
+ 528 0079 19       		.uleb128 0x19
+ 529 007a 01       		.uleb128 0x1
+ 530 007b 13       		.uleb128 0x13
+ 531 007c 00       		.byte	0
+ 532 007d 00       		.byte	0
+ 533 007e 0A       		.uleb128 0xa
+ 534 007f 34       		.uleb128 0x34
+ 535 0080 00       		.byte	0
+ 536 0081 03       		.uleb128 0x3
+ 537 0082 0E       		.uleb128 0xe
+ 538 0083 3A       		.uleb128 0x3a
+ 539 0084 0B       		.uleb128 0xb
+ 540 0085 3B       		.uleb128 0x3b
+ 541 0086 0B       		.uleb128 0xb
+ 542 0087 49       		.uleb128 0x49
+ 543 0088 13       		.uleb128 0x13
+ 544 0089 02       		.uleb128 0x2
+ 545 008a 18       		.uleb128 0x18
+ 546 008b 00       		.byte	0
+ 547 008c 00       		.byte	0
+ 548 008d 0B       		.uleb128 0xb
+ 549 008e 34       		.uleb128 0x34
+ 550 008f 00       		.byte	0
+ 551 0090 03       		.uleb128 0x3
+ 552 0091 08       		.uleb128 0x8
+ 553 0092 3A       		.uleb128 0x3a
+ 554 0093 0B       		.uleb128 0xb
+ 555 0094 3B       		.uleb128 0x3b
+ 556 0095 0B       		.uleb128 0xb
+ 557 0096 49       		.uleb128 0x49
+ 558 0097 13       		.uleb128 0x13
+ 559 0098 02       		.uleb128 0x2
+ 560 0099 18       		.uleb128 0x18
+ 561 009a 00       		.byte	0
+ 562 009b 00       		.byte	0
+ 563 009c 0C       		.uleb128 0xc
+ 564 009d 34       		.uleb128 0x34
+ 565 009e 00       		.byte	0
+ 566 009f 03       		.uleb128 0x3
+ 567 00a0 08       		.uleb128 0x8
+ 568 00a1 3A       		.uleb128 0x3a
+ 569 00a2 0B       		.uleb128 0xb
+ 570 00a3 3B       		.uleb128 0x3b
+ 571 00a4 0B       		.uleb128 0xb
+ 572 00a5 49       		.uleb128 0x49
+ 573 00a6 13       		.uleb128 0x13
+ 574 00a7 02       		.uleb128 0x2
+ 575 00a8 17       		.uleb128 0x17
+ 576 00a9 00       		.byte	0
+ 577 00aa 00       		.byte	0
+ 578 00ab 0D       		.uleb128 0xd
+ 579 00ac 898201   		.uleb128 0x4109
+ 580 00af 01       		.byte	0x1
+ 581 00b0 11       		.uleb128 0x11
+ 582 00b1 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 12
+
+
+ 583 00b2 31       		.uleb128 0x31
+ 584 00b3 13       		.uleb128 0x13
+ 585 00b4 01       		.uleb128 0x1
+ 586 00b5 13       		.uleb128 0x13
+ 587 00b6 00       		.byte	0
+ 588 00b7 00       		.byte	0
+ 589 00b8 0E       		.uleb128 0xe
+ 590 00b9 8A8201   		.uleb128 0x410a
+ 591 00bc 00       		.byte	0
+ 592 00bd 02       		.uleb128 0x2
+ 593 00be 18       		.uleb128 0x18
+ 594 00bf 9142     		.uleb128 0x2111
+ 595 00c1 18       		.uleb128 0x18
+ 596 00c2 00       		.byte	0
+ 597 00c3 00       		.byte	0
+ 598 00c4 0F       		.uleb128 0xf
+ 599 00c5 898201   		.uleb128 0x4109
+ 600 00c8 01       		.byte	0x1
+ 601 00c9 11       		.uleb128 0x11
+ 602 00ca 01       		.uleb128 0x1
+ 603 00cb 31       		.uleb128 0x31
+ 604 00cc 13       		.uleb128 0x13
+ 605 00cd 00       		.byte	0
+ 606 00ce 00       		.byte	0
+ 607 00cf 10       		.uleb128 0x10
+ 608 00d0 2E       		.uleb128 0x2e
+ 609 00d1 01       		.byte	0x1
+ 610 00d2 3F       		.uleb128 0x3f
+ 611 00d3 19       		.uleb128 0x19
+ 612 00d4 03       		.uleb128 0x3
+ 613 00d5 0E       		.uleb128 0xe
+ 614 00d6 3A       		.uleb128 0x3a
+ 615 00d7 0B       		.uleb128 0xb
+ 616 00d8 3B       		.uleb128 0x3b
+ 617 00d9 0B       		.uleb128 0xb
+ 618 00da 27       		.uleb128 0x27
+ 619 00db 19       		.uleb128 0x19
+ 620 00dc 11       		.uleb128 0x11
+ 621 00dd 01       		.uleb128 0x1
+ 622 00de 12       		.uleb128 0x12
+ 623 00df 06       		.uleb128 0x6
+ 624 00e0 40       		.uleb128 0x40
+ 625 00e1 18       		.uleb128 0x18
+ 626 00e2 9742     		.uleb128 0x2117
+ 627 00e4 19       		.uleb128 0x19
+ 628 00e5 01       		.uleb128 0x1
+ 629 00e6 13       		.uleb128 0x13
+ 630 00e7 00       		.byte	0
+ 631 00e8 00       		.byte	0
+ 632 00e9 11       		.uleb128 0x11
+ 633 00ea 05       		.uleb128 0x5
+ 634 00eb 00       		.byte	0
+ 635 00ec 03       		.uleb128 0x3
+ 636 00ed 08       		.uleb128 0x8
+ 637 00ee 3A       		.uleb128 0x3a
+ 638 00ef 0B       		.uleb128 0xb
+ 639 00f0 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 13
+
+
+ 640 00f1 0B       		.uleb128 0xb
+ 641 00f2 49       		.uleb128 0x49
+ 642 00f3 13       		.uleb128 0x13
+ 643 00f4 02       		.uleb128 0x2
+ 644 00f5 17       		.uleb128 0x17
+ 645 00f6 00       		.byte	0
+ 646 00f7 00       		.byte	0
+ 647 00f8 12       		.uleb128 0x12
+ 648 00f9 2E       		.uleb128 0x2e
+ 649 00fa 01       		.byte	0x1
+ 650 00fb 3F       		.uleb128 0x3f
+ 651 00fc 19       		.uleb128 0x19
+ 652 00fd 03       		.uleb128 0x3
+ 653 00fe 0E       		.uleb128 0xe
+ 654 00ff 3A       		.uleb128 0x3a
+ 655 0100 0B       		.uleb128 0xb
+ 656 0101 3B       		.uleb128 0x3b
+ 657 0102 0B       		.uleb128 0xb
+ 658 0103 49       		.uleb128 0x49
+ 659 0104 13       		.uleb128 0x13
+ 660 0105 3C       		.uleb128 0x3c
+ 661 0106 19       		.uleb128 0x19
+ 662 0107 01       		.uleb128 0x1
+ 663 0108 13       		.uleb128 0x13
+ 664 0109 00       		.byte	0
+ 665 010a 00       		.byte	0
+ 666 010b 13       		.uleb128 0x13
+ 667 010c 18       		.uleb128 0x18
+ 668 010d 00       		.byte	0
+ 669 010e 00       		.byte	0
+ 670 010f 00       		.byte	0
+ 671 0110 14       		.uleb128 0x14
+ 672 0111 36       		.uleb128 0x36
+ 673 0112 00       		.byte	0
+ 674 0113 02       		.uleb128 0x2
+ 675 0114 18       		.uleb128 0x18
+ 676 0115 00       		.byte	0
+ 677 0116 00       		.byte	0
+ 678 0117 15       		.uleb128 0x15
+ 679 0118 2E       		.uleb128 0x2e
+ 680 0119 01       		.byte	0x1
+ 681 011a 3F       		.uleb128 0x3f
+ 682 011b 19       		.uleb128 0x19
+ 683 011c 03       		.uleb128 0x3
+ 684 011d 0E       		.uleb128 0xe
+ 685 011e 3A       		.uleb128 0x3a
+ 686 011f 0B       		.uleb128 0xb
+ 687 0120 3B       		.uleb128 0x3b
+ 688 0121 0B       		.uleb128 0xb
+ 689 0122 27       		.uleb128 0x27
+ 690 0123 19       		.uleb128 0x19
+ 691 0124 49       		.uleb128 0x49
+ 692 0125 13       		.uleb128 0x13
+ 693 0126 3C       		.uleb128 0x3c
+ 694 0127 19       		.uleb128 0x19
+ 695 0128 01       		.uleb128 0x1
+ 696 0129 13       		.uleb128 0x13
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 14
+
+
+ 697 012a 00       		.byte	0
+ 698 012b 00       		.byte	0
+ 699 012c 16       		.uleb128 0x16
+ 700 012d 05       		.uleb128 0x5
+ 701 012e 00       		.byte	0
+ 702 012f 49       		.uleb128 0x49
+ 703 0130 13       		.uleb128 0x13
+ 704 0131 00       		.byte	0
+ 705 0132 00       		.byte	0
+ 706 0133 17       		.uleb128 0x17
+ 707 0134 2E       		.uleb128 0x2e
+ 708 0135 01       		.byte	0x1
+ 709 0136 3F       		.uleb128 0x3f
+ 710 0137 19       		.uleb128 0x19
+ 711 0138 03       		.uleb128 0x3
+ 712 0139 0E       		.uleb128 0xe
+ 713 013a 3A       		.uleb128 0x3a
+ 714 013b 0B       		.uleb128 0xb
+ 715 013c 3B       		.uleb128 0x3b
+ 716 013d 0B       		.uleb128 0xb
+ 717 013e 49       		.uleb128 0x49
+ 718 013f 13       		.uleb128 0x13
+ 719 0140 3C       		.uleb128 0x3c
+ 720 0141 19       		.uleb128 0x19
+ 721 0142 00       		.byte	0
+ 722 0143 00       		.byte	0
+ 723 0144 00       		.byte	0
+ 724              		.section	.debug_loc,"",%progbits
+ 725              	.Ldebug_loc0:
+ 726              	.LLST0:
+ 727 0000 12000000 		.4byte	.LVL1
+ 728 0004 18000000 		.4byte	.LVL2
+ 729 0008 0100     		.2byte	0x1
+ 730 000a 50       		.byte	0x50
+ 731 000b 18000000 		.4byte	.LVL2
+ 732 000f 21000000 		.4byte	.LVL3-1
+ 733 0013 0100     		.2byte	0x1
+ 734 0015 52       		.byte	0x52
+ 735 0016 00000000 		.4byte	0
+ 736 001a 00000000 		.4byte	0
+ 737              	.LLST1:
+ 738 001e 00000000 		.4byte	.LVL4
+ 739 0022 06000000 		.4byte	.LVL5
+ 740 0026 0100     		.2byte	0x1
+ 741 0028 50       		.byte	0x50
+ 742 0029 06000000 		.4byte	.LVL5
+ 743 002d 09000000 		.4byte	.LVL6-1
+ 744 0031 0200     		.2byte	0x2
+ 745 0033 70       		.byte	0x70
+ 746 0034 00       		.sleb128 0
+ 747 0035 09000000 		.4byte	.LVL6-1
+ 748 0039 0C000000 		.4byte	.LFE1
+ 749 003d 0200     		.2byte	0x2
+ 750 003f 91       		.byte	0x91
+ 751 0040 74       		.sleb128 -12
+ 752 0041 00000000 		.4byte	0
+ 753 0045 00000000 		.4byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 15
+
+
+ 754              		.section	.debug_aranges,"",%progbits
+ 755 0000 24000000 		.4byte	0x24
+ 756 0004 0200     		.2byte	0x2
+ 757 0006 00000000 		.4byte	.Ldebug_info0
+ 758 000a 04       		.byte	0x4
+ 759 000b 00       		.byte	0
+ 760 000c 0000     		.2byte	0
+ 761 000e 0000     		.2byte	0
+ 762 0010 00000000 		.4byte	.LFB0
+ 763 0014 30000000 		.4byte	.LFE0-.LFB0
+ 764 0018 00000000 		.4byte	.LFB1
+ 765 001c 0C000000 		.4byte	.LFE1-.LFB1
+ 766 0020 00000000 		.4byte	0
+ 767 0024 00000000 		.4byte	0
+ 768              		.section	.debug_ranges,"",%progbits
+ 769              	.Ldebug_ranges0:
+ 770 0000 00000000 		.4byte	.LFB0
+ 771 0004 30000000 		.4byte	.LFE0
+ 772 0008 00000000 		.4byte	.LFB1
+ 773 000c 0C000000 		.4byte	.LFE1
+ 774 0010 00000000 		.4byte	0
+ 775 0014 00000000 		.4byte	0
+ 776              		.section	.debug_line,"",%progbits
+ 777              	.Ldebug_line0:
+ 778 0000 4B010000 		.section	.debug_str,"MS",%progbits,1
+ 778      02001C01 
+ 778      00000201 
+ 778      FB0E0D00 
+ 778      01010101 
+ 779              	.LASF24:
+ 780 0000 6D6B7469 		.ascii	"mktime\000"
+ 780      6D6500
+ 781              	.LASF25:
+ 782 0007 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 782      4320342E 
+ 782      392E3320 
+ 782      32303135 
+ 782      30333033 
+ 783 003a 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 783      20726576 
+ 783      6973696F 
+ 783      6E203232 
+ 783      31323230 
+ 784 006d 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 784      66756E63 
+ 784      74696F6E 
+ 784      2D736563 
+ 784      74696F6E 
+ 785              	.LASF17:
+ 786 0095 746D5F77 		.ascii	"tm_wday\000"
+ 786      64617900 
+ 787              	.LASF29:
+ 788 009d 7374696D 		.ascii	"stime\000"
+ 788      6500
+ 789              	.LASF13:
+ 790 00a3 746D5F68 		.ascii	"tm_hour\000"
+ 790      6F757200 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 16
+
+
+ 791              	.LASF2:
+ 792 00ab 756E7369 		.ascii	"unsigned char\000"
+ 792      676E6564 
+ 792      20636861 
+ 792      7200
+ 793              	.LASF6:
+ 794 00b9 6C6F6E67 		.ascii	"long unsigned int\000"
+ 794      20756E73 
+ 794      69676E65 
+ 794      6420696E 
+ 794      7400
+ 795              	.LASF4:
+ 796 00cb 73686F72 		.ascii	"short unsigned int\000"
+ 796      7420756E 
+ 796      7369676E 
+ 796      65642069 
+ 796      6E7400
+ 797              	.LASF28:
+ 798 00de 74696D65 		.ascii	"time_t\000"
+ 798      5F7400
+ 799              	.LASF11:
+ 800 00e5 746D5F73 		.ascii	"tm_sec\000"
+ 800      656300
+ 801              	.LASF19:
+ 802 00ec 746D5F69 		.ascii	"tm_isdst\000"
+ 802      73647374 
+ 802      00
+ 803              	.LASF18:
+ 804 00f5 746D5F79 		.ascii	"tm_yday\000"
+ 804      64617900 
+ 805              	.LASF0:
+ 806 00fd 756E7369 		.ascii	"unsigned int\000"
+ 806      676E6564 
+ 806      20696E74 
+ 806      00
+ 807              	.LASF8:
+ 808 010a 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 808      206C6F6E 
+ 808      6720756E 
+ 808      7369676E 
+ 808      65642069 
+ 809              	.LASF12:
+ 810 0121 746D5F6D 		.ascii	"tm_min\000"
+ 810      696E00
+ 811              	.LASF27:
+ 812 0128 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 812      73657273 
+ 812      5C646465 
+ 812      6D69646F 
+ 812      765C446F 
+ 813 0156 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 813      6530315C 
+ 813      53656E73 
+ 813      65416269 
+ 813      6C697479 
+ 814              	.LASF26:
+ 815 0171 2E2E5C61 		.ascii	"..\\acn-sdk-c\\src\\time\\time.c\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\cclXVnAe.s 			page 17
+
+
+ 815      636E2D73 
+ 815      646B2D63 
+ 815      5C737263 
+ 815      5C74696D 
+ 816              	.LASF9:
+ 817 018e 73697A65 		.ascii	"sizetype\000"
+ 817      74797065 
+ 817      00
+ 818              	.LASF23:
+ 819 0197 73747270 		.ascii	"strptime\000"
+ 819      74696D65 
+ 819      00
+ 820              	.LASF7:
+ 821 01a0 6C6F6E67 		.ascii	"long long int\000"
+ 821      206C6F6E 
+ 821      6720696E 
+ 821      7400
+ 822              	.LASF10:
+ 823 01ae 63686172 		.ascii	"char\000"
+ 823      00
+ 824              	.LASF15:
+ 825 01b3 746D5F6D 		.ascii	"tm_mon\000"
+ 825      6F6E00
+ 826              	.LASF3:
+ 827 01ba 73686F72 		.ascii	"short int\000"
+ 827      7420696E 
+ 827      7400
+ 828              	.LASF16:
+ 829 01c4 746D5F79 		.ascii	"tm_year\000"
+ 829      65617200 
+ 830              	.LASF22:
+ 831 01cc 7365745F 		.ascii	"set_time\000"
+ 831      74696D65 
+ 831      00
+ 832              	.LASF5:
+ 833 01d5 6C6F6E67 		.ascii	"long int\000"
+ 833      20696E74 
+ 833      00
+ 834              	.LASF1:
+ 835 01de 7369676E 		.ascii	"signed char\000"
+ 835      65642063 
+ 835      68617200 
+ 836              	.LASF20:
+ 837 01ea 6275696C 		.ascii	"built\000"
+ 837      7400
+ 838              	.LASF14:
+ 839 01f0 746D5F6D 		.ascii	"tm_mday\000"
+ 839      64617900 
+ 840              	.LASF21:
+ 841 01f8 6275696C 		.ascii	"build_time\000"
+ 841      645F7469 
+ 841      6D6500
+ 842              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

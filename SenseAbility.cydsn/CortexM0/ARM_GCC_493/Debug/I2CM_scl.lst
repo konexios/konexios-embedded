@@ -1,0 +1,941 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"I2CM_scl.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.I2CM_scl_Write,"ax",%progbits
+  18              		.align	1
+  19              		.global	I2CM_scl_Write
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	I2CM_scl_Write, %function
+  23              	I2CM_scl_Write:
+  24              	.LFB0:
+  25              		.file 1 ".\\Generated_Source\\PSoC4\\I2CM_scl.c"
+   1:.\Generated_Source\PSoC4/I2CM_scl.c **** /*******************************************************************************
+   2:.\Generated_Source\PSoC4/I2CM_scl.c **** * File Name: I2CM_scl.c  
+   3:.\Generated_Source\PSoC4/I2CM_scl.c **** * Version 2.10
+   4:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+   5:.\Generated_Source\PSoC4/I2CM_scl.c **** * Description:
+   6:.\Generated_Source\PSoC4/I2CM_scl.c **** *  This file contains API to enable firmware control of a Pins component.
+   7:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+   8:.\Generated_Source\PSoC4/I2CM_scl.c **** * Note:
+   9:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  10:.\Generated_Source\PSoC4/I2CM_scl.c **** ********************************************************************************
+  11:.\Generated_Source\PSoC4/I2CM_scl.c **** * Copyright 2008-2014, Cypress Semiconductor Corporation.  All rights reserved.
+  12:.\Generated_Source\PSoC4/I2CM_scl.c **** * You may use this file only in accordance with the license, terms, conditions, 
+  13:.\Generated_Source\PSoC4/I2CM_scl.c **** * disclaimers, and limitations in the end user license agreement accompanying 
+  14:.\Generated_Source\PSoC4/I2CM_scl.c **** * the software package with which this file was provided.
+  15:.\Generated_Source\PSoC4/I2CM_scl.c **** *******************************************************************************/
+  16:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  17:.\Generated_Source\PSoC4/I2CM_scl.c **** #include "cytypes.h"
+  18:.\Generated_Source\PSoC4/I2CM_scl.c **** #include "I2CM_scl.h"
+  19:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  20:.\Generated_Source\PSoC4/I2CM_scl.c **** #define SetP4PinDriveMode(shift, mode)  \
+  21:.\Generated_Source\PSoC4/I2CM_scl.c ****     do { \
+  22:.\Generated_Source\PSoC4/I2CM_scl.c ****         I2CM_scl_PC =   (I2CM_scl_PC & \
+  23:.\Generated_Source\PSoC4/I2CM_scl.c ****                                 (uint32)(~(uint32)(I2CM_scl_DRIVE_MODE_IND_MASK << (I2CM_scl_DRIVE_
+  24:.\Generated_Source\PSoC4/I2CM_scl.c ****                                 (uint32)((uint32)(mode) << (I2CM_scl_DRIVE_MODE_BITS * (shift))); \
+  25:.\Generated_Source\PSoC4/I2CM_scl.c ****     } while (0)
+  26:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  27:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  28:.\Generated_Source\PSoC4/I2CM_scl.c **** /*******************************************************************************
+  29:.\Generated_Source\PSoC4/I2CM_scl.c **** * Function Name: I2CM_scl_Write
+  30:.\Generated_Source\PSoC4/I2CM_scl.c **** ********************************************************************************
+  31:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  32:.\Generated_Source\PSoC4/I2CM_scl.c **** * Summary:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 2
+
+
+  33:.\Generated_Source\PSoC4/I2CM_scl.c **** *  Assign a new value to the digital port's data output register.  
+  34:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  35:.\Generated_Source\PSoC4/I2CM_scl.c **** * Parameters:  
+  36:.\Generated_Source\PSoC4/I2CM_scl.c **** *  prtValue:  The value to be assigned to the Digital Port. 
+  37:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  38:.\Generated_Source\PSoC4/I2CM_scl.c **** * Return: 
+  39:.\Generated_Source\PSoC4/I2CM_scl.c **** *  None 
+  40:.\Generated_Source\PSoC4/I2CM_scl.c **** *  
+  41:.\Generated_Source\PSoC4/I2CM_scl.c **** *******************************************************************************/
+  42:.\Generated_Source\PSoC4/I2CM_scl.c **** void I2CM_scl_Write(uint8 value) 
+  43:.\Generated_Source\PSoC4/I2CM_scl.c **** {
+  26              		.loc 1 43 0
+  27              		.cfi_startproc
+  28              	.LVL0:
+  44:.\Generated_Source\PSoC4/I2CM_scl.c ****     uint8 drVal = (uint8)(I2CM_scl_DR & (uint8)(~I2CM_scl_MASK));
+  29              		.loc 1 44 0
+  30 0000 2023     		mov	r3, #32
+  31 0002 0449     		ldr	r1, .L2
+  45:.\Generated_Source\PSoC4/I2CM_scl.c ****     drVal = (drVal | ((uint8)(value << I2CM_scl_SHIFT) & I2CM_scl_MASK));
+  32              		.loc 1 45 0
+  33 0004 4001     		lsl	r0, r0, #5
+  34              	.LVL1:
+  44:.\Generated_Source\PSoC4/I2CM_scl.c ****     uint8 drVal = (uint8)(I2CM_scl_DR & (uint8)(~I2CM_scl_MASK));
+  35              		.loc 1 44 0
+  36 0006 0A68     		ldr	r2, [r1]
+  46:.\Generated_Source\PSoC4/I2CM_scl.c ****     I2CM_scl_DR = (uint32)drVal;
+  47:.\Generated_Source\PSoC4/I2CM_scl.c **** }
+  37              		.loc 1 47 0
+  38              		@ sp needed
+  44:.\Generated_Source\PSoC4/I2CM_scl.c ****     drVal = (drVal | ((uint8)(value << I2CM_scl_SHIFT) & I2CM_scl_MASK));
+  39              		.loc 1 44 0
+  40 0008 9A43     		bic	r2, r3
+  41 000a D2B2     		uxtb	r2, r2
+  45:.\Generated_Source\PSoC4/I2CM_scl.c ****     drVal = (drVal | ((uint8)(value << I2CM_scl_SHIFT) & I2CM_scl_MASK));
+  42              		.loc 1 45 0
+  43 000c 0340     		and	r3, r0
+  46:.\Generated_Source\PSoC4/I2CM_scl.c ****     I2CM_scl_DR = (uint32)drVal;
+  44              		.loc 1 46 0
+  45 000e 1343     		orr	r3, r2
+  46 0010 0B60     		str	r3, [r1]
+  47              		.loc 1 47 0
+  48 0012 7047     		bx	lr
+  49              	.L3:
+  50              		.align	2
+  51              	.L2:
+  52 0014 00030440 		.word	1074004736
+  53              		.cfi_endproc
+  54              	.LFE0:
+  55              		.size	I2CM_scl_Write, .-I2CM_scl_Write
+  56              		.section	.text.I2CM_scl_SetDriveMode,"ax",%progbits
+  57              		.align	1
+  58              		.global	I2CM_scl_SetDriveMode
+  59              		.code	16
+  60              		.thumb_func
+  61              		.type	I2CM_scl_SetDriveMode, %function
+  62              	I2CM_scl_SetDriveMode:
+  63              	.LFB1:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 3
+
+
+  48:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  49:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  50:.\Generated_Source\PSoC4/I2CM_scl.c **** /*******************************************************************************
+  51:.\Generated_Source\PSoC4/I2CM_scl.c **** * Function Name: I2CM_scl_SetDriveMode
+  52:.\Generated_Source\PSoC4/I2CM_scl.c **** ********************************************************************************
+  53:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  54:.\Generated_Source\PSoC4/I2CM_scl.c **** * Summary:
+  55:.\Generated_Source\PSoC4/I2CM_scl.c **** *  Change the drive mode on the pins of the port.
+  56:.\Generated_Source\PSoC4/I2CM_scl.c **** * 
+  57:.\Generated_Source\PSoC4/I2CM_scl.c **** * Parameters:  
+  58:.\Generated_Source\PSoC4/I2CM_scl.c **** *  mode:  Change the pins to one of the following drive modes.
+  59:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  60:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_STRONG     Strong Drive 
+  61:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_OD_HI      Open Drain, Drives High 
+  62:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_OD_LO      Open Drain, Drives Low 
+  63:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_RES_UP     Resistive Pull Up 
+  64:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_RES_DWN    Resistive Pull Down 
+  65:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_RES_UPDWN  Resistive Pull Up/Down 
+  66:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_DIG_HIZ    High Impedance Digital 
+  67:.\Generated_Source\PSoC4/I2CM_scl.c **** *  I2CM_scl_DM_ALG_HIZ    High Impedance Analog 
+  68:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  69:.\Generated_Source\PSoC4/I2CM_scl.c **** * Return: 
+  70:.\Generated_Source\PSoC4/I2CM_scl.c **** *  None
+  71:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  72:.\Generated_Source\PSoC4/I2CM_scl.c **** *******************************************************************************/
+  73:.\Generated_Source\PSoC4/I2CM_scl.c **** void I2CM_scl_SetDriveMode(uint8 mode) 
+  74:.\Generated_Source\PSoC4/I2CM_scl.c **** {
+  64              		.loc 1 74 0
+  65              		.cfi_startproc
+  66              	.LVL2:
+  75:.\Generated_Source\PSoC4/I2CM_scl.c **** 	SetP4PinDriveMode(I2CM_scl__0__SHIFT, mode);
+  67              		.loc 1 75 0
+  68 0000 034A     		ldr	r2, .L5
+  69 0002 044B     		ldr	r3, .L5+4
+  70 0004 1168     		ldr	r1, [r2]
+  71 0006 C003     		lsl	r0, r0, #15
+  72              	.LVL3:
+  73 0008 0B40     		and	r3, r1
+  74 000a 1843     		orr	r0, r3
+  75 000c 1060     		str	r0, [r2]
+  76:.\Generated_Source\PSoC4/I2CM_scl.c **** }
+  76              		.loc 1 76 0
+  77              		@ sp needed
+  78 000e 7047     		bx	lr
+  79              	.L6:
+  80              		.align	2
+  81              	.L5:
+  82 0010 08030440 		.word	1074004744
+  83 0014 FF7FFCFF 		.word	-229377
+  84              		.cfi_endproc
+  85              	.LFE1:
+  86              		.size	I2CM_scl_SetDriveMode, .-I2CM_scl_SetDriveMode
+  87              		.section	.text.I2CM_scl_Read,"ax",%progbits
+  88              		.align	1
+  89              		.global	I2CM_scl_Read
+  90              		.code	16
+  91              		.thumb_func
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 4
+
+
+  92              		.type	I2CM_scl_Read, %function
+  93              	I2CM_scl_Read:
+  94              	.LFB2:
+  77:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  78:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+  79:.\Generated_Source\PSoC4/I2CM_scl.c **** /*******************************************************************************
+  80:.\Generated_Source\PSoC4/I2CM_scl.c **** * Function Name: I2CM_scl_Read
+  81:.\Generated_Source\PSoC4/I2CM_scl.c **** ********************************************************************************
+  82:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  83:.\Generated_Source\PSoC4/I2CM_scl.c **** * Summary:
+  84:.\Generated_Source\PSoC4/I2CM_scl.c **** *  Read the current value on the pins of the Digital Port in right justified 
+  85:.\Generated_Source\PSoC4/I2CM_scl.c **** *  form.
+  86:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  87:.\Generated_Source\PSoC4/I2CM_scl.c **** * Parameters:  
+  88:.\Generated_Source\PSoC4/I2CM_scl.c **** *  None 
+  89:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+  90:.\Generated_Source\PSoC4/I2CM_scl.c **** * Return: 
+  91:.\Generated_Source\PSoC4/I2CM_scl.c **** *  Returns the current value of the Digital Port as a right justified number
+  92:.\Generated_Source\PSoC4/I2CM_scl.c **** *  
+  93:.\Generated_Source\PSoC4/I2CM_scl.c **** * Note:
+  94:.\Generated_Source\PSoC4/I2CM_scl.c **** *  Macro I2CM_scl_ReadPS calls this function. 
+  95:.\Generated_Source\PSoC4/I2CM_scl.c **** *  
+  96:.\Generated_Source\PSoC4/I2CM_scl.c **** *******************************************************************************/
+  97:.\Generated_Source\PSoC4/I2CM_scl.c **** uint8 I2CM_scl_Read(void) 
+  98:.\Generated_Source\PSoC4/I2CM_scl.c **** {
+  95              		.loc 1 98 0
+  96              		.cfi_startproc
+  99:.\Generated_Source\PSoC4/I2CM_scl.c ****     return (uint8)((I2CM_scl_PS & I2CM_scl_MASK) >> I2CM_scl_SHIFT);
+  97              		.loc 1 99 0
+  98 0000 024B     		ldr	r3, .L8
+ 100:.\Generated_Source\PSoC4/I2CM_scl.c **** }
+  99              		.loc 1 100 0
+ 100              		@ sp needed
+  99:.\Generated_Source\PSoC4/I2CM_scl.c ****     return (uint8)((I2CM_scl_PS & I2CM_scl_MASK) >> I2CM_scl_SHIFT);
+ 101              		.loc 1 99 0
+ 102 0002 1868     		ldr	r0, [r3]
+ 103 0004 8006     		lsl	r0, r0, #26
+ 104 0006 C00F     		lsr	r0, r0, #31
+ 105              		.loc 1 100 0
+ 106 0008 7047     		bx	lr
+ 107              	.L9:
+ 108 000a C046     		.align	2
+ 109              	.L8:
+ 110 000c 04030440 		.word	1074004740
+ 111              		.cfi_endproc
+ 112              	.LFE2:
+ 113              		.size	I2CM_scl_Read, .-I2CM_scl_Read
+ 114              		.section	.text.I2CM_scl_ReadDataReg,"ax",%progbits
+ 115              		.align	1
+ 116              		.global	I2CM_scl_ReadDataReg
+ 117              		.code	16
+ 118              		.thumb_func
+ 119              		.type	I2CM_scl_ReadDataReg, %function
+ 120              	I2CM_scl_ReadDataReg:
+ 121              	.LFB3:
+ 101:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+ 102:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 5
+
+
+ 103:.\Generated_Source\PSoC4/I2CM_scl.c **** /*******************************************************************************
+ 104:.\Generated_Source\PSoC4/I2CM_scl.c **** * Function Name: I2CM_scl_ReadDataReg
+ 105:.\Generated_Source\PSoC4/I2CM_scl.c **** ********************************************************************************
+ 106:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+ 107:.\Generated_Source\PSoC4/I2CM_scl.c **** * Summary:
+ 108:.\Generated_Source\PSoC4/I2CM_scl.c **** *  Read the current value assigned to a Digital Port's data output register
+ 109:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+ 110:.\Generated_Source\PSoC4/I2CM_scl.c **** * Parameters:  
+ 111:.\Generated_Source\PSoC4/I2CM_scl.c **** *  None 
+ 112:.\Generated_Source\PSoC4/I2CM_scl.c **** *
+ 113:.\Generated_Source\PSoC4/I2CM_scl.c **** * Return: 
+ 114:.\Generated_Source\PSoC4/I2CM_scl.c **** *  Returns the current value assigned to the Digital Port's data output register
+ 115:.\Generated_Source\PSoC4/I2CM_scl.c **** *  
+ 116:.\Generated_Source\PSoC4/I2CM_scl.c **** *******************************************************************************/
+ 117:.\Generated_Source\PSoC4/I2CM_scl.c **** uint8 I2CM_scl_ReadDataReg(void) 
+ 118:.\Generated_Source\PSoC4/I2CM_scl.c **** {
+ 122              		.loc 1 118 0
+ 123              		.cfi_startproc
+ 119:.\Generated_Source\PSoC4/I2CM_scl.c ****     return (uint8)((I2CM_scl_DR & I2CM_scl_MASK) >> I2CM_scl_SHIFT);
+ 124              		.loc 1 119 0
+ 125 0000 024B     		ldr	r3, .L11
+ 120:.\Generated_Source\PSoC4/I2CM_scl.c **** }
+ 126              		.loc 1 120 0
+ 127              		@ sp needed
+ 119:.\Generated_Source\PSoC4/I2CM_scl.c ****     return (uint8)((I2CM_scl_DR & I2CM_scl_MASK) >> I2CM_scl_SHIFT);
+ 128              		.loc 1 119 0
+ 129 0002 1868     		ldr	r0, [r3]
+ 130 0004 8006     		lsl	r0, r0, #26
+ 131 0006 C00F     		lsr	r0, r0, #31
+ 132              		.loc 1 120 0
+ 133 0008 7047     		bx	lr
+ 134              	.L12:
+ 135 000a C046     		.align	2
+ 136              	.L11:
+ 137 000c 00030440 		.word	1074004736
+ 138              		.cfi_endproc
+ 139              	.LFE3:
+ 140              		.size	I2CM_scl_ReadDataReg, .-I2CM_scl_ReadDataReg
+ 141              		.section	.text.I2CM_scl_ClearInterrupt,"ax",%progbits
+ 142              		.align	1
+ 143              		.global	I2CM_scl_ClearInterrupt
+ 144              		.code	16
+ 145              		.thumb_func
+ 146              		.type	I2CM_scl_ClearInterrupt, %function
+ 147              	I2CM_scl_ClearInterrupt:
+ 148              	.LFB4:
+ 121:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+ 122:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+ 123:.\Generated_Source\PSoC4/I2CM_scl.c **** /* If Interrupts Are Enabled for this Pins component */ 
+ 124:.\Generated_Source\PSoC4/I2CM_scl.c **** #if defined(I2CM_scl_INTSTAT) 
+ 125:.\Generated_Source\PSoC4/I2CM_scl.c **** 
+ 126:.\Generated_Source\PSoC4/I2CM_scl.c ****     /*******************************************************************************
+ 127:.\Generated_Source\PSoC4/I2CM_scl.c ****     * Function Name: I2CM_scl_ClearInterrupt
+ 128:.\Generated_Source\PSoC4/I2CM_scl.c ****     ********************************************************************************
+ 129:.\Generated_Source\PSoC4/I2CM_scl.c ****     *
+ 130:.\Generated_Source\PSoC4/I2CM_scl.c ****     * Summary:
+ 131:.\Generated_Source\PSoC4/I2CM_scl.c ****     *  Clears any active interrupts attached to port and returns the value of the 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 6
+
+
+ 132:.\Generated_Source\PSoC4/I2CM_scl.c ****     *  interrupt status register.
+ 133:.\Generated_Source\PSoC4/I2CM_scl.c ****     *
+ 134:.\Generated_Source\PSoC4/I2CM_scl.c ****     * Parameters:  
+ 135:.\Generated_Source\PSoC4/I2CM_scl.c ****     *  None 
+ 136:.\Generated_Source\PSoC4/I2CM_scl.c ****     *
+ 137:.\Generated_Source\PSoC4/I2CM_scl.c ****     * Return: 
+ 138:.\Generated_Source\PSoC4/I2CM_scl.c ****     *  Returns the value of the interrupt status register
+ 139:.\Generated_Source\PSoC4/I2CM_scl.c ****     *  
+ 140:.\Generated_Source\PSoC4/I2CM_scl.c ****     *******************************************************************************/
+ 141:.\Generated_Source\PSoC4/I2CM_scl.c ****     uint8 I2CM_scl_ClearInterrupt(void) 
+ 142:.\Generated_Source\PSoC4/I2CM_scl.c ****     {
+ 149              		.loc 1 142 0
+ 150              		.cfi_startproc
+ 143:.\Generated_Source\PSoC4/I2CM_scl.c **** 		uint8 maskedStatus = (uint8)(I2CM_scl_INTSTAT & I2CM_scl_MASK);
+ 151              		.loc 1 143 0
+ 152 0000 2023     		mov	r3, #32
+ 153 0002 034A     		ldr	r2, .L14
+ 144:.\Generated_Source\PSoC4/I2CM_scl.c **** 		I2CM_scl_INTSTAT = maskedStatus;
+ 145:.\Generated_Source\PSoC4/I2CM_scl.c ****         return maskedStatus >> I2CM_scl_SHIFT;
+ 146:.\Generated_Source\PSoC4/I2CM_scl.c ****     }
+ 154              		.loc 1 146 0
+ 155              		@ sp needed
+ 143:.\Generated_Source\PSoC4/I2CM_scl.c **** 		uint8 maskedStatus = (uint8)(I2CM_scl_INTSTAT & I2CM_scl_MASK);
+ 156              		.loc 1 143 0
+ 157 0004 1068     		ldr	r0, [r2]
+ 158 0006 1840     		and	r0, r3
+ 159              	.LVL4:
+ 144:.\Generated_Source\PSoC4/I2CM_scl.c **** 		I2CM_scl_INTSTAT = maskedStatus;
+ 160              		.loc 1 144 0
+ 161 0008 1060     		str	r0, [r2]
+ 145:.\Generated_Source\PSoC4/I2CM_scl.c ****     }
+ 162              		.loc 1 145 0
+ 163 000a 4009     		lsr	r0, r0, #5
+ 164              	.LVL5:
+ 165 000c C0B2     		uxtb	r0, r0
+ 166              		.loc 1 146 0
+ 167 000e 7047     		bx	lr
+ 168              	.L15:
+ 169              		.align	2
+ 170              	.L14:
+ 171 0010 10030440 		.word	1074004752
+ 172              		.cfi_endproc
+ 173              	.LFE4:
+ 174              		.size	I2CM_scl_ClearInterrupt, .-I2CM_scl_ClearInterrupt
+ 175              		.text
+ 176              	.Letext0:
+ 177              		.file 2 ".\\Generated_Source\\PSoC4\\cytypes.h"
+ 178              		.section	.debug_info,"",%progbits
+ 179              	.Ldebug_info0:
+ 180 0000 4A010000 		.4byte	0x14a
+ 181 0004 0400     		.2byte	0x4
+ 182 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 183 000a 04       		.byte	0x4
+ 184 000b 01       		.uleb128 0x1
+ 185 000c 06000000 		.4byte	.LASF22
+ 186 0010 01       		.byte	0x1
+ 187 0011 9A000000 		.4byte	.LASF23
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 7
+
+
+ 188 0015 42010000 		.4byte	.LASF24
+ 189 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 190 001d 00000000 		.4byte	0
+ 191 0021 00000000 		.4byte	.Ldebug_line0
+ 192 0025 02       		.uleb128 0x2
+ 193 0026 01       		.byte	0x1
+ 194 0027 06       		.byte	0x6
+ 195 0028 FE010000 		.4byte	.LASF0
+ 196 002c 02       		.uleb128 0x2
+ 197 002d 01       		.byte	0x1
+ 198 002e 08       		.byte	0x8
+ 199 002f D2000000 		.4byte	.LASF1
+ 200 0033 02       		.uleb128 0x2
+ 201 0034 02       		.byte	0x2
+ 202 0035 05       		.byte	0x5
+ 203 0036 D6010000 		.4byte	.LASF2
+ 204 003a 02       		.uleb128 0x2
+ 205 003b 02       		.byte	0x2
+ 206 003c 07       		.byte	0x7
+ 207 003d F8000000 		.4byte	.LASF3
+ 208 0041 02       		.uleb128 0x2
+ 209 0042 04       		.byte	0x4
+ 210 0043 05       		.byte	0x5
+ 211 0044 F5010000 		.4byte	.LASF4
+ 212 0048 02       		.uleb128 0x2
+ 213 0049 04       		.byte	0x4
+ 214 004a 07       		.byte	0x7
+ 215 004b E6000000 		.4byte	.LASF5
+ 216 004f 02       		.uleb128 0x2
+ 217 0050 08       		.byte	0x8
+ 218 0051 05       		.byte	0x5
+ 219 0052 B6010000 		.4byte	.LASF6
+ 220 0056 02       		.uleb128 0x2
+ 221 0057 08       		.byte	0x8
+ 222 0058 07       		.byte	0x7
+ 223 0059 26010000 		.4byte	.LASF7
+ 224 005d 03       		.uleb128 0x3
+ 225 005e 04       		.byte	0x4
+ 226 005f 05       		.byte	0x5
+ 227 0060 696E7400 		.ascii	"int\000"
+ 228 0064 02       		.uleb128 0x2
+ 229 0065 04       		.byte	0x4
+ 230 0066 07       		.byte	0x7
+ 231 0067 19010000 		.4byte	.LASF8
+ 232 006b 04       		.uleb128 0x4
+ 233 006c E0010000 		.4byte	.LASF9
+ 234 0070 02       		.byte	0x2
+ 235 0071 3801     		.2byte	0x138
+ 236 0073 2C000000 		.4byte	0x2c
+ 237 0077 04       		.uleb128 0x4
+ 238 0078 12010000 		.4byte	.LASF10
+ 239 007c 02       		.byte	0x2
+ 240 007d 3A01     		.2byte	0x13a
+ 241 007f 48000000 		.4byte	0x48
+ 242 0083 02       		.uleb128 0x2
+ 243 0084 04       		.byte	0x4
+ 244 0085 04       		.byte	0x4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 8
+
+
+ 245 0086 CC000000 		.4byte	.LASF11
+ 246 008a 02       		.uleb128 0x2
+ 247 008b 08       		.byte	0x8
+ 248 008c 04       		.byte	0x4
+ 249 008d 0B010000 		.4byte	.LASF12
+ 250 0091 02       		.uleb128 0x2
+ 251 0092 01       		.byte	0x1
+ 252 0093 08       		.byte	0x8
+ 253 0094 D1010000 		.4byte	.LASF13
+ 254 0098 04       		.uleb128 0x4
+ 255 0099 00000000 		.4byte	.LASF14
+ 256 009d 02       		.byte	0x2
+ 257 009e E401     		.2byte	0x1e4
+ 258 00a0 A4000000 		.4byte	0xa4
+ 259 00a4 05       		.uleb128 0x5
+ 260 00a5 77000000 		.4byte	0x77
+ 261 00a9 06       		.uleb128 0x6
+ 262 00aa E6010000 		.4byte	.LASF15
+ 263 00ae 01       		.byte	0x1
+ 264 00af 2A       		.byte	0x2a
+ 265 00b0 00000000 		.4byte	.LFB0
+ 266 00b4 18000000 		.4byte	.LFE0-.LFB0
+ 267 00b8 01       		.uleb128 0x1
+ 268 00b9 9C       		.byte	0x9c
+ 269 00ba D9000000 		.4byte	0xd9
+ 270 00be 07       		.uleb128 0x7
+ 271 00bf 94000000 		.4byte	.LASF17
+ 272 00c3 01       		.byte	0x1
+ 273 00c4 2A       		.byte	0x2a
+ 274 00c5 6B000000 		.4byte	0x6b
+ 275 00c9 00000000 		.4byte	.LLST0
+ 276 00cd 08       		.uleb128 0x8
+ 277 00ce E0000000 		.4byte	.LASF25
+ 278 00d2 01       		.byte	0x1
+ 279 00d3 2C       		.byte	0x2c
+ 280 00d4 6B000000 		.4byte	0x6b
+ 281 00d8 00       		.byte	0
+ 282 00d9 06       		.uleb128 0x6
+ 283 00da 8B010000 		.4byte	.LASF16
+ 284 00de 01       		.byte	0x1
+ 285 00df 49       		.byte	0x49
+ 286 00e0 00000000 		.4byte	.LFB1
+ 287 00e4 18000000 		.4byte	.LFE1-.LFB1
+ 288 00e8 01       		.uleb128 0x1
+ 289 00e9 9C       		.byte	0x9c
+ 290 00ea FE000000 		.4byte	0xfe
+ 291 00ee 07       		.uleb128 0x7
+ 292 00ef 3D010000 		.4byte	.LASF18
+ 293 00f3 01       		.byte	0x1
+ 294 00f4 49       		.byte	0x49
+ 295 00f5 6B000000 		.4byte	0x6b
+ 296 00f9 21000000 		.4byte	.LLST1
+ 297 00fd 00       		.byte	0
+ 298 00fe 09       		.uleb128 0x9
+ 299 00ff BE000000 		.4byte	.LASF19
+ 300 0103 01       		.byte	0x1
+ 301 0104 61       		.byte	0x61
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 9
+
+
+ 302 0105 6B000000 		.4byte	0x6b
+ 303 0109 00000000 		.4byte	.LFB2
+ 304 010d 10000000 		.4byte	.LFE2-.LFB2
+ 305 0111 01       		.uleb128 0x1
+ 306 0112 9C       		.byte	0x9c
+ 307 0113 09       		.uleb128 0x9
+ 308 0114 A1010000 		.4byte	.LASF20
+ 309 0118 01       		.byte	0x1
+ 310 0119 75       		.byte	0x75
+ 311 011a 6B000000 		.4byte	0x6b
+ 312 011e 00000000 		.4byte	.LFB3
+ 313 0122 10000000 		.4byte	.LFE3-.LFB3
+ 314 0126 01       		.uleb128 0x1
+ 315 0127 9C       		.byte	0x9c
+ 316 0128 0A       		.uleb128 0xa
+ 317 0129 0A020000 		.4byte	.LASF21
+ 318 012d 01       		.byte	0x1
+ 319 012e 8D       		.byte	0x8d
+ 320 012f 6B000000 		.4byte	0x6b
+ 321 0133 00000000 		.4byte	.LFB4
+ 322 0137 14000000 		.4byte	.LFE4-.LFB4
+ 323 013b 01       		.uleb128 0x1
+ 324 013c 9C       		.byte	0x9c
+ 325 013d 0B       		.uleb128 0xb
+ 326 013e C4010000 		.4byte	.LASF26
+ 327 0142 01       		.byte	0x1
+ 328 0143 8F       		.byte	0x8f
+ 329 0144 6B000000 		.4byte	0x6b
+ 330 0148 42000000 		.4byte	.LLST2
+ 331 014c 00       		.byte	0
+ 332 014d 00       		.byte	0
+ 333              		.section	.debug_abbrev,"",%progbits
+ 334              	.Ldebug_abbrev0:
+ 335 0000 01       		.uleb128 0x1
+ 336 0001 11       		.uleb128 0x11
+ 337 0002 01       		.byte	0x1
+ 338 0003 25       		.uleb128 0x25
+ 339 0004 0E       		.uleb128 0xe
+ 340 0005 13       		.uleb128 0x13
+ 341 0006 0B       		.uleb128 0xb
+ 342 0007 03       		.uleb128 0x3
+ 343 0008 0E       		.uleb128 0xe
+ 344 0009 1B       		.uleb128 0x1b
+ 345 000a 0E       		.uleb128 0xe
+ 346 000b 55       		.uleb128 0x55
+ 347 000c 17       		.uleb128 0x17
+ 348 000d 11       		.uleb128 0x11
+ 349 000e 01       		.uleb128 0x1
+ 350 000f 10       		.uleb128 0x10
+ 351 0010 17       		.uleb128 0x17
+ 352 0011 00       		.byte	0
+ 353 0012 00       		.byte	0
+ 354 0013 02       		.uleb128 0x2
+ 355 0014 24       		.uleb128 0x24
+ 356 0015 00       		.byte	0
+ 357 0016 0B       		.uleb128 0xb
+ 358 0017 0B       		.uleb128 0xb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 10
+
+
+ 359 0018 3E       		.uleb128 0x3e
+ 360 0019 0B       		.uleb128 0xb
+ 361 001a 03       		.uleb128 0x3
+ 362 001b 0E       		.uleb128 0xe
+ 363 001c 00       		.byte	0
+ 364 001d 00       		.byte	0
+ 365 001e 03       		.uleb128 0x3
+ 366 001f 24       		.uleb128 0x24
+ 367 0020 00       		.byte	0
+ 368 0021 0B       		.uleb128 0xb
+ 369 0022 0B       		.uleb128 0xb
+ 370 0023 3E       		.uleb128 0x3e
+ 371 0024 0B       		.uleb128 0xb
+ 372 0025 03       		.uleb128 0x3
+ 373 0026 08       		.uleb128 0x8
+ 374 0027 00       		.byte	0
+ 375 0028 00       		.byte	0
+ 376 0029 04       		.uleb128 0x4
+ 377 002a 16       		.uleb128 0x16
+ 378 002b 00       		.byte	0
+ 379 002c 03       		.uleb128 0x3
+ 380 002d 0E       		.uleb128 0xe
+ 381 002e 3A       		.uleb128 0x3a
+ 382 002f 0B       		.uleb128 0xb
+ 383 0030 3B       		.uleb128 0x3b
+ 384 0031 05       		.uleb128 0x5
+ 385 0032 49       		.uleb128 0x49
+ 386 0033 13       		.uleb128 0x13
+ 387 0034 00       		.byte	0
+ 388 0035 00       		.byte	0
+ 389 0036 05       		.uleb128 0x5
+ 390 0037 35       		.uleb128 0x35
+ 391 0038 00       		.byte	0
+ 392 0039 49       		.uleb128 0x49
+ 393 003a 13       		.uleb128 0x13
+ 394 003b 00       		.byte	0
+ 395 003c 00       		.byte	0
+ 396 003d 06       		.uleb128 0x6
+ 397 003e 2E       		.uleb128 0x2e
+ 398 003f 01       		.byte	0x1
+ 399 0040 3F       		.uleb128 0x3f
+ 400 0041 19       		.uleb128 0x19
+ 401 0042 03       		.uleb128 0x3
+ 402 0043 0E       		.uleb128 0xe
+ 403 0044 3A       		.uleb128 0x3a
+ 404 0045 0B       		.uleb128 0xb
+ 405 0046 3B       		.uleb128 0x3b
+ 406 0047 0B       		.uleb128 0xb
+ 407 0048 27       		.uleb128 0x27
+ 408 0049 19       		.uleb128 0x19
+ 409 004a 11       		.uleb128 0x11
+ 410 004b 01       		.uleb128 0x1
+ 411 004c 12       		.uleb128 0x12
+ 412 004d 06       		.uleb128 0x6
+ 413 004e 40       		.uleb128 0x40
+ 414 004f 18       		.uleb128 0x18
+ 415 0050 9742     		.uleb128 0x2117
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 11
+
+
+ 416 0052 19       		.uleb128 0x19
+ 417 0053 01       		.uleb128 0x1
+ 418 0054 13       		.uleb128 0x13
+ 419 0055 00       		.byte	0
+ 420 0056 00       		.byte	0
+ 421 0057 07       		.uleb128 0x7
+ 422 0058 05       		.uleb128 0x5
+ 423 0059 00       		.byte	0
+ 424 005a 03       		.uleb128 0x3
+ 425 005b 0E       		.uleb128 0xe
+ 426 005c 3A       		.uleb128 0x3a
+ 427 005d 0B       		.uleb128 0xb
+ 428 005e 3B       		.uleb128 0x3b
+ 429 005f 0B       		.uleb128 0xb
+ 430 0060 49       		.uleb128 0x49
+ 431 0061 13       		.uleb128 0x13
+ 432 0062 02       		.uleb128 0x2
+ 433 0063 17       		.uleb128 0x17
+ 434 0064 00       		.byte	0
+ 435 0065 00       		.byte	0
+ 436 0066 08       		.uleb128 0x8
+ 437 0067 34       		.uleb128 0x34
+ 438 0068 00       		.byte	0
+ 439 0069 03       		.uleb128 0x3
+ 440 006a 0E       		.uleb128 0xe
+ 441 006b 3A       		.uleb128 0x3a
+ 442 006c 0B       		.uleb128 0xb
+ 443 006d 3B       		.uleb128 0x3b
+ 444 006e 0B       		.uleb128 0xb
+ 445 006f 49       		.uleb128 0x49
+ 446 0070 13       		.uleb128 0x13
+ 447 0071 00       		.byte	0
+ 448 0072 00       		.byte	0
+ 449 0073 09       		.uleb128 0x9
+ 450 0074 2E       		.uleb128 0x2e
+ 451 0075 00       		.byte	0
+ 452 0076 3F       		.uleb128 0x3f
+ 453 0077 19       		.uleb128 0x19
+ 454 0078 03       		.uleb128 0x3
+ 455 0079 0E       		.uleb128 0xe
+ 456 007a 3A       		.uleb128 0x3a
+ 457 007b 0B       		.uleb128 0xb
+ 458 007c 3B       		.uleb128 0x3b
+ 459 007d 0B       		.uleb128 0xb
+ 460 007e 27       		.uleb128 0x27
+ 461 007f 19       		.uleb128 0x19
+ 462 0080 49       		.uleb128 0x49
+ 463 0081 13       		.uleb128 0x13
+ 464 0082 11       		.uleb128 0x11
+ 465 0083 01       		.uleb128 0x1
+ 466 0084 12       		.uleb128 0x12
+ 467 0085 06       		.uleb128 0x6
+ 468 0086 40       		.uleb128 0x40
+ 469 0087 18       		.uleb128 0x18
+ 470 0088 9742     		.uleb128 0x2117
+ 471 008a 19       		.uleb128 0x19
+ 472 008b 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 12
+
+
+ 473 008c 00       		.byte	0
+ 474 008d 0A       		.uleb128 0xa
+ 475 008e 2E       		.uleb128 0x2e
+ 476 008f 01       		.byte	0x1
+ 477 0090 3F       		.uleb128 0x3f
+ 478 0091 19       		.uleb128 0x19
+ 479 0092 03       		.uleb128 0x3
+ 480 0093 0E       		.uleb128 0xe
+ 481 0094 3A       		.uleb128 0x3a
+ 482 0095 0B       		.uleb128 0xb
+ 483 0096 3B       		.uleb128 0x3b
+ 484 0097 0B       		.uleb128 0xb
+ 485 0098 27       		.uleb128 0x27
+ 486 0099 19       		.uleb128 0x19
+ 487 009a 49       		.uleb128 0x49
+ 488 009b 13       		.uleb128 0x13
+ 489 009c 11       		.uleb128 0x11
+ 490 009d 01       		.uleb128 0x1
+ 491 009e 12       		.uleb128 0x12
+ 492 009f 06       		.uleb128 0x6
+ 493 00a0 40       		.uleb128 0x40
+ 494 00a1 18       		.uleb128 0x18
+ 495 00a2 9742     		.uleb128 0x2117
+ 496 00a4 19       		.uleb128 0x19
+ 497 00a5 00       		.byte	0
+ 498 00a6 00       		.byte	0
+ 499 00a7 0B       		.uleb128 0xb
+ 500 00a8 34       		.uleb128 0x34
+ 501 00a9 00       		.byte	0
+ 502 00aa 03       		.uleb128 0x3
+ 503 00ab 0E       		.uleb128 0xe
+ 504 00ac 3A       		.uleb128 0x3a
+ 505 00ad 0B       		.uleb128 0xb
+ 506 00ae 3B       		.uleb128 0x3b
+ 507 00af 0B       		.uleb128 0xb
+ 508 00b0 49       		.uleb128 0x49
+ 509 00b1 13       		.uleb128 0x13
+ 510 00b2 02       		.uleb128 0x2
+ 511 00b3 17       		.uleb128 0x17
+ 512 00b4 00       		.byte	0
+ 513 00b5 00       		.byte	0
+ 514 00b6 00       		.byte	0
+ 515              		.section	.debug_loc,"",%progbits
+ 516              	.Ldebug_loc0:
+ 517              	.LLST0:
+ 518 0000 00000000 		.4byte	.LVL0
+ 519 0004 06000000 		.4byte	.LVL1
+ 520 0008 0100     		.2byte	0x1
+ 521 000a 50       		.byte	0x50
+ 522 000b 06000000 		.4byte	.LVL1
+ 523 000f 18000000 		.4byte	.LFE0
+ 524 0013 0400     		.2byte	0x4
+ 525 0015 F3       		.byte	0xf3
+ 526 0016 01       		.uleb128 0x1
+ 527 0017 50       		.byte	0x50
+ 528 0018 9F       		.byte	0x9f
+ 529 0019 00000000 		.4byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 13
+
+
+ 530 001d 00000000 		.4byte	0
+ 531              	.LLST1:
+ 532 0021 00000000 		.4byte	.LVL2
+ 533 0025 08000000 		.4byte	.LVL3
+ 534 0029 0100     		.2byte	0x1
+ 535 002b 50       		.byte	0x50
+ 536 002c 08000000 		.4byte	.LVL3
+ 537 0030 18000000 		.4byte	.LFE1
+ 538 0034 0400     		.2byte	0x4
+ 539 0036 F3       		.byte	0xf3
+ 540 0037 01       		.uleb128 0x1
+ 541 0038 50       		.byte	0x50
+ 542 0039 9F       		.byte	0x9f
+ 543 003a 00000000 		.4byte	0
+ 544 003e 00000000 		.4byte	0
+ 545              	.LLST2:
+ 546 0042 08000000 		.4byte	.LVL4
+ 547 0046 0C000000 		.4byte	.LVL5
+ 548 004a 0100     		.2byte	0x1
+ 549 004c 50       		.byte	0x50
+ 550 004d 0C000000 		.4byte	.LVL5
+ 551 0051 14000000 		.4byte	.LFE4
+ 552 0055 0400     		.2byte	0x4
+ 553 0057 72       		.byte	0x72
+ 554 0058 00       		.sleb128 0
+ 555 0059 06       		.byte	0x6
+ 556 005a 9F       		.byte	0x9f
+ 557 005b 00000000 		.4byte	0
+ 558 005f 00000000 		.4byte	0
+ 559              		.section	.debug_aranges,"",%progbits
+ 560 0000 3C000000 		.4byte	0x3c
+ 561 0004 0200     		.2byte	0x2
+ 562 0006 00000000 		.4byte	.Ldebug_info0
+ 563 000a 04       		.byte	0x4
+ 564 000b 00       		.byte	0
+ 565 000c 0000     		.2byte	0
+ 566 000e 0000     		.2byte	0
+ 567 0010 00000000 		.4byte	.LFB0
+ 568 0014 18000000 		.4byte	.LFE0-.LFB0
+ 569 0018 00000000 		.4byte	.LFB1
+ 570 001c 18000000 		.4byte	.LFE1-.LFB1
+ 571 0020 00000000 		.4byte	.LFB2
+ 572 0024 10000000 		.4byte	.LFE2-.LFB2
+ 573 0028 00000000 		.4byte	.LFB3
+ 574 002c 10000000 		.4byte	.LFE3-.LFB3
+ 575 0030 00000000 		.4byte	.LFB4
+ 576 0034 14000000 		.4byte	.LFE4-.LFB4
+ 577 0038 00000000 		.4byte	0
+ 578 003c 00000000 		.4byte	0
+ 579              		.section	.debug_ranges,"",%progbits
+ 580              	.Ldebug_ranges0:
+ 581 0000 00000000 		.4byte	.LFB0
+ 582 0004 18000000 		.4byte	.LFE0
+ 583 0008 00000000 		.4byte	.LFB1
+ 584 000c 18000000 		.4byte	.LFE1
+ 585 0010 00000000 		.4byte	.LFB2
+ 586 0014 10000000 		.4byte	.LFE2
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 14
+
+
+ 587 0018 00000000 		.4byte	.LFB3
+ 588 001c 10000000 		.4byte	.LFE3
+ 589 0020 00000000 		.4byte	.LFB4
+ 590 0024 14000000 		.4byte	.LFE4
+ 591 0028 00000000 		.4byte	0
+ 592 002c 00000000 		.4byte	0
+ 593              		.section	.debug_line,"",%progbits
+ 594              	.Ldebug_line0:
+ 595 0000 B4000000 		.section	.debug_str,"MS",%progbits,1
+ 595      02004700 
+ 595      00000201 
+ 595      FB0E0D00 
+ 595      01010101 
+ 596              	.LASF14:
+ 597 0000 72656733 		.ascii	"reg32\000"
+ 597      3200
+ 598              	.LASF22:
+ 599 0006 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 599      4320342E 
+ 599      392E3320 
+ 599      32303135 
+ 599      30333033 
+ 600 0039 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 600      20726576 
+ 600      6973696F 
+ 600      6E203232 
+ 600      31323230 
+ 601 006c 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 601      66756E63 
+ 601      74696F6E 
+ 601      2D736563 
+ 601      74696F6E 
+ 602              	.LASF17:
+ 603 0094 76616C75 		.ascii	"value\000"
+ 603      6500
+ 604              	.LASF23:
+ 605 009a 2E5C4765 		.ascii	".\\Generated_Source\\PSoC4\\I2CM_scl.c\000"
+ 605      6E657261 
+ 605      7465645F 
+ 605      536F7572 
+ 605      63655C50 
+ 606              	.LASF19:
+ 607 00be 4932434D 		.ascii	"I2CM_scl_Read\000"
+ 607      5F73636C 
+ 607      5F526561 
+ 607      6400
+ 608              	.LASF11:
+ 609 00cc 666C6F61 		.ascii	"float\000"
+ 609      7400
+ 610              	.LASF1:
+ 611 00d2 756E7369 		.ascii	"unsigned char\000"
+ 611      676E6564 
+ 611      20636861 
+ 611      7200
+ 612              	.LASF25:
+ 613 00e0 64725661 		.ascii	"drVal\000"
+ 613      6C00
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 15
+
+
+ 614              	.LASF5:
+ 615 00e6 6C6F6E67 		.ascii	"long unsigned int\000"
+ 615      20756E73 
+ 615      69676E65 
+ 615      6420696E 
+ 615      7400
+ 616              	.LASF3:
+ 617 00f8 73686F72 		.ascii	"short unsigned int\000"
+ 617      7420756E 
+ 617      7369676E 
+ 617      65642069 
+ 617      6E7400
+ 618              	.LASF12:
+ 619 010b 646F7562 		.ascii	"double\000"
+ 619      6C6500
+ 620              	.LASF10:
+ 621 0112 75696E74 		.ascii	"uint32\000"
+ 621      333200
+ 622              	.LASF8:
+ 623 0119 756E7369 		.ascii	"unsigned int\000"
+ 623      676E6564 
+ 623      20696E74 
+ 623      00
+ 624              	.LASF7:
+ 625 0126 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 625      206C6F6E 
+ 625      6720756E 
+ 625      7369676E 
+ 625      65642069 
+ 626              	.LASF18:
+ 627 013d 6D6F6465 		.ascii	"mode\000"
+ 627      00
+ 628              	.LASF24:
+ 629 0142 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 629      73657273 
+ 629      5C646465 
+ 629      6D69646F 
+ 629      765C446F 
+ 630 0170 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 630      6530315C 
+ 630      53656E73 
+ 630      65416269 
+ 630      6C697479 
+ 631              	.LASF16:
+ 632 018b 4932434D 		.ascii	"I2CM_scl_SetDriveMode\000"
+ 632      5F73636C 
+ 632      5F536574 
+ 632      44726976 
+ 632      654D6F64 
+ 633              	.LASF20:
+ 634 01a1 4932434D 		.ascii	"I2CM_scl_ReadDataReg\000"
+ 634      5F73636C 
+ 634      5F526561 
+ 634      64446174 
+ 634      61526567 
+ 635              	.LASF6:
+ 636 01b6 6C6F6E67 		.ascii	"long long int\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccyRGVFh.s 			page 16
+
+
+ 636      206C6F6E 
+ 636      6720696E 
+ 636      7400
+ 637              	.LASF26:
+ 638 01c4 6D61736B 		.ascii	"maskedStatus\000"
+ 638      65645374 
+ 638      61747573 
+ 638      00
+ 639              	.LASF13:
+ 640 01d1 63686172 		.ascii	"char\000"
+ 640      00
+ 641              	.LASF2:
+ 642 01d6 73686F72 		.ascii	"short int\000"
+ 642      7420696E 
+ 642      7400
+ 643              	.LASF9:
+ 644 01e0 75696E74 		.ascii	"uint8\000"
+ 644      3800
+ 645              	.LASF15:
+ 646 01e6 4932434D 		.ascii	"I2CM_scl_Write\000"
+ 646      5F73636C 
+ 646      5F577269 
+ 646      746500
+ 647              	.LASF4:
+ 648 01f5 6C6F6E67 		.ascii	"long int\000"
+ 648      20696E74 
+ 648      00
+ 649              	.LASF0:
+ 650 01fe 7369676E 		.ascii	"signed char\000"
+ 650      65642063 
+ 650      68617200 
+ 651              	.LASF21:
+ 652 020a 4932434D 		.ascii	"I2CM_scl_ClearInterrupt\000"
+ 652      5F73636C 
+ 652      5F436C65 
+ 652      6172496E 
+ 652      74657272 
+ 653              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

@@ -1,0 +1,3813 @@
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Sensor_Processes.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Sensor_Data_init,"ax",%progbits
+  18              		.align	1
+  19              		.global	Sensor_Data_init
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	Sensor_Data_init, %function
+  23              	Sensor_Data_init:
+  24              	.LFB63:
+  25              		.file 1 ".\\Sensor_Processes.c"
+   1:.\Sensor_Processes.c **** /* ========================================
+   2:.\Sensor_Processes.c ****  *
+   3:.\Sensor_Processes.c ****  * Copyright Arrow Electronics, 2015
+   4:.\Sensor_Processes.c ****  * All Rights Reserved
+   5:.\Sensor_Processes.c ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:.\Sensor_Processes.c ****  * 
+   7:.\Sensor_Processes.c ****  * Cypress Universal Sensor Eval Project
+   8:.\Sensor_Processes.c ****  *
+   9:.\Sensor_Processes.c ****  * Filename - Sensor_Processes.c
+  10:.\Sensor_Processes.c ****  *
+  11:.\Sensor_Processes.c ****  * Sensor Subroutines
+  12:.\Sensor_Processes.c ****  * ------------------
+  13:.\Sensor_Processes.c ****  *
+  14:.\Sensor_Processes.c ****  * Sensor_Present_Test - checks to see if sensors
+  15:.\Sensor_Processes.c ****  *   are present by writing to their I2C Address
+  16:.\Sensor_Processes.c ****  *   and checking for ACK or NACK
+  17:.\Sensor_Processes.c ****  *
+  18:.\Sensor_Processes.c ****  * Start_TH_Measurement - writes a byte to the 
+  19:.\Sensor_Processes.c ****  *   Humidicon sensor to start a Temperature and 
+  20:.\Sensor_Processes.c ****  *   Humidity measurement
+  21:.\Sensor_Processes.c ****  *
+  22:.\Sensor_Processes.c ****  * Read_Temp_and_Humidity - this reads the humidity 
+  23:.\Sensor_Processes.c ****  *   and temperature data, checks to make sure this 
+  24:.\Sensor_Processes.c ****  *   is new data and calls the temperature and humidity
+  25:.\Sensor_Processes.c ****  *   calculation subroutines
+  26:.\Sensor_Processes.c ****  *
+  27:.\Sensor_Processes.c ****  * TemperatureCalcuation - calculates the Temperature
+  28:.\Sensor_Processes.c ****  *   from the raw ADC data from the sensor and returns it
+  29:.\Sensor_Processes.c ****  *   in degrees C
+  30:.\Sensor_Processes.c ****  *
+  31:.\Sensor_Processes.c ****  * HumidityCalcuation - calculates the Relative Humidity
+  32:.\Sensor_Processes.c ****  *   from the raw ADC data from the sensor and returns it
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 2
+
+
+  33:.\Sensor_Processes.c ****  *   as a percentage
+  34:.\Sensor_Processes.c ****  *
+  35:.\Sensor_Processes.c ****  * Start_Airflow_Measurement - reads the 1st 3 words so
+  36:.\Sensor_Processes.c ****  *   that the next one is airflow data
+  37:.\Sensor_Processes.c ****  *
+  38:.\Sensor_Processes.c ****  * Read_Airflow - this reads the 2 byte (14 bit value)
+  39:.\Sensor_Processes.c ****  *   swaps the bytes, calculates the airflow and 
+  40:.\Sensor_Processes.c ****  *   stores it in the Sensor.data structure
+  41:.\Sensor_Processes.c ****  *
+  42:.\Sensor_Processes.c ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+  43:.\Sensor_Processes.c ****  * WHICH IS THE PROPERTY OF ARROW ELECTRONICS.
+  44:.\Sensor_Processes.c ****  *
+  45:.\Sensor_Processes.c ****  * ========================================
+  46:.\Sensor_Processes.c **** */
+  47:.\Sensor_Processes.c **** #include <project.h>
+  48:.\Sensor_Processes.c **** #include <main.h>
+  49:.\Sensor_Processes.c **** #include <Sensor_Processes.h>
+  50:.\Sensor_Processes.c **** 
+  51:.\Sensor_Processes.c **** struct /* Sensor Raw Data - MSB Read 1st followed by LSB */ 
+  52:.\Sensor_Processes.c **** {
+  53:.\Sensor_Processes.c ****     uint8   humidiconADChigh;   /* Humidity Sensor ADC high byte   */    
+  54:.\Sensor_Processes.c ****     uint8   humidiconADClow;    /* Humidity Sensor ADC low byte    */
+  55:.\Sensor_Processes.c ****     uint8   temperatureADChigh; /* Temperature Sensor high byte    */
+  56:.\Sensor_Processes.c ****     uint8   temperatureADClow ; /* Temperature Sensor low byte     */
+  57:.\Sensor_Processes.c ****     uint8   AirflowADChigh;     /* Airflow Sensor ADC high byte    */
+  58:.\Sensor_Processes.c ****     uint8   AirflowADClow;      /* Airflow Sensor ADC low byte     */
+  59:.\Sensor_Processes.c ****     uint8   pressureADChigh;    /* Pressure Sensor ADC high byte   */
+  60:.\Sensor_Processes.c ****     uint8   pressureADClow;     /* Pressure Sensor ADC high low   */
+  61:.\Sensor_Processes.c **** 
+  62:.\Sensor_Processes.c **** } Sensor_Raw ;
+  63:.\Sensor_Processes.c **** 
+  64:.\Sensor_Processes.c **** #define  I2C_TIMEOUT    0xfff
+  65:.\Sensor_Processes.c **** 
+  66:.\Sensor_Processes.c **** /*****************************************************************/
+  67:.\Sensor_Processes.c **** 
+  68:.\Sensor_Processes.c **** void Sensor_Data_init(Sensor_Data_t *data) {
+  26              		.loc 1 68 0
+  27              		.cfi_startproc
+  28              	.LVL0:
+  69:.\Sensor_Processes.c ****     data->Status = MAGNET_PRESENT_MASK;       /* Magnetic Switch Present */
+  29              		.loc 1 69 0
+  30 0000 0823     		mov	r3, #8
+  31 0002 0370     		strb	r3, [r0]
+  70:.\Sensor_Processes.c ****     data->Temperature = DEFAULT_TEMP;        
+  32              		.loc 1 70 0
+  33 0004 0C33     		add	r3, r3, #12
+  34 0006 4370     		strb	r3, [r0, #1]
+  71:.\Sensor_Processes.c ****     data->Humidity = HUMIDICON_I2C_ADDRESS;   
+  35              		.loc 1 71 0
+  36 0008 1333     		add	r3, r3, #19
+  37 000a 8370     		strb	r3, [r0, #2]
+  72:.\Sensor_Processes.c ****     data->Air_Flow = AIRFLOW_I2C_ADDRESS;     
+  38              		.loc 1 72 0
+  39 000c 2233     		add	r3, r3, #34
+  40 000e C380     		strh	r3, [r0, #6]
+  73:.\Sensor_Processes.c ****     data->Pressure = PRESSURE_I2C_ADDRESS;
+  41              		.loc 1 73 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 3
+
+
+  42 0010 113B     		sub	r3, r3, #17
+  43 0012 8380     		strh	r3, [r0, #4]
+  74:.\Sensor_Processes.c ****     data->Magnetic_Switch = 0x01;             /* Magnet not Present */ 
+  44              		.loc 1 74 0
+  45 0014 373B     		sub	r3, r3, #55
+  46 0016 C370     		strb	r3, [r0, #3]
+  75:.\Sensor_Processes.c **** }
+  47              		.loc 1 75 0
+  48              		@ sp needed
+  49 0018 7047     		bx	lr
+  50              		.cfi_endproc
+  51              	.LFE63:
+  52              		.size	Sensor_Data_init, .-Sensor_Data_init
+  53              		.section	.text.Sensor_Present_Test,"ax",%progbits
+  54              		.align	1
+  55              		.global	Sensor_Present_Test
+  56              		.code	16
+  57              		.thumb_func
+  58              		.type	Sensor_Present_Test, %function
+  59              	Sensor_Present_Test:
+  60              	.LFB64:
+  76:.\Sensor_Processes.c **** 
+  77:.\Sensor_Processes.c **** int Sensor_Present_Test(Sensor_Data_t *data) {
+  61              		.loc 1 77 0
+  62              		.cfi_startproc
+  63              	.LVL1:
+  64 0000 7FB5     		push	{r0, r1, r2, r3, r4, r5, r6, lr}
+  65              		.cfi_def_cfa_offset 32
+  66              		.cfi_offset 0, -32
+  67              		.cfi_offset 1, -28
+  68              		.cfi_offset 2, -24
+  69              		.cfi_offset 3, -20
+  70              		.cfi_offset 4, -16
+  71              		.cfi_offset 5, -12
+  72              		.cfi_offset 6, -8
+  73              		.cfi_offset 14, -4
+  78:.\Sensor_Processes.c ****     uint32  statusI2C;
+  79:.\Sensor_Processes.c ****     uint8   command = 0;
+  74              		.loc 1 79 0
+  75 0002 6B46     		mov	r3, sp
+  76 0004 DD1C     		add	r5, r3, #3
+  77 0006 0023     		mov	r3, #0
+  77:.\Sensor_Processes.c ****     uint32  statusI2C;
+  78              		.loc 1 77 0
+  79 0008 041C     		mov	r4, r0
+  80:.\Sensor_Processes.c ****     uint8   dummy[10];
+  81:.\Sensor_Processes.c ****     uint16   i;
+  82:.\Sensor_Processes.c ****     
+  83:.\Sensor_Processes.c ****     /* See if Humidicon sensor is present by Writing a Byte and reading Status for ACK or NACK */
+  84:.\Sensor_Processes.c ****     I2CM_I2CMasterWriteBuf(HUMIDICON_I2C_ADDRESS, &command, 1, I2CM_I2C_MODE_COMPLETE_XFER);
+  80              		.loc 1 84 0
+  81 000a 291C     		mov	r1, r5
+  82 000c 2720     		mov	r0, #39
+  83              	.LVL2:
+  84 000e 0122     		mov	r2, #1
+  85:.\Sensor_Processes.c **** 
+  86:.\Sensor_Processes.c ****     /* Waits until master completes write transfer */
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 4
+
+
+  87:.\Sensor_Processes.c ****     i = I2C_TIMEOUT;
+  88:.\Sensor_Processes.c ****     while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_WR_CMPLT)) if(!i--) return -1;
+  85              		.loc 1 88 0
+  86 0010 8026     		mov	r6, #128
+  79:.\Sensor_Processes.c ****     uint8   dummy[10];
+  87              		.loc 1 79 0
+  88 0012 2B70     		strb	r3, [r5]
+  84:.\Sensor_Processes.c **** 
+  89              		.loc 1 84 0
+  90 0014 FFF7FEFF 		bl	I2CM_I2CMasterWriteBuf
+  91              	.LVL3:
+  92              		.loc 1 88 0
+  93 0018 7601     		lsl	r6, r6, #5
+  94              	.LVL4:
+  95              	.L3:
+  96              		.loc 1 88 0 is_stmt 0 discriminator 2
+  97 001a FFF7FEFF 		bl	I2CM_I2CMasterStatus
+  98              	.LVL5:
+  99 001e 8307     		lsl	r3, r0, #30
+ 100 0020 05D4     		bmi	.L21
+ 101              	.LVL6:
+ 102 0022 013E     		sub	r6, r6, #1
+ 103              	.LVL7:
+ 104 0024 B6B2     		uxth	r6, r6
+ 105              		.loc 1 88 0 discriminator 3
+ 106 0026 002E     		cmp	r6, #0
+ 107 0028 F7D1     		bne	.L3
+ 108              		.loc 1 88 0
+ 109 002a 0120     		mov	r0, #1
+ 110 002c 4EE0     		b	.L19
+ 111              	.LVL8:
+ 112              	.L21:
+  89:.\Sensor_Processes.c ****     
+  90:.\Sensor_Processes.c ****     statusI2C = I2CM_I2CMasterStatus();
+ 113              		.loc 1 90 0 is_stmt 1
+ 114 002e FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 115              	.LVL9:
+  91:.\Sensor_Processes.c ****     if ((I2CM_I2C_MSTAT_ERR_MASK & statusI2C) == 0) {
+ 116              		.loc 1 91 0
+ 117 0032 FC21     		mov	r1, #252
+ 118 0034 8900     		lsl	r1, r1, #2
+ 119 0036 2378     		ldrb	r3, [r4]
+ 120 0038 0122     		mov	r2, #1
+ 121 003a 0842     		tst	r0, r1
+ 122 003c 01D1     		bne	.L6
+  92:.\Sensor_Processes.c ****         data->Status |= HUMIDICON_PRESENT_MASK;
+ 123              		.loc 1 92 0
+ 124 003e 1343     		orr	r3, r2
+ 125 0040 00E0     		b	.L18
+ 126              	.L6:
+  93:.\Sensor_Processes.c ****     }else {
+  94:.\Sensor_Processes.c ****         data->Status &= ~HUMIDICON_PRESENT_MASK;
+ 127              		.loc 1 94 0
+ 128 0042 9343     		bic	r3, r2
+ 129              	.L18:
+ 130 0044 2370     		strb	r3, [r4]
+  95:.\Sensor_Processes.c ****     }
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 5
+
+
+  96:.\Sensor_Processes.c ****     
+  97:.\Sensor_Processes.c ****     // See if Airflow sensor is present by Writing a Byte and reading Status for ACK or NACK
+  98:.\Sensor_Processes.c ****     I2CM_I2CMasterReadBuf(AIRFLOW_I2C_ADDRESS, dummy, 6, I2CM_I2C_MODE_COMPLETE_XFER);
+ 131              		.loc 1 98 0
+ 132 0046 4920     		mov	r0, #73
+ 133              	.LVL10:
+ 134 0048 01A9     		add	r1, sp, #4
+ 135 004a 0622     		mov	r2, #6
+ 136 004c 0023     		mov	r3, #0
+  99:.\Sensor_Processes.c **** 
+ 100:.\Sensor_Processes.c ****     // Waits until master completes write transfer
+ 101:.\Sensor_Processes.c ****     i = I2C_TIMEOUT;
+ 102:.\Sensor_Processes.c ****     while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_RD_CMPLT)) if(!i--) return -2;
+ 137              		.loc 1 102 0
+ 138 004e 8026     		mov	r6, #128
+ 139              	.LVL11:
+  98:.\Sensor_Processes.c **** 
+ 140              		.loc 1 98 0
+ 141 0050 FFF7FEFF 		bl	I2CM_I2CMasterReadBuf
+ 142              	.LVL12:
+ 143              		.loc 1 102 0
+ 144 0054 7601     		lsl	r6, r6, #5
+ 145              	.LVL13:
+ 146              	.L8:
+ 147              		.loc 1 102 0 is_stmt 0 discriminator 2
+ 148 0056 FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 149              	.LVL14:
+ 150 005a C307     		lsl	r3, r0, #31
+ 151 005c 05D4     		bmi	.L22
+ 152              	.LVL15:
+ 153 005e 013E     		sub	r6, r6, #1
+ 154              	.LVL16:
+ 155 0060 B6B2     		uxth	r6, r6
+ 156              		.loc 1 102 0 discriminator 3
+ 157 0062 002E     		cmp	r6, #0
+ 158 0064 F7D1     		bne	.L8
+ 159              		.loc 1 102 0
+ 160 0066 0220     		mov	r0, #2
+ 161 0068 30E0     		b	.L19
+ 162              	.LVL17:
+ 163              	.L22:
+ 103:.\Sensor_Processes.c ****     
+ 104:.\Sensor_Processes.c ****     statusI2C = I2CM_I2CMasterStatus();
+ 164              		.loc 1 104 0 is_stmt 1
+ 165 006a FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 166              	.LVL18:
+ 105:.\Sensor_Processes.c ****     if ((I2CM_I2C_MSTAT_ERR_MASK & statusI2C) == 0) {
+ 167              		.loc 1 105 0
+ 168 006e FC21     		mov	r1, #252
+ 169 0070 8900     		lsl	r1, r1, #2
+ 170 0072 0222     		mov	r2, #2
+ 171 0074 2378     		ldrb	r3, [r4]
+ 172 0076 0842     		tst	r0, r1
+ 173 0078 02D1     		bne	.L10
+ 106:.\Sensor_Processes.c ****         data->Status |= AIRFLOW_PRESENT_MASK;
+ 174              		.loc 1 106 0
+ 175 007a 1343     		orr	r3, r2
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 6
+
+
+ 176 007c 2370     		strb	r3, [r4]
+ 177 007e 03E0     		b	.L11
+ 178              	.L10:
+ 107:.\Sensor_Processes.c ****     } else {
+ 108:.\Sensor_Processes.c ****         data->Status &= ~AIRFLOW_PRESENT_MASK;
+ 179              		.loc 1 108 0
+ 180 0080 9343     		bic	r3, r2
+ 181 0082 2370     		strb	r3, [r4]
+ 109:.\Sensor_Processes.c ****         data->Air_Flow = 0x46;
+ 182              		.loc 1 109 0
+ 183 0084 4623     		mov	r3, #70
+ 184 0086 E380     		strh	r3, [r4, #6]
+ 185              	.L11:
+ 110:.\Sensor_Processes.c ****     }
+ 111:.\Sensor_Processes.c ****     
+ 112:.\Sensor_Processes.c ****     // See if Pressure sensor is present by Writing a Byte and reading Status for ACK or NACK
+ 113:.\Sensor_Processes.c ****     I2CM_I2CMasterWriteBuf(PRESSURE_I2C_ADDRESS, &command, 1, I2CM_I2C_MODE_COMPLETE_XFER);
+ 186              		.loc 1 113 0
+ 187 0088 291C     		mov	r1, r5
+ 188 008a 3820     		mov	r0, #56
+ 189              	.LVL19:
+ 190 008c 0122     		mov	r2, #1
+ 191 008e 0023     		mov	r3, #0
+ 114:.\Sensor_Processes.c ****     // Waits until master completes write transfer
+ 115:.\Sensor_Processes.c ****     i = I2C_TIMEOUT;
+ 116:.\Sensor_Processes.c ****     while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_WR_CMPLT)) if(!i--) return -3;
+ 192              		.loc 1 116 0
+ 193 0090 8025     		mov	r5, #128
+ 113:.\Sensor_Processes.c ****     // Waits until master completes write transfer
+ 194              		.loc 1 113 0
+ 195 0092 FFF7FEFF 		bl	I2CM_I2CMasterWriteBuf
+ 196              	.LVL20:
+ 197              		.loc 1 116 0
+ 198 0096 6D01     		lsl	r5, r5, #5
+ 199              	.LVL21:
+ 200              	.L12:
+ 201              		.loc 1 116 0 is_stmt 0 discriminator 2
+ 202 0098 FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 203              	.LVL22:
+ 204 009c 8307     		lsl	r3, r0, #30
+ 205 009e 05D4     		bmi	.L23
+ 206              	.LVL23:
+ 207 00a0 013D     		sub	r5, r5, #1
+ 208              	.LVL24:
+ 209 00a2 ADB2     		uxth	r5, r5
+ 210              		.loc 1 116 0 discriminator 3
+ 211 00a4 002D     		cmp	r5, #0
+ 212 00a6 F7D1     		bne	.L12
+ 213              		.loc 1 116 0
+ 214 00a8 0320     		mov	r0, #3
+ 215 00aa 0FE0     		b	.L19
+ 216              	.LVL25:
+ 217              	.L23:
+ 117:.\Sensor_Processes.c ****     statusI2C = I2CM_I2CMasterStatus();
+ 218              		.loc 1 117 0 is_stmt 1
+ 219 00ac FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 220              	.LVL26:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 7
+
+
+ 118:.\Sensor_Processes.c ****     // No Errors - Sensor Present
+ 119:.\Sensor_Processes.c ****     if ((I2CM_I2C_MSTAT_ERR_MASK & statusI2C) == 0) {
+ 221              		.loc 1 119 0
+ 222 00b0 FC23     		mov	r3, #252
+ 223 00b2 9B00     		lsl	r3, r3, #2
+ 224 00b4 1840     		and	r0, r3
+ 225              	.LVL27:
+ 226 00b6 0422     		mov	r2, #4
+ 227 00b8 2378     		ldrb	r3, [r4]
+ 228 00ba 0028     		cmp	r0, #0
+ 229 00bc 02D1     		bne	.L14
+ 120:.\Sensor_Processes.c ****         data->Status |= PRESSURE_PRESENT_MASK;
+ 230              		.loc 1 120 0
+ 231 00be 1343     		orr	r3, r2
+ 232 00c0 2370     		strb	r3, [r4]
+ 233 00c2 04E0     		b	.L4
+ 234              	.L14:
+ 121:.\Sensor_Processes.c ****     } else {
+ 122:.\Sensor_Processes.c ****         data->Status &= ~PRESSURE_PRESENT_MASK;
+ 235              		.loc 1 122 0
+ 236 00c4 9343     		bic	r3, r2
+ 237 00c6 2370     		strb	r3, [r4]
+ 123:.\Sensor_Processes.c ****     }
+ 124:.\Sensor_Processes.c ****     return 0;
+ 238              		.loc 1 124 0
+ 239 00c8 0020     		mov	r0, #0
+ 240 00ca 00E0     		b	.L4
+ 241              	.LVL28:
+ 242              	.L19:
+ 116:.\Sensor_Processes.c ****     statusI2C = I2CM_I2CMasterStatus();
+ 243              		.loc 1 116 0
+ 244 00cc 4042     		neg	r0, r0
+ 245              	.L4:
+ 125:.\Sensor_Processes.c **** } /* End Sensor_Present_Test */
+ 246              		.loc 1 125 0
+ 247 00ce 04B0     		add	sp, sp, #16
+ 248              		@ sp needed
+ 249              	.LVL29:
+ 250 00d0 70BD     		pop	{r4, r5, r6, pc}
+ 251              		.cfi_endproc
+ 252              	.LFE64:
+ 253              		.size	Sensor_Present_Test, .-Sensor_Present_Test
+ 254              		.section	.text.Start_TH_Measurement,"ax",%progbits
+ 255              		.align	1
+ 256              		.global	Start_TH_Measurement
+ 257              		.code	16
+ 258              		.thumb_func
+ 259              		.type	Start_TH_Measurement, %function
+ 260              	Start_TH_Measurement:
+ 261              	.LFB65:
+ 126:.\Sensor_Processes.c **** 
+ 127:.\Sensor_Processes.c **** /******************************************************************/
+ 128:.\Sensor_Processes.c **** 
+ 129:.\Sensor_Processes.c **** int Start_TH_Measurement(void) {
+ 262              		.loc 1 129 0
+ 263              		.cfi_startproc
+ 264 0000 13B5     		push	{r0, r1, r4, lr}
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 8
+
+
+ 265              		.cfi_def_cfa_offset 16
+ 266              		.cfi_offset 0, -16
+ 267              		.cfi_offset 1, -12
+ 268              		.cfi_offset 4, -8
+ 269              		.cfi_offset 14, -4
+ 130:.\Sensor_Processes.c ****     uint8 command = 0;
+ 270              		.loc 1 130 0
+ 271 0002 6B46     		mov	r3, sp
+ 272 0004 D91D     		add	r1, r3, #7
+ 273 0006 0023     		mov	r3, #0
+ 131:.\Sensor_Processes.c ****     uint16 i = I2C_TIMEOUT;
+ 132:.\Sensor_Processes.c **** 
+ 133:.\Sensor_Processes.c ****     /* Start Measurement by Writing a byte to the Humidicon sensor */
+ 134:.\Sensor_Processes.c ****     I2CM_I2CMasterWriteBuf(HUMIDICON_I2C_ADDRESS, &command, 1, I2CM_I2C_MODE_COMPLETE_XFER);
+ 274              		.loc 1 134 0
+ 275 0008 2720     		mov	r0, #39
+ 276 000a 0122     		mov	r2, #1
+ 135:.\Sensor_Processes.c **** 
+ 136:.\Sensor_Processes.c ****     /* Waits until master completes write transfer */
+ 137:.\Sensor_Processes.c ****     while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_WR_CMPLT)) if(!i--) return -1;
+ 277              		.loc 1 137 0
+ 278 000c 8024     		mov	r4, #128
+ 130:.\Sensor_Processes.c ****     uint16 i = I2C_TIMEOUT;
+ 279              		.loc 1 130 0
+ 280 000e 0B70     		strb	r3, [r1]
+ 281              	.LVL30:
+ 134:.\Sensor_Processes.c **** 
+ 282              		.loc 1 134 0
+ 283 0010 FFF7FEFF 		bl	I2CM_I2CMasterWriteBuf
+ 284              	.LVL31:
+ 285              		.loc 1 137 0
+ 286 0014 6401     		lsl	r4, r4, #5
+ 287              	.LVL32:
+ 288              	.L25:
+ 289              		.loc 1 137 0 is_stmt 0 discriminator 2
+ 290 0016 FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 291              	.LVL33:
+ 292 001a 8307     		lsl	r3, r0, #30
+ 293 001c 06D4     		bmi	.L29
+ 294              	.LVL34:
+ 295 001e 013C     		sub	r4, r4, #1
+ 296              	.LVL35:
+ 297 0020 A4B2     		uxth	r4, r4
+ 298              		.loc 1 137 0 discriminator 3
+ 299 0022 002C     		cmp	r4, #0
+ 300 0024 F7D1     		bne	.L25
+ 301              		.loc 1 137 0
+ 302 0026 0120     		mov	r0, #1
+ 303 0028 4042     		neg	r0, r0
+ 304 002a 00E0     		b	.L26
+ 305              	.LVL36:
+ 306              	.L29:
+ 138:.\Sensor_Processes.c ****     return 0;
+ 307              		.loc 1 138 0 is_stmt 1
+ 308 002c 0020     		mov	r0, #0
+ 309              	.LVL37:
+ 310              	.L26:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 9
+
+
+ 139:.\Sensor_Processes.c ****  }
+ 311              		.loc 1 139 0
+ 312              		@ sp needed
+ 313 002e 16BD     		pop	{r1, r2, r4, pc}
+ 314              		.cfi_endproc
+ 315              	.LFE65:
+ 316              		.size	Start_TH_Measurement, .-Start_TH_Measurement
+ 317              		.global	__aeabi_idiv
+ 318              		.section	.text.TemperatureCalcuation,"ax",%progbits
+ 319              		.align	1
+ 320              		.global	TemperatureCalcuation
+ 321              		.code	16
+ 322              		.thumb_func
+ 323              		.type	TemperatureCalcuation, %function
+ 324              	TemperatureCalcuation:
+ 325              	.LFB67:
+ 140:.\Sensor_Processes.c **** 
+ 141:.\Sensor_Processes.c **** /********************************************************************/
+ 142:.\Sensor_Processes.c **** 
+ 143:.\Sensor_Processes.c **** int Read_Temp_and_Humidity(Sensor_Data_t *data) {
+ 144:.\Sensor_Processes.c ****     volatile int32   temperatureRaw;
+ 145:.\Sensor_Processes.c ****     volatile uint32  humidityRaw;
+ 146:.\Sensor_Processes.c ****     uint8   dataStale;
+ 147:.\Sensor_Processes.c ****     uint16 i, to = I2C_TIMEOUT;
+ 148:.\Sensor_Processes.c **** 
+ 149:.\Sensor_Processes.c ****     /* Wait for conversion complete */
+ 150:.\Sensor_Processes.c ****     dataStale = 1;
+ 151:.\Sensor_Processes.c ****     while (dataStale) {
+ 152:.\Sensor_Processes.c ****         /* Read data including status */
+ 153:.\Sensor_Processes.c ****         I2CM_I2CMasterReadBuf(HUMIDICON_I2C_ADDRESS, (uint8*)&Sensor_Raw.humidiconADChigh, 4, I2CM_
+ 154:.\Sensor_Processes.c **** 
+ 155:.\Sensor_Processes.c ****         /* Waits until master complete read transfer */
+ 156:.\Sensor_Processes.c ****         i = I2C_TIMEOUT;
+ 157:.\Sensor_Processes.c ****         while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_RD_CMPLT)) if(!i--) return -1;
+ 158:.\Sensor_Processes.c ****         
+ 159:.\Sensor_Processes.c ****         dataStale = Sensor_Raw.humidiconADChigh & HUMIDITY_STATUS_MASK;
+ 160:.\Sensor_Processes.c ****         if ( !to-- ) return -1;
+ 161:.\Sensor_Processes.c ****     }
+ 162:.\Sensor_Processes.c **** 
+ 163:.\Sensor_Processes.c ****     /*Swap data bytes for Temperature and Humidity */
+ 164:.\Sensor_Processes.c ****         
+ 165:.\Sensor_Processes.c ****     temperatureRaw = Sensor_Raw.temperatureADChigh << 6;
+ 166:.\Sensor_Processes.c ****     temperatureRaw = temperatureRaw + (Sensor_Raw.temperatureADClow >>2);  
+ 167:.\Sensor_Processes.c ****     data->Temperature = TemperatureCalcuation(temperatureRaw);
+ 168:.\Sensor_Processes.c **** 
+ 169:.\Sensor_Processes.c ****     humidityRaw = ((Sensor_Raw.humidiconADChigh & HUMIDITY_DATA_MASK) << 8) + Sensor_Raw.humidiconA
+ 170:.\Sensor_Processes.c ****     data->Humidity = HumidityCalcuation(humidityRaw);
+ 171:.\Sensor_Processes.c ****     return 0;
+ 172:.\Sensor_Processes.c **** }
+ 173:.\Sensor_Processes.c **** 
+ 174:.\Sensor_Processes.c **** /********************************************************************/
+ 175:.\Sensor_Processes.c **** 
+ 176:.\Sensor_Processes.c **** /* Temperature Calcuation */
+ 177:.\Sensor_Processes.c **** 
+ 178:.\Sensor_Processes.c **** int8 TemperatureCalcuation (int32 Temperature_ADC) {
+ 326              		.loc 1 178 0
+ 327              		.cfi_startproc
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 10
+
+
+ 328              	.LVL38:
+ 329 0000 08B5     		push	{r3, lr}
+ 330              		.cfi_def_cfa_offset 8
+ 331              		.cfi_offset 3, -8
+ 332              		.cfi_offset 14, -4
+ 179:.\Sensor_Processes.c ****     int32 Temperature;
+ 180:.\Sensor_Processes.c ****     
+ 181:.\Sensor_Processes.c ****     Temperature = (((Temperature_ADC << 10) * TEMPERATURE_MULTIPLIER) / DIVISOR);
+ 333              		.loc 1 181 0
+ 334 0002 A523     		mov	r3, #165
+ 335 0004 8002     		lsl	r0, r0, #10
+ 336              	.LVL39:
+ 337 0006 5843     		mul	r0, r3
+ 338 0008 0349     		ldr	r1, .L31
+ 339 000a FFF7FEFF 		bl	__aeabi_idiv
+ 340              	.LVL40:
+ 182:.\Sensor_Processes.c ****     Temperature = (Temperature >> 10) - OFFSET;
+ 341              		.loc 1 182 0
+ 342 000e 8012     		asr	r0, r0, #10
+ 343              	.LVL41:
+ 344 0010 2838     		sub	r0, r0, #40
+ 345              	.LVL42:
+ 183:.\Sensor_Processes.c ****     return ((int8)Temperature);
+ 346              		.loc 1 183 0
+ 347 0012 40B2     		sxtb	r0, r0
+ 348              	.LVL43:
+ 184:.\Sensor_Processes.c **** }
+ 349              		.loc 1 184 0
+ 350              		@ sp needed
+ 351 0014 08BD     		pop	{r3, pc}
+ 352              	.L32:
+ 353 0016 C046     		.align	2
+ 354              	.L31:
+ 355 0018 FE3F0000 		.word	16382
+ 356              		.cfi_endproc
+ 357              	.LFE67:
+ 358              		.size	TemperatureCalcuation, .-TemperatureCalcuation
+ 359              		.global	__aeabi_uidiv
+ 360              		.section	.text.Read_Temp_and_Humidity,"ax",%progbits
+ 361              		.align	1
+ 362              		.global	Read_Temp_and_Humidity
+ 363              		.code	16
+ 364              		.thumb_func
+ 365              		.type	Read_Temp_and_Humidity, %function
+ 366              	Read_Temp_and_Humidity:
+ 367              	.LFB66:
+ 143:.\Sensor_Processes.c ****     volatile int32   temperatureRaw;
+ 368              		.loc 1 143 0
+ 369              		.cfi_startproc
+ 370              	.LVL44:
+ 371 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 372              		.cfi_def_cfa_offset 20
+ 373              		.cfi_offset 4, -20
+ 374              		.cfi_offset 5, -16
+ 375              		.cfi_offset 6, -12
+ 376              		.cfi_offset 7, -8
+ 377              		.cfi_offset 14, -4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 11
+
+
+ 378 0002 8024     		mov	r4, #128
+ 379 0004 85B0     		sub	sp, sp, #20
+ 380              		.cfi_def_cfa_offset 40
+ 143:.\Sensor_Processes.c ****     volatile int32   temperatureRaw;
+ 381              		.loc 1 143 0
+ 382 0006 0190     		str	r0, [sp, #4]
+ 383 0008 6401     		lsl	r4, r4, #5
+ 384              	.LVL45:
+ 385              	.L37:
+ 153:.\Sensor_Processes.c **** 
+ 386              		.loc 1 153 0
+ 387 000a 1F4F     		ldr	r7, .L41
+ 388 000c 2720     		mov	r0, #39
+ 389 000e 391C     		mov	r1, r7
+ 390 0010 0422     		mov	r2, #4
+ 391 0012 0023     		mov	r3, #0
+ 157:.\Sensor_Processes.c ****         
+ 392              		.loc 1 157 0
+ 393 0014 8025     		mov	r5, #128
+ 153:.\Sensor_Processes.c **** 
+ 394              		.loc 1 153 0
+ 395 0016 FFF7FEFF 		bl	I2CM_I2CMasterReadBuf
+ 396              	.LVL46:
+ 397 001a 3E1C     		mov	r6, r7
+ 157:.\Sensor_Processes.c ****         
+ 398              		.loc 1 157 0
+ 399 001c 6D01     		lsl	r5, r5, #5
+ 400              	.LVL47:
+ 401              	.L34:
+ 157:.\Sensor_Processes.c ****         
+ 402              		.loc 1 157 0 is_stmt 0 discriminator 2
+ 403 001e FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 404              	.LVL48:
+ 405 0022 C307     		lsl	r3, r0, #31
+ 406 0024 04D4     		bmi	.L40
+ 407              	.LVL49:
+ 408 0026 013D     		sub	r5, r5, #1
+ 409              	.LVL50:
+ 410 0028 ADB2     		uxth	r5, r5
+ 157:.\Sensor_Processes.c ****         
+ 411              		.loc 1 157 0 discriminator 3
+ 412 002a 002D     		cmp	r5, #0
+ 413 002c F7D1     		bne	.L34
+ 414 002e 26E0     		b	.L39
+ 415              	.LVL51:
+ 416              	.L40:
+ 159:.\Sensor_Processes.c ****         if ( !to-- ) return -1;
+ 417              		.loc 1 159 0 is_stmt 1
+ 418 0030 3D78     		ldrb	r5, [r7]
+ 419              	.LVL52:
+ 420 0032 3F23     		mov	r3, #63
+ 421 0034 2F1C     		mov	r7, r5
+ 422 0036 013C     		sub	r4, r4, #1
+ 423              	.LVL53:
+ 424 0038 A4B2     		uxth	r4, r4
+ 425 003a 9F43     		bic	r7, r3
+ 426              	.LVL54:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 12
+
+
+ 160:.\Sensor_Processes.c ****     }
+ 427              		.loc 1 160 0
+ 428 003c 002C     		cmp	r4, #0
+ 429 003e 1ED0     		beq	.L39
+ 151:.\Sensor_Processes.c ****         /* Read data including status */
+ 430              		.loc 1 151 0
+ 431 0040 002F     		cmp	r7, #0
+ 432 0042 E2D1     		bne	.L37
+ 165:.\Sensor_Processes.c ****     temperatureRaw = temperatureRaw + (Sensor_Raw.temperatureADClow >>2);  
+ 433              		.loc 1 165 0
+ 434 0044 B378     		ldrb	r3, [r6, #2]
+ 169:.\Sensor_Processes.c ****     data->Humidity = HumidityCalcuation(humidityRaw);
+ 435              		.loc 1 169 0
+ 436 0046 2D02     		lsl	r5, r5, #8
+ 165:.\Sensor_Processes.c ****     temperatureRaw = temperatureRaw + (Sensor_Raw.temperatureADClow >>2);  
+ 437              		.loc 1 165 0
+ 438 0048 9B01     		lsl	r3, r3, #6
+ 439 004a 0293     		str	r3, [sp, #8]
+ 166:.\Sensor_Processes.c ****     data->Temperature = TemperatureCalcuation(temperatureRaw);
+ 440              		.loc 1 166 0
+ 441 004c F378     		ldrb	r3, [r6, #3]
+ 442 004e 029A     		ldr	r2, [sp, #8]
+ 443 0050 9B08     		lsr	r3, r3, #2
+ 444 0052 D318     		add	r3, r2, r3
+ 445 0054 0293     		str	r3, [sp, #8]
+ 167:.\Sensor_Processes.c **** 
+ 446              		.loc 1 167 0
+ 447 0056 0298     		ldr	r0, [sp, #8]
+ 448 0058 FFF7FEFF 		bl	TemperatureCalcuation
+ 449              	.LVL55:
+ 450 005c 019B     		ldr	r3, [sp, #4]
+ 451              	.LBB4:
+ 452              	.LBB5:
+ 185:.\Sensor_Processes.c **** 
+ 186:.\Sensor_Processes.c **** /*************************************************************************/
+ 187:.\Sensor_Processes.c **** 
+ 188:.\Sensor_Processes.c **** /* Humidity Calcuation */
+ 189:.\Sensor_Processes.c **** 
+ 190:.\Sensor_Processes.c **** uint8 HumidityCalcuation (uint32 Humidity_ADC) {
+ 191:.\Sensor_Processes.c ****     uint32 Humidity;
+ 192:.\Sensor_Processes.c ****     Humidity = ((Humidity_ADC <<10) * HUMIDITY_MULTIPLIER) / DIVISOR;
+ 453              		.loc 1 192 0
+ 454 005e 0B49     		ldr	r1, .L41+4
+ 455              	.LBE5:
+ 456              	.LBE4:
+ 167:.\Sensor_Processes.c **** 
+ 457              		.loc 1 167 0
+ 458 0060 5870     		strb	r0, [r3, #1]
+ 169:.\Sensor_Processes.c ****     data->Humidity = HumidityCalcuation(humidityRaw);
+ 459              		.loc 1 169 0
+ 460 0062 7378     		ldrb	r3, [r6, #1]
+ 461 0064 ED18     		add	r5, r5, r3
+ 462              	.LBB9:
+ 463              	.LBB6:
+ 464              		.loc 1 192 0
+ 465 0066 C823     		mov	r3, #200
+ 466              	.LBE6:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 13
+
+
+ 467              	.LBE9:
+ 169:.\Sensor_Processes.c ****     data->Humidity = HumidityCalcuation(humidityRaw);
+ 468              		.loc 1 169 0
+ 469 0068 0395     		str	r5, [sp, #12]
+ 170:.\Sensor_Processes.c ****     return 0;
+ 470              		.loc 1 170 0
+ 471 006a 0398     		ldr	r0, [sp, #12]
+ 472              	.LVL56:
+ 473              	.LBB10:
+ 474              	.LBB7:
+ 475              		.loc 1 192 0
+ 476 006c 5B02     		lsl	r3, r3, #9
+ 477 006e 5843     		mul	r0, r3
+ 478              	.LVL57:
+ 479 0070 FFF7FEFF 		bl	__aeabi_uidiv
+ 480              	.LVL58:
+ 481              	.LBE7:
+ 482              	.LBE10:
+ 170:.\Sensor_Processes.c ****     return 0;
+ 483              		.loc 1 170 0
+ 484 0074 019B     		ldr	r3, [sp, #4]
+ 485              	.LBB11:
+ 486              	.LBB8:
+ 193:.\Sensor_Processes.c ****     return ((uint8) (Humidity >> 10));
+ 487              		.loc 1 193 0
+ 488 0076 800A     		lsr	r0, r0, #10
+ 489              	.LBE8:
+ 490              	.LBE11:
+ 170:.\Sensor_Processes.c ****     return 0;
+ 491              		.loc 1 170 0
+ 492 0078 9870     		strb	r0, [r3, #2]
+ 171:.\Sensor_Processes.c **** }
+ 493              		.loc 1 171 0
+ 494 007a 381C     		mov	r0, r7
+ 495 007c 01E0     		b	.L35
+ 496              	.LVL59:
+ 497              	.L39:
+ 157:.\Sensor_Processes.c ****         
+ 498              		.loc 1 157 0
+ 499 007e 0120     		mov	r0, #1
+ 500 0080 4042     		neg	r0, r0
+ 501              	.L35:
+ 172:.\Sensor_Processes.c **** 
+ 502              		.loc 1 172 0
+ 503 0082 05B0     		add	sp, sp, #20
+ 504              		@ sp needed
+ 505 0084 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 506              	.L42:
+ 507 0086 C046     		.align	2
+ 508              	.L41:
+ 509 0088 00000000 		.word	Sensor_Raw
+ 510 008c FE3F0000 		.word	16382
+ 511              		.cfi_endproc
+ 512              	.LFE66:
+ 513              		.size	Read_Temp_and_Humidity, .-Read_Temp_and_Humidity
+ 514              		.section	.text.HumidityCalcuation,"ax",%progbits
+ 515              		.align	1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 14
+
+
+ 516              		.global	HumidityCalcuation
+ 517              		.code	16
+ 518              		.thumb_func
+ 519              		.type	HumidityCalcuation, %function
+ 520              	HumidityCalcuation:
+ 521              	.LFB68:
+ 190:.\Sensor_Processes.c ****     uint32 Humidity;
+ 522              		.loc 1 190 0
+ 523              		.cfi_startproc
+ 524              	.LVL60:
+ 525 0000 08B5     		push	{r3, lr}
+ 526              		.cfi_def_cfa_offset 8
+ 527              		.cfi_offset 3, -8
+ 528              		.cfi_offset 14, -4
+ 192:.\Sensor_Processes.c ****     return ((uint8) (Humidity >> 10));
+ 529              		.loc 1 192 0
+ 530 0002 C823     		mov	r3, #200
+ 531 0004 5B02     		lsl	r3, r3, #9
+ 532 0006 5843     		mul	r0, r3
+ 533              	.LVL61:
+ 534 0008 0249     		ldr	r1, .L44
+ 535 000a FFF7FEFF 		bl	__aeabi_uidiv
+ 536              	.LVL62:
+ 537              		.loc 1 193 0
+ 538 000e 800A     		lsr	r0, r0, #10
+ 539 0010 C0B2     		uxtb	r0, r0
+ 194:.\Sensor_Processes.c **** }
+ 540              		.loc 1 194 0
+ 541              		@ sp needed
+ 542 0012 08BD     		pop	{r3, pc}
+ 543              	.L45:
+ 544              		.align	2
+ 545              	.L44:
+ 546 0014 FE3F0000 		.word	16382
+ 547              		.cfi_endproc
+ 548              	.LFE68:
+ 549              		.size	HumidityCalcuation, .-HumidityCalcuation
+ 550              		.section	.text.Start_Airflow_Measurement,"ax",%progbits
+ 551              		.align	1
+ 552              		.global	Start_Airflow_Measurement
+ 553              		.code	16
+ 554              		.thumb_func
+ 555              		.type	Start_Airflow_Measurement, %function
+ 556              	Start_Airflow_Measurement:
+ 557              	.LFB69:
+ 195:.\Sensor_Processes.c **** 
+ 196:.\Sensor_Processes.c **** /******************************************************************/
+ 197:.\Sensor_Processes.c **** 
+ 198:.\Sensor_Processes.c **** int Start_Airflow_Measurement(void) {
+ 558              		.loc 1 198 0
+ 559              		.cfi_startproc
+ 560 0000 10B5     		push	{r4, lr}
+ 561              		.cfi_def_cfa_offset 8
+ 562              		.cfi_offset 4, -8
+ 563              		.cfi_offset 14, -4
+ 564              	.L50:
+ 565              	.LVL63:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 15
+
+
+ 199:.\Sensor_Processes.c ****     int i;
+ 200:.\Sensor_Processes.c ****     /* Start Measurement by reading 3 words from Airflow Sensor - 4th transfer and everyone afterwa
+ 201:.\Sensor_Processes.c ****     for (i = 0; i < 3 ; i++) {
+ 202:.\Sensor_Processes.c ****         I2CM_I2CMasterReadBuf(AIRFLOW_I2C_ADDRESS, &Sensor_Raw.AirflowADChigh, 2, I2CM_I2C_MODE_COM
+ 566              		.loc 1 202 0
+ 567 0002 4920     		mov	r0, #73
+ 568 0004 0849     		ldr	r1, .L53
+ 569 0006 0222     		mov	r2, #2
+ 570 0008 0023     		mov	r3, #0
+ 571 000a FFF7FEFF 		bl	I2CM_I2CMasterReadBuf
+ 572              	.LVL64:
+ 203:.\Sensor_Processes.c ****         /* Waits until master completes write transfer */
+ 204:.\Sensor_Processes.c ****         i = I2C_TIMEOUT;
+ 573              		.loc 1 204 0
+ 574 000e 074C     		ldr	r4, .L53+4
+ 575              	.LVL65:
+ 576              	.L47:
+ 205:.\Sensor_Processes.c ****         while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_WR_CMPLT)) if(!i--) return -1;
+ 577              		.loc 1 205 0 discriminator 2
+ 578 0010 FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 579              	.LVL66:
+ 580 0014 8307     		lsl	r3, r0, #30
+ 581 0016 03D4     		bmi	.L52
+ 582              	.LVL67:
+ 583              		.loc 1 205 0 is_stmt 0 discriminator 3
+ 584 0018 013C     		sub	r4, r4, #1
+ 585 001a F9D2     		bcs	.L47
+ 586              	.LVL68:
+ 587              		.loc 1 205 0
+ 588 001c 201C     		mov	r0, r4
+ 589 001e 02E0     		b	.L48
+ 590              	.L52:
+ 591              	.LVL69:
+ 201:.\Sensor_Processes.c ****         I2CM_I2CMasterReadBuf(AIRFLOW_I2C_ADDRESS, &Sensor_Raw.AirflowADChigh, 2, I2CM_I2C_MODE_COM
+ 592              		.loc 1 201 0 is_stmt 1
+ 593 0020 012C     		cmp	r4, #1
+ 594 0022 EEDD     		ble	.L50
+ 206:.\Sensor_Processes.c ****     }
+ 207:.\Sensor_Processes.c ****     return 0;
+ 595              		.loc 1 207 0
+ 596 0024 0020     		mov	r0, #0
+ 597              	.LVL70:
+ 598              	.L48:
+ 208:.\Sensor_Processes.c ****  }
+ 599              		.loc 1 208 0
+ 600              		@ sp needed
+ 601 0026 10BD     		pop	{r4, pc}
+ 602              	.L54:
+ 603              		.align	2
+ 604              	.L53:
+ 605 0028 04000000 		.word	Sensor_Raw+4
+ 606 002c FF0F0000 		.word	4095
+ 607              		.cfi_endproc
+ 608              	.LFE69:
+ 609              		.size	Start_Airflow_Measurement, .-Start_Airflow_Measurement
+ 610              		.global	__aeabi_i2f
+ 611              		.global	__aeabi_fmul
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 16
+
+
+ 612              		.global	__aeabi_fsub
+ 613              		.global	__aeabi_f2d
+ 614              		.global	__aeabi_ddiv
+ 615              		.global	__aeabi_d2f
+ 616              		.global	__aeabi_f2iz
+ 617              		.section	.text.Read_Airflow,"ax",%progbits
+ 618              		.align	1
+ 619              		.global	Read_Airflow
+ 620              		.code	16
+ 621              		.thumb_func
+ 622              		.type	Read_Airflow, %function
+ 623              	Read_Airflow:
+ 624              	.LFB70:
+ 209:.\Sensor_Processes.c **** 
+ 210:.\Sensor_Processes.c **** /********************************************************************/
+ 211:.\Sensor_Processes.c **** 
+ 212:.\Sensor_Processes.c **** int Read_Airflow(Sensor_Data_t *data) {
+ 625              		.loc 1 212 0
+ 626              		.cfi_startproc
+ 627              	.LVL71:
+ 628 0000 38B5     		push	{r3, r4, r5, lr}
+ 629              		.cfi_def_cfa_offset 16
+ 630              		.cfi_offset 3, -16
+ 631              		.cfi_offset 4, -12
+ 632              		.cfi_offset 5, -8
+ 633              		.cfi_offset 14, -4
+ 213:.\Sensor_Processes.c ****     int32  airflowRaw;
+ 214:.\Sensor_Processes.c ****     float   airflowCalc;
+ 215:.\Sensor_Processes.c ****     uint16  i;
+ 216:.\Sensor_Processes.c **** 
+ 217:.\Sensor_Processes.c ****     /*  Airflow Ideal Transfer Function
+ 218:.\Sensor_Processes.c ****         --------------------------------
+ 219:.\Sensor_Processes.c ****         airflowRaw = 16384 * [0.5 + 0.4 * (Flow Applied/Full Scale Flow)]
+ 220:.\Sensor_Processes.c ****         Flow Applied = Full Scale Flow * ((airflowRaw/16384) - 0.5]/0.4)    */
+ 221:.\Sensor_Processes.c **** 
+ 222:.\Sensor_Processes.c ****     /* Read data  */
+ 223:.\Sensor_Processes.c ****     I2CM_I2CMasterReadBuf(AIRFLOW_I2C_ADDRESS, &Sensor_Raw.AirflowADChigh, 2,I2CM_I2C_MODE_COMPLETE
+ 634              		.loc 1 223 0
+ 635 0002 1949     		ldr	r1, .L61
+ 212:.\Sensor_Processes.c ****     int32  airflowRaw;
+ 636              		.loc 1 212 0
+ 637 0004 051C     		mov	r5, r0
+ 638              		.loc 1 223 0
+ 639 0006 0222     		mov	r2, #2
+ 640 0008 4920     		mov	r0, #73
+ 641              	.LVL72:
+ 642 000a 0023     		mov	r3, #0
+ 224:.\Sensor_Processes.c **** 
+ 225:.\Sensor_Processes.c ****     /* Waits until master complete read transfer */
+ 226:.\Sensor_Processes.c ****     i = I2C_TIMEOUT;
+ 227:.\Sensor_Processes.c ****     while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_RD_CMPLT)) if(!i--) return -1;
+ 643              		.loc 1 227 0
+ 644 000c 8024     		mov	r4, #128
+ 223:.\Sensor_Processes.c **** 
+ 645              		.loc 1 223 0
+ 646 000e FFF7FEFF 		bl	I2CM_I2CMasterReadBuf
+ 647              	.LVL73:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 17
+
+
+ 648              		.loc 1 227 0
+ 649 0012 6401     		lsl	r4, r4, #5
+ 650              	.LVL74:
+ 651              	.L56:
+ 652              		.loc 1 227 0 is_stmt 0 discriminator 2
+ 653 0014 FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ 654              	.LVL75:
+ 655 0018 C307     		lsl	r3, r0, #31
+ 656 001a 06D4     		bmi	.L60
+ 657              	.LVL76:
+ 658 001c 013C     		sub	r4, r4, #1
+ 659              	.LVL77:
+ 660 001e A4B2     		uxth	r4, r4
+ 661              		.loc 1 227 0 discriminator 3
+ 662 0020 002C     		cmp	r4, #0
+ 663 0022 F7D1     		bne	.L56
+ 664              		.loc 1 227 0
+ 665 0024 0120     		mov	r0, #1
+ 666 0026 4042     		neg	r0, r0
+ 667 0028 1DE0     		b	.L57
+ 668              	.LVL78:
+ 669              	.L60:
+ 228:.\Sensor_Processes.c ****  
+ 229:.\Sensor_Processes.c ****     /* Convert data read integer and perform calculation */
+ 230:.\Sensor_Processes.c **** 
+ 231:.\Sensor_Processes.c ****     airflowRaw = (Sensor_Raw.AirflowADChigh << 8) | Sensor_Raw.AirflowADClow; 
+ 670              		.loc 1 231 0 is_stmt 1
+ 671 002a 104B     		ldr	r3, .L61+4
+ 672 002c 1879     		ldrb	r0, [r3, #4]
+ 673 002e 5B79     		ldrb	r3, [r3, #5]
+ 674 0030 0002     		lsl	r0, r0, #8
+ 675 0032 1843     		orr	r0, r3
+ 232:.\Sensor_Processes.c ****     airflowCalc = ((float)airflowRaw / MAX_AIRFLOW_COUNTS);
+ 676              		.loc 1 232 0
+ 677 0034 FFF7FEFF 		bl	__aeabi_i2f
+ 678              	.LVL79:
+ 679 0038 E221     		mov	r1, #226
+ 680 003a 8905     		lsl	r1, r1, #22
+ 681 003c FFF7FEFF 		bl	__aeabi_fmul
+ 682              	.LVL80:
+ 233:.\Sensor_Processes.c ****     airflowCalc = airflowCalc -0.5;
+ 683              		.loc 1 233 0
+ 684 0040 FC21     		mov	r1, #252
+ 685 0042 8905     		lsl	r1, r1, #22
+ 686 0044 FFF7FEFF 		bl	__aeabi_fsub
+ 687              	.LVL81:
+ 234:.\Sensor_Processes.c ****     airflowCalc = airflowCalc * FULL_SCALE_AIRFLOW / 0.4;
+ 688              		.loc 1 234 0
+ 689 0048 0949     		ldr	r1, .L61+8
+ 690 004a FFF7FEFF 		bl	__aeabi_fmul
+ 691              	.LVL82:
+ 692 004e FFF7FEFF 		bl	__aeabi_f2d
+ 693              	.LVL83:
+ 694 0052 084A     		ldr	r2, .L61+12
+ 695 0054 084B     		ldr	r3, .L61+16
+ 696 0056 FFF7FEFF 		bl	__aeabi_ddiv
+ 697              	.LVL84:
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 18
+
+
+ 698 005a FFF7FEFF 		bl	__aeabi_d2f
+ 699              	.LVL85:
+ 235:.\Sensor_Processes.c ****     data->Air_Flow = (int16)airflowCalc;
+ 700              		.loc 1 235 0
+ 701 005e FFF7FEFF 		bl	__aeabi_f2iz
+ 702              	.LVL86:
+ 703 0062 E880     		strh	r0, [r5, #6]
+ 236:.\Sensor_Processes.c ****     return 0;
+ 704              		.loc 1 236 0
+ 705 0064 0020     		mov	r0, #0
+ 706              	.LVL87:
+ 707              	.L57:
+ 237:.\Sensor_Processes.c **** } /* End Read_Airflow Subroutine */
+ 708              		.loc 1 237 0
+ 709              		@ sp needed
+ 710              	.LVL88:
+ 711 0066 38BD     		pop	{r3, r4, r5, pc}
+ 712              	.L62:
+ 713              		.align	2
+ 714              	.L61:
+ 715 0068 04000000 		.word	Sensor_Raw+4
+ 716 006c 00000000 		.word	Sensor_Raw
+ 717 0070 00004843 		.word	1128792064
+ 718 0074 9A999999 		.word	-1717986918
+ 719 0078 9999D93F 		.word	1071225241
+ 720              		.cfi_endproc
+ 721              	.LFE70:
+ 722              		.size	Read_Airflow, .-Read_Airflow
+ 723              		.global	__aeabi_fdiv
+ 724              		.global	__aeabi_fadd
+ 725              		.section	.text.Pressure_Calcuation,"ax",%progbits
+ 726              		.align	1
+ 727              		.global	Pressure_Calcuation
+ 728              		.code	16
+ 729              		.thumb_func
+ 730              		.type	Pressure_Calcuation, %function
+ 731              	Pressure_Calcuation:
+ 732              	.LFB72:
+ 238:.\Sensor_Processes.c **** 
+ 239:.\Sensor_Processes.c **** /********************************************************************/
+ 240:.\Sensor_Processes.c **** 
+ 241:.\Sensor_Processes.c **** /********************************************************************/
+ 242:.\Sensor_Processes.c **** 
+ 243:.\Sensor_Processes.c **** int Read_Pressure(Sensor_Data_t *data) {
+ 244:.\Sensor_Processes.c ****     int32   pressureRaw;
+ 245:.\Sensor_Processes.c ****     uint8   dataStale;
+ 246:.\Sensor_Processes.c ****     uint16  i, to = I2C_TIMEOUT;
+ 247:.\Sensor_Processes.c **** 
+ 248:.\Sensor_Processes.c ****     /* Wait for conversion complete */
+ 249:.\Sensor_Processes.c ****     dataStale = 1;
+ 250:.\Sensor_Processes.c ****     while ( dataStale ) {
+ 251:.\Sensor_Processes.c ****         /* Read data including status */
+ 252:.\Sensor_Processes.c ****         I2CM_I2CMasterReadBuf(PRESSURE_I2C_ADDRESS, &Sensor_Raw.pressureADChigh, 2, I2CM_I2C_MODE_C
+ 253:.\Sensor_Processes.c **** 
+ 254:.\Sensor_Processes.c ****         /* Waits until master complete read transfer */
+ 255:.\Sensor_Processes.c ****         i = I2C_TIMEOUT;
+ 256:.\Sensor_Processes.c ****         while (0u == (I2CM_I2CMasterStatus() & I2CM_I2C_MSTAT_RD_CMPLT)) if(!i--) return -1;
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 19
+
+
+ 257:.\Sensor_Processes.c ****         dataStale = Sensor_Raw.pressureADChigh & PRESSURE_STATUS_MASK;
+ 258:.\Sensor_Processes.c ****         if ( !to-- ) return -2;
+ 259:.\Sensor_Processes.c ****     }
+ 260:.\Sensor_Processes.c ****     /* Convert two bytes in an int16 for calculations */
+ 261:.\Sensor_Processes.c ****     pressureRaw = ((Sensor_Raw.pressureADChigh & PRESSURE_DATA_MASK) << 8) + Sensor_Raw.pressureADC
+ 262:.\Sensor_Processes.c ****     if (data) data->Pressure = Pressure_Calcuation(pressureRaw);
+ 263:.\Sensor_Processes.c ****     return 0;
+ 264:.\Sensor_Processes.c **** }
+ 265:.\Sensor_Processes.c **** 
+ 266:.\Sensor_Processes.c **** /********************************************************************/
+ 267:.\Sensor_Processes.c **** 
+ 268:.\Sensor_Processes.c **** /* Pressure Calcuation */
+ 269:.\Sensor_Processes.c **** int16 Pressure_Calcuation (int32 pressureRaw) {
+ 733              		.loc 1 269 0
+ 734              		.cfi_startproc
+ 735              	.LVL89:
+ 736 0000 08B5     		push	{r3, lr}
+ 737              		.cfi_def_cfa_offset 8
+ 738              		.cfi_offset 3, -8
+ 739              		.cfi_offset 14, -4
+ 270:.\Sensor_Processes.c ****     float Pressure;
+ 271:.\Sensor_Processes.c ****     Pressure = (pressureRaw - PRESSURE_OUT_MIN) * (PRESSURE_MAX - PRESSURE_MIN);
+ 740              		.loc 1 271 0
+ 741 0002 084B     		ldr	r3, .L64
+ 272:.\Sensor_Processes.c ****     Pressure = Pressure / (OUTPUT_COUNTS_DIFF);
+ 273:.\Sensor_Processes.c ****     Pressure = Pressure + PRESSURE_MIN;
+ 274:.\Sensor_Processes.c ****     Pressure = Pressure * 10000;
+ 275:.\Sensor_Processes.c ****     return ((int16)Pressure);
+ 276:.\Sensor_Processes.c **** }
+ 742              		.loc 1 276 0
+ 743              		@ sp needed
+ 271:.\Sensor_Processes.c ****     Pressure = Pressure / (OUTPUT_COUNTS_DIFF);
+ 744              		.loc 1 271 0
+ 745 0004 C018     		add	r0, r0, r3
+ 746              	.LVL90:
+ 747 0006 FFF7FEFF 		bl	__aeabi_i2f
+ 748              	.LVL91:
+ 272:.\Sensor_Processes.c ****     Pressure = Pressure / (OUTPUT_COUNTS_DIFF);
+ 749              		.loc 1 272 0
+ 750 000a 0749     		ldr	r1, .L64+4
+ 751 000c FFF7FEFF 		bl	__aeabi_fdiv
+ 752              	.LVL92:
+ 273:.\Sensor_Processes.c ****     Pressure = Pressure * 10000;
+ 753              		.loc 1 273 0
+ 754 0010 0021     		mov	r1, #0
+ 755 0012 FFF7FEFF 		bl	__aeabi_fadd
+ 756              	.LVL93:
+ 274:.\Sensor_Processes.c ****     return ((int16)Pressure);
+ 757              		.loc 1 274 0
+ 758 0016 0549     		ldr	r1, .L64+8
+ 759 0018 FFF7FEFF 		bl	__aeabi_fmul
+ 760              	.LVL94:
+ 275:.\Sensor_Processes.c **** }
+ 761              		.loc 1 275 0
+ 762 001c FFF7FEFF 		bl	__aeabi_f2iz
+ 763              	.LVL95:
+ 764 0020 00B2     		sxth	r0, r0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 20
+
+
+ 765              		.loc 1 276 0
+ 766 0022 08BD     		pop	{r3, pc}
+ 767              	.L65:
+ 768              		.align	2
+ 769              	.L64:
+ 770 0024 9AF9FFFF 		.word	-1638
+ 771 0028 00CC4C46 		.word	1179438080
+ 772 002c 00401C46 		.word	1176256512
+ 773              		.cfi_endproc
+ 774              	.LFE72:
+ 775              		.size	Pressure_Calcuation, .-Pressure_Calcuation
+ 776              		.section	.text.Read_Pressure,"ax",%progbits
+ 777              		.align	1
+ 778              		.global	Read_Pressure
+ 779              		.code	16
+ 780              		.thumb_func
+ 781              		.type	Read_Pressure, %function
+ 782              	Read_Pressure:
+ 783              	.LFB71:
+ 243:.\Sensor_Processes.c ****     int32   pressureRaw;
+ 784              		.loc 1 243 0
+ 785              		.cfi_startproc
+ 786              	.LVL96:
+ 787 0000 70B5     		push	{r4, r5, r6, lr}
+ 788              		.cfi_def_cfa_offset 16
+ 789              		.cfi_offset 4, -16
+ 790              		.cfi_offset 5, -12
+ 791              		.cfi_offset 6, -8
+ 792              		.cfi_offset 14, -4
+ 243:.\Sensor_Processes.c ****     int32   pressureRaw;
+ 793              		.loc 1 243 0
+ 794 0002 8024     		mov	r4, #128
+ 795 0004 061C     		mov	r6, r0
+ 796 0006 6401     		lsl	r4, r4, #5
+ 797              	.LVL97:
+ 798              	.L70:
+ 252:.\Sensor_Processes.c **** 
+ 799              		.loc 1 252 0
+ 800 0008 3820     		mov	r0, #56
+ 801 000a 1549     		ldr	r1, .L76
+ 802 000c 0222     		mov	r2, #2
+ 803 000e 0023     		mov	r3, #0
+ 256:.\Sensor_Processes.c ****         dataStale = Sensor_Raw.pressureADChigh & PRESSURE_STATUS_MASK;
+ 804              		.loc 1 256 0
+ 805 0010 8025     		mov	r5, #128
+ 252:.\Sensor_Processes.c **** 
+ 806              		.loc 1 252 0
+ 807 0012 FFF7FEFF 		bl	I2CM_I2CMasterReadBuf
+ 808              	.LVL98:
+ 256:.\Sensor_Processes.c ****         dataStale = Sensor_Raw.pressureADChigh & PRESSURE_STATUS_MASK;
+ 809              		.loc 1 256 0
+ 810 0016 6D01     		lsl	r5, r5, #5
+ 811              	.LVL99:
+ 812              	.L67:
+ 256:.\Sensor_Processes.c ****         dataStale = Sensor_Raw.pressureADChigh & PRESSURE_STATUS_MASK;
+ 813              		.loc 1 256 0 is_stmt 0 discriminator 2
+ 814 0018 FFF7FEFF 		bl	I2CM_I2CMasterStatus
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 21
+
+
+ 815              	.LVL100:
+ 816 001c C307     		lsl	r3, r0, #31
+ 817 001e 05D4     		bmi	.L75
+ 818              	.LVL101:
+ 819 0020 013D     		sub	r5, r5, #1
+ 820              	.LVL102:
+ 821 0022 ADB2     		uxth	r5, r5
+ 256:.\Sensor_Processes.c ****         dataStale = Sensor_Raw.pressureADChigh & PRESSURE_STATUS_MASK;
+ 822              		.loc 1 256 0 discriminator 3
+ 823 0024 002D     		cmp	r5, #0
+ 824 0026 F7D1     		bne	.L67
+ 256:.\Sensor_Processes.c ****         dataStale = Sensor_Raw.pressureADChigh & PRESSURE_STATUS_MASK;
+ 825              		.loc 1 256 0
+ 826 0028 0123     		mov	r3, #1
+ 827 002a 15E0     		b	.L74
+ 828              	.LVL103:
+ 829              	.L75:
+ 257:.\Sensor_Processes.c ****         if ( !to-- ) return -2;
+ 830              		.loc 1 257 0 is_stmt 1
+ 831 002c 0D4B     		ldr	r3, .L76+4
+ 832 002e 3F22     		mov	r2, #63
+ 833 0030 9879     		ldrb	r0, [r3, #6]
+ 834 0032 013C     		sub	r4, r4, #1
+ 835              	.LVL104:
+ 836 0034 051C     		mov	r5, r0
+ 837              	.LVL105:
+ 838 0036 A4B2     		uxth	r4, r4
+ 839 0038 9543     		bic	r5, r2
+ 840              	.LVL106:
+ 258:.\Sensor_Processes.c ****     }
+ 841              		.loc 1 258 0
+ 842 003a 002C     		cmp	r4, #0
+ 843 003c 0BD0     		beq	.L72
+ 250:.\Sensor_Processes.c ****         /* Read data including status */
+ 844              		.loc 1 250 0
+ 845 003e 002D     		cmp	r5, #0
+ 846 0040 E2D1     		bne	.L70
+ 261:.\Sensor_Processes.c ****     if (data) data->Pressure = Pressure_Calcuation(pressureRaw);
+ 847              		.loc 1 261 0
+ 848 0042 DB79     		ldrb	r3, [r3, #7]
+ 849 0044 0002     		lsl	r0, r0, #8
+ 850 0046 C018     		add	r0, r0, r3
+ 851              	.LVL107:
+ 263:.\Sensor_Processes.c **** }
+ 852              		.loc 1 263 0
+ 853 0048 331E     		sub	r3, r6, #0
+ 262:.\Sensor_Processes.c ****     return 0;
+ 854              		.loc 1 262 0
+ 855 004a 06D0     		beq	.L68
+ 856              	.LVL108:
+ 262:.\Sensor_Processes.c ****     return 0;
+ 857              		.loc 1 262 0 is_stmt 0 discriminator 1
+ 858 004c FFF7FEFF 		bl	Pressure_Calcuation
+ 859              	.LVL109:
+ 263:.\Sensor_Processes.c **** }
+ 860              		.loc 1 263 0 is_stmt 1 discriminator 1
+ 861 0050 2B1C     		mov	r3, r5
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 22
+
+
+ 262:.\Sensor_Processes.c ****     return 0;
+ 862              		.loc 1 262 0 discriminator 1
+ 863 0052 B080     		strh	r0, [r6, #4]
+ 864 0054 01E0     		b	.L68
+ 865              	.L72:
+ 258:.\Sensor_Processes.c ****     }
+ 866              		.loc 1 258 0
+ 867 0056 0223     		mov	r3, #2
+ 868              	.LVL110:
+ 869              	.L74:
+ 870 0058 5B42     		neg	r3, r3
+ 871              	.L68:
+ 264:.\Sensor_Processes.c **** 
+ 872              		.loc 1 264 0
+ 873 005a 181C     		mov	r0, r3
+ 874              		@ sp needed
+ 875              	.LVL111:
+ 876 005c 70BD     		pop	{r4, r5, r6, pc}
+ 877              	.L77:
+ 878 005e C046     		.align	2
+ 879              	.L76:
+ 880 0060 06000000 		.word	Sensor_Raw+6
+ 881 0064 00000000 		.word	Sensor_Raw
+ 882              		.cfi_endproc
+ 883              	.LFE71:
+ 884              		.size	Read_Pressure, .-Read_Pressure
+ 885              		.comm	Sensor_Raw,8,1
+ 886              		.text
+ 887              	.Letext0:
+ 888              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 889              		.file 3 "..\\acn-sdk-c\\include/json/telemetry.h"
+ 890              		.file 4 "Generated_Source\\PSoC4/I2CM_I2C.h"
+ 891              		.section	.debug_info,"",%progbits
+ 892              	.Ldebug_info0:
+ 893 0000 AD060000 		.4byte	0x6ad
+ 894 0004 0400     		.2byte	0x4
+ 895 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 896 000a 04       		.byte	0x4
+ 897 000b 01       		.uleb128 0x1
+ 898 000c 46000000 		.4byte	.LASF56
+ 899 0010 01       		.byte	0x1
+ 900 0011 7E020000 		.4byte	.LASF57
+ 901 0015 CD030000 		.4byte	.LASF58
+ 902 0019 28000000 		.4byte	.Ldebug_ranges0+0x28
+ 903 001d 00000000 		.4byte	0
+ 904 0021 00000000 		.4byte	.Ldebug_line0
+ 905 0025 02       		.uleb128 0x2
+ 906 0026 04       		.byte	0x4
+ 907 0027 07       		.byte	0x7
+ 908 0028 71020000 		.4byte	.LASF0
+ 909 002c 02       		.uleb128 0x2
+ 910 002d 04       		.byte	0x4
+ 911 002e 04       		.byte	0x4
+ 912 002f 76010000 		.4byte	.LASF1
+ 913 0033 02       		.uleb128 0x2
+ 914 0034 08       		.byte	0x8
+ 915 0035 04       		.byte	0x4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 23
+
+
+ 916 0036 4F030000 		.4byte	.LASF2
+ 917 003a 02       		.uleb128 0x2
+ 918 003b 01       		.byte	0x1
+ 919 003c 06       		.byte	0x6
+ 920 003d 4E020000 		.4byte	.LASF3
+ 921 0041 02       		.uleb128 0x2
+ 922 0042 01       		.byte	0x1
+ 923 0043 08       		.byte	0x8
+ 924 0044 22020000 		.4byte	.LASF4
+ 925 0048 02       		.uleb128 0x2
+ 926 0049 02       		.byte	0x2
+ 927 004a 05       		.byte	0x5
+ 928 004b 3C000000 		.4byte	.LASF5
+ 929 004f 02       		.uleb128 0x2
+ 930 0050 02       		.byte	0x2
+ 931 0051 07       		.byte	0x7
+ 932 0052 DC020000 		.4byte	.LASF6
+ 933 0056 02       		.uleb128 0x2
+ 934 0057 04       		.byte	0x4
+ 935 0058 05       		.byte	0x5
+ 936 0059 B9010000 		.4byte	.LASF7
+ 937 005d 02       		.uleb128 0x2
+ 938 005e 04       		.byte	0x4
+ 939 005f 07       		.byte	0x7
+ 940 0060 29030000 		.4byte	.LASF8
+ 941 0064 02       		.uleb128 0x2
+ 942 0065 08       		.byte	0x8
+ 943 0066 05       		.byte	0x5
+ 944 0067 8C010000 		.4byte	.LASF9
+ 945 006b 02       		.uleb128 0x2
+ 946 006c 08       		.byte	0x8
+ 947 006d 07       		.byte	0x7
+ 948 006e 5A020000 		.4byte	.LASF10
+ 949 0072 03       		.uleb128 0x3
+ 950 0073 04       		.byte	0x4
+ 951 0074 05       		.byte	0x5
+ 952 0075 696E7400 		.ascii	"int\000"
+ 953 0079 04       		.uleb128 0x4
+ 954 007a 07020000 		.4byte	.LASF11
+ 955 007e 02       		.byte	0x2
+ 956 007f 3801     		.2byte	0x138
+ 957 0081 41000000 		.4byte	0x41
+ 958 0085 04       		.uleb128 0x4
+ 959 0086 43010000 		.4byte	.LASF12
+ 960 008a 02       		.byte	0x2
+ 961 008b 3901     		.2byte	0x139
+ 962 008d 4F000000 		.4byte	0x4f
+ 963 0091 04       		.uleb128 0x4
+ 964 0092 22030000 		.4byte	.LASF13
+ 965 0096 02       		.byte	0x2
+ 966 0097 3A01     		.2byte	0x13a
+ 967 0099 5D000000 		.4byte	0x5d
+ 968 009d 04       		.uleb128 0x4
+ 969 009e B4010000 		.4byte	.LASF14
+ 970 00a2 02       		.byte	0x2
+ 971 00a3 3B01     		.2byte	0x13b
+ 972 00a5 3A000000 		.4byte	0x3a
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 24
+
+
+ 973 00a9 04       		.uleb128 0x4
+ 974 00aa 4A010000 		.4byte	.LASF15
+ 975 00ae 02       		.byte	0x2
+ 976 00af 3C01     		.2byte	0x13c
+ 977 00b1 48000000 		.4byte	0x48
+ 978 00b5 04       		.uleb128 0x4
+ 979 00b6 49030000 		.4byte	.LASF16
+ 980 00ba 02       		.byte	0x2
+ 981 00bb 3D01     		.2byte	0x13d
+ 982 00bd 56000000 		.4byte	0x56
+ 983 00c1 02       		.uleb128 0x2
+ 984 00c2 01       		.byte	0x1
+ 985 00c3 08       		.byte	0x8
+ 986 00c4 D1020000 		.4byte	.LASF17
+ 987 00c8 05       		.uleb128 0x5
+ 988 00c9 91000000 		.4byte	0x91
+ 989 00cd 02       		.uleb128 0x2
+ 990 00ce 04       		.byte	0x4
+ 991 00cf 07       		.byte	0x7
+ 992 00d0 DF000000 		.4byte	.LASF18
+ 993 00d4 02       		.uleb128 0x2
+ 994 00d5 01       		.byte	0x1
+ 995 00d6 02       		.byte	0x2
+ 996 00d7 D6020000 		.4byte	.LASF19
+ 997 00db 06       		.uleb128 0x6
+ 998 00dc 08       		.byte	0x8
+ 999 00dd 03       		.byte	0x3
+ 1000 00de 20       		.byte	0x20
+ 1001 00df 2C010000 		.4byte	0x12c
+ 1002 00e3 07       		.uleb128 0x7
+ 1003 00e4 56030000 		.4byte	.LASF20
+ 1004 00e8 03       		.byte	0x3
+ 1005 00e9 21       		.byte	0x21
+ 1006 00ea 79000000 		.4byte	0x79
+ 1007 00ee 00       		.byte	0
+ 1008 00ef 07       		.uleb128 0x7
+ 1009 00f0 74030000 		.4byte	.LASF21
+ 1010 00f4 03       		.byte	0x3
+ 1011 00f5 2A       		.byte	0x2a
+ 1012 00f6 9D000000 		.4byte	0x9d
+ 1013 00fa 01       		.byte	0x1
+ 1014 00fb 07       		.uleb128 0x7
+ 1015 00fc 06030000 		.4byte	.LASF22
+ 1016 0100 03       		.byte	0x3
+ 1017 0101 2B       		.byte	0x2b
+ 1018 0102 79000000 		.4byte	0x79
+ 1019 0106 02       		.byte	0x2
+ 1020 0107 07       		.uleb128 0x7
+ 1021 0108 30020000 		.4byte	.LASF23
+ 1022 010c 03       		.byte	0x3
+ 1023 010d 2C       		.byte	0x2c
+ 1024 010e 79000000 		.4byte	0x79
+ 1025 0112 03       		.byte	0x3
+ 1026 0113 07       		.uleb128 0x7
+ 1027 0114 64010000 		.4byte	.LASF24
+ 1028 0118 03       		.byte	0x3
+ 1029 0119 2D       		.byte	0x2d
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 25
+
+
+ 1030 011a A9000000 		.4byte	0xa9
+ 1031 011e 04       		.byte	0x4
+ 1032 011f 07       		.uleb128 0x7
+ 1033 0120 6D010000 		.4byte	.LASF25
+ 1034 0124 03       		.byte	0x3
+ 1035 0125 2E       		.byte	0x2e
+ 1036 0126 A9000000 		.4byte	0xa9
+ 1037 012a 06       		.byte	0x6
+ 1038 012b 00       		.byte	0
+ 1039 012c 08       		.uleb128 0x8
+ 1040 012d 14030000 		.4byte	.LASF26
+ 1041 0131 03       		.byte	0x3
+ 1042 0132 2F       		.byte	0x2f
+ 1043 0133 DB000000 		.4byte	0xdb
+ 1044 0137 06       		.uleb128 0x6
+ 1045 0138 08       		.byte	0x8
+ 1046 0139 01       		.byte	0x1
+ 1047 013a 33       		.byte	0x33
+ 1048 013b A0010000 		.4byte	0x1a0
+ 1049 013f 07       		.uleb128 0x7
+ 1050 0140 A6020000 		.4byte	.LASF27
+ 1051 0144 01       		.byte	0x1
+ 1052 0145 35       		.byte	0x35
+ 1053 0146 79000000 		.4byte	0x79
+ 1054 014a 00       		.byte	0
+ 1055 014b 07       		.uleb128 0x7
+ 1056 014c 0D010000 		.4byte	.LASF28
+ 1057 0150 01       		.byte	0x1
+ 1058 0151 36       		.byte	0x36
+ 1059 0152 79000000 		.4byte	0x79
+ 1060 0156 01       		.byte	0x1
+ 1061 0157 07       		.uleb128 0x7
+ 1062 0158 D8010000 		.4byte	.LASF29
+ 1063 015c 01       		.byte	0x1
+ 1064 015d 37       		.byte	0x37
+ 1065 015e 79000000 		.4byte	0x79
+ 1066 0162 02       		.byte	0x2
+ 1067 0163 07       		.uleb128 0x7
+ 1068 0164 EB010000 		.4byte	.LASF30
+ 1069 0168 01       		.byte	0x1
+ 1070 0169 38       		.byte	0x38
+ 1071 016a 79000000 		.4byte	0x79
+ 1072 016e 03       		.byte	0x3
+ 1073 016f 07       		.uleb128 0x7
+ 1074 0170 96030000 		.4byte	.LASF31
+ 1075 0174 01       		.byte	0x1
+ 1076 0175 39       		.byte	0x39
+ 1077 0176 79000000 		.4byte	0x79
+ 1078 017a 04       		.byte	0x4
+ 1079 017b 07       		.uleb128 0x7
+ 1080 017c 40020000 		.4byte	.LASF32
+ 1081 0180 01       		.byte	0x1
+ 1082 0181 3A       		.byte	0x3a
+ 1083 0182 79000000 		.4byte	0x79
+ 1084 0186 05       		.byte	0x5
+ 1085 0187 07       		.uleb128 0x7
+ 1086 0188 7C010000 		.4byte	.LASF33
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 26
+
+
+ 1087 018c 01       		.byte	0x1
+ 1088 018d 3B       		.byte	0x3b
+ 1089 018e 79000000 		.4byte	0x79
+ 1090 0192 06       		.byte	0x6
+ 1091 0193 07       		.uleb128 0x7
+ 1092 0194 18000000 		.4byte	.LASF34
+ 1093 0198 01       		.byte	0x1
+ 1094 0199 3C       		.byte	0x3c
+ 1095 019a 79000000 		.4byte	0x79
+ 1096 019e 07       		.byte	0x7
+ 1097 019f 00       		.byte	0
+ 1098 01a0 09       		.uleb128 0x9
+ 1099 01a1 93020000 		.4byte	.LASF54
+ 1100 01a5 01       		.byte	0x1
+ 1101 01a6 BE       		.byte	0xbe
+ 1102 01a7 79000000 		.4byte	0x79
+ 1103 01ab 01       		.byte	0x1
+ 1104 01ac C7010000 		.4byte	0x1c7
+ 1105 01b0 0A       		.uleb128 0xa
+ 1106 01b1 B7020000 		.4byte	.LASF59
+ 1107 01b5 01       		.byte	0x1
+ 1108 01b6 BE       		.byte	0xbe
+ 1109 01b7 91000000 		.4byte	0x91
+ 1110 01bb 0B       		.uleb128 0xb
+ 1111 01bc 06030000 		.4byte	.LASF22
+ 1112 01c0 01       		.byte	0x1
+ 1113 01c1 BF       		.byte	0xbf
+ 1114 01c2 91000000 		.4byte	0x91
+ 1115 01c6 00       		.byte	0
+ 1116 01c7 0C       		.uleb128 0xc
+ 1117 01c8 E8000000 		.4byte	.LASF60
+ 1118 01cc 01       		.byte	0x1
+ 1119 01cd 44       		.byte	0x44
+ 1120 01ce 00000000 		.4byte	.LFB63
+ 1121 01d2 1A000000 		.4byte	.LFE63-.LFB63
+ 1122 01d6 01       		.uleb128 0x1
+ 1123 01d7 9C       		.byte	0x9c
+ 1124 01d8 EA010000 		.4byte	0x1ea
+ 1125 01dc 0D       		.uleb128 0xd
+ 1126 01dd 0F030000 		.4byte	.LASF35
+ 1127 01e1 01       		.byte	0x1
+ 1128 01e2 44       		.byte	0x44
+ 1129 01e3 EA010000 		.4byte	0x1ea
+ 1130 01e7 01       		.uleb128 0x1
+ 1131 01e8 50       		.byte	0x50
+ 1132 01e9 00       		.byte	0
+ 1133 01ea 0E       		.uleb128 0xe
+ 1134 01eb 04       		.byte	0x4
+ 1135 01ec 2C010000 		.4byte	0x12c
+ 1136 01f0 0F       		.uleb128 0xf
+ 1137 01f1 50010000 		.4byte	.LASF39
+ 1138 01f5 01       		.byte	0x1
+ 1139 01f6 4D       		.byte	0x4d
+ 1140 01f7 72000000 		.4byte	0x72
+ 1141 01fb 00000000 		.4byte	.LFB64
+ 1142 01ff D2000000 		.4byte	.LFE64-.LFB64
+ 1143 0203 01       		.uleb128 0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 27
+
+
+ 1144 0204 9C       		.byte	0x9c
+ 1145 0205 F3020000 		.4byte	0x2f3
+ 1146 0209 10       		.uleb128 0x10
+ 1147 020a 0F030000 		.4byte	.LASF35
+ 1148 020e 01       		.byte	0x1
+ 1149 020f 4D       		.byte	0x4d
+ 1150 0210 EA010000 		.4byte	0x1ea
+ 1151 0214 00000000 		.4byte	.LLST0
+ 1152 0218 11       		.uleb128 0x11
+ 1153 0219 FD010000 		.4byte	.LASF36
+ 1154 021d 01       		.byte	0x1
+ 1155 021e 4E       		.byte	0x4e
+ 1156 021f 91000000 		.4byte	0x91
+ 1157 0223 2C000000 		.4byte	.LLST1
+ 1158 0227 12       		.uleb128 0x12
+ 1159 0228 A5030000 		.4byte	.LASF37
+ 1160 022c 01       		.byte	0x1
+ 1161 022d 4F       		.byte	0x4f
+ 1162 022e 79000000 		.4byte	0x79
+ 1163 0232 02       		.uleb128 0x2
+ 1164 0233 91       		.byte	0x91
+ 1165 0234 63       		.sleb128 -29
+ 1166 0235 12       		.uleb128 0x12
+ 1167 0236 C2010000 		.4byte	.LASF38
+ 1168 023a 01       		.byte	0x1
+ 1169 023b 50       		.byte	0x50
+ 1170 023c F3020000 		.4byte	0x2f3
+ 1171 0240 02       		.uleb128 0x2
+ 1172 0241 91       		.byte	0x91
+ 1173 0242 64       		.sleb128 -28
+ 1174 0243 13       		.uleb128 0x13
+ 1175 0244 6900     		.ascii	"i\000"
+ 1176 0246 01       		.byte	0x1
+ 1177 0247 51       		.byte	0x51
+ 1178 0248 85000000 		.4byte	0x85
+ 1179 024c 55000000 		.4byte	.LLST2
+ 1180 0250 14       		.uleb128 0x14
+ 1181 0251 18000000 		.4byte	.LVL3
+ 1182 0255 5B060000 		.4byte	0x65b
+ 1183 0259 74020000 		.4byte	0x274
+ 1184 025d 15       		.uleb128 0x15
+ 1185 025e 01       		.uleb128 0x1
+ 1186 025f 53       		.byte	0x53
+ 1187 0260 01       		.uleb128 0x1
+ 1188 0261 30       		.byte	0x30
+ 1189 0262 15       		.uleb128 0x15
+ 1190 0263 01       		.uleb128 0x1
+ 1191 0264 52       		.byte	0x52
+ 1192 0265 01       		.uleb128 0x1
+ 1193 0266 31       		.byte	0x31
+ 1194 0267 15       		.uleb128 0x15
+ 1195 0268 01       		.uleb128 0x1
+ 1196 0269 51       		.byte	0x51
+ 1197 026a 02       		.uleb128 0x2
+ 1198 026b 75       		.byte	0x75
+ 1199 026c 00       		.sleb128 0
+ 1200 026d 15       		.uleb128 0x15
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 28
+
+
+ 1201 026e 01       		.uleb128 0x1
+ 1202 026f 50       		.byte	0x50
+ 1203 0270 02       		.uleb128 0x2
+ 1204 0271 08       		.byte	0x8
+ 1205 0272 27       		.byte	0x27
+ 1206 0273 00       		.byte	0
+ 1207 0274 16       		.uleb128 0x16
+ 1208 0275 1E000000 		.4byte	.LVL5
+ 1209 0279 85060000 		.4byte	0x685
+ 1210 027d 16       		.uleb128 0x16
+ 1211 027e 32000000 		.4byte	.LVL9
+ 1212 0282 85060000 		.4byte	0x685
+ 1213 0286 14       		.uleb128 0x14
+ 1214 0287 54000000 		.4byte	.LVL12
+ 1215 028b 90060000 		.4byte	0x690
+ 1216 028f AA020000 		.4byte	0x2aa
+ 1217 0293 15       		.uleb128 0x15
+ 1218 0294 01       		.uleb128 0x1
+ 1219 0295 53       		.byte	0x53
+ 1220 0296 01       		.uleb128 0x1
+ 1221 0297 30       		.byte	0x30
+ 1222 0298 15       		.uleb128 0x15
+ 1223 0299 01       		.uleb128 0x1
+ 1224 029a 52       		.byte	0x52
+ 1225 029b 01       		.uleb128 0x1
+ 1226 029c 36       		.byte	0x36
+ 1227 029d 15       		.uleb128 0x15
+ 1228 029e 01       		.uleb128 0x1
+ 1229 029f 51       		.byte	0x51
+ 1230 02a0 02       		.uleb128 0x2
+ 1231 02a1 91       		.byte	0x91
+ 1232 02a2 64       		.sleb128 -28
+ 1233 02a3 15       		.uleb128 0x15
+ 1234 02a4 01       		.uleb128 0x1
+ 1235 02a5 50       		.byte	0x50
+ 1236 02a6 02       		.uleb128 0x2
+ 1237 02a7 08       		.byte	0x8
+ 1238 02a8 49       		.byte	0x49
+ 1239 02a9 00       		.byte	0
+ 1240 02aa 16       		.uleb128 0x16
+ 1241 02ab 5A000000 		.4byte	.LVL14
+ 1242 02af 85060000 		.4byte	0x685
+ 1243 02b3 16       		.uleb128 0x16
+ 1244 02b4 6E000000 		.4byte	.LVL18
+ 1245 02b8 85060000 		.4byte	0x685
+ 1246 02bc 14       		.uleb128 0x14
+ 1247 02bd 96000000 		.4byte	.LVL20
+ 1248 02c1 5B060000 		.4byte	0x65b
+ 1249 02c5 E0020000 		.4byte	0x2e0
+ 1250 02c9 15       		.uleb128 0x15
+ 1251 02ca 01       		.uleb128 0x1
+ 1252 02cb 53       		.byte	0x53
+ 1253 02cc 01       		.uleb128 0x1
+ 1254 02cd 30       		.byte	0x30
+ 1255 02ce 15       		.uleb128 0x15
+ 1256 02cf 01       		.uleb128 0x1
+ 1257 02d0 52       		.byte	0x52
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 29
+
+
+ 1258 02d1 01       		.uleb128 0x1
+ 1259 02d2 31       		.byte	0x31
+ 1260 02d3 15       		.uleb128 0x15
+ 1261 02d4 01       		.uleb128 0x1
+ 1262 02d5 51       		.byte	0x51
+ 1263 02d6 02       		.uleb128 0x2
+ 1264 02d7 7D       		.byte	0x7d
+ 1265 02d8 03       		.sleb128 3
+ 1266 02d9 15       		.uleb128 0x15
+ 1267 02da 01       		.uleb128 0x1
+ 1268 02db 50       		.byte	0x50
+ 1269 02dc 02       		.uleb128 0x2
+ 1270 02dd 08       		.byte	0x8
+ 1271 02de 38       		.byte	0x38
+ 1272 02df 00       		.byte	0
+ 1273 02e0 16       		.uleb128 0x16
+ 1274 02e1 9C000000 		.4byte	.LVL22
+ 1275 02e5 85060000 		.4byte	0x685
+ 1276 02e9 16       		.uleb128 0x16
+ 1277 02ea B0000000 		.4byte	.LVL26
+ 1278 02ee 85060000 		.4byte	0x685
+ 1279 02f2 00       		.byte	0
+ 1280 02f3 17       		.uleb128 0x17
+ 1281 02f4 79000000 		.4byte	0x79
+ 1282 02f8 03030000 		.4byte	0x303
+ 1283 02fc 18       		.uleb128 0x18
+ 1284 02fd CD000000 		.4byte	0xcd
+ 1285 0301 09       		.byte	0x9
+ 1286 0302 00       		.byte	0
+ 1287 0303 0F       		.uleb128 0xf
+ 1288 0304 27000000 		.4byte	.LASF40
+ 1289 0308 01       		.byte	0x1
+ 1290 0309 81       		.byte	0x81
+ 1291 030a 72000000 		.4byte	0x72
+ 1292 030e 00000000 		.4byte	.LFB65
+ 1293 0312 30000000 		.4byte	.LFE65-.LFB65
+ 1294 0316 01       		.uleb128 0x1
+ 1295 0317 9C       		.byte	0x9c
+ 1296 0318 65030000 		.4byte	0x365
+ 1297 031c 12       		.uleb128 0x12
+ 1298 031d A5030000 		.4byte	.LASF37
+ 1299 0321 01       		.byte	0x1
+ 1300 0322 82       		.byte	0x82
+ 1301 0323 79000000 		.4byte	0x79
+ 1302 0327 02       		.uleb128 0x2
+ 1303 0328 91       		.byte	0x91
+ 1304 0329 77       		.sleb128 -9
+ 1305 032a 13       		.uleb128 0x13
+ 1306 032b 6900     		.ascii	"i\000"
+ 1307 032d 01       		.byte	0x1
+ 1308 032e 83       		.byte	0x83
+ 1309 032f 85000000 		.4byte	0x85
+ 1310 0333 FC000000 		.4byte	.LLST3
+ 1311 0337 14       		.uleb128 0x14
+ 1312 0338 14000000 		.4byte	.LVL31
+ 1313 033c 5B060000 		.4byte	0x65b
+ 1314 0340 5B030000 		.4byte	0x35b
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 30
+
+
+ 1315 0344 15       		.uleb128 0x15
+ 1316 0345 01       		.uleb128 0x1
+ 1317 0346 53       		.byte	0x53
+ 1318 0347 01       		.uleb128 0x1
+ 1319 0348 30       		.byte	0x30
+ 1320 0349 15       		.uleb128 0x15
+ 1321 034a 01       		.uleb128 0x1
+ 1322 034b 52       		.byte	0x52
+ 1323 034c 01       		.uleb128 0x1
+ 1324 034d 31       		.byte	0x31
+ 1325 034e 15       		.uleb128 0x15
+ 1326 034f 01       		.uleb128 0x1
+ 1327 0350 51       		.byte	0x51
+ 1328 0351 02       		.uleb128 0x2
+ 1329 0352 7D       		.byte	0x7d
+ 1330 0353 07       		.sleb128 7
+ 1331 0354 15       		.uleb128 0x15
+ 1332 0355 01       		.uleb128 0x1
+ 1333 0356 50       		.byte	0x50
+ 1334 0357 02       		.uleb128 0x2
+ 1335 0358 08       		.byte	0x8
+ 1336 0359 27       		.byte	0x27
+ 1337 035a 00       		.byte	0
+ 1338 035b 16       		.uleb128 0x16
+ 1339 035c 1A000000 		.4byte	.LVL33
+ 1340 0360 85060000 		.4byte	0x685
+ 1341 0364 00       		.byte	0
+ 1342 0365 19       		.uleb128 0x19
+ 1343 0366 AD030000 		.4byte	.LASF41
+ 1344 036a 01       		.byte	0x1
+ 1345 036b B2       		.byte	0xb2
+ 1346 036c 9D000000 		.4byte	0x9d
+ 1347 0370 00000000 		.4byte	.LFB67
+ 1348 0374 1C000000 		.4byte	.LFE67-.LFB67
+ 1349 0378 01       		.uleb128 0x1
+ 1350 0379 9C       		.byte	0x9c
+ 1351 037a 9D030000 		.4byte	0x39d
+ 1352 037e 10       		.uleb128 0x10
+ 1353 037f C8010000 		.4byte	.LASF42
+ 1354 0383 01       		.byte	0x1
+ 1355 0384 B2       		.byte	0xb2
+ 1356 0385 B5000000 		.4byte	0xb5
+ 1357 0389 39010000 		.4byte	.LLST4
+ 1358 038d 11       		.uleb128 0x11
+ 1359 038e 74030000 		.4byte	.LASF21
+ 1360 0392 01       		.byte	0x1
+ 1361 0393 B3       		.byte	0xb3
+ 1362 0394 B5000000 		.4byte	0xb5
+ 1363 0398 5A010000 		.4byte	.LLST5
+ 1364 039c 00       		.byte	0
+ 1365 039d 19       		.uleb128 0x19
+ 1366 039e EF020000 		.4byte	.LASF43
+ 1367 03a2 01       		.byte	0x1
+ 1368 03a3 8F       		.byte	0x8f
+ 1369 03a4 72000000 		.4byte	0x72
+ 1370 03a8 00000000 		.4byte	.LFB66
+ 1371 03ac 90000000 		.4byte	.LFE66-.LFB66
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 31
+
+
+ 1372 03b0 01       		.uleb128 0x1
+ 1373 03b1 9C       		.byte	0x9c
+ 1374 03b2 6E040000 		.4byte	0x46e
+ 1375 03b6 10       		.uleb128 0x10
+ 1376 03b7 0F030000 		.4byte	.LASF35
+ 1377 03bb 01       		.byte	0x1
+ 1378 03bc 8F       		.byte	0x8f
+ 1379 03bd EA010000 		.4byte	0x1ea
+ 1380 03c1 A7010000 		.4byte	.LLST6
+ 1381 03c5 12       		.uleb128 0x12
+ 1382 03c6 34010000 		.4byte	.LASF44
+ 1383 03ca 01       		.byte	0x1
+ 1384 03cb 90       		.byte	0x90
+ 1385 03cc 6E040000 		.4byte	0x46e
+ 1386 03d0 02       		.uleb128 0x2
+ 1387 03d1 91       		.byte	0x91
+ 1388 03d2 60       		.sleb128 -32
+ 1389 03d3 12       		.uleb128 0x12
+ 1390 03d4 0C000000 		.4byte	.LASF45
+ 1391 03d8 01       		.byte	0x1
+ 1392 03d9 91       		.byte	0x91
+ 1393 03da C8000000 		.4byte	0xc8
+ 1394 03de 02       		.uleb128 0x2
+ 1395 03df 91       		.byte	0x91
+ 1396 03e0 64       		.sleb128 -28
+ 1397 03e1 11       		.uleb128 0x11
+ 1398 03e2 C3030000 		.4byte	.LASF46
+ 1399 03e6 01       		.byte	0x1
+ 1400 03e7 92       		.byte	0x92
+ 1401 03e8 79000000 		.4byte	0x79
+ 1402 03ec C6010000 		.4byte	.LLST7
+ 1403 03f0 13       		.uleb128 0x13
+ 1404 03f1 6900     		.ascii	"i\000"
+ 1405 03f3 01       		.byte	0x1
+ 1406 03f4 93       		.byte	0x93
+ 1407 03f5 85000000 		.4byte	0x85
+ 1408 03f9 E5010000 		.4byte	.LLST8
+ 1409 03fd 13       		.uleb128 0x13
+ 1410 03fe 746F00   		.ascii	"to\000"
+ 1411 0401 01       		.byte	0x1
+ 1412 0402 93       		.byte	0x93
+ 1413 0403 85000000 		.4byte	0x85
+ 1414 0407 22020000 		.4byte	.LLST9
+ 1415 040b 1A       		.uleb128 0x1a
+ 1416 040c A0010000 		.4byte	0x1a0
+ 1417 0410 5E000000 		.4byte	.LBB4
+ 1418 0414 00000000 		.4byte	.Ldebug_ranges0+0
+ 1419 0418 01       		.byte	0x1
+ 1420 0419 AA       		.byte	0xaa
+ 1421 041a 37040000 		.4byte	0x437
+ 1422 041e 1B       		.uleb128 0x1b
+ 1423 041f B0010000 		.4byte	0x1b0
+ 1424 0423 45020000 		.4byte	.LLST10
+ 1425 0427 1C       		.uleb128 0x1c
+ 1426 0428 00000000 		.4byte	.Ldebug_ranges0+0
+ 1427 042c 1D       		.uleb128 0x1d
+ 1428 042d BB010000 		.4byte	0x1bb
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 32
+
+
+ 1429 0431 58020000 		.4byte	.LLST11
+ 1430 0435 00       		.byte	0
+ 1431 0436 00       		.byte	0
+ 1432 0437 14       		.uleb128 0x14
+ 1433 0438 1A000000 		.4byte	.LVL46
+ 1434 043c 90060000 		.4byte	0x690
+ 1435 0440 5B040000 		.4byte	0x45b
+ 1436 0444 15       		.uleb128 0x15
+ 1437 0445 01       		.uleb128 0x1
+ 1438 0446 53       		.byte	0x53
+ 1439 0447 01       		.uleb128 0x1
+ 1440 0448 30       		.byte	0x30
+ 1441 0449 15       		.uleb128 0x15
+ 1442 044a 01       		.uleb128 0x1
+ 1443 044b 52       		.byte	0x52
+ 1444 044c 01       		.uleb128 0x1
+ 1445 044d 34       		.byte	0x34
+ 1446 044e 15       		.uleb128 0x15
+ 1447 044f 01       		.uleb128 0x1
+ 1448 0450 51       		.byte	0x51
+ 1449 0451 02       		.uleb128 0x2
+ 1450 0452 77       		.byte	0x77
+ 1451 0453 00       		.sleb128 0
+ 1452 0454 15       		.uleb128 0x15
+ 1453 0455 01       		.uleb128 0x1
+ 1454 0456 50       		.byte	0x50
+ 1455 0457 02       		.uleb128 0x2
+ 1456 0458 08       		.byte	0x8
+ 1457 0459 27       		.byte	0x27
+ 1458 045a 00       		.byte	0
+ 1459 045b 16       		.uleb128 0x16
+ 1460 045c 22000000 		.4byte	.LVL48
+ 1461 0460 85060000 		.4byte	0x685
+ 1462 0464 16       		.uleb128 0x16
+ 1463 0465 5C000000 		.4byte	.LVL55
+ 1464 0469 65030000 		.4byte	0x365
+ 1465 046d 00       		.byte	0
+ 1466 046e 05       		.uleb128 0x5
+ 1467 046f B5000000 		.4byte	0xb5
+ 1468 0473 1E       		.uleb128 0x1e
+ 1469 0474 A0010000 		.4byte	0x1a0
+ 1470 0478 00000000 		.4byte	.LFB68
+ 1471 047c 18000000 		.4byte	.LFE68-.LFB68
+ 1472 0480 01       		.uleb128 0x1
+ 1473 0481 9C       		.byte	0x9c
+ 1474 0482 99040000 		.4byte	0x499
+ 1475 0486 1B       		.uleb128 0x1b
+ 1476 0487 B0010000 		.4byte	0x1b0
+ 1477 048b 7B020000 		.4byte	.LLST12
+ 1478 048f 1D       		.uleb128 0x1d
+ 1479 0490 BB010000 		.4byte	0x1bb
+ 1480 0494 9C020000 		.4byte	.LLST13
+ 1481 0498 00       		.byte	0
+ 1482 0499 0F       		.uleb128 0xf
+ 1483 049a 9A010000 		.4byte	.LASF47
+ 1484 049e 01       		.byte	0x1
+ 1485 049f C6       		.byte	0xc6
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 33
+
+
+ 1486 04a0 72000000 		.4byte	0x72
+ 1487 04a4 00000000 		.4byte	.LFB69
+ 1488 04a8 30000000 		.4byte	.LFE69-.LFB69
+ 1489 04ac 01       		.uleb128 0x1
+ 1490 04ad 9C       		.byte	0x9c
+ 1491 04ae F0040000 		.4byte	0x4f0
+ 1492 04b2 13       		.uleb128 0x13
+ 1493 04b3 6900     		.ascii	"i\000"
+ 1494 04b5 01       		.byte	0x1
+ 1495 04b6 C7       		.byte	0xc7
+ 1496 04b7 72000000 		.4byte	0x72
+ 1497 04bb DB020000 		.4byte	.LLST14
+ 1498 04bf 14       		.uleb128 0x14
+ 1499 04c0 0E000000 		.4byte	.LVL64
+ 1500 04c4 90060000 		.4byte	0x690
+ 1501 04c8 E6040000 		.4byte	0x4e6
+ 1502 04cc 15       		.uleb128 0x15
+ 1503 04cd 01       		.uleb128 0x1
+ 1504 04ce 53       		.byte	0x53
+ 1505 04cf 01       		.uleb128 0x1
+ 1506 04d0 30       		.byte	0x30
+ 1507 04d1 15       		.uleb128 0x15
+ 1508 04d2 01       		.uleb128 0x1
+ 1509 04d3 52       		.byte	0x52
+ 1510 04d4 01       		.uleb128 0x1
+ 1511 04d5 32       		.byte	0x32
+ 1512 04d6 15       		.uleb128 0x15
+ 1513 04d7 01       		.uleb128 0x1
+ 1514 04d8 51       		.byte	0x51
+ 1515 04d9 05       		.uleb128 0x5
+ 1516 04da 03       		.byte	0x3
+ 1517 04db 04000000 		.4byte	Sensor_Raw+4
+ 1518 04df 15       		.uleb128 0x15
+ 1519 04e0 01       		.uleb128 0x1
+ 1520 04e1 50       		.byte	0x50
+ 1521 04e2 02       		.uleb128 0x2
+ 1522 04e3 08       		.byte	0x8
+ 1523 04e4 49       		.byte	0x49
+ 1524 04e5 00       		.byte	0
+ 1525 04e6 16       		.uleb128 0x16
+ 1526 04e7 14000000 		.4byte	.LVL66
+ 1527 04eb 85060000 		.4byte	0x685
+ 1528 04ef 00       		.byte	0
+ 1529 04f0 19       		.uleb128 0x19
+ 1530 04f1 C4020000 		.4byte	.LASF48
+ 1531 04f5 01       		.byte	0x1
+ 1532 04f6 D4       		.byte	0xd4
+ 1533 04f7 72000000 		.4byte	0x72
+ 1534 04fb 00000000 		.4byte	.LFB70
+ 1535 04ff 7C000000 		.4byte	.LFE70-.LFB70
+ 1536 0503 01       		.uleb128 0x1
+ 1537 0504 9C       		.byte	0x9c
+ 1538 0505 74050000 		.4byte	0x574
+ 1539 0509 10       		.uleb128 0x10
+ 1540 050a 0F030000 		.4byte	.LASF35
+ 1541 050e 01       		.byte	0x1
+ 1542 050f D4       		.byte	0xd4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 34
+
+
+ 1543 0510 EA010000 		.4byte	0x1ea
+ 1544 0514 2D030000 		.4byte	.LLST15
+ 1545 0518 11       		.uleb128 0x11
+ 1546 0519 5D030000 		.4byte	.LASF49
+ 1547 051d 01       		.byte	0x1
+ 1548 051e D5       		.byte	0xd5
+ 1549 051f B5000000 		.4byte	0xb5
+ 1550 0523 59030000 		.4byte	.LLST16
+ 1551 0527 11       		.uleb128 0x11
+ 1552 0528 00000000 		.4byte	.LASF50
+ 1553 052c 01       		.byte	0x1
+ 1554 052d D6       		.byte	0xd6
+ 1555 052e 2C000000 		.4byte	0x2c
+ 1556 0532 83030000 		.4byte	.LLST17
+ 1557 0536 13       		.uleb128 0x13
+ 1558 0537 6900     		.ascii	"i\000"
+ 1559 0539 01       		.byte	0x1
+ 1560 053a D7       		.byte	0xd7
+ 1561 053b 85000000 		.4byte	0x85
+ 1562 053f B1030000 		.4byte	.LLST18
+ 1563 0543 14       		.uleb128 0x14
+ 1564 0544 12000000 		.4byte	.LVL73
+ 1565 0548 90060000 		.4byte	0x690
+ 1566 054c 6A050000 		.4byte	0x56a
+ 1567 0550 15       		.uleb128 0x15
+ 1568 0551 01       		.uleb128 0x1
+ 1569 0552 53       		.byte	0x53
+ 1570 0553 01       		.uleb128 0x1
+ 1571 0554 30       		.byte	0x30
+ 1572 0555 15       		.uleb128 0x15
+ 1573 0556 01       		.uleb128 0x1
+ 1574 0557 52       		.byte	0x52
+ 1575 0558 01       		.uleb128 0x1
+ 1576 0559 32       		.byte	0x32
+ 1577 055a 15       		.uleb128 0x15
+ 1578 055b 01       		.uleb128 0x1
+ 1579 055c 51       		.byte	0x51
+ 1580 055d 05       		.uleb128 0x5
+ 1581 055e 03       		.byte	0x3
+ 1582 055f 04000000 		.4byte	Sensor_Raw+4
+ 1583 0563 15       		.uleb128 0x15
+ 1584 0564 01       		.uleb128 0x1
+ 1585 0565 50       		.byte	0x50
+ 1586 0566 02       		.uleb128 0x2
+ 1587 0567 08       		.byte	0x8
+ 1588 0568 49       		.byte	0x49
+ 1589 0569 00       		.byte	0
+ 1590 056a 16       		.uleb128 0x16
+ 1591 056b 18000000 		.4byte	.LVL75
+ 1592 056f 85060000 		.4byte	0x685
+ 1593 0573 00       		.byte	0
+ 1594 0574 1F       		.uleb128 0x1f
+ 1595 0575 F9000000 		.4byte	.LASF51
+ 1596 0579 01       		.byte	0x1
+ 1597 057a 0D01     		.2byte	0x10d
+ 1598 057c A9000000 		.4byte	0xa9
+ 1599 0580 00000000 		.4byte	.LFB72
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 35
+
+
+ 1600 0584 30000000 		.4byte	.LFE72-.LFB72
+ 1601 0588 01       		.uleb128 0x1
+ 1602 0589 9C       		.byte	0x9c
+ 1603 058a AF050000 		.4byte	0x5af
+ 1604 058e 20       		.uleb128 0x20
+ 1605 058f 68030000 		.4byte	.LASF52
+ 1606 0593 01       		.byte	0x1
+ 1607 0594 0D01     		.2byte	0x10d
+ 1608 0596 B5000000 		.4byte	0xb5
+ 1609 059a EE030000 		.4byte	.LLST19
+ 1610 059e 21       		.uleb128 0x21
+ 1611 059f 64010000 		.4byte	.LASF24
+ 1612 05a3 01       		.byte	0x1
+ 1613 05a4 0E01     		.2byte	0x10e
+ 1614 05a6 2C000000 		.4byte	0x2c
+ 1615 05aa 1D040000 		.4byte	.LLST20
+ 1616 05ae 00       		.byte	0
+ 1617 05af 0F       		.uleb128 0xf
+ 1618 05b0 3B030000 		.4byte	.LASF53
+ 1619 05b4 01       		.byte	0x1
+ 1620 05b5 F3       		.byte	0xf3
+ 1621 05b6 72000000 		.4byte	0x72
+ 1622 05ba 00000000 		.4byte	.LFB71
+ 1623 05be 68000000 		.4byte	.LFE71-.LFB71
+ 1624 05c2 01       		.uleb128 0x1
+ 1625 05c3 9C       		.byte	0x9c
+ 1626 05c4 4A060000 		.4byte	0x64a
+ 1627 05c8 10       		.uleb128 0x10
+ 1628 05c9 0F030000 		.4byte	.LASF35
+ 1629 05cd 01       		.byte	0x1
+ 1630 05ce F3       		.byte	0xf3
+ 1631 05cf EA010000 		.4byte	0x1ea
+ 1632 05d3 51040000 		.4byte	.LLST21
+ 1633 05d7 11       		.uleb128 0x11
+ 1634 05d8 68030000 		.4byte	.LASF52
+ 1635 05dc 01       		.byte	0x1
+ 1636 05dd F4       		.byte	0xf4
+ 1637 05de B5000000 		.4byte	0xb5
+ 1638 05e2 93040000 		.4byte	.LLST22
+ 1639 05e6 11       		.uleb128 0x11
+ 1640 05e7 C3030000 		.4byte	.LASF46
+ 1641 05eb 01       		.byte	0x1
+ 1642 05ec F5       		.byte	0xf5
+ 1643 05ed 79000000 		.4byte	0x79
+ 1644 05f1 A6040000 		.4byte	.LLST23
+ 1645 05f5 13       		.uleb128 0x13
+ 1646 05f6 6900     		.ascii	"i\000"
+ 1647 05f8 01       		.byte	0x1
+ 1648 05f9 F6       		.byte	0xf6
+ 1649 05fa 85000000 		.4byte	0x85
+ 1650 05fe C5040000 		.4byte	.LLST24
+ 1651 0602 13       		.uleb128 0x13
+ 1652 0603 746F00   		.ascii	"to\000"
+ 1653 0606 01       		.byte	0x1
+ 1654 0607 F6       		.byte	0xf6
+ 1655 0608 85000000 		.4byte	0x85
+ 1656 060c 02050000 		.4byte	.LLST25
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 36
+
+
+ 1657 0610 14       		.uleb128 0x14
+ 1658 0611 16000000 		.4byte	.LVL98
+ 1659 0615 90060000 		.4byte	0x690
+ 1660 0619 37060000 		.4byte	0x637
+ 1661 061d 15       		.uleb128 0x15
+ 1662 061e 01       		.uleb128 0x1
+ 1663 061f 53       		.byte	0x53
+ 1664 0620 01       		.uleb128 0x1
+ 1665 0621 30       		.byte	0x30
+ 1666 0622 15       		.uleb128 0x15
+ 1667 0623 01       		.uleb128 0x1
+ 1668 0624 52       		.byte	0x52
+ 1669 0625 01       		.uleb128 0x1
+ 1670 0626 32       		.byte	0x32
+ 1671 0627 15       		.uleb128 0x15
+ 1672 0628 01       		.uleb128 0x1
+ 1673 0629 51       		.byte	0x51
+ 1674 062a 05       		.uleb128 0x5
+ 1675 062b 03       		.byte	0x3
+ 1676 062c 06000000 		.4byte	Sensor_Raw+6
+ 1677 0630 15       		.uleb128 0x15
+ 1678 0631 01       		.uleb128 0x1
+ 1679 0632 50       		.byte	0x50
+ 1680 0633 02       		.uleb128 0x2
+ 1681 0634 08       		.byte	0x8
+ 1682 0635 38       		.byte	0x38
+ 1683 0636 00       		.byte	0
+ 1684 0637 16       		.uleb128 0x16
+ 1685 0638 1C000000 		.4byte	.LVL100
+ 1686 063c 85060000 		.4byte	0x685
+ 1687 0640 16       		.uleb128 0x16
+ 1688 0641 50000000 		.4byte	.LVL109
+ 1689 0645 74050000 		.4byte	0x574
+ 1690 0649 00       		.byte	0
+ 1691 064a 22       		.uleb128 0x22
+ 1692 064b D4000000 		.4byte	.LASF61
+ 1693 064f 01       		.byte	0x1
+ 1694 0650 3E       		.byte	0x3e
+ 1695 0651 37010000 		.4byte	0x137
+ 1696 0655 05       		.uleb128 0x5
+ 1697 0656 03       		.byte	0x3
+ 1698 0657 00000000 		.4byte	Sensor_Raw
+ 1699 065b 23       		.uleb128 0x23
+ 1700 065c 1D010000 		.4byte	.LASF55
+ 1701 0660 04       		.byte	0x4
+ 1702 0661 C4       		.byte	0xc4
+ 1703 0662 91000000 		.4byte	0x91
+ 1704 0666 7F060000 		.4byte	0x67f
+ 1705 066a 24       		.uleb128 0x24
+ 1706 066b 91000000 		.4byte	0x91
+ 1707 066f 24       		.uleb128 0x24
+ 1708 0670 7F060000 		.4byte	0x67f
+ 1709 0674 24       		.uleb128 0x24
+ 1710 0675 91000000 		.4byte	0x91
+ 1711 0679 24       		.uleb128 0x24
+ 1712 067a 91000000 		.4byte	0x91
+ 1713 067e 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 37
+
+
+ 1714 067f 0E       		.uleb128 0xe
+ 1715 0680 04       		.byte	0x4
+ 1716 0681 79000000 		.4byte	0x79
+ 1717 0685 25       		.uleb128 0x25
+ 1718 0686 0D020000 		.4byte	.LASF62
+ 1719 068a 04       		.byte	0x4
+ 1720 068b C0       		.byte	0xc0
+ 1721 068c 91000000 		.4byte	0x91
+ 1722 0690 26       		.uleb128 0x26
+ 1723 0691 80030000 		.4byte	.LASF63
+ 1724 0695 04       		.byte	0x4
+ 1725 0696 C5       		.byte	0xc5
+ 1726 0697 91000000 		.4byte	0x91
+ 1727 069b 24       		.uleb128 0x24
+ 1728 069c 91000000 		.4byte	0x91
+ 1729 06a0 24       		.uleb128 0x24
+ 1730 06a1 7F060000 		.4byte	0x67f
+ 1731 06a5 24       		.uleb128 0x24
+ 1732 06a6 91000000 		.4byte	0x91
+ 1733 06aa 24       		.uleb128 0x24
+ 1734 06ab 91000000 		.4byte	0x91
+ 1735 06af 00       		.byte	0
+ 1736 06b0 00       		.byte	0
+ 1737              		.section	.debug_abbrev,"",%progbits
+ 1738              	.Ldebug_abbrev0:
+ 1739 0000 01       		.uleb128 0x1
+ 1740 0001 11       		.uleb128 0x11
+ 1741 0002 01       		.byte	0x1
+ 1742 0003 25       		.uleb128 0x25
+ 1743 0004 0E       		.uleb128 0xe
+ 1744 0005 13       		.uleb128 0x13
+ 1745 0006 0B       		.uleb128 0xb
+ 1746 0007 03       		.uleb128 0x3
+ 1747 0008 0E       		.uleb128 0xe
+ 1748 0009 1B       		.uleb128 0x1b
+ 1749 000a 0E       		.uleb128 0xe
+ 1750 000b 55       		.uleb128 0x55
+ 1751 000c 17       		.uleb128 0x17
+ 1752 000d 11       		.uleb128 0x11
+ 1753 000e 01       		.uleb128 0x1
+ 1754 000f 10       		.uleb128 0x10
+ 1755 0010 17       		.uleb128 0x17
+ 1756 0011 00       		.byte	0
+ 1757 0012 00       		.byte	0
+ 1758 0013 02       		.uleb128 0x2
+ 1759 0014 24       		.uleb128 0x24
+ 1760 0015 00       		.byte	0
+ 1761 0016 0B       		.uleb128 0xb
+ 1762 0017 0B       		.uleb128 0xb
+ 1763 0018 3E       		.uleb128 0x3e
+ 1764 0019 0B       		.uleb128 0xb
+ 1765 001a 03       		.uleb128 0x3
+ 1766 001b 0E       		.uleb128 0xe
+ 1767 001c 00       		.byte	0
+ 1768 001d 00       		.byte	0
+ 1769 001e 03       		.uleb128 0x3
+ 1770 001f 24       		.uleb128 0x24
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 38
+
+
+ 1771 0020 00       		.byte	0
+ 1772 0021 0B       		.uleb128 0xb
+ 1773 0022 0B       		.uleb128 0xb
+ 1774 0023 3E       		.uleb128 0x3e
+ 1775 0024 0B       		.uleb128 0xb
+ 1776 0025 03       		.uleb128 0x3
+ 1777 0026 08       		.uleb128 0x8
+ 1778 0027 00       		.byte	0
+ 1779 0028 00       		.byte	0
+ 1780 0029 04       		.uleb128 0x4
+ 1781 002a 16       		.uleb128 0x16
+ 1782 002b 00       		.byte	0
+ 1783 002c 03       		.uleb128 0x3
+ 1784 002d 0E       		.uleb128 0xe
+ 1785 002e 3A       		.uleb128 0x3a
+ 1786 002f 0B       		.uleb128 0xb
+ 1787 0030 3B       		.uleb128 0x3b
+ 1788 0031 05       		.uleb128 0x5
+ 1789 0032 49       		.uleb128 0x49
+ 1790 0033 13       		.uleb128 0x13
+ 1791 0034 00       		.byte	0
+ 1792 0035 00       		.byte	0
+ 1793 0036 05       		.uleb128 0x5
+ 1794 0037 35       		.uleb128 0x35
+ 1795 0038 00       		.byte	0
+ 1796 0039 49       		.uleb128 0x49
+ 1797 003a 13       		.uleb128 0x13
+ 1798 003b 00       		.byte	0
+ 1799 003c 00       		.byte	0
+ 1800 003d 06       		.uleb128 0x6
+ 1801 003e 13       		.uleb128 0x13
+ 1802 003f 01       		.byte	0x1
+ 1803 0040 0B       		.uleb128 0xb
+ 1804 0041 0B       		.uleb128 0xb
+ 1805 0042 3A       		.uleb128 0x3a
+ 1806 0043 0B       		.uleb128 0xb
+ 1807 0044 3B       		.uleb128 0x3b
+ 1808 0045 0B       		.uleb128 0xb
+ 1809 0046 01       		.uleb128 0x1
+ 1810 0047 13       		.uleb128 0x13
+ 1811 0048 00       		.byte	0
+ 1812 0049 00       		.byte	0
+ 1813 004a 07       		.uleb128 0x7
+ 1814 004b 0D       		.uleb128 0xd
+ 1815 004c 00       		.byte	0
+ 1816 004d 03       		.uleb128 0x3
+ 1817 004e 0E       		.uleb128 0xe
+ 1818 004f 3A       		.uleb128 0x3a
+ 1819 0050 0B       		.uleb128 0xb
+ 1820 0051 3B       		.uleb128 0x3b
+ 1821 0052 0B       		.uleb128 0xb
+ 1822 0053 49       		.uleb128 0x49
+ 1823 0054 13       		.uleb128 0x13
+ 1824 0055 38       		.uleb128 0x38
+ 1825 0056 0B       		.uleb128 0xb
+ 1826 0057 00       		.byte	0
+ 1827 0058 00       		.byte	0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 39
+
+
+ 1828 0059 08       		.uleb128 0x8
+ 1829 005a 16       		.uleb128 0x16
+ 1830 005b 00       		.byte	0
+ 1831 005c 03       		.uleb128 0x3
+ 1832 005d 0E       		.uleb128 0xe
+ 1833 005e 3A       		.uleb128 0x3a
+ 1834 005f 0B       		.uleb128 0xb
+ 1835 0060 3B       		.uleb128 0x3b
+ 1836 0061 0B       		.uleb128 0xb
+ 1837 0062 49       		.uleb128 0x49
+ 1838 0063 13       		.uleb128 0x13
+ 1839 0064 00       		.byte	0
+ 1840 0065 00       		.byte	0
+ 1841 0066 09       		.uleb128 0x9
+ 1842 0067 2E       		.uleb128 0x2e
+ 1843 0068 01       		.byte	0x1
+ 1844 0069 3F       		.uleb128 0x3f
+ 1845 006a 19       		.uleb128 0x19
+ 1846 006b 03       		.uleb128 0x3
+ 1847 006c 0E       		.uleb128 0xe
+ 1848 006d 3A       		.uleb128 0x3a
+ 1849 006e 0B       		.uleb128 0xb
+ 1850 006f 3B       		.uleb128 0x3b
+ 1851 0070 0B       		.uleb128 0xb
+ 1852 0071 27       		.uleb128 0x27
+ 1853 0072 19       		.uleb128 0x19
+ 1854 0073 49       		.uleb128 0x49
+ 1855 0074 13       		.uleb128 0x13
+ 1856 0075 20       		.uleb128 0x20
+ 1857 0076 0B       		.uleb128 0xb
+ 1858 0077 01       		.uleb128 0x1
+ 1859 0078 13       		.uleb128 0x13
+ 1860 0079 00       		.byte	0
+ 1861 007a 00       		.byte	0
+ 1862 007b 0A       		.uleb128 0xa
+ 1863 007c 05       		.uleb128 0x5
+ 1864 007d 00       		.byte	0
+ 1865 007e 03       		.uleb128 0x3
+ 1866 007f 0E       		.uleb128 0xe
+ 1867 0080 3A       		.uleb128 0x3a
+ 1868 0081 0B       		.uleb128 0xb
+ 1869 0082 3B       		.uleb128 0x3b
+ 1870 0083 0B       		.uleb128 0xb
+ 1871 0084 49       		.uleb128 0x49
+ 1872 0085 13       		.uleb128 0x13
+ 1873 0086 00       		.byte	0
+ 1874 0087 00       		.byte	0
+ 1875 0088 0B       		.uleb128 0xb
+ 1876 0089 34       		.uleb128 0x34
+ 1877 008a 00       		.byte	0
+ 1878 008b 03       		.uleb128 0x3
+ 1879 008c 0E       		.uleb128 0xe
+ 1880 008d 3A       		.uleb128 0x3a
+ 1881 008e 0B       		.uleb128 0xb
+ 1882 008f 3B       		.uleb128 0x3b
+ 1883 0090 0B       		.uleb128 0xb
+ 1884 0091 49       		.uleb128 0x49
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 40
+
+
+ 1885 0092 13       		.uleb128 0x13
+ 1886 0093 00       		.byte	0
+ 1887 0094 00       		.byte	0
+ 1888 0095 0C       		.uleb128 0xc
+ 1889 0096 2E       		.uleb128 0x2e
+ 1890 0097 01       		.byte	0x1
+ 1891 0098 3F       		.uleb128 0x3f
+ 1892 0099 19       		.uleb128 0x19
+ 1893 009a 03       		.uleb128 0x3
+ 1894 009b 0E       		.uleb128 0xe
+ 1895 009c 3A       		.uleb128 0x3a
+ 1896 009d 0B       		.uleb128 0xb
+ 1897 009e 3B       		.uleb128 0x3b
+ 1898 009f 0B       		.uleb128 0xb
+ 1899 00a0 27       		.uleb128 0x27
+ 1900 00a1 19       		.uleb128 0x19
+ 1901 00a2 11       		.uleb128 0x11
+ 1902 00a3 01       		.uleb128 0x1
+ 1903 00a4 12       		.uleb128 0x12
+ 1904 00a5 06       		.uleb128 0x6
+ 1905 00a6 40       		.uleb128 0x40
+ 1906 00a7 18       		.uleb128 0x18
+ 1907 00a8 9742     		.uleb128 0x2117
+ 1908 00aa 19       		.uleb128 0x19
+ 1909 00ab 01       		.uleb128 0x1
+ 1910 00ac 13       		.uleb128 0x13
+ 1911 00ad 00       		.byte	0
+ 1912 00ae 00       		.byte	0
+ 1913 00af 0D       		.uleb128 0xd
+ 1914 00b0 05       		.uleb128 0x5
+ 1915 00b1 00       		.byte	0
+ 1916 00b2 03       		.uleb128 0x3
+ 1917 00b3 0E       		.uleb128 0xe
+ 1918 00b4 3A       		.uleb128 0x3a
+ 1919 00b5 0B       		.uleb128 0xb
+ 1920 00b6 3B       		.uleb128 0x3b
+ 1921 00b7 0B       		.uleb128 0xb
+ 1922 00b8 49       		.uleb128 0x49
+ 1923 00b9 13       		.uleb128 0x13
+ 1924 00ba 02       		.uleb128 0x2
+ 1925 00bb 18       		.uleb128 0x18
+ 1926 00bc 00       		.byte	0
+ 1927 00bd 00       		.byte	0
+ 1928 00be 0E       		.uleb128 0xe
+ 1929 00bf 0F       		.uleb128 0xf
+ 1930 00c0 00       		.byte	0
+ 1931 00c1 0B       		.uleb128 0xb
+ 1932 00c2 0B       		.uleb128 0xb
+ 1933 00c3 49       		.uleb128 0x49
+ 1934 00c4 13       		.uleb128 0x13
+ 1935 00c5 00       		.byte	0
+ 1936 00c6 00       		.byte	0
+ 1937 00c7 0F       		.uleb128 0xf
+ 1938 00c8 2E       		.uleb128 0x2e
+ 1939 00c9 01       		.byte	0x1
+ 1940 00ca 3F       		.uleb128 0x3f
+ 1941 00cb 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 41
+
+
+ 1942 00cc 03       		.uleb128 0x3
+ 1943 00cd 0E       		.uleb128 0xe
+ 1944 00ce 3A       		.uleb128 0x3a
+ 1945 00cf 0B       		.uleb128 0xb
+ 1946 00d0 3B       		.uleb128 0x3b
+ 1947 00d1 0B       		.uleb128 0xb
+ 1948 00d2 27       		.uleb128 0x27
+ 1949 00d3 19       		.uleb128 0x19
+ 1950 00d4 49       		.uleb128 0x49
+ 1951 00d5 13       		.uleb128 0x13
+ 1952 00d6 11       		.uleb128 0x11
+ 1953 00d7 01       		.uleb128 0x1
+ 1954 00d8 12       		.uleb128 0x12
+ 1955 00d9 06       		.uleb128 0x6
+ 1956 00da 40       		.uleb128 0x40
+ 1957 00db 18       		.uleb128 0x18
+ 1958 00dc 9742     		.uleb128 0x2117
+ 1959 00de 19       		.uleb128 0x19
+ 1960 00df 01       		.uleb128 0x1
+ 1961 00e0 13       		.uleb128 0x13
+ 1962 00e1 00       		.byte	0
+ 1963 00e2 00       		.byte	0
+ 1964 00e3 10       		.uleb128 0x10
+ 1965 00e4 05       		.uleb128 0x5
+ 1966 00e5 00       		.byte	0
+ 1967 00e6 03       		.uleb128 0x3
+ 1968 00e7 0E       		.uleb128 0xe
+ 1969 00e8 3A       		.uleb128 0x3a
+ 1970 00e9 0B       		.uleb128 0xb
+ 1971 00ea 3B       		.uleb128 0x3b
+ 1972 00eb 0B       		.uleb128 0xb
+ 1973 00ec 49       		.uleb128 0x49
+ 1974 00ed 13       		.uleb128 0x13
+ 1975 00ee 02       		.uleb128 0x2
+ 1976 00ef 17       		.uleb128 0x17
+ 1977 00f0 00       		.byte	0
+ 1978 00f1 00       		.byte	0
+ 1979 00f2 11       		.uleb128 0x11
+ 1980 00f3 34       		.uleb128 0x34
+ 1981 00f4 00       		.byte	0
+ 1982 00f5 03       		.uleb128 0x3
+ 1983 00f6 0E       		.uleb128 0xe
+ 1984 00f7 3A       		.uleb128 0x3a
+ 1985 00f8 0B       		.uleb128 0xb
+ 1986 00f9 3B       		.uleb128 0x3b
+ 1987 00fa 0B       		.uleb128 0xb
+ 1988 00fb 49       		.uleb128 0x49
+ 1989 00fc 13       		.uleb128 0x13
+ 1990 00fd 02       		.uleb128 0x2
+ 1991 00fe 17       		.uleb128 0x17
+ 1992 00ff 00       		.byte	0
+ 1993 0100 00       		.byte	0
+ 1994 0101 12       		.uleb128 0x12
+ 1995 0102 34       		.uleb128 0x34
+ 1996 0103 00       		.byte	0
+ 1997 0104 03       		.uleb128 0x3
+ 1998 0105 0E       		.uleb128 0xe
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 42
+
+
+ 1999 0106 3A       		.uleb128 0x3a
+ 2000 0107 0B       		.uleb128 0xb
+ 2001 0108 3B       		.uleb128 0x3b
+ 2002 0109 0B       		.uleb128 0xb
+ 2003 010a 49       		.uleb128 0x49
+ 2004 010b 13       		.uleb128 0x13
+ 2005 010c 02       		.uleb128 0x2
+ 2006 010d 18       		.uleb128 0x18
+ 2007 010e 00       		.byte	0
+ 2008 010f 00       		.byte	0
+ 2009 0110 13       		.uleb128 0x13
+ 2010 0111 34       		.uleb128 0x34
+ 2011 0112 00       		.byte	0
+ 2012 0113 03       		.uleb128 0x3
+ 2013 0114 08       		.uleb128 0x8
+ 2014 0115 3A       		.uleb128 0x3a
+ 2015 0116 0B       		.uleb128 0xb
+ 2016 0117 3B       		.uleb128 0x3b
+ 2017 0118 0B       		.uleb128 0xb
+ 2018 0119 49       		.uleb128 0x49
+ 2019 011a 13       		.uleb128 0x13
+ 2020 011b 02       		.uleb128 0x2
+ 2021 011c 17       		.uleb128 0x17
+ 2022 011d 00       		.byte	0
+ 2023 011e 00       		.byte	0
+ 2024 011f 14       		.uleb128 0x14
+ 2025 0120 898201   		.uleb128 0x4109
+ 2026 0123 01       		.byte	0x1
+ 2027 0124 11       		.uleb128 0x11
+ 2028 0125 01       		.uleb128 0x1
+ 2029 0126 31       		.uleb128 0x31
+ 2030 0127 13       		.uleb128 0x13
+ 2031 0128 01       		.uleb128 0x1
+ 2032 0129 13       		.uleb128 0x13
+ 2033 012a 00       		.byte	0
+ 2034 012b 00       		.byte	0
+ 2035 012c 15       		.uleb128 0x15
+ 2036 012d 8A8201   		.uleb128 0x410a
+ 2037 0130 00       		.byte	0
+ 2038 0131 02       		.uleb128 0x2
+ 2039 0132 18       		.uleb128 0x18
+ 2040 0133 9142     		.uleb128 0x2111
+ 2041 0135 18       		.uleb128 0x18
+ 2042 0136 00       		.byte	0
+ 2043 0137 00       		.byte	0
+ 2044 0138 16       		.uleb128 0x16
+ 2045 0139 898201   		.uleb128 0x4109
+ 2046 013c 00       		.byte	0
+ 2047 013d 11       		.uleb128 0x11
+ 2048 013e 01       		.uleb128 0x1
+ 2049 013f 31       		.uleb128 0x31
+ 2050 0140 13       		.uleb128 0x13
+ 2051 0141 00       		.byte	0
+ 2052 0142 00       		.byte	0
+ 2053 0143 17       		.uleb128 0x17
+ 2054 0144 01       		.uleb128 0x1
+ 2055 0145 01       		.byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 43
+
+
+ 2056 0146 49       		.uleb128 0x49
+ 2057 0147 13       		.uleb128 0x13
+ 2058 0148 01       		.uleb128 0x1
+ 2059 0149 13       		.uleb128 0x13
+ 2060 014a 00       		.byte	0
+ 2061 014b 00       		.byte	0
+ 2062 014c 18       		.uleb128 0x18
+ 2063 014d 21       		.uleb128 0x21
+ 2064 014e 00       		.byte	0
+ 2065 014f 49       		.uleb128 0x49
+ 2066 0150 13       		.uleb128 0x13
+ 2067 0151 2F       		.uleb128 0x2f
+ 2068 0152 0B       		.uleb128 0xb
+ 2069 0153 00       		.byte	0
+ 2070 0154 00       		.byte	0
+ 2071 0155 19       		.uleb128 0x19
+ 2072 0156 2E       		.uleb128 0x2e
+ 2073 0157 01       		.byte	0x1
+ 2074 0158 3F       		.uleb128 0x3f
+ 2075 0159 19       		.uleb128 0x19
+ 2076 015a 03       		.uleb128 0x3
+ 2077 015b 0E       		.uleb128 0xe
+ 2078 015c 3A       		.uleb128 0x3a
+ 2079 015d 0B       		.uleb128 0xb
+ 2080 015e 3B       		.uleb128 0x3b
+ 2081 015f 0B       		.uleb128 0xb
+ 2082 0160 27       		.uleb128 0x27
+ 2083 0161 19       		.uleb128 0x19
+ 2084 0162 49       		.uleb128 0x49
+ 2085 0163 13       		.uleb128 0x13
+ 2086 0164 11       		.uleb128 0x11
+ 2087 0165 01       		.uleb128 0x1
+ 2088 0166 12       		.uleb128 0x12
+ 2089 0167 06       		.uleb128 0x6
+ 2090 0168 40       		.uleb128 0x40
+ 2091 0169 18       		.uleb128 0x18
+ 2092 016a 9642     		.uleb128 0x2116
+ 2093 016c 19       		.uleb128 0x19
+ 2094 016d 01       		.uleb128 0x1
+ 2095 016e 13       		.uleb128 0x13
+ 2096 016f 00       		.byte	0
+ 2097 0170 00       		.byte	0
+ 2098 0171 1A       		.uleb128 0x1a
+ 2099 0172 1D       		.uleb128 0x1d
+ 2100 0173 01       		.byte	0x1
+ 2101 0174 31       		.uleb128 0x31
+ 2102 0175 13       		.uleb128 0x13
+ 2103 0176 52       		.uleb128 0x52
+ 2104 0177 01       		.uleb128 0x1
+ 2105 0178 55       		.uleb128 0x55
+ 2106 0179 17       		.uleb128 0x17
+ 2107 017a 58       		.uleb128 0x58
+ 2108 017b 0B       		.uleb128 0xb
+ 2109 017c 59       		.uleb128 0x59
+ 2110 017d 0B       		.uleb128 0xb
+ 2111 017e 01       		.uleb128 0x1
+ 2112 017f 13       		.uleb128 0x13
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 44
+
+
+ 2113 0180 00       		.byte	0
+ 2114 0181 00       		.byte	0
+ 2115 0182 1B       		.uleb128 0x1b
+ 2116 0183 05       		.uleb128 0x5
+ 2117 0184 00       		.byte	0
+ 2118 0185 31       		.uleb128 0x31
+ 2119 0186 13       		.uleb128 0x13
+ 2120 0187 02       		.uleb128 0x2
+ 2121 0188 17       		.uleb128 0x17
+ 2122 0189 00       		.byte	0
+ 2123 018a 00       		.byte	0
+ 2124 018b 1C       		.uleb128 0x1c
+ 2125 018c 0B       		.uleb128 0xb
+ 2126 018d 01       		.byte	0x1
+ 2127 018e 55       		.uleb128 0x55
+ 2128 018f 17       		.uleb128 0x17
+ 2129 0190 00       		.byte	0
+ 2130 0191 00       		.byte	0
+ 2131 0192 1D       		.uleb128 0x1d
+ 2132 0193 34       		.uleb128 0x34
+ 2133 0194 00       		.byte	0
+ 2134 0195 31       		.uleb128 0x31
+ 2135 0196 13       		.uleb128 0x13
+ 2136 0197 02       		.uleb128 0x2
+ 2137 0198 17       		.uleb128 0x17
+ 2138 0199 00       		.byte	0
+ 2139 019a 00       		.byte	0
+ 2140 019b 1E       		.uleb128 0x1e
+ 2141 019c 2E       		.uleb128 0x2e
+ 2142 019d 01       		.byte	0x1
+ 2143 019e 31       		.uleb128 0x31
+ 2144 019f 13       		.uleb128 0x13
+ 2145 01a0 11       		.uleb128 0x11
+ 2146 01a1 01       		.uleb128 0x1
+ 2147 01a2 12       		.uleb128 0x12
+ 2148 01a3 06       		.uleb128 0x6
+ 2149 01a4 40       		.uleb128 0x40
+ 2150 01a5 18       		.uleb128 0x18
+ 2151 01a6 9642     		.uleb128 0x2116
+ 2152 01a8 19       		.uleb128 0x19
+ 2153 01a9 01       		.uleb128 0x1
+ 2154 01aa 13       		.uleb128 0x13
+ 2155 01ab 00       		.byte	0
+ 2156 01ac 00       		.byte	0
+ 2157 01ad 1F       		.uleb128 0x1f
+ 2158 01ae 2E       		.uleb128 0x2e
+ 2159 01af 01       		.byte	0x1
+ 2160 01b0 3F       		.uleb128 0x3f
+ 2161 01b1 19       		.uleb128 0x19
+ 2162 01b2 03       		.uleb128 0x3
+ 2163 01b3 0E       		.uleb128 0xe
+ 2164 01b4 3A       		.uleb128 0x3a
+ 2165 01b5 0B       		.uleb128 0xb
+ 2166 01b6 3B       		.uleb128 0x3b
+ 2167 01b7 05       		.uleb128 0x5
+ 2168 01b8 27       		.uleb128 0x27
+ 2169 01b9 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 45
+
+
+ 2170 01ba 49       		.uleb128 0x49
+ 2171 01bb 13       		.uleb128 0x13
+ 2172 01bc 11       		.uleb128 0x11
+ 2173 01bd 01       		.uleb128 0x1
+ 2174 01be 12       		.uleb128 0x12
+ 2175 01bf 06       		.uleb128 0x6
+ 2176 01c0 40       		.uleb128 0x40
+ 2177 01c1 18       		.uleb128 0x18
+ 2178 01c2 9642     		.uleb128 0x2116
+ 2179 01c4 19       		.uleb128 0x19
+ 2180 01c5 01       		.uleb128 0x1
+ 2181 01c6 13       		.uleb128 0x13
+ 2182 01c7 00       		.byte	0
+ 2183 01c8 00       		.byte	0
+ 2184 01c9 20       		.uleb128 0x20
+ 2185 01ca 05       		.uleb128 0x5
+ 2186 01cb 00       		.byte	0
+ 2187 01cc 03       		.uleb128 0x3
+ 2188 01cd 0E       		.uleb128 0xe
+ 2189 01ce 3A       		.uleb128 0x3a
+ 2190 01cf 0B       		.uleb128 0xb
+ 2191 01d0 3B       		.uleb128 0x3b
+ 2192 01d1 05       		.uleb128 0x5
+ 2193 01d2 49       		.uleb128 0x49
+ 2194 01d3 13       		.uleb128 0x13
+ 2195 01d4 02       		.uleb128 0x2
+ 2196 01d5 17       		.uleb128 0x17
+ 2197 01d6 00       		.byte	0
+ 2198 01d7 00       		.byte	0
+ 2199 01d8 21       		.uleb128 0x21
+ 2200 01d9 34       		.uleb128 0x34
+ 2201 01da 00       		.byte	0
+ 2202 01db 03       		.uleb128 0x3
+ 2203 01dc 0E       		.uleb128 0xe
+ 2204 01dd 3A       		.uleb128 0x3a
+ 2205 01de 0B       		.uleb128 0xb
+ 2206 01df 3B       		.uleb128 0x3b
+ 2207 01e0 05       		.uleb128 0x5
+ 2208 01e1 49       		.uleb128 0x49
+ 2209 01e2 13       		.uleb128 0x13
+ 2210 01e3 02       		.uleb128 0x2
+ 2211 01e4 17       		.uleb128 0x17
+ 2212 01e5 00       		.byte	0
+ 2213 01e6 00       		.byte	0
+ 2214 01e7 22       		.uleb128 0x22
+ 2215 01e8 34       		.uleb128 0x34
+ 2216 01e9 00       		.byte	0
+ 2217 01ea 03       		.uleb128 0x3
+ 2218 01eb 0E       		.uleb128 0xe
+ 2219 01ec 3A       		.uleb128 0x3a
+ 2220 01ed 0B       		.uleb128 0xb
+ 2221 01ee 3B       		.uleb128 0x3b
+ 2222 01ef 0B       		.uleb128 0xb
+ 2223 01f0 49       		.uleb128 0x49
+ 2224 01f1 13       		.uleb128 0x13
+ 2225 01f2 3F       		.uleb128 0x3f
+ 2226 01f3 19       		.uleb128 0x19
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 46
+
+
+ 2227 01f4 02       		.uleb128 0x2
+ 2228 01f5 18       		.uleb128 0x18
+ 2229 01f6 00       		.byte	0
+ 2230 01f7 00       		.byte	0
+ 2231 01f8 23       		.uleb128 0x23
+ 2232 01f9 2E       		.uleb128 0x2e
+ 2233 01fa 01       		.byte	0x1
+ 2234 01fb 3F       		.uleb128 0x3f
+ 2235 01fc 19       		.uleb128 0x19
+ 2236 01fd 03       		.uleb128 0x3
+ 2237 01fe 0E       		.uleb128 0xe
+ 2238 01ff 3A       		.uleb128 0x3a
+ 2239 0200 0B       		.uleb128 0xb
+ 2240 0201 3B       		.uleb128 0x3b
+ 2241 0202 0B       		.uleb128 0xb
+ 2242 0203 27       		.uleb128 0x27
+ 2243 0204 19       		.uleb128 0x19
+ 2244 0205 49       		.uleb128 0x49
+ 2245 0206 13       		.uleb128 0x13
+ 2246 0207 3C       		.uleb128 0x3c
+ 2247 0208 19       		.uleb128 0x19
+ 2248 0209 01       		.uleb128 0x1
+ 2249 020a 13       		.uleb128 0x13
+ 2250 020b 00       		.byte	0
+ 2251 020c 00       		.byte	0
+ 2252 020d 24       		.uleb128 0x24
+ 2253 020e 05       		.uleb128 0x5
+ 2254 020f 00       		.byte	0
+ 2255 0210 49       		.uleb128 0x49
+ 2256 0211 13       		.uleb128 0x13
+ 2257 0212 00       		.byte	0
+ 2258 0213 00       		.byte	0
+ 2259 0214 25       		.uleb128 0x25
+ 2260 0215 2E       		.uleb128 0x2e
+ 2261 0216 00       		.byte	0
+ 2262 0217 3F       		.uleb128 0x3f
+ 2263 0218 19       		.uleb128 0x19
+ 2264 0219 03       		.uleb128 0x3
+ 2265 021a 0E       		.uleb128 0xe
+ 2266 021b 3A       		.uleb128 0x3a
+ 2267 021c 0B       		.uleb128 0xb
+ 2268 021d 3B       		.uleb128 0x3b
+ 2269 021e 0B       		.uleb128 0xb
+ 2270 021f 27       		.uleb128 0x27
+ 2271 0220 19       		.uleb128 0x19
+ 2272 0221 49       		.uleb128 0x49
+ 2273 0222 13       		.uleb128 0x13
+ 2274 0223 3C       		.uleb128 0x3c
+ 2275 0224 19       		.uleb128 0x19
+ 2276 0225 00       		.byte	0
+ 2277 0226 00       		.byte	0
+ 2278 0227 26       		.uleb128 0x26
+ 2279 0228 2E       		.uleb128 0x2e
+ 2280 0229 01       		.byte	0x1
+ 2281 022a 3F       		.uleb128 0x3f
+ 2282 022b 19       		.uleb128 0x19
+ 2283 022c 03       		.uleb128 0x3
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 47
+
+
+ 2284 022d 0E       		.uleb128 0xe
+ 2285 022e 3A       		.uleb128 0x3a
+ 2286 022f 0B       		.uleb128 0xb
+ 2287 0230 3B       		.uleb128 0x3b
+ 2288 0231 0B       		.uleb128 0xb
+ 2289 0232 27       		.uleb128 0x27
+ 2290 0233 19       		.uleb128 0x19
+ 2291 0234 49       		.uleb128 0x49
+ 2292 0235 13       		.uleb128 0x13
+ 2293 0236 3C       		.uleb128 0x3c
+ 2294 0237 19       		.uleb128 0x19
+ 2295 0238 00       		.byte	0
+ 2296 0239 00       		.byte	0
+ 2297 023a 00       		.byte	0
+ 2298              		.section	.debug_loc,"",%progbits
+ 2299              	.Ldebug_loc0:
+ 2300              	.LLST0:
+ 2301 0000 00000000 		.4byte	.LVL1
+ 2302 0004 0E000000 		.4byte	.LVL2
+ 2303 0008 0100     		.2byte	0x1
+ 2304 000a 50       		.byte	0x50
+ 2305 000b 0E000000 		.4byte	.LVL2
+ 2306 000f D0000000 		.4byte	.LVL29
+ 2307 0013 0100     		.2byte	0x1
+ 2308 0015 54       		.byte	0x54
+ 2309 0016 D0000000 		.4byte	.LVL29
+ 2310 001a D2000000 		.4byte	.LFE64
+ 2311 001e 0400     		.2byte	0x4
+ 2312 0020 F3       		.byte	0xf3
+ 2313 0021 01       		.uleb128 0x1
+ 2314 0022 50       		.byte	0x50
+ 2315 0023 9F       		.byte	0x9f
+ 2316 0024 00000000 		.4byte	0
+ 2317 0028 00000000 		.4byte	0
+ 2318              	.LLST1:
+ 2319 002c 32000000 		.4byte	.LVL9
+ 2320 0030 48000000 		.4byte	.LVL10
+ 2321 0034 0100     		.2byte	0x1
+ 2322 0036 50       		.byte	0x50
+ 2323 0037 6E000000 		.4byte	.LVL18
+ 2324 003b 8C000000 		.4byte	.LVL19
+ 2325 003f 0100     		.2byte	0x1
+ 2326 0041 50       		.byte	0x50
+ 2327 0042 B0000000 		.4byte	.LVL26
+ 2328 0046 B6000000 		.4byte	.LVL27
+ 2329 004a 0100     		.2byte	0x1
+ 2330 004c 50       		.byte	0x50
+ 2331 004d 00000000 		.4byte	0
+ 2332 0051 00000000 		.4byte	0
+ 2333              	.LLST2:
+ 2334 0055 18000000 		.4byte	.LVL3
+ 2335 0059 1A000000 		.4byte	.LVL4
+ 2336 005d 0400     		.2byte	0x4
+ 2337 005f 0A       		.byte	0xa
+ 2338 0060 FF0F     		.2byte	0xfff
+ 2339 0062 9F       		.byte	0x9f
+ 2340 0063 1A000000 		.4byte	.LVL4
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 48
+
+
+ 2341 0067 22000000 		.4byte	.LVL6
+ 2342 006b 0300     		.2byte	0x3
+ 2343 006d 76       		.byte	0x76
+ 2344 006e 7F       		.sleb128 -1
+ 2345 006f 9F       		.byte	0x9f
+ 2346 0070 22000000 		.4byte	.LVL6
+ 2347 0074 24000000 		.4byte	.LVL7
+ 2348 0078 0300     		.2byte	0x3
+ 2349 007a 76       		.byte	0x76
+ 2350 007b 7E       		.sleb128 -2
+ 2351 007c 9F       		.byte	0x9f
+ 2352 007d 2E000000 		.4byte	.LVL8
+ 2353 0081 50000000 		.4byte	.LVL11
+ 2354 0085 0300     		.2byte	0x3
+ 2355 0087 76       		.byte	0x76
+ 2356 0088 7F       		.sleb128 -1
+ 2357 0089 9F       		.byte	0x9f
+ 2358 008a 54000000 		.4byte	.LVL12
+ 2359 008e 56000000 		.4byte	.LVL13
+ 2360 0092 0400     		.2byte	0x4
+ 2361 0094 0A       		.byte	0xa
+ 2362 0095 FF0F     		.2byte	0xfff
+ 2363 0097 9F       		.byte	0x9f
+ 2364 0098 56000000 		.4byte	.LVL13
+ 2365 009c 5E000000 		.4byte	.LVL15
+ 2366 00a0 0300     		.2byte	0x3
+ 2367 00a2 76       		.byte	0x76
+ 2368 00a3 7F       		.sleb128 -1
+ 2369 00a4 9F       		.byte	0x9f
+ 2370 00a5 5E000000 		.4byte	.LVL15
+ 2371 00a9 60000000 		.4byte	.LVL16
+ 2372 00ad 0300     		.2byte	0x3
+ 2373 00af 76       		.byte	0x76
+ 2374 00b0 7E       		.sleb128 -2
+ 2375 00b1 9F       		.byte	0x9f
+ 2376 00b2 6A000000 		.4byte	.LVL17
+ 2377 00b6 96000000 		.4byte	.LVL20
+ 2378 00ba 0300     		.2byte	0x3
+ 2379 00bc 76       		.byte	0x76
+ 2380 00bd 7F       		.sleb128 -1
+ 2381 00be 9F       		.byte	0x9f
+ 2382 00bf 96000000 		.4byte	.LVL20
+ 2383 00c3 98000000 		.4byte	.LVL21
+ 2384 00c7 0400     		.2byte	0x4
+ 2385 00c9 0A       		.byte	0xa
+ 2386 00ca FF0F     		.2byte	0xfff
+ 2387 00cc 9F       		.byte	0x9f
+ 2388 00cd 98000000 		.4byte	.LVL21
+ 2389 00d1 A0000000 		.4byte	.LVL23
+ 2390 00d5 0300     		.2byte	0x3
+ 2391 00d7 75       		.byte	0x75
+ 2392 00d8 7F       		.sleb128 -1
+ 2393 00d9 9F       		.byte	0x9f
+ 2394 00da A0000000 		.4byte	.LVL23
+ 2395 00de A2000000 		.4byte	.LVL24
+ 2396 00e2 0300     		.2byte	0x3
+ 2397 00e4 75       		.byte	0x75
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 49
+
+
+ 2398 00e5 7E       		.sleb128 -2
+ 2399 00e6 9F       		.byte	0x9f
+ 2400 00e7 AC000000 		.4byte	.LVL25
+ 2401 00eb CC000000 		.4byte	.LVL28
+ 2402 00ef 0300     		.2byte	0x3
+ 2403 00f1 75       		.byte	0x75
+ 2404 00f2 7F       		.sleb128 -1
+ 2405 00f3 9F       		.byte	0x9f
+ 2406 00f4 00000000 		.4byte	0
+ 2407 00f8 00000000 		.4byte	0
+ 2408              	.LLST3:
+ 2409 00fc 10000000 		.4byte	.LVL30
+ 2410 0100 16000000 		.4byte	.LVL32
+ 2411 0104 0400     		.2byte	0x4
+ 2412 0106 0A       		.byte	0xa
+ 2413 0107 FF0F     		.2byte	0xfff
+ 2414 0109 9F       		.byte	0x9f
+ 2415 010a 16000000 		.4byte	.LVL32
+ 2416 010e 1E000000 		.4byte	.LVL34
+ 2417 0112 0300     		.2byte	0x3
+ 2418 0114 74       		.byte	0x74
+ 2419 0115 7F       		.sleb128 -1
+ 2420 0116 9F       		.byte	0x9f
+ 2421 0117 1E000000 		.4byte	.LVL34
+ 2422 011b 20000000 		.4byte	.LVL35
+ 2423 011f 0300     		.2byte	0x3
+ 2424 0121 74       		.byte	0x74
+ 2425 0122 7E       		.sleb128 -2
+ 2426 0123 9F       		.byte	0x9f
+ 2427 0124 2C000000 		.4byte	.LVL36
+ 2428 0128 2E000000 		.4byte	.LVL37
+ 2429 012c 0300     		.2byte	0x3
+ 2430 012e 74       		.byte	0x74
+ 2431 012f 7F       		.sleb128 -1
+ 2432 0130 9F       		.byte	0x9f
+ 2433 0131 00000000 		.4byte	0
+ 2434 0135 00000000 		.4byte	0
+ 2435              	.LLST4:
+ 2436 0139 00000000 		.4byte	.LVL38
+ 2437 013d 06000000 		.4byte	.LVL39
+ 2438 0141 0100     		.2byte	0x1
+ 2439 0143 50       		.byte	0x50
+ 2440 0144 06000000 		.4byte	.LVL39
+ 2441 0148 1C000000 		.4byte	.LFE67
+ 2442 014c 0400     		.2byte	0x4
+ 2443 014e F3       		.byte	0xf3
+ 2444 014f 01       		.uleb128 0x1
+ 2445 0150 50       		.byte	0x50
+ 2446 0151 9F       		.byte	0x9f
+ 2447 0152 00000000 		.4byte	0
+ 2448 0156 00000000 		.4byte	0
+ 2449              	.LLST5:
+ 2450 015a 00000000 		.4byte	.LVL38
+ 2451 015e 06000000 		.4byte	.LVL39
+ 2452 0162 0C00     		.2byte	0xc
+ 2453 0164 70       		.byte	0x70
+ 2454 0165 00       		.sleb128 0
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 50
+
+
+ 2455 0166 3A       		.byte	0x3a
+ 2456 0167 24       		.byte	0x24
+ 2457 0168 08       		.byte	0x8
+ 2458 0169 A5       		.byte	0xa5
+ 2459 016a 1E       		.byte	0x1e
+ 2460 016b 0A       		.byte	0xa
+ 2461 016c FE3F     		.2byte	0x3ffe
+ 2462 016e 1B       		.byte	0x1b
+ 2463 016f 9F       		.byte	0x9f
+ 2464 0170 06000000 		.4byte	.LVL39
+ 2465 0174 10000000 		.4byte	.LVL41
+ 2466 0178 0D00     		.2byte	0xd
+ 2467 017a F3       		.byte	0xf3
+ 2468 017b 01       		.uleb128 0x1
+ 2469 017c 50       		.byte	0x50
+ 2470 017d 3A       		.byte	0x3a
+ 2471 017e 24       		.byte	0x24
+ 2472 017f 08       		.byte	0x8
+ 2473 0180 A5       		.byte	0xa5
+ 2474 0181 1E       		.byte	0x1e
+ 2475 0182 0A       		.byte	0xa
+ 2476 0183 FE3F     		.2byte	0x3ffe
+ 2477 0185 1B       		.byte	0x1b
+ 2478 0186 9F       		.byte	0x9f
+ 2479 0187 10000000 		.4byte	.LVL41
+ 2480 018b 12000000 		.4byte	.LVL42
+ 2481 018f 0300     		.2byte	0x3
+ 2482 0191 70       		.byte	0x70
+ 2483 0192 58       		.sleb128 -40
+ 2484 0193 9F       		.byte	0x9f
+ 2485 0194 12000000 		.4byte	.LVL42
+ 2486 0198 14000000 		.4byte	.LVL43
+ 2487 019c 0100     		.2byte	0x1
+ 2488 019e 50       		.byte	0x50
+ 2489 019f 00000000 		.4byte	0
+ 2490 01a3 00000000 		.4byte	0
+ 2491              	.LLST6:
+ 2492 01a7 00000000 		.4byte	.LVL44
+ 2493 01ab 0A000000 		.4byte	.LVL45
+ 2494 01af 0100     		.2byte	0x1
+ 2495 01b1 50       		.byte	0x50
+ 2496 01b2 0A000000 		.4byte	.LVL45
+ 2497 01b6 90000000 		.4byte	.LFE66
+ 2498 01ba 0200     		.2byte	0x2
+ 2499 01bc 91       		.byte	0x91
+ 2500 01bd 5C       		.sleb128 -36
+ 2501 01be 00000000 		.4byte	0
+ 2502 01c2 00000000 		.4byte	0
+ 2503              	.LLST7:
+ 2504 01c6 00000000 		.4byte	.LVL44
+ 2505 01ca 3C000000 		.4byte	.LVL54
+ 2506 01ce 0200     		.2byte	0x2
+ 2507 01d0 31       		.byte	0x31
+ 2508 01d1 9F       		.byte	0x9f
+ 2509 01d2 3C000000 		.4byte	.LVL54
+ 2510 01d6 7E000000 		.4byte	.LVL59
+ 2511 01da 0100     		.2byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 51
+
+
+ 2512 01dc 57       		.byte	0x57
+ 2513 01dd 00000000 		.4byte	0
+ 2514 01e1 00000000 		.4byte	0
+ 2515              	.LLST8:
+ 2516 01e5 1A000000 		.4byte	.LVL46
+ 2517 01e9 1E000000 		.4byte	.LVL47
+ 2518 01ed 0400     		.2byte	0x4
+ 2519 01ef 0A       		.byte	0xa
+ 2520 01f0 FF0F     		.2byte	0xfff
+ 2521 01f2 9F       		.byte	0x9f
+ 2522 01f3 1E000000 		.4byte	.LVL47
+ 2523 01f7 26000000 		.4byte	.LVL49
+ 2524 01fb 0300     		.2byte	0x3
+ 2525 01fd 75       		.byte	0x75
+ 2526 01fe 7F       		.sleb128 -1
+ 2527 01ff 9F       		.byte	0x9f
+ 2528 0200 26000000 		.4byte	.LVL49
+ 2529 0204 28000000 		.4byte	.LVL50
+ 2530 0208 0300     		.2byte	0x3
+ 2531 020a 75       		.byte	0x75
+ 2532 020b 7E       		.sleb128 -2
+ 2533 020c 9F       		.byte	0x9f
+ 2534 020d 30000000 		.4byte	.LVL51
+ 2535 0211 32000000 		.4byte	.LVL52
+ 2536 0215 0300     		.2byte	0x3
+ 2537 0217 75       		.byte	0x75
+ 2538 0218 7F       		.sleb128 -1
+ 2539 0219 9F       		.byte	0x9f
+ 2540 021a 00000000 		.4byte	0
+ 2541 021e 00000000 		.4byte	0
+ 2542              	.LLST9:
+ 2543 0222 00000000 		.4byte	.LVL44
+ 2544 0226 0A000000 		.4byte	.LVL45
+ 2545 022a 0400     		.2byte	0x4
+ 2546 022c 0A       		.byte	0xa
+ 2547 022d FF0F     		.2byte	0xfff
+ 2548 022f 9F       		.byte	0x9f
+ 2549 0230 0A000000 		.4byte	.LVL45
+ 2550 0234 38000000 		.4byte	.LVL53
+ 2551 0238 0300     		.2byte	0x3
+ 2552 023a 74       		.byte	0x74
+ 2553 023b 7F       		.sleb128 -1
+ 2554 023c 9F       		.byte	0x9f
+ 2555 023d 00000000 		.4byte	0
+ 2556 0241 00000000 		.4byte	0
+ 2557              	.LLST10:
+ 2558 0245 6C000000 		.4byte	.LVL56
+ 2559 0249 70000000 		.4byte	.LVL57
+ 2560 024d 0100     		.2byte	0x1
+ 2561 024f 50       		.byte	0x50
+ 2562 0250 00000000 		.4byte	0
+ 2563 0254 00000000 		.4byte	0
+ 2564              	.LLST11:
+ 2565 0258 6C000000 		.4byte	.LVL56
+ 2566 025c 70000000 		.4byte	.LVL57
+ 2567 0260 1100     		.2byte	0x11
+ 2568 0262 70       		.byte	0x70
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 52
+
+
+ 2569 0263 00       		.sleb128 0
+ 2570 0264 49       		.byte	0x49
+ 2571 0265 3C       		.byte	0x3c
+ 2572 0266 24       		.byte	0x24
+ 2573 0267 1E       		.byte	0x1e
+ 2574 0268 F7       		.byte	0xf7
+ 2575 0269 25       		.uleb128 0x25
+ 2576 026a 0A       		.byte	0xa
+ 2577 026b FE3F     		.2byte	0x3ffe
+ 2578 026d F7       		.byte	0xf7
+ 2579 026e 25       		.uleb128 0x25
+ 2580 026f 1B       		.byte	0x1b
+ 2581 0270 F7       		.byte	0xf7
+ 2582 0271 00       		.uleb128 0
+ 2583 0272 9F       		.byte	0x9f
+ 2584 0273 00000000 		.4byte	0
+ 2585 0277 00000000 		.4byte	0
+ 2586              	.LLST12:
+ 2587 027b 00000000 		.4byte	.LVL60
+ 2588 027f 08000000 		.4byte	.LVL61
+ 2589 0283 0100     		.2byte	0x1
+ 2590 0285 50       		.byte	0x50
+ 2591 0286 08000000 		.4byte	.LVL61
+ 2592 028a 18000000 		.4byte	.LFE68
+ 2593 028e 0400     		.2byte	0x4
+ 2594 0290 F3       		.byte	0xf3
+ 2595 0291 01       		.uleb128 0x1
+ 2596 0292 50       		.byte	0x50
+ 2597 0293 9F       		.byte	0x9f
+ 2598 0294 00000000 		.4byte	0
+ 2599 0298 00000000 		.4byte	0
+ 2600              	.LLST13:
+ 2601 029c 00000000 		.4byte	.LVL60
+ 2602 02a0 08000000 		.4byte	.LVL61
+ 2603 02a4 1100     		.2byte	0x11
+ 2604 02a6 70       		.byte	0x70
+ 2605 02a7 00       		.sleb128 0
+ 2606 02a8 49       		.byte	0x49
+ 2607 02a9 3C       		.byte	0x3c
+ 2608 02aa 24       		.byte	0x24
+ 2609 02ab 1E       		.byte	0x1e
+ 2610 02ac F7       		.byte	0xf7
+ 2611 02ad 25       		.uleb128 0x25
+ 2612 02ae 0A       		.byte	0xa
+ 2613 02af FE3F     		.2byte	0x3ffe
+ 2614 02b1 F7       		.byte	0xf7
+ 2615 02b2 25       		.uleb128 0x25
+ 2616 02b3 1B       		.byte	0x1b
+ 2617 02b4 F7       		.byte	0xf7
+ 2618 02b5 00       		.uleb128 0
+ 2619 02b6 9F       		.byte	0x9f
+ 2620 02b7 08000000 		.4byte	.LVL61
+ 2621 02bb 18000000 		.4byte	.LFE68
+ 2622 02bf 1200     		.2byte	0x12
+ 2623 02c1 F3       		.byte	0xf3
+ 2624 02c2 01       		.uleb128 0x1
+ 2625 02c3 50       		.byte	0x50
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 53
+
+
+ 2626 02c4 49       		.byte	0x49
+ 2627 02c5 3C       		.byte	0x3c
+ 2628 02c6 24       		.byte	0x24
+ 2629 02c7 1E       		.byte	0x1e
+ 2630 02c8 F7       		.byte	0xf7
+ 2631 02c9 25       		.uleb128 0x25
+ 2632 02ca 0A       		.byte	0xa
+ 2633 02cb FE3F     		.2byte	0x3ffe
+ 2634 02cd F7       		.byte	0xf7
+ 2635 02ce 25       		.uleb128 0x25
+ 2636 02cf 1B       		.byte	0x1b
+ 2637 02d0 F7       		.byte	0xf7
+ 2638 02d1 00       		.uleb128 0
+ 2639 02d2 9F       		.byte	0x9f
+ 2640 02d3 00000000 		.4byte	0
+ 2641 02d7 00000000 		.4byte	0
+ 2642              	.LLST14:
+ 2643 02db 02000000 		.4byte	.LVL63
+ 2644 02df 0E000000 		.4byte	.LVL64
+ 2645 02e3 0200     		.2byte	0x2
+ 2646 02e5 30       		.byte	0x30
+ 2647 02e6 9F       		.byte	0x9f
+ 2648 02e7 0E000000 		.4byte	.LVL64
+ 2649 02eb 10000000 		.4byte	.LVL65
+ 2650 02ef 0400     		.2byte	0x4
+ 2651 02f1 0A       		.byte	0xa
+ 2652 02f2 FF0F     		.2byte	0xfff
+ 2653 02f4 9F       		.byte	0x9f
+ 2654 02f5 10000000 		.4byte	.LVL65
+ 2655 02f9 18000000 		.4byte	.LVL67
+ 2656 02fd 0100     		.2byte	0x1
+ 2657 02ff 54       		.byte	0x54
+ 2658 0300 18000000 		.4byte	.LVL67
+ 2659 0304 1C000000 		.4byte	.LVL68
+ 2660 0308 0300     		.2byte	0x3
+ 2661 030a 74       		.byte	0x74
+ 2662 030b 7F       		.sleb128 -1
+ 2663 030c 9F       		.byte	0x9f
+ 2664 030d 1C000000 		.4byte	.LVL68
+ 2665 0311 20000000 		.4byte	.LVL69
+ 2666 0315 0100     		.2byte	0x1
+ 2667 0317 54       		.byte	0x54
+ 2668 0318 20000000 		.4byte	.LVL69
+ 2669 031c 26000000 		.4byte	.LVL70
+ 2670 0320 0300     		.2byte	0x3
+ 2671 0322 74       		.byte	0x74
+ 2672 0323 01       		.sleb128 1
+ 2673 0324 9F       		.byte	0x9f
+ 2674 0325 00000000 		.4byte	0
+ 2675 0329 00000000 		.4byte	0
+ 2676              	.LLST15:
+ 2677 032d 00000000 		.4byte	.LVL71
+ 2678 0331 0A000000 		.4byte	.LVL72
+ 2679 0335 0100     		.2byte	0x1
+ 2680 0337 50       		.byte	0x50
+ 2681 0338 0A000000 		.4byte	.LVL72
+ 2682 033c 66000000 		.4byte	.LVL88
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 54
+
+
+ 2683 0340 0100     		.2byte	0x1
+ 2684 0342 55       		.byte	0x55
+ 2685 0343 66000000 		.4byte	.LVL88
+ 2686 0347 7C000000 		.4byte	.LFE70
+ 2687 034b 0400     		.2byte	0x4
+ 2688 034d F3       		.byte	0xf3
+ 2689 034e 01       		.uleb128 0x1
+ 2690 034f 50       		.byte	0x50
+ 2691 0350 9F       		.byte	0x9f
+ 2692 0351 00000000 		.4byte	0
+ 2693 0355 00000000 		.4byte	0
+ 2694              	.LLST16:
+ 2695 0359 2A000000 		.4byte	.LVL78
+ 2696 035d 37000000 		.4byte	.LVL79-1
+ 2697 0361 1800     		.2byte	0x18
+ 2698 0363 03       		.byte	0x3
+ 2699 0364 04000000 		.4byte	Sensor_Raw+4
+ 2700 0368 94       		.byte	0x94
+ 2701 0369 01       		.byte	0x1
+ 2702 036a 08       		.byte	0x8
+ 2703 036b FF       		.byte	0xff
+ 2704 036c 1A       		.byte	0x1a
+ 2705 036d 38       		.byte	0x38
+ 2706 036e 24       		.byte	0x24
+ 2707 036f 03       		.byte	0x3
+ 2708 0370 05000000 		.4byte	Sensor_Raw+5
+ 2709 0374 94       		.byte	0x94
+ 2710 0375 01       		.byte	0x1
+ 2711 0376 08       		.byte	0x8
+ 2712 0377 FF       		.byte	0xff
+ 2713 0378 1A       		.byte	0x1a
+ 2714 0379 21       		.byte	0x21
+ 2715 037a 9F       		.byte	0x9f
+ 2716 037b 00000000 		.4byte	0
+ 2717 037f 00000000 		.4byte	0
+ 2718              	.LLST17:
+ 2719 0383 40000000 		.4byte	.LVL80
+ 2720 0387 47000000 		.4byte	.LVL81-1
+ 2721 038b 0C00     		.2byte	0xc
+ 2722 038d F5       		.byte	0xf5
+ 2723 038e 00       		.uleb128 0
+ 2724 038f 2C       		.uleb128 0x2c
+ 2725 0390 F4       		.byte	0xf4
+ 2726 0391 2C       		.uleb128 0x2c
+ 2727 0392 04       		.byte	0x4
+ 2728 0393 0000003F 		.4byte	0x3f000000
+ 2729 0397 1C       		.byte	0x1c
+ 2730 0398 9F       		.byte	0x9f
+ 2731 0399 5A000000 		.4byte	.LVL84
+ 2732 039d 5D000000 		.4byte	.LVL85-1
+ 2733 03a1 0600     		.2byte	0x6
+ 2734 03a3 F5       		.byte	0xf5
+ 2735 03a4 00       		.uleb128 0
+ 2736 03a5 33       		.uleb128 0x33
+ 2737 03a6 F7       		.byte	0xf7
+ 2738 03a7 2C       		.uleb128 0x2c
+ 2739 03a8 9F       		.byte	0x9f
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 55
+
+
+ 2740 03a9 00000000 		.4byte	0
+ 2741 03ad 00000000 		.4byte	0
+ 2742              	.LLST18:
+ 2743 03b1 12000000 		.4byte	.LVL73
+ 2744 03b5 14000000 		.4byte	.LVL74
+ 2745 03b9 0400     		.2byte	0x4
+ 2746 03bb 0A       		.byte	0xa
+ 2747 03bc FF0F     		.2byte	0xfff
+ 2748 03be 9F       		.byte	0x9f
+ 2749 03bf 14000000 		.4byte	.LVL74
+ 2750 03c3 1C000000 		.4byte	.LVL76
+ 2751 03c7 0300     		.2byte	0x3
+ 2752 03c9 74       		.byte	0x74
+ 2753 03ca 7F       		.sleb128 -1
+ 2754 03cb 9F       		.byte	0x9f
+ 2755 03cc 1C000000 		.4byte	.LVL76
+ 2756 03d0 1E000000 		.4byte	.LVL77
+ 2757 03d4 0300     		.2byte	0x3
+ 2758 03d6 74       		.byte	0x74
+ 2759 03d7 7E       		.sleb128 -2
+ 2760 03d8 9F       		.byte	0x9f
+ 2761 03d9 2A000000 		.4byte	.LVL78
+ 2762 03dd 66000000 		.4byte	.LVL87
+ 2763 03e1 0300     		.2byte	0x3
+ 2764 03e3 74       		.byte	0x74
+ 2765 03e4 7F       		.sleb128 -1
+ 2766 03e5 9F       		.byte	0x9f
+ 2767 03e6 00000000 		.4byte	0
+ 2768 03ea 00000000 		.4byte	0
+ 2769              	.LLST19:
+ 2770 03ee 00000000 		.4byte	.LVL89
+ 2771 03f2 06000000 		.4byte	.LVL90
+ 2772 03f6 0100     		.2byte	0x1
+ 2773 03f8 50       		.byte	0x50
+ 2774 03f9 06000000 		.4byte	.LVL90
+ 2775 03fd 09000000 		.4byte	.LVL91-1
+ 2776 0401 0400     		.2byte	0x4
+ 2777 0403 70       		.byte	0x70
+ 2778 0404 E60C     		.sleb128 1638
+ 2779 0406 9F       		.byte	0x9f
+ 2780 0407 09000000 		.4byte	.LVL91-1
+ 2781 040b 30000000 		.4byte	.LFE72
+ 2782 040f 0400     		.2byte	0x4
+ 2783 0411 F3       		.byte	0xf3
+ 2784 0412 01       		.uleb128 0x1
+ 2785 0413 50       		.byte	0x50
+ 2786 0414 9F       		.byte	0x9f
+ 2787 0415 00000000 		.4byte	0
+ 2788 0419 00000000 		.4byte	0
+ 2789              	.LLST20:
+ 2790 041d 0A000000 		.4byte	.LVL91
+ 2791 0421 0F000000 		.4byte	.LVL92-1
+ 2792 0425 0100     		.2byte	0x1
+ 2793 0427 50       		.byte	0x50
+ 2794 0428 10000000 		.4byte	.LVL92
+ 2795 042c 15000000 		.4byte	.LVL93-1
+ 2796 0430 0100     		.2byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 56
+
+
+ 2797 0432 50       		.byte	0x50
+ 2798 0433 16000000 		.4byte	.LVL93
+ 2799 0437 1B000000 		.4byte	.LVL94-1
+ 2800 043b 0C00     		.2byte	0xc
+ 2801 043d F5       		.byte	0xf5
+ 2802 043e 00       		.uleb128 0
+ 2803 043f 2C       		.uleb128 0x2c
+ 2804 0440 F4       		.byte	0xf4
+ 2805 0441 2C       		.uleb128 0x2c
+ 2806 0442 04       		.byte	0x4
+ 2807 0443 00401C46 		.4byte	0x461c4000
+ 2808 0447 1E       		.byte	0x1e
+ 2809 0448 9F       		.byte	0x9f
+ 2810 0449 00000000 		.4byte	0
+ 2811 044d 00000000 		.4byte	0
+ 2812              	.LLST21:
+ 2813 0451 00000000 		.4byte	.LVL96
+ 2814 0455 08000000 		.4byte	.LVL97
+ 2815 0459 0100     		.2byte	0x1
+ 2816 045b 50       		.byte	0x50
+ 2817 045c 08000000 		.4byte	.LVL97
+ 2818 0460 4C000000 		.4byte	.LVL108
+ 2819 0464 0100     		.2byte	0x1
+ 2820 0466 56       		.byte	0x56
+ 2821 0467 4C000000 		.4byte	.LVL108
+ 2822 046b 4F000000 		.4byte	.LVL109-1
+ 2823 046f 0100     		.2byte	0x1
+ 2824 0471 53       		.byte	0x53
+ 2825 0472 4F000000 		.4byte	.LVL109-1
+ 2826 0476 5C000000 		.4byte	.LVL111
+ 2827 047a 0100     		.2byte	0x1
+ 2828 047c 56       		.byte	0x56
+ 2829 047d 5C000000 		.4byte	.LVL111
+ 2830 0481 68000000 		.4byte	.LFE71
+ 2831 0485 0400     		.2byte	0x4
+ 2832 0487 F3       		.byte	0xf3
+ 2833 0488 01       		.uleb128 0x1
+ 2834 0489 50       		.byte	0x50
+ 2835 048a 9F       		.byte	0x9f
+ 2836 048b 00000000 		.4byte	0
+ 2837 048f 00000000 		.4byte	0
+ 2838              	.LLST22:
+ 2839 0493 48000000 		.4byte	.LVL107
+ 2840 0497 4F000000 		.4byte	.LVL109-1
+ 2841 049b 0100     		.2byte	0x1
+ 2842 049d 50       		.byte	0x50
+ 2843 049e 00000000 		.4byte	0
+ 2844 04a2 00000000 		.4byte	0
+ 2845              	.LLST23:
+ 2846 04a6 00000000 		.4byte	.LVL96
+ 2847 04aa 3A000000 		.4byte	.LVL106
+ 2848 04ae 0200     		.2byte	0x2
+ 2849 04b0 31       		.byte	0x31
+ 2850 04b1 9F       		.byte	0x9f
+ 2851 04b2 3A000000 		.4byte	.LVL106
+ 2852 04b6 58000000 		.4byte	.LVL110
+ 2853 04ba 0100     		.2byte	0x1
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 57
+
+
+ 2854 04bc 55       		.byte	0x55
+ 2855 04bd 00000000 		.4byte	0
+ 2856 04c1 00000000 		.4byte	0
+ 2857              	.LLST24:
+ 2858 04c5 16000000 		.4byte	.LVL98
+ 2859 04c9 18000000 		.4byte	.LVL99
+ 2860 04cd 0400     		.2byte	0x4
+ 2861 04cf 0A       		.byte	0xa
+ 2862 04d0 FF0F     		.2byte	0xfff
+ 2863 04d2 9F       		.byte	0x9f
+ 2864 04d3 18000000 		.4byte	.LVL99
+ 2865 04d7 20000000 		.4byte	.LVL101
+ 2866 04db 0300     		.2byte	0x3
+ 2867 04dd 75       		.byte	0x75
+ 2868 04de 7F       		.sleb128 -1
+ 2869 04df 9F       		.byte	0x9f
+ 2870 04e0 20000000 		.4byte	.LVL101
+ 2871 04e4 22000000 		.4byte	.LVL102
+ 2872 04e8 0300     		.2byte	0x3
+ 2873 04ea 75       		.byte	0x75
+ 2874 04eb 7E       		.sleb128 -2
+ 2875 04ec 9F       		.byte	0x9f
+ 2876 04ed 2C000000 		.4byte	.LVL103
+ 2877 04f1 36000000 		.4byte	.LVL105
+ 2878 04f5 0300     		.2byte	0x3
+ 2879 04f7 75       		.byte	0x75
+ 2880 04f8 7F       		.sleb128 -1
+ 2881 04f9 9F       		.byte	0x9f
+ 2882 04fa 00000000 		.4byte	0
+ 2883 04fe 00000000 		.4byte	0
+ 2884              	.LLST25:
+ 2885 0502 00000000 		.4byte	.LVL96
+ 2886 0506 08000000 		.4byte	.LVL97
+ 2887 050a 0400     		.2byte	0x4
+ 2888 050c 0A       		.byte	0xa
+ 2889 050d FF0F     		.2byte	0xfff
+ 2890 050f 9F       		.byte	0x9f
+ 2891 0510 08000000 		.4byte	.LVL97
+ 2892 0514 34000000 		.4byte	.LVL104
+ 2893 0518 0300     		.2byte	0x3
+ 2894 051a 74       		.byte	0x74
+ 2895 051b 7F       		.sleb128 -1
+ 2896 051c 9F       		.byte	0x9f
+ 2897 051d 00000000 		.4byte	0
+ 2898 0521 00000000 		.4byte	0
+ 2899              		.section	.debug_aranges,"",%progbits
+ 2900 0000 64000000 		.4byte	0x64
+ 2901 0004 0200     		.2byte	0x2
+ 2902 0006 00000000 		.4byte	.Ldebug_info0
+ 2903 000a 04       		.byte	0x4
+ 2904 000b 00       		.byte	0
+ 2905 000c 0000     		.2byte	0
+ 2906 000e 0000     		.2byte	0
+ 2907 0010 00000000 		.4byte	.LFB63
+ 2908 0014 1A000000 		.4byte	.LFE63-.LFB63
+ 2909 0018 00000000 		.4byte	.LFB64
+ 2910 001c D2000000 		.4byte	.LFE64-.LFB64
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 58
+
+
+ 2911 0020 00000000 		.4byte	.LFB65
+ 2912 0024 30000000 		.4byte	.LFE65-.LFB65
+ 2913 0028 00000000 		.4byte	.LFB67
+ 2914 002c 1C000000 		.4byte	.LFE67-.LFB67
+ 2915 0030 00000000 		.4byte	.LFB66
+ 2916 0034 90000000 		.4byte	.LFE66-.LFB66
+ 2917 0038 00000000 		.4byte	.LFB68
+ 2918 003c 18000000 		.4byte	.LFE68-.LFB68
+ 2919 0040 00000000 		.4byte	.LFB69
+ 2920 0044 30000000 		.4byte	.LFE69-.LFB69
+ 2921 0048 00000000 		.4byte	.LFB70
+ 2922 004c 7C000000 		.4byte	.LFE70-.LFB70
+ 2923 0050 00000000 		.4byte	.LFB72
+ 2924 0054 30000000 		.4byte	.LFE72-.LFB72
+ 2925 0058 00000000 		.4byte	.LFB71
+ 2926 005c 68000000 		.4byte	.LFE71-.LFB71
+ 2927 0060 00000000 		.4byte	0
+ 2928 0064 00000000 		.4byte	0
+ 2929              		.section	.debug_ranges,"",%progbits
+ 2930              	.Ldebug_ranges0:
+ 2931 0000 5E000000 		.4byte	.LBB4
+ 2932 0004 60000000 		.4byte	.LBE4
+ 2933 0008 66000000 		.4byte	.LBB9
+ 2934 000c 68000000 		.4byte	.LBE9
+ 2935 0010 6C000000 		.4byte	.LBB10
+ 2936 0014 74000000 		.4byte	.LBE10
+ 2937 0018 76000000 		.4byte	.LBB11
+ 2938 001c 78000000 		.4byte	.LBE11
+ 2939 0020 00000000 		.4byte	0
+ 2940 0024 00000000 		.4byte	0
+ 2941 0028 00000000 		.4byte	.LFB63
+ 2942 002c 1A000000 		.4byte	.LFE63
+ 2943 0030 00000000 		.4byte	.LFB64
+ 2944 0034 D2000000 		.4byte	.LFE64
+ 2945 0038 00000000 		.4byte	.LFB65
+ 2946 003c 30000000 		.4byte	.LFE65
+ 2947 0040 00000000 		.4byte	.LFB67
+ 2948 0044 1C000000 		.4byte	.LFE67
+ 2949 0048 00000000 		.4byte	.LFB66
+ 2950 004c 90000000 		.4byte	.LFE66
+ 2951 0050 00000000 		.4byte	.LFB68
+ 2952 0054 18000000 		.4byte	.LFE68
+ 2953 0058 00000000 		.4byte	.LFB69
+ 2954 005c 30000000 		.4byte	.LFE69
+ 2955 0060 00000000 		.4byte	.LFB70
+ 2956 0064 7C000000 		.4byte	.LFE70
+ 2957 0068 00000000 		.4byte	.LFB72
+ 2958 006c 30000000 		.4byte	.LFE72
+ 2959 0070 00000000 		.4byte	.LFB71
+ 2960 0074 68000000 		.4byte	.LFE71
+ 2961 0078 00000000 		.4byte	0
+ 2962 007c 00000000 		.4byte	0
+ 2963              		.section	.debug_line,"",%progbits
+ 2964              	.Ldebug_line0:
+ 2965 0000 48020000 		.section	.debug_str,"MS",%progbits,1
+ 2965      02008600 
+ 2965      00000201 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 59
+
+
+ 2965      FB0E0D00 
+ 2965      01010101 
+ 2966              	.LASF50:
+ 2967 0000 61697266 		.ascii	"airflowCalc\000"
+ 2967      6C6F7743 
+ 2967      616C6300 
+ 2968              	.LASF45:
+ 2969 000c 68756D69 		.ascii	"humidityRaw\000"
+ 2969      64697479 
+ 2969      52617700 
+ 2970              	.LASF34:
+ 2971 0018 70726573 		.ascii	"pressureADClow\000"
+ 2971      73757265 
+ 2971      4144436C 
+ 2971      6F7700
+ 2972              	.LASF40:
+ 2973 0027 53746172 		.ascii	"Start_TH_Measurement\000"
+ 2973      745F5448 
+ 2973      5F4D6561 
+ 2973      73757265 
+ 2973      6D656E74 
+ 2974              	.LASF5:
+ 2975 003c 73686F72 		.ascii	"short int\000"
+ 2975      7420696E 
+ 2975      7400
+ 2976              	.LASF56:
+ 2977 0046 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 2977      4320342E 
+ 2977      392E3320 
+ 2977      32303135 
+ 2977      30333033 
+ 2978 0079 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 2978      20726576 
+ 2978      6973696F 
+ 2978      6E203232 
+ 2978      31323230 
+ 2979 00ac 73202D66 		.ascii	"s -ffunction-sections -ffat-lto-objects\000"
+ 2979      66756E63 
+ 2979      74696F6E 
+ 2979      2D736563 
+ 2979      74696F6E 
+ 2980              	.LASF61:
+ 2981 00d4 53656E73 		.ascii	"Sensor_Raw\000"
+ 2981      6F725F52 
+ 2981      617700
+ 2982              	.LASF18:
+ 2983 00df 73697A65 		.ascii	"sizetype\000"
+ 2983      74797065 
+ 2983      00
+ 2984              	.LASF60:
+ 2985 00e8 53656E73 		.ascii	"Sensor_Data_init\000"
+ 2985      6F725F44 
+ 2985      6174615F 
+ 2985      696E6974 
+ 2985      00
+ 2986              	.LASF51:
+ 2987 00f9 50726573 		.ascii	"Pressure_Calcuation\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 60
+
+
+ 2987      73757265 
+ 2987      5F43616C 
+ 2987      63756174 
+ 2987      696F6E00 
+ 2988              	.LASF28:
+ 2989 010d 68756D69 		.ascii	"humidiconADClow\000"
+ 2989      6469636F 
+ 2989      6E414443 
+ 2989      6C6F7700 
+ 2990              	.LASF55:
+ 2991 011d 4932434D 		.ascii	"I2CM_I2CMasterWriteBuf\000"
+ 2991      5F493243 
+ 2991      4D617374 
+ 2991      65725772 
+ 2991      69746542 
+ 2992              	.LASF44:
+ 2993 0134 74656D70 		.ascii	"temperatureRaw\000"
+ 2993      65726174 
+ 2993      75726552 
+ 2993      617700
+ 2994              	.LASF12:
+ 2995 0143 75696E74 		.ascii	"uint16\000"
+ 2995      313600
+ 2996              	.LASF15:
+ 2997 014a 696E7431 		.ascii	"int16\000"
+ 2997      3600
+ 2998              	.LASF39:
+ 2999 0150 53656E73 		.ascii	"Sensor_Present_Test\000"
+ 2999      6F725F50 
+ 2999      72657365 
+ 2999      6E745F54 
+ 2999      65737400 
+ 3000              	.LASF24:
+ 3001 0164 50726573 		.ascii	"Pressure\000"
+ 3001      73757265 
+ 3001      00
+ 3002              	.LASF25:
+ 3003 016d 4169725F 		.ascii	"Air_Flow\000"
+ 3003      466C6F77 
+ 3003      00
+ 3004              	.LASF1:
+ 3005 0176 666C6F61 		.ascii	"float\000"
+ 3005      7400
+ 3006              	.LASF33:
+ 3007 017c 70726573 		.ascii	"pressureADChigh\000"
+ 3007      73757265 
+ 3007      41444368 
+ 3007      69676800 
+ 3008              	.LASF9:
+ 3009 018c 6C6F6E67 		.ascii	"long long int\000"
+ 3009      206C6F6E 
+ 3009      6720696E 
+ 3009      7400
+ 3010              	.LASF47:
+ 3011 019a 53746172 		.ascii	"Start_Airflow_Measurement\000"
+ 3011      745F4169 
+ 3011      72666C6F 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 61
+
+
+ 3011      775F4D65 
+ 3011      61737572 
+ 3012              	.LASF14:
+ 3013 01b4 696E7438 		.ascii	"int8\000"
+ 3013      00
+ 3014              	.LASF7:
+ 3015 01b9 6C6F6E67 		.ascii	"long int\000"
+ 3015      20696E74 
+ 3015      00
+ 3016              	.LASF38:
+ 3017 01c2 64756D6D 		.ascii	"dummy\000"
+ 3017      7900
+ 3018              	.LASF42:
+ 3019 01c8 54656D70 		.ascii	"Temperature_ADC\000"
+ 3019      65726174 
+ 3019      7572655F 
+ 3019      41444300 
+ 3020              	.LASF29:
+ 3021 01d8 74656D70 		.ascii	"temperatureADChigh\000"
+ 3021      65726174 
+ 3021      75726541 
+ 3021      44436869 
+ 3021      676800
+ 3022              	.LASF30:
+ 3023 01eb 74656D70 		.ascii	"temperatureADClow\000"
+ 3023      65726174 
+ 3023      75726541 
+ 3023      44436C6F 
+ 3023      7700
+ 3024              	.LASF36:
+ 3025 01fd 73746174 		.ascii	"statusI2C\000"
+ 3025      75734932 
+ 3025      4300
+ 3026              	.LASF11:
+ 3027 0207 75696E74 		.ascii	"uint8\000"
+ 3027      3800
+ 3028              	.LASF62:
+ 3029 020d 4932434D 		.ascii	"I2CM_I2CMasterStatus\000"
+ 3029      5F493243 
+ 3029      4D617374 
+ 3029      65725374 
+ 3029      61747573 
+ 3030              	.LASF4:
+ 3031 0222 756E7369 		.ascii	"unsigned char\000"
+ 3031      676E6564 
+ 3031      20636861 
+ 3031      7200
+ 3032              	.LASF23:
+ 3033 0230 4D61676E 		.ascii	"Magnetic_Switch\000"
+ 3033      65746963 
+ 3033      5F537769 
+ 3033      74636800 
+ 3034              	.LASF32:
+ 3035 0240 41697266 		.ascii	"AirflowADClow\000"
+ 3035      6C6F7741 
+ 3035      44436C6F 
+ 3035      7700
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 62
+
+
+ 3036              	.LASF3:
+ 3037 024e 7369676E 		.ascii	"signed char\000"
+ 3037      65642063 
+ 3037      68617200 
+ 3038              	.LASF10:
+ 3039 025a 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 3039      206C6F6E 
+ 3039      6720756E 
+ 3039      7369676E 
+ 3039      65642069 
+ 3040              	.LASF0:
+ 3041 0271 756E7369 		.ascii	"unsigned int\000"
+ 3041      676E6564 
+ 3041      20696E74 
+ 3041      00
+ 3042              	.LASF57:
+ 3043 027e 2E5C5365 		.ascii	".\\Sensor_Processes.c\000"
+ 3043      6E736F72 
+ 3043      5F50726F 
+ 3043      63657373 
+ 3043      65732E63 
+ 3044              	.LASF54:
+ 3045 0293 48756D69 		.ascii	"HumidityCalcuation\000"
+ 3045      64697479 
+ 3045      43616C63 
+ 3045      75617469 
+ 3045      6F6E00
+ 3046              	.LASF27:
+ 3047 02a6 68756D69 		.ascii	"humidiconADChigh\000"
+ 3047      6469636F 
+ 3047      6E414443 
+ 3047      68696768 
+ 3047      00
+ 3048              	.LASF59:
+ 3049 02b7 48756D69 		.ascii	"Humidity_ADC\000"
+ 3049      64697479 
+ 3049      5F414443 
+ 3049      00
+ 3050              	.LASF48:
+ 3051 02c4 52656164 		.ascii	"Read_Airflow\000"
+ 3051      5F416972 
+ 3051      666C6F77 
+ 3051      00
+ 3052              	.LASF17:
+ 3053 02d1 63686172 		.ascii	"char\000"
+ 3053      00
+ 3054              	.LASF19:
+ 3055 02d6 5F426F6F 		.ascii	"_Bool\000"
+ 3055      6C00
+ 3056              	.LASF6:
+ 3057 02dc 73686F72 		.ascii	"short unsigned int\000"
+ 3057      7420756E 
+ 3057      7369676E 
+ 3057      65642069 
+ 3057      6E7400
+ 3058              	.LASF43:
+ 3059 02ef 52656164 		.ascii	"Read_Temp_and_Humidity\000"
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 63
+
+
+ 3059      5F54656D 
+ 3059      705F616E 
+ 3059      645F4875 
+ 3059      6D696469 
+ 3060              	.LASF22:
+ 3061 0306 48756D69 		.ascii	"Humidity\000"
+ 3061      64697479 
+ 3061      00
+ 3062              	.LASF35:
+ 3063 030f 64617461 		.ascii	"data\000"
+ 3063      00
+ 3064              	.LASF26:
+ 3065 0314 53656E73 		.ascii	"Sensor_Data_t\000"
+ 3065      6F725F44 
+ 3065      6174615F 
+ 3065      7400
+ 3066              	.LASF13:
+ 3067 0322 75696E74 		.ascii	"uint32\000"
+ 3067      333200
+ 3068              	.LASF8:
+ 3069 0329 6C6F6E67 		.ascii	"long unsigned int\000"
+ 3069      20756E73 
+ 3069      69676E65 
+ 3069      6420696E 
+ 3069      7400
+ 3070              	.LASF53:
+ 3071 033b 52656164 		.ascii	"Read_Pressure\000"
+ 3071      5F507265 
+ 3071      73737572 
+ 3071      6500
+ 3072              	.LASF16:
+ 3073 0349 696E7433 		.ascii	"int32\000"
+ 3073      3200
+ 3074              	.LASF2:
+ 3075 034f 646F7562 		.ascii	"double\000"
+ 3075      6C6500
+ 3076              	.LASF20:
+ 3077 0356 53746174 		.ascii	"Status\000"
+ 3077      757300
+ 3078              	.LASF49:
+ 3079 035d 61697266 		.ascii	"airflowRaw\000"
+ 3079      6C6F7752 
+ 3079      617700
+ 3080              	.LASF52:
+ 3081 0368 70726573 		.ascii	"pressureRaw\000"
+ 3081      73757265 
+ 3081      52617700 
+ 3082              	.LASF21:
+ 3083 0374 54656D70 		.ascii	"Temperature\000"
+ 3083      65726174 
+ 3083      75726500 
+ 3084              	.LASF63:
+ 3085 0380 4932434D 		.ascii	"I2CM_I2CMasterReadBuf\000"
+ 3085      5F493243 
+ 3085      4D617374 
+ 3085      65725265 
+ 3085      61644275 
+ARM GAS  C:\Users\ddemidov\AppData\Local\Temp\ccdgWM8Q.s 			page 64
+
+
+ 3086              	.LASF31:
+ 3087 0396 41697266 		.ascii	"AirflowADChigh\000"
+ 3087      6C6F7741 
+ 3087      44436869 
+ 3087      676800
+ 3088              	.LASF37:
+ 3089 03a5 636F6D6D 		.ascii	"command\000"
+ 3089      616E6400 
+ 3090              	.LASF41:
+ 3091 03ad 54656D70 		.ascii	"TemperatureCalcuation\000"
+ 3091      65726174 
+ 3091      75726543 
+ 3091      616C6375 
+ 3091      6174696F 
+ 3092              	.LASF46:
+ 3093 03c3 64617461 		.ascii	"dataStale\000"
+ 3093      5374616C 
+ 3093      6500
+ 3094              	.LASF58:
+ 3095 03cd 433A5C55 		.ascii	"C:\\Users\\ddemidov\\Documents\\PSoC Creator\\BLE_F"
+ 3095      73657273 
+ 3095      5C646465 
+ 3095      6D69646F 
+ 3095      765C446F 
+ 3096 03fb 696E644D 		.ascii	"indMe01\\SenseAbility.cydsn\000"
+ 3096      6530315C 
+ 3096      53656E73 
+ 3096      65416269 
+ 3096      6C697479 
+ 3097              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br
