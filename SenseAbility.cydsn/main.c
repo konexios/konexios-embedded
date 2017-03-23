@@ -1,14 +1,11 @@
-/* ========================================
- *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
- *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
- * ========================================
-*/
+/* Copyright (c) 2017 Arrow Electronics, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Apache License 2.0
+ * which accompanies this distribution, and is available at
+ * http://apache.org/licenses/LICENSE-2.0
+ * Contributors: Arrow Electronics, Inc.
+ */
+
 #include <project.h>
 #include <main.h>
 #include <json/telemetry.h>
@@ -29,51 +26,33 @@
 #define WDT_MATCH_VALUE_1SEC 10*WDT_MATCH_VALUE_100MS
 static int counter = 0;
 
-void WDT_INT_Handler(void) {
-    
-    if(CySysWdtGetInterruptSource() & CY_SYS_WDT_COUNTER0_INT)
-	{
-		CySysWdtClearInterrupt(CY_SYS_WDT_COUNTER0_INT);
-		CySysWdtUnlock();
-        BLUE_LED_Write( ~BLUE_LED_Read() );
-		CySysWdtDisable(CY_SYS_WDT_COUNTER0_MASK);
-		if ( counter < 60 ) {
-            CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
-		    CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, WDT_MATCH_VALUE_1SEC);
-        } else {
-            CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_RESET);
-            CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, 0x0001);
-            CySysWdtWriteClearOnMatch(CY_SYS_WDT_COUNTER0, TRUE);
-            
-        }
-		CySysWdtEnable(CY_SYS_WDT_COUNTER0_MASK);
-	    CySysWdtLock();
-        counter++;
-	}
-}
-
 void WDT_Feed() {
     counter = 0;
-    CySysWatchdogFeed(CY_SYS_WDT_COUNTER0); // if this board sent the data
-    CySysWdtResetCounters(CY_SYS_WDT_COUNTER0);
-    
 }
 
 void wdt_init() {
     CySysWdtUnlock(); 
-    CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_INT);
-    CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, WDT_MATCH_VALUE_1SEC); // 1 sec
+    CySysWdtWriteMode(CY_SYS_WDT_COUNTER0, CY_SYS_WDT_MODE_RESET);
+    CySysWdtWriteMatch(CY_SYS_WDT_COUNTER0, 0xfffa); //WDT_MATCH_VALUE_1SEC + WDT_MATCH_VALUE_100MS); // 1 sec + 100ms clearance
 	CySysWdtWriteClearOnMatch(CY_SYS_WDT_COUNTER0, TRUE);
 	CyIntSetPriority(WATCHDOG_INT_VEC_NUM, WATCHDOG_INT_VEC_PRIORITY);
     CyIntEnable(WATCHDOG_INT_VEC_NUM);
     CySysWdtEnable(CY_SYS_WDT_COUNTER0_MASK);
     CySysWdtLock();
-    CyIntSetVector(WATCHDOG_INT_VEC_NUM, &WDT_INT_Handler);
+    //CyIntSetVector(WATCHDOG_INT_VEC_NUM, &WDT_INT_Handler);
 }
 
 CY_ISR(RTC_PPS_InterruptHandler) {
    	RTC_PPS_STATUS;
     RTC_Update();
+    if ( counter++ < 60 ) {
+        BLUE_LED_Write( ~BLUE_LED_Read() );
+        CySysWdtUnlock();
+        CySysWatchdogFeed(CY_SYS_WDT_COUNTER0);
+        CySysWdtResetCounters(CY_SYS_WDT_COUNTER0);
+        CySysWdtLock();
+    }
+    DBG("i%d", counter);
 }
 
 void user_init() {
@@ -117,7 +96,6 @@ int main() {
     arrow_gateway_config_t config;
     arrow_device_t device;
     
-    wdt_init();
     CySysTickStart();
     
     PPS_ISR_Enable();
@@ -125,10 +103,9 @@ int main() {
     RTC_PPS_Start();    
     RTC_Start();
     RTC_SetUnixTime(build_time());
-    RTC_SetPeriod(1u, 1u);
-    
-    
-    
+    RTC_SetPeriod(1u, 1u);   
+    wdt_init();
+        
     CyGlobalIntEnable; /* Enable global interrupts. */
     
     user_init();
