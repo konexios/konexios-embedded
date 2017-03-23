@@ -89,7 +89,7 @@ void wifi_thread_entry(void) {
     winc1500_init();
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
 
-    if ( ap_mode_lvl != IOPORT_LEVEL_LOW ) {
+    if ( ap_mode_lvl == IOPORT_LEVEL_LOW ) {
         if ( ota_mode_lvl != IOPORT_LEVEL_LOW ) {
 force_ap:
             DBG("init AP mode %d", count_wdt);
