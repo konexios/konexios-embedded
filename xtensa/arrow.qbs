@@ -5,7 +5,7 @@ import qbs.FileInfo
 Project {
     property string location: "no"
     references: [
-        "../kronos-c-sdk/kronos-c-sdk.qbs"
+        "../acn-sdk-c/kronos-c-sdk.qbs"
     ]
 
 CppApplication {

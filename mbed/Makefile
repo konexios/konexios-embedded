@@ -9,7 +9,10 @@ APP_OUT = ${APP_NAME}.out
 GCC_BIN = 
 PROJECT = arrow
 
-KRONOS_C_SDK_PATH = $(PWD)/../kronos-c-sdk
+C_SDK_PATH = $(PWD)/../acn-sdk-c
+
+-include $(C_SDK_PATH)/Makefile.mbed.def
+
 CPPSRCS  = $(wildcard $(PWD)/*.cpp)
 CPPSRCS += $(wildcard $(PWD)/DnsQuery/*.cpp)
 CPPSRCS += $(shell find $(PWD)/X_NUCLEO_IDW01M1 -name "*.cpp")
@@ -34,7 +37,7 @@ INCLUDES = -I$(PWD)/. \
 	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM 
 
 LIBRARY_PATHS = -L$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM -L$(PWD)/.build
-LIBRARIES = -lmbed -lkronoscsdk
+LIBRARIES = -lmbed -lacnsdkc
 LINKER_SCRIPT = $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/STM32F401XE.ld
 
 # WIFI
@@ -60,8 +63,8 @@ INCLUDES += -I$(PWD)/Components \
 # DNS
 INCLUDES += -I$(PWD)/DnsQuery
 
-INCLUDES += -I$(KRONOS_C_SDK_PATH) \
-	    -I$(KRONOS_C_SDK_PATH)/include
+INCLUDES += -I$(C_SDK_PATH) \
+	    -I$(C_SDK_PATH)/include
 
 ############################################################################### 
 AS      = $(GCC_BIN)arm-none-eabi-as
@@ -111,18 +114,19 @@ endif
 .cpp.o:
 	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) $< -o $@
 
-libkronoscsdk.a:
+libacnsdkc.a:
 	@echo $(PWD)
-	cd $(KRONOS_C_SDK_PATH) && $(MAKE) -f Makefile.mbed LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
+	if [ ! -e $(PWD)/.build ]; then mkdir $(PWD)/.build; fi
+	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.mbed LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
 
-$(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libkronoscsdk.a
+$(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a
 	  @echo "build $(APP_OUT)"
 	  $(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
 	
 clean:
 	$(RM) $(OBJDIR) 
 	$(RM) $(CPPOBJS)
-	cd $(KRONOS_C_SDK_PATH) && $(MAKE) -f Makefile.mbed clean
+	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.mbed clean
 	
 $(APP_OUT).bin: $(APP_OUT)
 	$(OBJCOPY) -O binary $< $@
@@ -141,47 +145,5 @@ size: $(APP_OUT)
 flash:
 	st-flash write $(APP_OUT).bin 0x8000000
 
-all: libkronoscsdk.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
+all: libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
 
-# 
-#   .asm.o:
-# 	  +@$(call MAKEDIR,$(dir $@))
-# 	  $(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
-#   .s.o:
-# 	  +@$(call MAKEDIR,$(dir $@))
-# 	  $(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
-#   .S.o:
-# 	  +@$(call MAKEDIR,$(dir $@))
-# 	  $(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
-# 
-#   .c.o:
-# 	  +@$(call MAKEDIR,$(dir $@))
-# 	  $(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDE_PATHS) -o $@ $<
-# 
-#   .cpp.o:
-# 	  +@$(call MAKEDIR,$(dir $@))
-# 	  $(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDE_PATHS) -o $@ $<
-# 
-# 
-# 
-#   $(PROJECT).elf: $(OBJECTS) $(SYS_OBJECTS) $(LINKER_SCRIPT)
-# 	  $(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
-# 
-# 
-#   $(PROJECT).bin: $(PROJECT).elf
-# 	  $(OBJCOPY) -O binary $< $@
-# 
-#   $(PROJECT).hex: $(PROJECT).elf
-# 	  @$(OBJCOPY) -O ihex $< $@
-# 
-#   $(PROJECT).lst: $(PROJECT).elf
-# 	  @$(OBJDUMP) -Sdh $< > $@
-# 
-#   lst: $(PROJECT).lst
-# 
-#   size: $(PROJECT).elf
-# 	  $(SIZE) $(PROJECT).elf
-# 
-#   DEPS = $(OBJECTS:.o=.d) $(SYS_OBJECTS:.o=.d)
-#   -include $(DEPS)
-# 
