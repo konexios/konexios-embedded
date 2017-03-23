@@ -6,7 +6,7 @@
     <Toolchain Name="ARM GCC Generic" Selected="True">
       <Tool Name="prebuild" Command="" Options="" />
       <Tool Name="assembler" Command="arm-none-eabi-as.exe" Options="-mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -alh=${OutputDir}/${CompileFile}.lst -g -W" />
-      <Tool Name="compiler" Command="arm-none-eabi-gcc.exe" Options="-mcpu=cortex-m0 -mthumb -Wno-main -I..\acn-sdk-c -I..\acn-sdk-c\include -I..\acn-sdk-c\src\wolfSSL -I..\acn-sdk-c\src\wolfSSL\wolfssl -I. -IGenerated_Source\PSoC4 -Wa,-alh=${OutputDir}/${CompileFile}.lst -g -D DEBUG -D __senseability__ -Wall -ffunction-sections -Os -ffat-lto-objects" />
+      <Tool Name="compiler" Command="arm-none-eabi-gcc.exe" Options="-mcpu=cortex-m0 -mthumb -Wno-main -I..\acn-sdk-c -I..\acn-sdk-c\include -I..\acn-sdk-c\src\wolfSSL -I..\acn-sdk-c\src\wolfSSL\wolfssl -I. -IGenerated_Source\PSoC4 -Wa,-alh=${OutputDir}/${CompileFile}.lst -g -D DEBUG -D __senseability__ -D &quot;DEFAULT_API_KEY=\&quot;5a3264fb990a18e0e180efbbfadd5d95db3baed93defcb1d5a35966c6b98fef5\&quot;&quot; -D &quot;DEFAULT_SECRET_KEY=\&quot;E9Y8y8A88R/x5JV2nfB7H/1A3eET85PSeURpk4QKp4c=\&quot;&quot; -Wall -ffunction-sections -Os -ffat-lto-objects" />
       <Tool Name="linker" Command="arm-none-eabi-gcc.exe" Options="-mcpu=cortex-m0 -mthumb -g -ffunction-sections -Os -L Generated_Source\PSoC4 -Wl,-Map,${OutputDir}/${ProjectShortName}.map -T Generated_Source\PSoC4\cm0gcc.ld -specs=nano.specs -Wl,--gc-sections" />
       <Tool Name="postbuild" Command="" Options="" />
     </Toolchain>
