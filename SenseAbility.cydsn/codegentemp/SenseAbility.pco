@@ -1,0 +1,35 @@
+# SenseAbility
+# 2017-03-23 07:19:02Z
+
+# IO_6@[IOP=(0)][IoId=(6)] is reserved: SWDDebugEnabled
+dont_use_io iocell 0 6
+# IO_7@[IOP=(0)][IoId=(7)] is reserved: SWDDebugEnabled
+dont_use_io iocell 0 7
+# IO_0@[IOP=(6)][IoId=(0)] is reserved: KhzXtalEnabled
+dont_use_io iocell 6 0
+# IO_1@[IOP=(6)][IoId=(1)] is reserved: KhzXtalEnabled
+dont_use_io iocell 6 1
+set_location "ClockGenBlock" m0s8clockgenblockcell -1 -1 0
+set_location "ClockBlock" m0s8clockblockcell -1 -1 0
+set_io "\SW_Tx_UART_1:tx(0)\" iocell 1 5
+set_io "GREEN_LED(0)" iocell 3 6
+set_io "RED_LED(0)" iocell 2 6
+set_io "BLUE_LED(0)" iocell 3 7
+set_io "\I2CM:sda(0)\" iocell 3 4
+set_io "\I2CM:scl(0)\" iocell 3 5
+set_io "SHD_LED_1(0)" iocell 2 0
+set_io "SHD_LED_2(0)" iocell 2 1
+set_io "TH_AL(0)" iocell 2 4
+set_io "TH_AH(0)" iocell 2 5
+set_io "MAG_SW_IN(0)" iocell 0 3
+set_location "\RTC_PPS:TimerUDB:status_tc\" 0 0 0 0
+set_location "\I2CM:SCB_IRQ\" interrupt -1 -1 10
+set_location "\I2CM:SCB\" m0s8scbcell -1 -1 1
+set_location "\RTC_PPS:TimerUDB:sCTRLReg:SyncCtl:ctrlreg\" 0 1 6
+set_location "\RTC_PPS:TimerUDB:rstSts:stsreg\" 0 0 4
+set_location "\RTC_PPS:TimerUDB:sT32:timerdp:u0\" 0 1 2
+set_location "\RTC_PPS:TimerUDB:sT32:timerdp:u1\" 1 1 2
+set_location "\RTC_PPS:TimerUDB:sT32:timerdp:u2\" 1 0 2
+set_location "\RTC_PPS:TimerUDB:sT32:timerdp:u3\" 0 0 2
+set_location "PPS_ISR" interrupt -1 -1 1
+set_location "WDT" m0s8wdtcell -1 -1 0
