@@ -28,7 +28,7 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 
 SYS_OBJECTS = $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.o)
 
-INCLUDES = -I$(PWD)/. \
+INCLUDES += -I$(PWD)/. \
 	   -I$(PWD)/mbed \
 	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE \
 	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM \
@@ -65,29 +65,6 @@ INCLUDES += -I$(PWD)/DnsQuery
 
 INCLUDES += -I$(C_SDK_PATH) \
 	    -I$(C_SDK_PATH)/include
-
-############################################################################### 
-AS      = $(GCC_BIN)arm-none-eabi-as
-CC      = $(GCC_BIN)arm-none-eabi-gcc
-CPP     = $(GCC_BIN)arm-none-eabi-g++
-LD      = $(GCC_BIN)arm-none-eabi-gcc
-OBJCOPY = $(GCC_BIN)arm-none-eabi-objcopy
-OBJDUMP = $(GCC_BIN)arm-none-eabi-objdump
-SIZE    = $(GCC_BIN)arm-none-eabi-size 
-
-ifeq ($(HARDFP),1)
-	FLOAT_ABI = hard
-else
-	FLOAT_ABI = softfp
-endif
-
-
-CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI) 
-COMMON_FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer
-CC_FLAGS = -c $(COMMON_FLAGS) $(CPU) -Os -std=gnu99 -include mbed_config.h -MP
-CPPC_FLAGS = -c $(COMMON_FLAGS) $(CPU) -Os -std=gnu++98 -fno-rtti -Wvla -include mbed_config.h -MP
-ASM_FLAGS = -x assembler-with-cpp -c $(COMMON_FLAGS) $(CPU) -Os
-CC_SYMBOLS = -D__MBED__=1 -DDEVICE_I2CSLAVE=1 -DTARGET_LIKE_MBED -DTARGET_NUCLEO_F401RE -DTARGET_RTOS_M4_M7 -DDEVICE_RTC=1 -DTOOLCHAIN_object -DTARGET_STM32F4 -D__CMSIS_RTOS -DTOOLCHAIN_GCC -DTARGET_CORTEX_M -DTARGET_LIKE_CORTEX_M4 -DTARGET_M4 -DTARGET_UVISOR_UNSUPPORTED -DDEVICE_PWMOUT=1 -DDEVICE_INTERRUPTIN=1 -DDEVICE_I2C=1 -DDEVICE_PORTOUT=1 -D__CORTEX_M4 -DDEVICE_STDIO_MESSAGES=1 -DTARGET_STM32F401RE -DTARGET_FF_MORPHO -D__FPU_PRESENT=1 -DTARGET_FF_ARDUINO -DDEVICE_PORTIN=1 -DTARGET_RELEASE -DTARGET_STM -DDEVICE_SERIAL_FC=1 -DDEVICE_PORTINOUT=1 -DMBED_BUILD_TIMESTAMP=1471326725.12 -D__MBED_CMSIS_RTOS_CM -DDEVICE_SLEEP=1 -DTOOLCHAIN_GCC_ARM -DDEVICE_SPI=1 -DDEVICE_ERROR_RED=1 -DDEVICE_SPISLAVE=1 -DDEVICE_ANALOGIN=1 -DDEVICE_SERIAL=1 -DARM_MATH_CM4 
 
 LD_FLAGS =-Wl,--gc-sections -Wl,--wrap,main $(CPU)
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys

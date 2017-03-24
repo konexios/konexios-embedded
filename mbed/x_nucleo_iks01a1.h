@@ -49,6 +49,7 @@
 #include "lsm6ds0/lsm6ds0_class.h"
 #include "lsm6ds3/lsm6ds3_class.h"
 #include "DevI2C.h"
+#include "x_nucleo_iks01a1_data.h"
 
 /* Macros -------------------------------------------------------------------*/
 #define CALL_METH(obj, meth, param, ret) ((obj == NULL) ?		\
@@ -140,6 +141,8 @@ class X_NUCLEO_IKS01A1
 	}
 	LSM6DS0 *gyro_lsm6ds0;
 	LSM6DS3 *gyro_lsm6ds3;
+
+  void getData(X_NUCLEO_IKS01A1_data *data);
 
  private:
 	static X_NUCLEO_IKS01A1 *_instance;

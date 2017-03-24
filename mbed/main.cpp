@@ -199,8 +199,10 @@ force_ap:
 //#endif
 //    ext_board.setDeviceHid(dev.hid());
 
+    X_NUCLEO_IKS01A1_data data;
+    mems_expansion_board->getData(&data);
     printf("send telemetry via API\r\n");
-    while ( arrow_send_telemetry(&device, mems_expansion_board) < 0) {
+    while ( arrow_send_telemetry(&device, &data) < 0) {
       printf("arrow: send telemetry fail\r\n");
     }
 
@@ -228,10 +230,10 @@ force_ap:
 #ifdef SENSOR_TILE
       tmp = mems_expansion_board->getTemperature();
 #else
-      mems_expansion_board->ht_sensor->GetTemperature(&tmp);
+      mems_expansion_board->getData(&data);
 #endif
       printf("mqtt publish [%d]: T(%4.2f)...\r\n", i++, tmp);
-      if ( mqtt_publish(&device, mems_expansion_board) < 0 ) {
+      if ( mqtt_publish(&device, &data) < 0 ) {
         printf("mqtt publish failure...");
         mqtt_disconnect();
         while (mqtt_connect(&gateway, &device, &gate_conf) < 0) { wait(1);}
