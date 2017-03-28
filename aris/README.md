@@ -12,7 +12,18 @@
 4. Select License file:
   Help->Synergy License...
   C:\Renesas\e2_studio\internal\projectgen\arm\Licenses\SSP_License_Example_EvalLicense_20160205.xml
-5. Build project:
+
+5. Before build project you should to define DEFAULT_API_KEY and DEFAULT_SECRET_KEY;
+   Project->Properties
+   In the properties window select "C/C++ Build" Settings:
+   Tool Settings panel -> Cross ARM C Compiler -> Preprocessor
+   And in the "Define symbols" area on the right add a new items like this:
+   DEFAULT_API_KEY=\\\"xxxxxxx\\\"
+   or define this keys into a header file
+   Warning: if you define the DEV_ENV symbol application will works with Arrow development portal only
+
+
+6. Build project:
   Project->Build All
 
 ### How to flash ###

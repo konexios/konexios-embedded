@@ -16,6 +16,7 @@ typedef size_t socklen_t;
 int winc1500_init();
 int net_sta_init();
 int net_ap_init();
+int net_ota_init();
 
 struct hostent *gethostbyname(char *host);
 
