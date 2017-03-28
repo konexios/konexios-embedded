@@ -120,9 +120,9 @@ static void swat_http_get_callback(void* cxt, void* buf)
 
     if (qcom_http_collect_scan_result(currentDeviceId, &http_data, &data_len) == A_OK)
     {
-        if (swat_http_server_header_form(currentDeviceId, &header_data, &header_len) == A_OK) {
-            qcom_http_get_datasend(sess_index, data_len, url, http_data, header_len, header_data);
-          qcom_mem_free(header_data);
+      if (swat_http_server_header_form(currentDeviceId, &header_data, &header_len) == A_OK) {
+        qcom_http_get_datasend(sess_index, data_len, url, http_data, header_len, header_data);
+        qcom_mem_free(header_data);
       }
 
       qcom_mem_free(http_data);
@@ -152,9 +152,12 @@ int find_tlv(HTTP_EVENT_T* ev, const char *key, char *value) {
             GET_TLV_TYPE(data, type);
             GET_TLV_LENGTH(data, length);
             val = GET_TLV_VAL(data);
-            strncpy(value, (char*)val, length);
-            value[length] = 0;
+            if ( value ) {
+              strncpy(value, (char*)val, length);
+              value[length] = 0;
+            }
           }
+          return 0;
         }
       break;
       case HTTP_TYPE_VALUE:
@@ -167,7 +170,7 @@ int find_tlv(HTTP_EVENT_T* ev, const char *key, char *value) {
     data = GET_NEXT_TLV(data, length);
     numTLV--;
   }
-  return 0;
+  return -1;
 }
 
 /*Callback function called by PHOST when a client sends a command to HTTP server*/
@@ -182,7 +185,14 @@ static void swat_process_tlv(void* cxt, void* buf)
     char pass[32];
     char auth_tmp[32];
     char sec_tmp[32];
+    char tmp[32];
     int sec = 0;
+
+    if ( find_tlv(ev, "Reboot", tmp) == 0 ) {
+      //   reset board
+      A_PRINTF("RESET THE BOARD!: %s\n",tmp);
+      qcom_sys_reset();
+    }
 
     find_tlv(ev, "ssid", ssid);
     find_tlv(ev, "pass", pass);
@@ -210,8 +220,6 @@ static void swat_process_tlv(void* cxt, void* buf)
     DBG("sec : {%08x}", sec);
     //save
     save_wifi_setting(ssid, pass, sec);
-    // reset board
-    qcom_sys_reset();
 }
 
 /*HTTP Server extensions -- application callbacks to all HTTP methods*/

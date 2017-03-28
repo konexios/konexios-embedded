@@ -1,81 +1,35 @@
 <html>
-<head><title>Arrow IOE QCA4010</title></head>
+<head>
+<meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'/>
+<style>body{font-size:xx-large;font-family:'Arial';} input{font-size:xx-large;width:100%;padding:12px 20px;margin:8px 0;box-sizing:border-box;} button{background-color:white;color:black;border:2px solid #blue;padding:15px 32px;font-size:xx-large;}</style>
+</head>
 <body>
-<div id="main">
+<div id="main" style='padding: 20px;'>
+<h1>Arrow Connect</h1>
+<h3>ARIS Board Wi-Fi settings</h3><br>
+
 <form action="index.cgi" enctype="application/x-www-form-urlencoded" method="post" name="cred">
-<h1>IOE QCA4010 Arrow Connect v1</h1>
 <p>SSID <input maxlength="32" id="ssid" name="ssid" size="32" type="text" /></p>
 <p> SSID is <!--#echo var="ssid" --></p>
-<p>Authentication <input name="auth" id="auth" type="radio" value="open"/>Open<input name="auth" type="radio" value="wpa"/>WPA<input name="auth" type="radio" value="wpa2"/>WPA2</p>
+<p>Authentication <select size=3 multiple name="auth">
+          <option disabled>Auth</option>
+          <option value='open'>Open</option>
+          <option value='wpa'>WPA</option>
+          <option selected value='wpa2'>WPA2</option>
+          </select></p>
 <p> Authen is <!--#echo var="auth" --></p>
-<p>Encryption <input name="sec" type="radio" id="sec" value="none"/>None<input name="sec" type="radio" value="tkip"/>TKIP<input name="sec" type="radio" value="AES"/>CCMP</p>
+<p>Encryption <select size=3 multiple name="sec">
+          <option disabled>Security</option>
+          <option value='none'>None</option>
+          <option value='tkip'>TKIP</option>
+          <option selected value='AES'>CCMP</option>
+          </select></p>
 <p> Encryption is  <!--#echo var="sec" --></p>
 <p>Passphrase <input maxlength="32" name="pass" id="pass" size="32" type="password" /></p>
 <p> Passphrase is <!--#echo var="pass" --></p>
 <p><input name="Submit" type="submit" value="Submit"></p>
+<p><input name="Reboot" type="submit" value="Reset"></p>
 </form>
-<br/>
-<b>(Object Name to be used: SSID=ssid, Authentication=auth, Encryption=sec, Passphrase=pass)</b>
-<br/><br/>
-<p>Object Name:<input type="text" maxlength="32" size="32" id="putname"/></p>
-<p>Object Value:<input type="text" id="putvalue" maxlength="32" size="32"/></p>
-<input type=button onclick= "makePutReq()" value = "PUT"/>
-<input type=button onclick= "makeDeleteReq()" value = "DELETE"/>
 </div>
-<script>
-var xmlhttp;
-if (window.XMLHttpRequest)
-{// code for IE7+, Firefox, Chrome, Opera, Safari
-	xmlhttp=new XMLHttpRequest();
-}
-else
-{// code for IE6, IE5
-	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-}
-
-function makePutReq(  ){
-var putname = document.getElementById("putname").value;
-var putvalue = document.getElementById("putvalue").value;  
-var name = putname+"="+putvalue;
-if(putname == "" || putvalue =="")
-{
-	alert("Object Name or Value cannot be Empty");
-}
-else
-{
-   xmlhttp.onreadystatechange=function()
-   {
-		if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		{
-			document.getElementById("main").innerHTML  = xmlhttp.responseText;
-		}
-   }
-   //alert(name);
-	xmlhttp.open("PUT","index.cgi",true);
-	xmlhttp.send(name);
-}
-}
-
-function makeDeleteReq(  ){
-var delname =  document.getElementById("putname").value; 
-if(delname == "")
-{
-	alert("Object name cannot be Empty");
-}
-else
-{
-	xmlhttp.onreadystatechange=function()
-	  {
-	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		{
-			document.getElementById("main").innerHTML  = (xmlhttp.responseText);
-		}
-	}
-	//alert(delname);
-	xmlhttp.open("DELETE","index.cgi/"+delname,true);
-	xmlhttp.send();
-}
-}
-</script>
 </body>
 </html>

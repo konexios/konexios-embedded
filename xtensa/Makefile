@@ -15,7 +15,7 @@ DEMO_LIB = $(LIBDIR)/lib${APP_NAME}.a
 
 C_SDK_PATH = ../acn-sdk-c
 
--include $(C_SDK_PATH)/Makefile.def
+-include $(C_SDK_PATH)/Makefile.xtensa.def
 
 INCLUDES += \
 	-I$(C_SDK_PATH) \
@@ -66,7 +66,7 @@ LDFLAGS = -nostdlib -Wl,-EL -Wl,--gc-sections \
 	-u app_start \
 	-Wl,-static \
 	-Wl,--start-group \
-	-ladc -luartserp -lconsole -lramcust -lserport -lkronoscsdk -lqcomcrypto -ljson \
+	-ladc -luartserp -lconsole -lramcust -lserport -lacnsdkc -lqcomcrypto -ljson \
 	$(LIBS)	\
 	-Wl,--end-group \
 	$(IMAGEDIR)/rom.addrs.ld \
@@ -85,14 +85,15 @@ $(DEMO_LIB): $(OBJS)
 	@mkdir -p $(LIBDIR)
 	$(AR) ru $@ $^
 
-libkronoscsdk.a:
+libacnsdkc.a:
 	cd $(C_SDK_PATH) && make -f Makefile.xtensa
 
-$(DEMO_OUT): libkronoscsdk.a $(LIBS) $(LDS)
+$(DEMO_OUT): libacnsdkc.a $(LIBS) $(LDS)
 	@mkdir -p $(IMAGEDIR)
 	$(CC) $(LDFLAGS) -o $@ 
 	
 firmware:
+	cp $(PWD)/config/index.html $(SRC_IOE)/demo/sdk_flash/
 	cd $(SRC_IOE)/tool && ./qonstruct.sh --qons ./tmp/
 
 all: $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware

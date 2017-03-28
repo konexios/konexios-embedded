@@ -15,8 +15,21 @@ extern "C" {
 #include <arrow/mqtt.h>
 #include <ntp/ntp.h>
 #include <arrow/storage.h>
+#include "stm32f4xx_hal_iwdg.h"
 }
 #include <stdio.h>
+
+IWDG_HandleTypeDef hiwdg;
+void WDT_Init(void) {
+    hiwdg.Instance = IWDG;
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
+    hiwdg.Init.Reload = 0xfff;
+    HAL_IWDG_Init(&hiwdg);
+}
+
+void WDT_Feed(void) {
+    HAL_IWDG_Refresh(&hiwdg);
+}
 
 #ifndef SENSOR_TILE
 #include "x_nucleo_iks01a1.h"
@@ -56,16 +69,16 @@ void add_file(const char *name, char *payload) {
 
 #include "wifi_module.h"
 int main() {
+  WDT_Init();
     printf("\r\n--- Starting new run ---\r\n");
-    print_free();
 
     int err;
     char ssid[64];
     char pass[64];
     nsapi_security_t security;
     err = restore_wifi_setting(ssid, pass, (int*)&security);
+    WDT_Feed();
 
-#if 1
     printf("@button %d\r\n", button.read());
     if (button == 0 || err < 0) {
 force_ap:
@@ -96,17 +109,16 @@ force_ap:
 
 //      wifi_file_list();
 //      wait(0.5);
-      menu();
+      WDT_Feed();
+      while(1) {
+        WDT_Feed();
+        wait_ms(1000);
+      }
     }
 
     printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
-#else
-    strcpy(ssid, "TP-LINK_POCKET_3020_403A9A");
-    strcpy(pass, "53319579");
-    security = NSAPI_SECURITY_WPA2;
-#endif
-
     printf("connecting to AP\r\n");
+    WDT_Feed();
 
     int try_connect = 5;
     do {
@@ -126,6 +138,7 @@ force_ap:
 
     pc.printf("Get UTC time...\r\n");
 
+    WDT_Feed();
     // set time
     ntp_set_time_cycle();
 
@@ -134,12 +147,15 @@ force_ap:
 
     arrow_gateway_t gateway;
     arrow_gateway_config_t gate_conf;
+
+    WDT_Feed();
     printf("register gateway via API %p\r\n", &gateway);
     while ( arrow_connect_gateway(&gateway) < 0 ) {
       printf("arrow gateway connection fail\r\n");
       wait(1);
     }
 
+    WDT_Feed();
     while ( arrow_config(&gateway, &gate_conf) < 0 ) {
       printf("arrow gateway config fail...\r\n");
       wait(1);
@@ -177,6 +193,7 @@ force_ap:
 //#endif
 
     // device registaration
+    WDT_Feed();
     printf("register device via API\r\n");
     arrow_device_t device;
     while ( arrow_connect_device(&gateway, &device) < 0 ) {
@@ -199,8 +216,11 @@ force_ap:
 //#endif
 //    ext_board.setDeviceHid(dev.hid());
 
+    WDT_Feed();
+    X_NUCLEO_IKS01A1_data data;
+    mems_expansion_board->getData(&data);
     printf("send telemetry via API\r\n");
-    while ( arrow_send_telemetry(&device, mems_expansion_board) < 0) {
+    while ( arrow_send_telemetry(&device, &data) < 0) {
       printf("arrow: send telemetry fail\r\n");
     }
 
@@ -215,27 +235,30 @@ force_ap:
 
 
     // MQTT
+    WDT_Feed();
     printf("mqtt connect...\r\n");
     while ( mqtt_connect(&gateway, &device, &gate_conf) < 0 ) {
       printf("mqtt connect fail\r\n");
       wait(1);
     } //every sec try to connect
 
+    WDT_Feed();
     int i = 0;
     while (true) {
-      wait_ms(5000); // every 5 sec send data via mqtt
+      WDT_Feed();
       float tmp;
 #ifdef SENSOR_TILE
       tmp = mems_expansion_board->getTemperature();
 #else
-      mems_expansion_board->ht_sensor->GetTemperature(&tmp);
+      mems_expansion_board->getData(&data);
 #endif
       printf("mqtt publish [%d]: T(%4.2f)...\r\n", i++, tmp);
-      if ( mqtt_publish(&device, mems_expansion_board) < 0 ) {
+      if ( mqtt_publish(&device, &data) < 0 ) {
         printf("mqtt publish failure...");
         mqtt_disconnect();
         while (mqtt_connect(&gateway, &device, &gate_conf) < 0) { wait(1);}
       }
+      wait_ms(TELEMETRY_DELAY); // every n sec send data via mqtt
     }
 
 

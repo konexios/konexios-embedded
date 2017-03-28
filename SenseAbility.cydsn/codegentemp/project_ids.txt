@@ -1,0 +1,5 @@
+C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\SenseAbility.cyprj|ac049608-ecbd-44f3-b130-1ae2257cf089
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|4cd853fc-5edd-451c-8ab1-a5e90c894e83
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|5d16cd42-a06f-4c9e-b1d1-1ca72837c3cb
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|7df3ac81-70bd-413c-8a18-7a13ee1c05e6
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|dc8dcc8f-fa65-43ab-a431-3492231906d0

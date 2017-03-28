@@ -131,7 +131,27 @@ X_NUCLEO_IKS01A1* X_NUCLEO_IKS01A1::Instance(PinName sda, PinName scl, PinName f
 		}
 	}
 
-	return _instance;
+  return _instance;
+}
+
+void X_NUCLEO_IKS01A1::getData(X_NUCLEO_IKS01A1_data *data) {
+  ht_sensor->GetTemperature(&data->ht_temperature);
+  pt_sensor->GetTemperature(&data->pt_temperature);
+  ht_sensor->GetHumidity(&data->humidity);
+  pt_sensor->GetPressure(&data->pressure);
+  int32_t axes[] = {0,0,0};
+  GetAccelerometer()->Get_X_Axes(axes);
+  data->accelerometer.x = axes[0];
+  data->accelerometer.y = axes[1];
+  data->accelerometer.z = axes[2];
+  GetGyroscope()->Get_G_Axes(axes);
+  data->gyrometer.x = axes[0];
+  data->gyrometer.y = axes[1];
+  data->gyrometer.z = axes[2];
+  magnetometer->Get_M_Axes(axes);
+  data->magnetometer.x = axes[0];
+  data->magnetometer.y = axes[1];
+  data->magnetometer.z = axes[2];
 }
 
 /**
