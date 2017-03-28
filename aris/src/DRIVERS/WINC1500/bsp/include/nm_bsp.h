@@ -2,9 +2,9 @@
  *
  * \file
  *
- * \brief WINC BSP API Declarations.
+ * \brief This module contains NMC1500 BSP APIs declarations.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -37,9 +37,6 @@
  *
  * \asf_license_stop
  *
- */
- 
-/** \defgroup nm_bsp BSP
  */
 /**@defgroup  BSPDefine Defines
  * @ingroup nm_bsp
@@ -93,21 +90,21 @@ typedef void (*tpfNmBspIsr)(void);
 
   /*!
  * @ingroup DataTypes
- * @typedef      unsigned char	uint8;
+ * @typedef      unsigned char  uint8;
  * @brief        Range of values between 0 to 255
  */
 typedef uint8_t         uint8;
 
  /*!
  * @ingroup DataTypes
- * @typedef      unsigned short	uint16;
+ * @typedef      unsigned short uint16;
  * @brief        Range of values between 0 to 65535
  */
 typedef uint16_t        uint16;
 
  /*!
  * @ingroup Data Types
- * @typedef      unsigned long	uint32;
+ * @typedef      unsigned long  uint32;
  * @brief        Range of values between 0 to 4294967295
  */
 typedef uint32_t        uint32;
@@ -115,21 +112,21 @@ typedef uint32_t        uint32;
 
   /*!
  * @ingroup Data Types
- * @typedef      signed char		sint8;
+ * @typedef      signed char        sint8;
  * @brief        Range of values between -128 to 127
  */
 typedef int8_t          sint8;
 
  /*!
  * @ingroup DataTypes
- * @typedef      signed short	sint16;
+ * @typedef      signed short   sint16;
  * @brief        Range of values between -32768 to 32767
  */
 typedef int16_t         sint16;
 
   /*!
  * @ingroup DataTypes
- * @typedef      signed long		sint32;
+ * @typedef      signed long        sint32;
  * @brief        Range of values between -2147483648 to 2147483647
  */
 
@@ -168,7 +165,7 @@ sint8 nm_bsp_init(const external_irq_instance_t * wifi_irq);
 
  /** @defgroup NmBspDeinitFn nm_bsp_deinit
  *    @ingroup BSPAPI
- *   	 De-initialization for BSP (\e Board \e Support \e Package)
+ *       De-initialization for BSP (\e Board \e Support \e Package)
  */
  /**@{*/
 /*!
@@ -283,4 +280,4 @@ void nm_bsp_interrupt_ctrl(uint8 u8Enable);
 #endif
 
 
-#endif	/*_NM_BSP_H_*/
+#endif  /*_NM_BSP_H_*/

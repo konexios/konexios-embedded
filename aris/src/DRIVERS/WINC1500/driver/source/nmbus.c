@@ -4,7 +4,7 @@
  *
  * \brief This module contains NMC1000 bus APIs implementation.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -46,6 +46,7 @@
 #include "nmuart.h"
 
 #define MAX_TRX_CFG_SZ		8
+#define M2M_UNUSED_PARAM(a)     (a=a)
 
 /**
 *	@fn		nm_bus_iface_init
@@ -200,7 +201,7 @@ static sint8 p_nm_read_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
 */
 sint8 nm_read_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz)
 {
-	uint16 u16MaxTrxSz = egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ;
+	uint16 u16MaxTrxSz = (uint16)(egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ);
 	uint32 off = 0;
 	sint8 s8Ret = M2M_SUCCESS;
 
@@ -208,12 +209,12 @@ sint8 nm_read_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz)
 	{
 		if(u32Sz <= u16MaxTrxSz)
 		{
-			s8Ret += p_nm_read_block(u32Addr, &puBuf[off], (uint16)u32Sz);
+			s8Ret = (sint8)(s8Ret + p_nm_read_block(u32Addr, &puBuf[off], (uint16)u32Sz));
 			break;
 		}
 		else
 		{
-			s8Ret += p_nm_read_block(u32Addr, &puBuf[off], u16MaxTrxSz);
+			s8Ret = (sint8)(s8Ret + p_nm_read_block(u32Addr, &puBuf[off], u16MaxTrxSz));
 			if(M2M_SUCCESS != s8Ret) break;
 			u32Sz -= u16MaxTrxSz;
 			off += u16MaxTrxSz;
@@ -253,7 +254,7 @@ static sint8 p_nm_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
 */
 sint8 nm_write_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz)
 {
-	uint16 u16MaxTrxSz = egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ;
+	uint16 u16MaxTrxSz = (uint16)(egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ);
 	uint32 off = 0;
 	sint8 s8Ret = M2M_SUCCESS;
 
@@ -261,12 +262,12 @@ sint8 nm_write_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz)
 	{
 		if(u32Sz <= u16MaxTrxSz)
 		{
-			s8Ret += p_nm_write_block(u32Addr, &puBuf[off], (uint16)u32Sz);
+			s8Ret = (sint8)(s8Ret + p_nm_write_block(u32Addr, &puBuf[off], (uint16)u32Sz));
 			break;
 		}
 		else
 		{
-			s8Ret += p_nm_write_block(u32Addr, &puBuf[off], u16MaxTrxSz);
+			s8Ret = (sint8)(s8Ret + p_nm_write_block(u32Addr, &puBuf[off], u16MaxTrxSz));
 			if(M2M_SUCCESS != s8Ret) break;
 			u32Sz -= u16MaxTrxSz;
 			off += u16MaxTrxSz;

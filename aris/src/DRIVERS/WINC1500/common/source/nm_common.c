@@ -4,7 +4,7 @@
  *
  * \brief This module contains common APIs declarations.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -83,7 +83,7 @@ uint16 m2m_strlen(uint8 * pcStr)
 	return u16StrLen;
 }
 
-uint8 m2m_strncmp(uint8 *pcS1, uint8 *pcS2, uint16 u16Len)
+sint8 m2m_strncmp(uint8 *pcS1, uint8 *pcS2, uint16 u16Len)
 {
     for ( ; u16Len > 0; pcS1++, pcS2++, --u16Len)
 	if (*pcS1 != *pcS2)

@@ -2,9 +2,9 @@
  *
  * \file
  *
- * \brief WINC Driver Common API Declarations.
+ * \brief This module contains common APIs declarations.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -137,6 +137,16 @@ Invalid argument
 #define BYTE_3(word)   					((uint8)(((word) >> 0 	) & 0x000000FFUL))
 #endif
 
+
+typedef enum{
+	M2M_REQ_GRP_MAIN = 0, M2M_REQ_GRP_WIFI, M2M_REQ_GRP_IP, M2M_REQ_GRP_HIF, M2M_REQ_GRP_OTA
+}tenuM2mReqGrp;
+
+
+typedef enum{
+	M2M_REQ_CONFIG_PKT,
+	M2M_REQ_DATA_PKT = NBIT7
+}tenuM2mReqPkt;
 /**@}*/
 #ifdef __cplusplus
      extern "C" {
@@ -145,7 +155,7 @@ NMI_API void m2m_memcpy(uint8* pDst,uint8* pSrc,uint32 sz);
 NMI_API void m2m_memset(uint8* pBuf,uint8 val,uint32 sz);
 NMI_API uint16 m2m_strlen(uint8 * pcStr);
 NMI_API sint8 m2m_memcmp(uint8 *pu8Buff1,uint8 *pu8Buff2 ,uint32 u32Size);
-NMI_API uint8 m2m_strncmp(uint8 *pcS1, uint8 *pcS2, uint16 u16Len);
+NMI_API sint8 m2m_strncmp(uint8 *pcS1, uint8 *pcS2, uint16 u16Len);
 NMI_API uint8 * m2m_strstr(uint8 *pcIn, uint8 *pcStr);
 NMI_API uint8 m2m_checksum(uint8* buf, int sz);
 

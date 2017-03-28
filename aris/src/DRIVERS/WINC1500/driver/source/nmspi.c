@@ -4,7 +4,7 @@
  *
  * \brief This module contains NMC1000 SPI protocol bus APIs implementation.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -84,12 +84,17 @@
 #define N_RESET					-1
 #define N_RETRY					-2
 
+
 #define DATA_PKT_SZ_256 		256
 #define DATA_PKT_SZ_512			512
 #define DATA_PKT_SZ_1K			1024
 #define DATA_PKT_SZ_4K			(4 * 1024)
 #define DATA_PKT_SZ_8K			(8 * 1024)
+#ifdef SAMG55
+#define DATA_PKT_SZ				DATA_PKT_SZ_1K
+#else
 #define DATA_PKT_SZ				DATA_PKT_SZ_8K
+#endif
 
 static uint8 	gu8Crc_off	=   0;
 
@@ -170,6 +175,25 @@ static uint8 crc7(uint8 crc, const uint8 *buffer, uint32 len)
 	Spi protocol Function
 
 ********************************************/
+
+#define CMD_DMA_WRITE			0xc1
+#define CMD_DMA_READ			0xc2
+#define CMD_INTERNAL_WRITE		0xc3
+#define CMD_INTERNAL_READ		0xc4
+#define CMD_TERMINATE			0xc5
+#define CMD_REPEAT				0xc6
+#define CMD_DMA_EXT_WRITE		0xc7
+#define CMD_DMA_EXT_READ		0xc8
+#define CMD_SINGLE_WRITE		0xc9
+#define CMD_SINGLE_READ			0xca
+#define CMD_RESET				0xcf
+
+#define DATA_PKT_SZ_256 		256
+#define DATA_PKT_SZ_512			512
+#define DATA_PKT_SZ_1K			1024
+#define DATA_PKT_SZ_4K			(4 * 1024)
+#define DATA_PKT_SZ_8K			(8 * 1024)
+#define DATA_PKT_SZ				DATA_PKT_SZ_8K
 
 static sint8 spi_cmd(uint8 cmd, uint32 adr, uint32 u32data, uint32 sz,uint8 clockless)
 {
@@ -256,9 +280,9 @@ static sint8 spi_cmd(uint8 cmd, uint32 adr, uint32 u32data, uint32 sz,uint8 cloc
 
 	if (result) {
 		if (!gu8Crc_off)
-			bc[len-1] = (crc7(0x7f, (const uint8 *)&bc[0], len-1)) << 1;
+			bc[len-1] = (uint8)((crc7(0x7f, (const uint8 *)&bc[0], (uint8)(len-1))) << 1);
 		else
-			len-=1;
+			len = (uint8)(len - 1);
 
 		if (M2M_SUCCESS != nmi_spi_write(bc, len)) {
 			M2M_ERR("[nmi spi]: Failed cmd write, bus error...\n");
@@ -330,12 +354,12 @@ static sint8 spi_data_read(uint8 *b, uint16 sz,uint8 clockless)
 	ix = 0;
 	do {
 		if (sz <= DATA_PKT_SZ)
-			nbytes = sz;
+			nbytes = (sint16) sz;
 		else
 			nbytes = DATA_PKT_SZ;
 
 		/**
-			Data Respnose header
+			Data Response header
 		**/
 		retry = 10;
 		do {
@@ -360,7 +384,7 @@ static sint8 spi_data_read(uint8 *b, uint16 sz,uint8 clockless)
 		/**
 			Read bytes
 		**/
-		if (M2M_SUCCESS != nmi_spi_read(&b[ix], nbytes)) {
+		if (M2M_SUCCESS != nmi_spi_read(&b[ix], (uint16)nbytes)) {
 			M2M_ERR("[nmi spi]: Failed data block read, bus error...\n");
 			result = N_FAIL;
 			break;
@@ -378,8 +402,8 @@ static sint8 spi_data_read(uint8 *b, uint16 sz,uint8 clockless)
 				}
 			}
 		}
-		ix += nbytes;
-		sz -= nbytes;
+		ix = (sint16)(ix + nbytes);
+		sz = (uint16)(sz - nbytes);
 
 	} while (sz);
 
@@ -445,9 +469,8 @@ static sint8 spi_data_write(uint8 *b, uint16 sz)
 				break;
 			}
 		}
-
-		ix += nbytes;
-		sz -= nbytes;
+        ix = (sint16)(ix + nbytes);
+        sz = (uint16)(sz - nbytes);
 	} while (sz);
 
 
@@ -668,7 +691,7 @@ static void spi_init_pkt_sz(void)
 
 	/* Make sure SPI max. packet size fits the defined DATA_PKT_SZ.  */
 	val32 = nm_spi_read_reg(SPI_BASE+0x24);
-	val32 &= ~(0x7 << 4);
+	val32 &= (uint32)(~(0x7 << 4));
 	switch(DATA_PKT_SZ)
 	{
 	case 256:  val32 |= (0 << 4); break;
@@ -715,8 +738,8 @@ sint8 nm_spi_init(void)
 	}
 	if(gu8Crc_off == 0)
 	{
-		reg &= ~0xc;	/* disable crc checking */
-		reg &= ~0x70;
+		reg &= (uint32)(~0xc);	/* disable crc checking */
+		reg &= (uint32)(~0x70);
 		reg |= (0x5 << 4);
 		if (!spi_write_reg(NMI_SPI_PROTOCOL_CONFIG, reg)) {
 			M2M_ERR( "[nmi spi]: Failed internal write protocol reg...\n");

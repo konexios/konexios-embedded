@@ -2,9 +2,9 @@
  *
  * \file
  *
- * \brief WINC Application Interface Internal Types.
+ * \brief NMC1500 IoT Application Interface Internal Types.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -85,25 +85,15 @@ MACROS
 #define M2M_GET_FW_MINOR(ver_info_word) M2M_GET_MINOR(M2M_GET_FW_VER(ver_info_word))
 #define M2M_GET_FW_PATCH(ver_info_word) M2M_GET_PATCH(M2M_GET_FW_VER(ver_info_word))
 
-#define M2M_MAKE_VERSION(major, minor, patch) ( \
-	((uint16)((major)  & 0xff)  << M2M_MAJOR_SHIFT) | \
-	((uint16)((minor)  & 0x0f)  << M2M_MINOR_SHIFT) | \
-	((uint16)((patch)  & 0x0f)  << M2M_PATCH_SHIFT))
+#define M2M_MAKE_VERSION(major, minor, patch) ( (uint16)(\
+	(uint16)((uint16)((major)  & 0xff)  << M2M_MAJOR_SHIFT) | \
+	(uint16)((uint16)((minor)  & 0x0f)  << M2M_MINOR_SHIFT) | \
+	(uint16)((uint16)((patch)  & 0x0f)  << M2M_PATCH_SHIFT) ) )
 
 #define M2M_MAKE_VERSION_INFO(fw_major, fw_minor, fw_patch, drv_major, drv_minor, drv_patch) \
 	( \
 	( ((uint32)M2M_MAKE_VERSION((fw_major),  (fw_minor),  (fw_patch)))  << M2M_FW_VERSION_SHIFT) | \
 	( ((uint32)M2M_MAKE_VERSION((drv_major), (drv_minor), (drv_patch))) << M2M_DRV_VERSION_SHIFT))
-
-#define REL_19_4_1_VER			M2M_MAKE_VERSION_INFO(19,4,1,19,3,0)
-#define REL_19_4_0_VER			M2M_MAKE_VERSION_INFO(19,4,0,19,3,0)
-#define REL_19_3_1_VER			M2M_MAKE_VERSION_INFO(19,3,1,19,3,0)
-#define REL_19_3_0_VER			M2M_MAKE_VERSION_INFO(19,3,0,19,3,0)
-#define REL_19_2_2_VER			M2M_MAKE_VERSION_INFO(19,2,2,19,2,0)
-#define REL_19_2_1_VER			M2M_MAKE_VERSION_INFO(19,2,1,19,2,0)
-#define REL_19_2_0_VER			M2M_MAKE_VERSION_INFO(19,2,0,19,2,0)
-#define REL_19_1_0_VER			M2M_MAKE_VERSION_INFO(19,1,0,18,2,0)
-#define REL_19_0_0_VER			M2M_MAKE_VERSION_INFO(19,0,0,18,1,1)
 
 /*======*======*======*======*
 		FIRMWARE VERSION NO INFO
@@ -114,11 +104,11 @@ MACROS
 */
 
 
-#define M2M_FIRMWARE_VERSION_MINOR_NO					(4)
+#define M2M_FIRMWARE_VERSION_MINOR_NO					(3)
 /*!< Firmware Minor release version number.
 */
 
-#define M2M_FIRMWARE_VERSION_PATCH_NO					(4)
+#define M2M_FIRMWARE_VERSION_PATCH_NO					(0)
 /*!< Firmware patch release version number.
 */
 
@@ -201,10 +191,7 @@ MACROS
 #define M2M_CUST_IE_LEN_MAX								252
 /*!< The maximum size of IE (Information Element).
 */
-/*********************
- *
- * WIFI GROUP requests
- */
+
 
 #define M2M_CONFIG_CMD_BASE									1
 /*!< The base value of all the host configuration commands opcodes.
@@ -218,28 +205,13 @@ MACROS
 #define M2M_P2P_CMD_BASE									90
 /*!< The base value of all the P2P mode host commands opcodes.
 */
-#define M2M_SERVER_CMD_BASE									100
-/*!< The base value of all the power save mode host commands codes.
-*/
-/**********************
- * OTA GROUP requests
- */
 #define M2M_OTA_CMD_BASE									100
 /*!< The base value of all the OTA mode host commands opcodes.
- * The OTA Have special group so can extended from 1-M2M_MAX_GRP_NUM_REQ
 */
-/***********************
- *
- * CRYPTO group requests
- */
-#define M2M_CRYPTO_CMD_BASE									1
-/*!< The base value of all the crypto mode host commands opcodes.
- * The crypto Have special group so can extended from 1-M2M_MAX_GRP_NUM_REQ
+#define M2M_SERVER_CMD_BASE									120
+/*!< The base value of all the power save mode host commands codes.
 */
 
-#define M2M_MAX_GRP_NUM_REQ									(127)
-/*!< max number of request in one group equal to 127 as the last bit reserved for config or data pkt
-*/
 
 #define WEP_40_KEY_STRING_SIZE 							((uint8)10)
 /*!< Indicate the wep key size in bytes for 40 bit string passphrase.
@@ -251,47 +223,72 @@ MACROS
 #define WEP_KEY_MAX_INDEX								((uint8)4)
 /*!< Indicate the max key index value for WEP authentication
 */
-#define M2M_SHA256_CONTEXT_BUFF_LEN							(128)
-/*!< sha256 context size
-*/
 #define M2M_SCAN_DEFAULT_NUM_SLOTS							(2)
 /*!< The default. number of scan slots performed by the WINC board.
 */
-#define M2M_SCAN_DEFAULT_SLOT_TIME							(30)
+#define M2M_SCAN_DEFAULT_SLOT_TIME							(20)
 /*!< The default. duration in miliseconds of a scan slots performed by the WINC board.
 */
 #define M2M_SCAN_DEFAULT_NUM_PROBE							(2)
 /*!< The default. number of scan slots performed by the WINC board.
 */
+#define M2M_SCAN_FAIL 									((uint8)1)
+/*!< Indicate that the WINC board has failed to perform the scan operation.
+*/
+#define M2M_JOIN_FAIL	 								((uint8)2)
+/*!< Indicate that the WINC board has failed to join the BSS .
+*/
+#define M2M_AUTH_FAIL 									((uint8)3)
+/*!< Indicate that the WINC board has failed to authenticate with the AP.
+*/
+#define M2M_ASSOC_FAIL 									((uint8)4)
+/*!< Indicate that the WINC board has failed to associate with the AP.
+*/
+
+#define M2M_SCAN_ERR_WIFI   	 						((sint8)-2)
+/*!< currently not used.
+*/
+#define M2M_SCAN_ERR_IP      							((sint8)-3)
+/*!< currently not used.
+*/
+#define M2M_SCAN_ERR_AP      							((sint8)-4)	
+/*!< currently not used.
+*/
+#define M2M_SCAN_ERR_P2P      							((sint8)-5)
+/*!< currently not used.
+*/
+#define M2M_SCAN_ERR_WPS      							((sint8)-6)	
+/*!< currently not used.
+*/
 
 
-/*======*======*======*======*
-	CONNECTION ERROR DEFINITIONS
- *======*======*======*======*/
-typedef enum { 		
-	M2M_DEFAULT_CONN_INPROGRESS = ((sint8)-23),  		
-	/*!<
-	A failure that indicates that a default connection or forced connection is in progress
-	*/
-	M2M_DEFAULT_CONN_FAIL,				
-	/*!<
-	A failure response that indicates that the winc failed to connect to the cached network
-	*/
-	 M2M_DEFAULT_CONN_SCAN_MISMATCH,	 													
-	/*!<
-	A failure response that indicates that no one of the cached networks 
-	was found in the scan results, as a result to the function call m2m_default_connect.
-	*/
-	M2M_DEFAULT_CONN_EMPTY_LIST
-	/*!<
+#define M2M_DEFAULT_CONN_EMPTY_LIST						((sint8)-20)
+/*!<
 	A failure response that indicates an empty network list as 
 	a result to the function call m2m_default_connect.
-	*/
-
-}tenuM2mDefaultConnErrcode;
+*/
 
 
+#define M2M_DEFAULT_CONN_SCAN_MISMATCH					((sint8)-21)
+/*!<
+	A failure response that indicates that no one of the cached networks 
+	was found in the scan results, as a result to the function call m2m_default_connect.
+*/
+#define M2M_DEFAULT_CONN_FAIL							((sint8)-22)
 
+/*!<
+	A failure response that indicates that the winc failed to connect to the cached network
+*/
+/*======*======*======*======*
+	MONTIORING MODE DEFINITIONS
+ *======*======*======*======*/
+
+#define M2M_WIFI_FRAME_TYPE_ANY							0xFF
+/*!< Set monitor mode to receive any of the frames types
+*/
+#define M2M_WIFI_FRAME_SUB_TYPE_ANY						0xFF
+/*!< Set monitor mode to receive frames with any sub type
+*/
 
 /*======*======*======*======*
 	OTA DEFINITIONS
@@ -308,12 +305,6 @@ typedef enum {
 #define OTA_MAGIC_VALUE						(0x1ABCDEF9)
 /*!< 
 	Magic value set at the beginning of the OTA image header
-*/
-
-#define OTA_FORMAT_VER_0					(0)	/*Till 19.2.2 format*/
-#define OTA_FORMAT_VER_1					(1) /*starting from 19.3.0 CRC is used and sequence number is used*/
-/*!<
-	Control structure format version
 */
 #define OTA_SHA256_DIGEST_SIZE 				(32)
 /*!< 
@@ -359,35 +350,9 @@ typedef enum {
 /**@}*/
 
 /**
-* @addtogroup WlanEnums Enumerations and Typedefs
-* @ingroup m2m_wifi
+* @addtogroup WlanEnums
 */
  /**@{*/ 
-
-/*!
-@enum	\
-	tenuM2mConnChangedErrcode
-	
-@brief
-	
-*/
-typedef enum {
-	 M2M_ERR_SCAN_FAIL = ((uint8)1),
-	/*!< Indicate that the WINC board has failed to perform the scan operation.
-	*/
-	 M2M_ERR_JOIN_FAIL,	 								
-	/*!< Indicate that the WINC board has failed to join the BSS .
-	*/
-	 M2M_ERR_AUTH_FAIL, 									
-	/*!< Indicate that the WINC board has failed to authenticate with the AP.
-	*/
-	 M2M_ERR_ASSOC_FAIL,
-	/*!< Indicate that the WINC board has failed to associate with the AP.
-	*/
-	 M2M_ERR_CONN_INPROGRESS,
-	 /*!< Indicate that the WINC board has another connection request in progress.
-	*/
-}tenuM2mConnChangedErrcode;
 /*!
 @enum	\
 	tenuM2mWepKeyIndex
@@ -415,11 +380,11 @@ typedef enum {
 	PWR_AUTO = ((uint8) 1),
 	/*!< FW will decide the best power mode to use internally. */
 	PWR_LOW1,
-	/*low power mode #1*/
+	/*low power mode #1. RX current 60mA, sensitivity Ok.*/
 	PWR_LOW2,
-	/*low power mode #2*/
+	/*low power mode #2, RX current 55mA, sensitivity is less by 3dBm*/
 	PWR_HIGH,
-	/* high power mode*/
+	/* high power mode: RX current 100mA.*/
 }tenuM2mPwrMode;
 
 /*!
@@ -502,33 +467,6 @@ typedef struct {
 	*/
 }tstrM2mBatteryVoltage;
 
-/*!
-@enum	\
-	tenuM2mReqGroup
-
-@brief
-*/
-typedef enum{
-	M2M_REQ_GROUP_MAIN = 0,
-	M2M_REQ_GROUP_WIFI,
-	M2M_REQ_GROUP_IP,
-	M2M_REQ_GROUP_HIF,
-	M2M_REQ_GROUP_OTA,
-	M2M_REQ_GROUP_SSL,
-	M2M_REQ_GROUP_CRYPTO,
-	M2M_REQ_GROUP_SIGMA,
-}tenuM2mReqGroup;
-
-/*!
-@enum	\
-	tenuM2mReqpkt
-
-@brief
-*/
-typedef enum{
-	M2M_REQ_CONFIG_PKT,
-	M2M_REQ_DATA_PKT = 0x80 /*BIT7*/
-}tenuM2mReqpkt;
 /*!
 @enum	\
 	tenuM2mConfigCmd
@@ -644,12 +582,6 @@ typedef enum {
 	*/	
 	M2M_WIFI_REQ_SET_MAC_MCAST,
 	/*!< Set the WINC multicast filters.
-	*/
-	M2M_WIFI_REQ_GET_PRNG,
-	/*!< Request PRNG.
-	*/
-	M2M_WIFI_RESP_GET_PRNG,
-	/*!< Response for PRNG.
 	*/
 	M2M_WIFI_MAX_CONFIG_ALL,
 }tenuM2mConfigCmd;
@@ -768,24 +700,6 @@ typedef enum {
 }tenuM2mP2pCmd;
 
 
-
-/*!
-@enum	\
-	tenuM2mServerCmd
-
-@brief
-	This enum contains all the WINC commands while in PS mode.
-	These command are currently not supported.
-*/
-typedef enum {
-	M2M_WIFI_REQ_CLIENT_CTRL = M2M_SERVER_CMD_BASE,
-	M2M_WIFI_RESP_CLIENT_INFO,
-	M2M_WIFI_REQ_SERVER_INIT,
-	M2M_WIFI_MAX_SERVER_ALL
-}tenuM2mServerCmd;
-
-
-
 /*!
 @enum	\
 	tenuM2mOtaCmd
@@ -806,26 +720,24 @@ typedef enum {
 	M2M_OTA_MAX_ALL,
 }tenuM2mOtaCmd;
 
+
 /*!
 @enum	\
-	tenuM2mCryptoCmd
+	tenuM2mServerCmd
 
 @brief
-
+	This enum contains all the WINC commands while in PS mode.
+	These command are currently not supported.
 */
 typedef enum {
-	M2M_CRYPTO_REQ_SHA256_INIT = M2M_CRYPTO_CMD_BASE,
-	M2M_CRYPTO_RESP_SHA256_INIT,
-	M2M_CRYPTO_REQ_SHA256_UPDATE,
-	M2M_CRYPTO_RESP_SHA256_UPDATE,
-	M2M_CRYPTO_REQ_SHA256_FINSIH,
-	M2M_CRYPTO_RESP_SHA256_FINSIH,
-	M2M_CRYPTO_REQ_RSA_SIGN_GEN,
-	M2M_CRYPTO_RESP_RSA_SIGN_GEN,
-	M2M_CRYPTO_REQ_RSA_SIGN_VERIFY,
-	M2M_CRYPTO_RESP_RSA_SIGN_VERIFY,
-	M2M_CRYPTO_MAX_ALL,
-}tenuM2mCryptoCmd;
+	M2M_WIFI_REQ_CLIENT_CTRL = M2M_SERVER_CMD_BASE,
+	M2M_WIFI_RESP_CLIENT_INFO,
+	M2M_WIFI_REQ_SERVER_INIT,
+	M2M_WIFI_MAX_SERVER_ALL
+}tenuM2mServerCmd;
+
+
+
 
 /*!
 @enum	\
@@ -840,28 +752,6 @@ typedef enum {
 	M2M_IP_REQ_ENABLE_DHCP,
 	M2M_IP_REQ_DISABLE_DHCP
 } tenuM2mIpCmd;
-
-/*!
-@enum	\
-	tenuM2mSigmaCmd
-	
-@brief
-
-*/
-typedef enum {
-	/* Request IDs corresponding to the IP GROUP. */
-	M2M_SIGMA_ENABLE = ((uint8) 3),
-	M2M_SIGMA_TA_START,
-	M2M_SIGMA_TA_STATS,
-	M2M_SIGMA_TA_RECEIVE_STOP,
-	M2M_SIGMA_ICMP_ARP,
-	M2M_SIGMA_ICMP_RX,
-	M2M_SIGMA_ICMP_TX,
-	M2M_SIGMA_UDP_TX,
-	M2M_SIGMA_UDP_TX_DEFER,
-	M2M_SIGMA_SECURITY_POLICY,
-	M2M_SIGMA_SET_SYSTIME
-} tenuM2mSigmaCmd;
 
 
 /*!
@@ -1028,16 +918,9 @@ typedef enum {
 	M2M_WIFI_MODE_NORMAL = ((uint8) 1),
 	/*!< Normal Mode means to run customer firmware version.
 	 */
-	M2M_WIFI_MODE_ATE_HIGH,
-	/*!< Config Mode in HIGH POWER means to run production test firmware version which is known as ATE (Burst) firmware.
+	M2M_WIFI_MODE_CONFIG,
+	/*!< Config Mode means to run production test firmware version which is known as ATE (Burst) firmware.
 	 */
-	M2M_WIFI_MODE_ATE_LOW,
-	/*!< Config Mode in LOW POWER means to run production test firmware version which is known as ATE (Burst) firmware.
-	 */
-	M2M_WIFI_MODE_ETHERNET,
-	/*!< etherent Mode
-	 */
-	M2M_WIFI_MODE_MAX,
 }tenuM2mWifiMode;
 
 /*!
@@ -1198,6 +1081,9 @@ typedef struct {
 
 @sa
 	tenuM2mSecType
+
+@todo
+	Use different error codes to differentiate error types.
 */
 typedef struct{
 	uint8	u8AuthType;
@@ -1303,21 +1189,6 @@ typedef struct {
 
 }tstrM2MScan;
 
-/*!
-@struct	\
-	tstrCyptoResp
-
-@brief
-	crypto response
-*/
-typedef struct {
-	sint8 s8Resp;
-	/***/
-	uint8 __PAD24__[3];
-	/*
-	*/
-}tstrCyptoResp;
-
 
 /*!
 @struct	\
@@ -1398,14 +1269,14 @@ typedef struct {
 	Wi-Fi Connection State
 
 @sa
-	M2M_WIFI_DISCONNECTED, M2M_WIFI_CONNECTED, M2M_WIFI_REQ_CON_STATE_CHANGED,tenuM2mConnChangedErrcode
+	M2M_WIFI_DISCONNECTED, M2M_WIFI_CONNECTED, M2M_WIFI_REQ_CON_STATE_CHANGED
 */
 typedef struct {
 	uint8	u8CurrState;
 	/*!< Current Wi-Fi connection state
 	*/
 	uint8  u8ErrCode;
-	/*!< Error type review tenuM2mConnChangedErrcode
+	/*!< Error type
 	*/
 	uint8	__PAD16__[2];
 	/*!< Padding bytes for forcing 4-byte alignment
@@ -1865,7 +1736,6 @@ typedef struct{
 	*/
 
 }tstrOtaInitHdr;
-
 /*!
 @struct	\
  	tstrOtaControlSec
@@ -1882,8 +1752,6 @@ typedef struct {
 */
 	uint32 u32OtaFormatVersion;
 /*!<
-		NA   NA   NA   Flash version   cs struct version
-		00   00   00   00              00 
 	Control structure format version, the value will be incremented in case of structure changed or updated
 */
 	uint32 u32OtaSequenceNumber;
@@ -1966,12 +1834,6 @@ typedef enum {
 	/*!< An OTA operation is already enabled. */
 	OTA_STATUS_UPDATE_INPROGRESS    = 6,
 	/*!< An OTA operation update is in progress */
-	OTA_STATUS_IMAGE_VERIF_FAILED = 7,
-	/*!<  OTA Verfication failed */
-	OTA_STATUS_CONNECTION_ERROR = 8,
-	/*!< OTA connection error */
-	OTA_STATUS_SERVER_ERROR = 9,
-	/*!< OTA server Error (file not found or else ...) */
 } tenuOtaUpdateStatus;
 /*!
 @enum	\
@@ -2093,28 +1955,6 @@ typedef struct{
 	/*!< Padding bytes for forcing 4-byte alignment
 	*/
 }tstrM2MMulticastMac;
-
-/*!
-@struct	\
- 	tstrPrng
-
-@brief
- 	M2M Request PRNG
- */
- typedef struct {
-	 /*!<
-		return buffer address
-	*/
-	uint8 *pu8RngBuff;
-	 /*!<
-		PRNG size requested
-	*/
-	uint16 	u16PrngSize;
-	/*!<
-		PRNG pads
-	*/
-	uint8 __PAD16__[2];
-}tstrPrng;
 
 
  /**@}*/

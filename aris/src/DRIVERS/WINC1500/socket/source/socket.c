@@ -47,7 +47,6 @@ INCLUDES
 #include "socket/include/socket.h"
 #include "driver/source/m2m_hif.h"
 #include "socket/source/socket_internal.h"
-#include "driver/include/m2m_types.h"
 
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 MACROS
@@ -67,7 +66,7 @@ MACROS
 #define SSL_TX_PACKET_OFFSET				(TCP_TX_PACKET_OFFSET + TLS_RECORD_HEADER_LENGTH)
 
 #define SOCKET_REQUEST(reqID, reqArgs, reqSize, reqPayload, reqPayloadSize, reqPayloadOffset)		\
-	hif_send(M2M_REQ_GROUP_IP, reqID, reqArgs, reqSize, reqPayload, reqPayloadSize, reqPayloadOffset)
+	hif_send(M2M_REQ_GRP_IP, reqID, reqArgs, reqSize, reqPayload, reqPayloadSize, reqPayloadOffset)
 
 
 #define SSL_FLAGS_ACTIVE					0x01
@@ -402,7 +401,7 @@ void socketInit(void)
 	if(gbSocketInit==0)
 	{
 		m2m_memset((uint8*)gastrSockets, 0, MAX_SOCKET * sizeof(tstrSocket));
-		hif_register_cb(M2M_REQ_GROUP_IP,m2m_ip_cb);
+		hif_register_cb(M2M_REQ_GRP_IP,m2m_ip_cb);
 		gbSocketInit=1;
 		gu16SessionID = 0;
 	}
@@ -429,7 +428,7 @@ Date
 void socketDeinit(void)
 {	
 	m2m_memset((uint8*)gastrSockets, 0, MAX_SOCKET * sizeof(tstrSocket));
-	hif_register_cb(M2M_REQ_GROUP_IP, NULL);
+	hif_register_cb(M2M_REQ_GRP_IP, NULL);
 	gpfAppSocketCb = NULL;
 	gpfAppResolveCb = NULL;
 	gbSocketInit = 0;

@@ -4,7 +4,7 @@
  *
  * \brief This module contains NMC1500 ASIC specific internal APIs.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -43,16 +43,15 @@
 #include "driver/source/nmbus.h"
 #include "bsp/include/nm_bsp.h"
 #include "driver/source/nmasic.h"
-#include "driver/include/m2m_types.h"
 
-#define NMI_GLB_RESET_0				(NMI_PERIPH_REG_BASE + 0x400)
-#define NMI_INTR_REG_BASE			(NMI_PERIPH_REG_BASE + 0xa00)
-#define NMI_PIN_MUX_0				(NMI_PERIPH_REG_BASE + 0x408)
-#define NMI_INTR_ENABLE				(NMI_INTR_REG_BASE)
-#define GET_UINT32(X,Y)				(X[0+Y] + ((uint32)X[1+Y]<<8) + ((uint32)X[2+Y]<<16) +((uint32)X[3+Y]<<24))
+#define NMI_GLB_RESET_0 (NMI_PERIPH_REG_BASE + 0x400)
+#define NMI_INTR_REG_BASE (NMI_PERIPH_REG_BASE+0xa00)
+#define NMI_PIN_MUX_0 (NMI_PERIPH_REG_BASE + 0x408)
+#define NMI_INTR_ENABLE (NMI_INTR_REG_BASE)
+#define GET_UINT32(X,Y) (X[0+Y] + ((uint32)X[1+Y]<<8) + ((uint32)X[2+Y]<<16) +((uint32)X[3+Y]<<24))
 
-#define TIMEOUT						(0xfffffffful)
-#define M2M_DISABLE_PS				(0xd0ul)
+#define TIMEOUT				(2000)
+#define M2M_DISABLE_PS        0xD0UL
 
 static uint32 clk_status_reg_adr = 0xf; /* Assume initially it is B0 chip */
 
@@ -136,20 +135,9 @@ sint8 nm_clkless_wake(void)
 			/* wait 1ms, spi data read */
 			nm_bsp_sleep(1);
 			ret = nm_read_reg_with_ret(clk_status_reg_adr, &clk_status_reg);
-			
-			/* Aelmeleh 24-08-2015*/
-			/* Check for C3000 rev. D0 value */
-			if( (ret != M2M_SUCCESS) || ((ret == M2M_SUCCESS) && (clk_status_reg == 0)) ) {
-				 
-				clk_status_reg_adr = 0x13;
-				/* wait 1ms, spi data read */
-				nm_bsp_sleep(1);
-				ret = nm_read_reg_with_ret(clk_status_reg_adr, &clk_status_reg);
-			
-				if(ret != M2M_SUCCESS) {
-					M2M_ERR("Bus error (2). Wake up failed\n");
-					goto _WAKE_EXIT;
-				}
+			if(ret != M2M_SUCCESS) {
+				M2M_ERR("Bus error (2). Wake up failed\n");
+				goto _WAKE_EXIT;
 			}
 		}
 
@@ -187,7 +175,7 @@ void chip_idle(void)
 	nm_read_reg_with_ret(0x1, &reg);
 	if(reg&0x2)
 	{
-		reg &=~(1 << 1);
+		reg &= (uint32)(~(1 << 1));
 		nm_write_reg(0x1, reg);
 	}
 }
@@ -258,14 +246,14 @@ sint8 cpu_start(void) {
 	reg |= (1 << 0);
 	ret = nm_write_reg(0x1118, reg);
 	ret = nm_write_reg(0x150014, 0x1);
-	ret += nm_read_reg_with_ret(NMI_GLB_RESET_0, &reg);
+	ret = (sint8)(ret + nm_read_reg_with_ret(NMI_GLB_RESET_0, &reg));
 	if ((reg & (1ul << 10)) == (1ul << 10)) {
 		reg &= ~(1ul << 10);
-		ret += nm_write_reg(NMI_GLB_RESET_0, reg);
+		ret = (sint8)(ret + nm_write_reg(NMI_GLB_RESET_0, reg));
 	}
 
 	reg |= (1ul << 10);
-	ret += nm_write_reg(NMI_GLB_RESET_0, reg);
+	ret = (sint8)(ret + nm_write_reg(NMI_GLB_RESET_0, reg));
 	nm_bsp_sleep(1); /* TODO: Why bus error if this delay is not here. */
 	return ret;
 }
@@ -275,6 +263,7 @@ uint32 nmi_get_chipid(void)
 	static uint32 chipid = 0;
 
 	if (chipid == 0) {
+		//uint32 revid;
 		uint32 rfrevid;
 
 		if((nm_read_reg_with_ret(0x1000, &chipid)) != M2M_SUCCESS) {
@@ -301,13 +290,7 @@ uint32 nmi_get_chipid(void)
 			} else /* if(rfrevid == 5) */ { /* 1002B2 */
 				chipid = 0x1002b2;
 			}
-		} else if(chipid == 0x1000F0) { 
-			if((nm_read_reg_with_ret(0x3B0000, &chipid)) != M2M_SUCCESS) {
-			chipid = 0;
-			return 0;
-			}
 		} else {
-			
 		}
 //#define PROBE_FLASH
 #ifdef PROBE_FLASH
@@ -326,7 +309,7 @@ uint32 nmi_get_chipid(void)
 		}
 #else
 		/*M2M is by default have SPI flash*/
-		chipid &= ~(0x0f0000);
+		chipid &= (uint32)(~(0x0f0000));
 		chipid |= 0x050000;
 #endif /* PROBE_FLASH */
 	}
@@ -378,21 +361,14 @@ void nmi_set_sys_clk_src_to_xo(void)
 	/* Do PLL update */
 	nmi_update_pll();
 }
-static uint8 check_3000_id(void)
-{
-	return ((nmi_get_chipid() & (0xf00000)) == 0x300000);
-}
-
 sint8 chip_wake(void)
 {
 	sint8 ret = M2M_SUCCESS;
+
 	ret  = nm_clkless_wake();
 	if(ret != M2M_SUCCESS) return ret;
-	if(!check_3000_id())
-	{
-		enable_rf_blocks();
-	}
-	
+
+	enable_rf_blocks();
 
 	return ret;
 }
@@ -405,27 +381,29 @@ sint8 chip_reset_and_cpu_halt(void)
 	if(ret != M2M_SUCCESS) {
 		return ret;
 	}
-	if(!check_3000_id())
-	{	
-		chip_reset();
-		ret = nm_read_reg_with_ret(0x1118, &reg);
-		if (M2M_SUCCESS != ret) {
-			ret = M2M_ERR_BUS_FAIL;
-			M2M_ERR("[nmi start]: fail read reg 0x1118 ...\n");
-		}
-		reg |= (1 << 0);
-		ret = nm_write_reg(0x1118, reg);
-		ret += nm_read_reg_with_ret(NMI_GLB_RESET_0, &reg);
-		if ((reg & (1ul << 10)) == (1ul << 10)) {
-			reg &= ~(1ul << 10);
-			ret += nm_write_reg(NMI_GLB_RESET_0, reg);
-			ret += nm_read_reg_with_ret(NMI_GLB_RESET_0, &reg);
-		}
-		nm_write_reg(BOOTROM_REG,0);
-		nm_write_reg(NMI_STATE_REG,0);
-		nm_write_reg(NMI_REV_REG,0);
-		nm_write_reg(NMI_PIN_MUX_0, 0x11111000);
+	chip_reset();
+	ret = nm_read_reg_with_ret(0x1118, &reg);
+	if (M2M_SUCCESS != ret) {
+		ret = M2M_ERR_BUS_FAIL;
+		M2M_ERR("[nmi start]: fail read reg 0x1118 ...\n");
 	}
+	reg |= (1 << 0);
+	ret = nm_write_reg(0x1118, reg);
+	ret = (sint8)(ret + nm_read_reg_with_ret(NMI_GLB_RESET_0, &reg));
+	if ((reg & (1ul << 10)) == (1ul << 10)) {
+		reg &= ~(1ul << 10);
+		ret = (sint8)(ret + nm_write_reg(NMI_GLB_RESET_0, reg));
+		ret = (sint8)(ret + nm_read_reg_with_ret(NMI_GLB_RESET_0, &reg));
+	}
+#if 0
+	reg |= (1ul << 10);
+	ret += nm_write_reg(NMI_GLB_RESET_0, reg);
+	ret += nm_read_reg_with_ret(NMI_GLB_RESET_0, &reg);
+#endif
+	nm_write_reg(BOOTROM_REG,0);
+	nm_write_reg(NMI_STATE_REG,0);
+	nm_write_reg(NMI_REV_REG,0);
+	nm_write_reg(NMI_PIN_MUX_0, 0x11111000);
 	return ret;
 }
 sint8 chip_reset(void)
@@ -434,7 +412,7 @@ sint8 chip_reset(void)
 #ifndef CONF_WINC_USE_UART
 	nmi_set_sys_clk_src_to_xo();
 #endif
-	ret += nm_write_reg(NMI_GLB_RESET_0, 0);
+	ret = (sint8)(ret + nm_write_reg(NMI_GLB_RESET_0, 0));
 	nm_bsp_sleep(50);
 #ifndef CONF_WINC_USE_UART
 	restore_pmu_settings_after_global_reset();
@@ -446,7 +424,6 @@ sint8 wait_for_bootrom(uint8 arg)
 {
 	sint8 ret = M2M_SUCCESS;
 	uint32 reg = 0, cnt = 0;
-	uint32 u32GpReg1 = 0;
 
 	reg = 0;
 	while(1) {
@@ -476,26 +453,20 @@ sint8 wait_for_bootrom(uint8 arg)
 			}
 		}
 	}
-	
-	if(M2M_WIFI_MODE_ATE_HIGH == arg) {
+
+	if(2 == arg) {
 		nm_write_reg(NMI_REV_REG, M2M_ATE_FW_START_VALUE);
-		nm_write_reg(NMI_STATE_REG, NBIT20);
-	}else if(M2M_WIFI_MODE_ATE_LOW == arg) {
-		nm_write_reg(NMI_REV_REG, M2M_ATE_FW_START_VALUE);
-		nm_write_reg(NMI_STATE_REG, 0);
-	}else if(M2M_WIFI_MODE_ETHERNET == arg){
-		u32GpReg1 = rHAVE_ETHERNET_MODE_BIT;
 	} else {
 		/*bypass this step*/
 	}
 
 	if(REV(nmi_get_chipid()) == REV_3A0)
 	{
-		chip_apply_conf(u32GpReg1 | rHAVE_USE_PMU_BIT);
+		chip_apply_conf(rHAVE_USE_PMU_BIT);
 	}
 	else
 	{
-		chip_apply_conf(u32GpReg1);
+		chip_apply_conf(0);
 	}
 	
 	nm_write_reg(BOOTROM_REG,M2M_START_FIRMWARE);
@@ -512,25 +483,22 @@ sint8 wait_for_firmware_start(uint8 arg)
 {
 	sint8 ret = M2M_SUCCESS;
 	uint32 reg = 0, cnt = 0;
-	uint32 u32Timeout = TIMEOUT;
 	volatile uint32 regAddress = NMI_STATE_REG;
 	volatile uint32 checkValue = M2M_FINISH_INIT_STATE;
-	
-	if((M2M_WIFI_MODE_ATE_HIGH == arg)||(M2M_WIFI_MODE_ATE_LOW == arg)) {
+
+	if(2 == arg) {
 		regAddress = NMI_REV_REG;
 		checkValue = M2M_ATE_FW_IS_UP_VALUE;
 	} else {
 		/*bypass this step*/
 	}
-	
-	
+
 	while (checkValue != reg)
 	{
-	
 		nm_bsp_sleep(2); /* TODO: Why bus error if this delay is not here. */
 		M2M_DBG("%x %x %x\n",(unsigned int)nm_read_reg(0x108c),(unsigned int)nm_read_reg(0x108c),(unsigned int)nm_read_reg(0x14A0));
 		reg = nm_read_reg(regAddress);
-		if(++cnt >= u32Timeout)
+		if(++cnt > TIMEOUT)
 		{
 			M2M_DBG("Time out for wait firmware Run\n");
 			ret = M2M_ERR_INIT;
@@ -558,7 +526,7 @@ sint8 chip_deinit(void)
 	if (ret != M2M_SUCCESS) {
 		M2M_ERR("failed to de-initialize\n");
 	}
-	reg &= ~(1 << 10);
+	reg &= (uint32)(~(1 << 10));
 	ret = nm_write_reg(NMI_GLB_RESET_0, reg);
 
 	if (ret != M2M_SUCCESS) {
@@ -575,7 +543,7 @@ sint8 chip_deinit(void)
 		/*Workaround to ensure that the chip is actually reset*/
 		if ((reg & (1 << 10))) {
 			M2M_DBG("Bit 10 not reset retry %d\n", timeout);
-			reg &= ~(1 << 10);
+			reg &= (uint32)(~(1 << 10));
 			ret = nm_write_reg(NMI_GLB_RESET_0, reg);
 			timeout--;
 		} else {
@@ -668,14 +636,9 @@ sint8 nmi_get_otp_mac_address(uint8 *pu8MacAddr,  uint8 * pu8IsValid)
 	sint8 ret;
 	uint32	u32RegValue;
 	uint8	mac[6];
-	tstrGpRegs strgp = {0};
 
-	ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &u32RegValue);
+	ret = nm_read_reg_with_ret(rNMI_GP_REG_0, &u32RegValue);
 	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
-
-	ret = nm_read_block(u32RegValue|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
-	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
-	u32RegValue = strgp.u32Mac_efuse_mib;
 
 	if(!EFUSED_MAC(u32RegValue)) {
 		M2M_DBG("Default MAC\n");
@@ -685,7 +648,7 @@ sint8 nmi_get_otp_mac_address(uint8 *pu8MacAddr,  uint8 * pu8IsValid)
 
 	M2M_DBG("OTP MAC\n");
 	u32RegValue >>=16;
-	ret = nm_read_block(u32RegValue|0x30000, mac, 6);
+	nm_read_block(u32RegValue|0x30000, mac, 6);
 	m2m_memcpy(pu8MacAddr,mac,6);
 	if(pu8IsValid) *pu8IsValid = 1;
 	return ret;
@@ -700,17 +663,12 @@ sint8 nmi_get_mac_address(uint8 *pu8MacAddr)
 	sint8 ret;
 	uint32	u32RegValue;
 	uint8	mac[6];
-	tstrGpRegs strgp = {0};
 
-	ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &u32RegValue);
+	ret = nm_read_reg_with_ret(rNMI_GP_REG_0, &u32RegValue);
 	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
-
-	ret = nm_read_block(u32RegValue|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
-	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
-	u32RegValue = strgp.u32Mac_efuse_mib;
 
 	u32RegValue &=0x0000ffff;
-	ret = nm_read_block(u32RegValue|0x30000, mac, 6);
+	nm_read_block(u32RegValue|0x30000, mac, 6);
 	m2m_memcpy(pu8MacAddr, mac, 6);
 
 	return ret;

@@ -4,7 +4,7 @@
  *
  * \brief NMC1500 Peripherials Application Interface.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -54,6 +54,8 @@ MACROS
 #define GPIO_OP_DIR     0
 #define GPIO_OP_SET     1
 #define GPIO_OP_GET     2
+
+#define M2M_UNUSED_PARAM(a)     (a=a)
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 DATA TYPES
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
@@ -67,10 +69,6 @@ static sint8 get_gpio_idx(uint8 u8GpioNum)
 	if(u8GpioNum == M2M_PERIPH_GPIO15) { return 15;
 	} else if(u8GpioNum == M2M_PERIPH_GPIO16) { return 16;
 	} else if(u8GpioNum == M2M_PERIPH_GPIO18) { return 18;
-	} else if(u8GpioNum == M2M_PERIPH_GPIO3) { return 3;
-	} else if(u8GpioNum == M2M_PERIPH_GPIO4) { return 4;
-	} else if(u8GpioNum == M2M_PERIPH_GPIO5) { return 5;
-	} else if(u8GpioNum == M2M_PERIPH_GPIO6) { return 6;
 	} else {
 		return -2;
 	}
