@@ -73,48 +73,31 @@ void wifi_thread_entry(void) {
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
 
 
-    TRACE("wifi init\r\n");
+    TRACE("wifi thread\r\n");
 
     feed_wdt();
     winc1500_init();
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
 
     if ( ap_mode_lvl == IOPORT_LEVEL_LOW ) {
-        if ( ota_mode_lvl != IOPORT_LEVEL_LOW ) {
 force_ap:
             DBG("init AP mode %d", count_wdt);
             stop_wdt();
             net_ap_init();
             server_run();
-        } else {
-            DBG("init OTA mode");
-            net_ota_init();
+
             ioport_level_t lvl1;
-            int i=0;
+            int i = 0;
             while(1) {
                 feed_wdt();
-                if ( (i++ % 25) == 0 ) {
+                server_run();
+                if ( (i++ % 50) == 0 ) {
                     g_ioport.p_api->pinRead(led1, &lvl1);
-                    if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
+                    if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1, IOPORT_LEVEL_HIGH);
                     else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
                 }
                 tx_thread_sleep ( CONV_MS_TO_TICK(10) );
             }
-
-        }
-
-        ioport_level_t lvl1;
-        int i = 0;
-        while(1) {
-            feed_wdt();
-            server_run();
-            if ( (i++ % 50) == 0 ) {
-                g_ioport.p_api->pinRead(led1, &lvl1);
-                if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1, IOPORT_LEVEL_HIGH);
-                else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
-            }
-            tx_thread_sleep ( CONV_MS_TO_TICK(10) );
-        }
     }
 
     feed_wdt();
@@ -123,6 +106,29 @@ force_ap:
         DBG("net STA mode failed");
         goto force_ap;
     }
+
+
+    if ( ota_mode_lvl == IOPORT_LEVEL_LOW ) {
+        DBG("init OTA mode");
+        net_ota_init();
+        ioport_level_t lvl1;
+        int i=0;
+        while(1) {
+            feed_wdt();
+            if ( (i++ % 25) == 0 ) {
+                g_ioport.p_api->pinRead(led1, &lvl1);
+                if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
+                else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
+            }
+            tx_thread_sleep ( CONV_MS_TO_TICK(10) );
+        }
+
+    }
+
+    tstrM2mRev info;
+    nm_get_firmware_info(&info);
+    DBG("WINC1500 firmware %d.%d.%d", info.u8FirmwareMajor, info.u8FirmwareMinor, info.u8FirmwarePatch);
+
 
     feed_wdt();
     ntp_set_time_cycle();
