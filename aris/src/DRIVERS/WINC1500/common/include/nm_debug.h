@@ -4,7 +4,7 @@
  *
  * \brief This module contains debug APIs declarations.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2016-2017 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -57,14 +57,12 @@
 #define M2M_LOG_REQ										3
 #define M2M_LOG_DBG										4
 
-#if (defined __APP_APS3_CORTUS__)
-#define M2M_LOG_LEVEL									M2M_LOG_ERROR
+#if (defined __APS3_CORTUS__)
+#define M2M_LOG_LEVEL									M2M_LOG_INFO
 #else
 #define M2M_LOG_LEVEL									M2M_LOG_REQ
 #endif
 
-/**/
-#if !((defined __MSP430FR5739)||(defined __MCF964548__))
 
 #define M2M_ERR(...)
 #define M2M_INFO(...)
@@ -87,41 +85,11 @@
 #if (M2M_LOG_LEVEL >= M2M_LOG_DBG)
 #undef M2M_DBG
 #define M2M_DBG(...)							do{CONF_WINC_PRINTF("(APP)(DBG)[%s][%d]",__FUNCTION__,__LINE__); CONF_WINC_PRINTF(__VA_ARGS__);CONF_WINC_PRINTF("\r");}while(0)
-#endif
-#endif
-#endif
-#endif
-#else
-#define M2M_ERR
-#define M2M_DBG
-#define M2M_REQ
-#define M2M_INFO
-#define M2M_PRINT
-#endif
-#else
-#if (!defined  __MCF964548__)||(!defined __SAMD21J18A__)
-static void M2M_ERR(const char *_format, ...) //__attribute__ ((__format__ (M2M_ERR, 1, 2)))
-{
-}
-static void M2M_DBG(const char *_format, ...) //__attribute__ ((__format__ (M2M_DBG, 1, 2)))
-{
-}
-static void M2M_REQ(const char *_format, ...) //__attribute__ ((__format__ (M2M_DBG, 1, 2)))
-{
-}
-static void M2M_INFO(const char *_format, ...) // __attribute__ ((__format__ (M2M_INFO, 1, 2)))
-{
-
-}
-static void M2M_PRINT(const char *_format, ...) // __attribute__ ((__format__ (M2M_INFO, 1, 2)))
-{
-
-}
-static void CONF_WINC_PRINTF(const char *_format, ...)
-{
-}
-#endif
-#endif
+#endif /*M2M_LOG_DBG*/
+#endif /*M2M_LOG_REQ*/
+#endif /*M2M_LOG_INFO*/
+#endif /*M2M_LOG_ERROR*/
+#endif /*CONF_WINC_DEBUG */
 
 /**@}*/
 #endif /* _NM_DEBUG_H_ */

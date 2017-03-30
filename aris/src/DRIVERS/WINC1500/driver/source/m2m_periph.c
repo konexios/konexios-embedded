@@ -4,7 +4,7 @@
  *
  * \brief NMC1500 Peripherials Application Interface.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2016-2017 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -47,6 +47,8 @@ INCLUDES
 #include "driver/include/m2m_periph.h"
 #include "driver/source/nmasic.h"
 #include "m2m_hif.h"
+
+#ifdef CONF_PERIPH
 
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 MACROS
@@ -109,7 +111,6 @@ FUNCTION IMPLEMENTATION
 
 sint8 m2m_periph_init(tstrPerphInitParam * param)
 {
-    M2M_UNUSED_PARAM (param);
 	return M2M_SUCCESS;
 }
 
@@ -130,36 +131,24 @@ sint8 m2m_periph_gpio_get_val(uint8 u8GpioNum, uint8 * pu8GpioVal)
 
 sint8 m2m_periph_gpio_pullup_ctrl(uint8 u8GpioNum, uint8 u8PullupEn)
 {
-    M2M_UNUSED_PARAM (u8GpioNum);
-    M2M_UNUSED_PARAM (u8PullupEn);
 	/* TBD */
 	return M2M_SUCCESS;
 }
 
 sint8 m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param)
 {
-    M2M_UNUSED_PARAM (param);
 	/* TBD */
 	return M2M_SUCCESS;
 }
 
 sint8 m2m_periph_i2c_master_write(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint8 flags)
 {
-    M2M_UNUSED_PARAM (u8SlaveAddr);
-    M2M_UNUSED_PARAM (pu8Buf);
-    M2M_UNUSED_PARAM (u16BufLen);
-    M2M_UNUSED_PARAM (flags);
 	/* TBD */
 	return M2M_SUCCESS;
 }
 
 sint8 m2m_periph_i2c_master_read(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint16 * pu16ReadLen, uint8 flags)
 {
-    M2M_UNUSED_PARAM (u8SlaveAddr);
-    M2M_UNUSED_PARAM (pu8Buf);
-    M2M_UNUSED_PARAM (u16BufLen);
-    M2M_UNUSED_PARAM (pu16ReadLen);
-    M2M_UNUSED_PARAM (flags);
 	/* TBD */
 	return M2M_SUCCESS;
 }
@@ -169,3 +158,4 @@ sint8 m2m_periph_pullup_ctrl(uint32 pinmask, uint8 enable)
 {
 	return pullup_ctrl(pinmask, enable);
 }
+#endif /* CONF_PERIPH */
