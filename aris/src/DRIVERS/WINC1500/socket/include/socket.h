@@ -489,19 +489,19 @@ Socket Errors
 
 #ifdef _NM_BSP_BIG_END
 
-#define _htonl(m)				(m)
-#define _htons(A)				(A)
+#define __htonl(m)				(m)
+#define __htons(A)				(A)
 
 #else
 
-#define _htonl(m)		\
+#define __htonl(m)		\
 	(uint32)(((uint32)(m << 24)) | ((uint32)((m & 0x0000FF00) << 8)) | ((uint32)((m & 0x00FF0000) >> 8)) | ((uint32)(m >> 24)))
 /*!<
 	Convert a 4-byte integer from the host representation to the Network byte order representation.
 */
 
 
-#define _htons(A)   	(uint16)((((uint16) (A)) << 8) | (((uint16) (A)) >> 8))
+#define __htons(A)   	(uint16)((((uint16) (A)) << 8) | (((uint16) (A)) >> 8))
 /*!<
 	Convert a 2-byte integer (short) from the host representation to the Network byte order representation.
 */
