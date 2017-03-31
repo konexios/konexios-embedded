@@ -42,8 +42,6 @@ endif
 endif
 endif
 
-# all $(PROJECT).bin $(PROJECT).hex size
-
 .c.o:
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) $< -o $@
 .cpp.o:
@@ -61,20 +59,11 @@ $(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) libacnsdkc.a
 clean:
 	$(RM) $(OBJDIR) 
 	$(RM) $(CPPOBJS)
-	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.linux clean
+	$(RM) $(CPPDEPS)
+	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.linux clean LIBDIR="$(PWD)/.build"
+	$(RM) $(APP_OUT)
 	
-$(APP_OUT).bin: $(APP_OUT)
-	$(OBJCOPY) -O binary $< $@
-
-$(APP_OUT).hex: $(APP_OUT)
-	@$(OBJCOPY) -O ihex $< $@
-
-$(APP_OUT).lst: $(APP_OUT)
-	@$(OBJDUMP) -Sdh $< > $@
-
-lst: $(APP_OUT).lst
-
 size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 
-all: libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
+all: libacnsdkc.a $(CPPOBJS) $(APP_OUT)
