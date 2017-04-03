@@ -1880,9 +1880,12 @@ typedef struct {
 	uint32 	u32SubnetMask;
 	/*!< Subnet mask for the local area network.
 	*/
+#if 0
+	// this doesn't work; I suppose WINC send old ip conf structure
 	uint32 u32DhcpLeaseTime;
 	/*!< Dhcp Lease Time in sec
 	*/
+#endif
 } tstrM2MIPConfig;
 
 /*!

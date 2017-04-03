@@ -78,6 +78,9 @@ void wifi_thread_entry(void) {
     feed_wdt();
     winc1500_init();
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
+    tstrM2mRev info;
+    nm_get_firmware_info(&info);
+    DBG("WINC1500 firmware %d.%d.%d", info.u8FirmwareMajor, info.u8FirmwareMinor, info.u8FirmwarePatch);
 
     if ( ap_mode_lvl == IOPORT_LEVEL_LOW ) {
 force_ap:
@@ -124,11 +127,6 @@ force_ap:
         }
 
     }
-
-    tstrM2mRev info;
-    nm_get_firmware_info(&info);
-    DBG("WINC1500 firmware %d.%d.%d", info.u8FirmwareMajor, info.u8FirmwareMinor, info.u8FirmwarePatch);
-
 
     feed_wdt();
     ntp_set_time_cycle();
