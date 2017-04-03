@@ -7,7 +7,8 @@ APP_OUT = ${APP_NAME}.elf
 PROJECT = arrow
 
 C_SDK_PATH = $(PWD)/../acn-sdk-c
--include $(C_SDK_PATH)/Makefile.linux.def
+C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/linux
+-include $(C_SDK_MAKE_PATH)/Makefile.linux.def
 
 CPPSRCS  = $(wildcard $(PWD)/*.cpp)
 
@@ -15,8 +16,6 @@ COBJS := $(CSRCS:%.c=%.o)
 CPPOBJS := $(CPPSRCS:%.cpp=%.o)
 CPPOBJS += $(COBJS)
 CPPDEPS := $(CPPSRCS:%.cpp=%.d)
-
-INCLUDES += -I$(PWD)/.
 
 LIBRARY_PATHS = -L$(C_SDK_PATH) -L$(PWD)/.build
 LIBRARIES = -lsensors -lacnsdkc
@@ -50,7 +49,7 @@ endif
 libacnsdkc.a:
 	@echo $(PWD)
 	if [ ! -e $(PWD)/.build ]; then mkdir $(PWD)/.build; fi
-	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.linux LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
+	cd $(C_SDK_PATH) && $(MAKE) -f $(C_SDK_MAKE_PATH)/Makefile.linux LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
 
 $(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) libacnsdkc.a
 	  @echo "build $(APP_OUT)"
@@ -60,7 +59,7 @@ clean:
 	$(RM) $(OBJDIR) 
 	$(RM) $(CPPOBJS)
 	$(RM) $(CPPDEPS)
-	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.linux clean LIBDIR="$(PWD)/.build"
+	cd $(C_SDK_PATH) && $(MAKE) -f $(C_SDK_MAKE_PATH)/Makefile.linux clean LIBDIR="$(PWD)/.build"
 	$(RM) $(APP_OUT)
 	
 size: $(APP_OUT)

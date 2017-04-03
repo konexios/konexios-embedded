@@ -10,8 +10,9 @@ GCC_BIN =
 PROJECT = arrow
 
 C_SDK_PATH = $(PWD)/../acn-sdk-c
+C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/nucleo
 
--include $(C_SDK_PATH)/Makefile.mbed.def
+-include $(C_SDK_MAKE_PATH)/Makefile.mbed.def
 
 CPPSRCS  = $(wildcard $(PWD)/*.cpp)
 CPPSRCS += $(wildcard $(PWD)/DnsQuery/*.cpp)
@@ -28,13 +29,13 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 
 SYS_OBJECTS = $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.o)
 
-INCLUDES += -I$(PWD)/. \
-	   -I$(PWD)/mbed \
-	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE \
-	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM \
-	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4 \
-	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_NUCLEO_F401RE \
-	   -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM 
+INCLUDES += -I$(PWD) \
+	    -I$(PWD)/mbed \
+	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE \
+	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM \
+	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4 \
+	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_NUCLEO_F401RE \
+	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM 
 
 LIBRARY_PATHS = -L$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM -L$(PWD)/.build
 LIBRARIES = -lmbed -lacnsdkc
@@ -66,9 +67,6 @@ INCLUDES += -I$(PWD)/DnsQuery
 INCLUDES += -I$(C_SDK_PATH) \
 	    -I$(C_SDK_PATH)/include
 
-LD_FLAGS =-Wl,--gc-sections -Wl,--wrap,main $(CPU)
-LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
-
 
 ifeq ($(DEBUG), 1)
   CC_FLAGS += -DDEBUG -O0
@@ -84,8 +82,6 @@ endif
 endif
 endif
 
-# all $(PROJECT).bin $(PROJECT).hex size
-
 .c.o:
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) $< -o $@
 .cpp.o:
@@ -94,7 +90,7 @@ endif
 libacnsdkc.a:
 	@echo $(PWD)
 	if [ ! -e $(PWD)/.build ]; then mkdir $(PWD)/.build; fi
-	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.mbed LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
+	cd $(C_SDK_PATH) && $(MAKE) -f $(C_SDK_MAKE_PATH)/Makefile.mbed LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
 
 $(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a
 	  @echo "build $(APP_OUT)"
@@ -103,7 +99,7 @@ $(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a
 clean:
 	$(RM) $(OBJDIR) 
 	$(RM) $(CPPOBJS)
-	cd $(C_SDK_PATH) && $(MAKE) -f Makefile.mbed clean
+	cd $(C_SDK_PATH) && $(MAKE) -f $(C_SDK_MAKE_PATH)/Makefile.mbed clean LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
 	
 $(APP_OUT).bin: $(APP_OUT)
 	$(OBJCOPY) -O binary $< $@

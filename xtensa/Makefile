@@ -13,9 +13,10 @@ IMAGEDIR := $(SRC_IOE)/image
 DEMO_OUT = $(IMAGEDIR)/${APP_NAME}.out
 DEMO_LIB = $(LIBDIR)/lib${APP_NAME}.a
 
-C_SDK_PATH = ../acn-sdk-c
+C_SDK_PATH = $(PWD)/../acn-sdk-c
+C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/xtensa
 
--include $(C_SDK_PATH)/Makefile.xtensa.def
+-include $(C_SDK_MAKE_PATH)/Makefile.xtensa.def
 
 INCLUDES += \
 	-I$(C_SDK_PATH) \
@@ -86,7 +87,7 @@ $(DEMO_LIB): $(OBJS)
 	$(AR) ru $@ $^
 
 libacnsdkc.a:
-	cd $(C_SDK_PATH) && make -f Makefile.xtensa
+	cd $(C_SDK_PATH) && make -f $(C_SDK_MAKE_PATH)/Makefile.xtensa
 
 $(DEMO_OUT): libacnsdkc.a $(LIBS) $(LDS)
 	@mkdir -p $(IMAGEDIR)
@@ -100,7 +101,7 @@ all: $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
 
 clean:
 	$(foreach d, $(SUBDIRS), make -C $(d) clean;)
-	make -C $(C_SDK_PATH) -f $(C_SDK_PATH)/Makefile.xtensa clean
+	cd $(C_SDK_PATH) && make -C $(C_SDK_PATH) -f $(C_SDK_MAKE_PATH)/Makefile.xtensa clean
 	$(RM) $(OBJS)
 	$(RM) $(DEMO_LIB)
 	$(RM) $(DEMO_OUT)
