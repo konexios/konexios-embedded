@@ -21,97 +21,55 @@ extern "C" {
 
 #include <iostream>
 
-//extern "C" {
-//void *__real_malloc (size_t size);
-
-///* This function wraps the real malloc */
-//void * __wrap_malloc (size_t size)
-//{
-//    void *lptr = __real_malloc(size);
-////    printf("Malloc: %lu bytes @%p\n", size, lptr);
-//    return lptr;
-//}
-
-//void __real_free(void *ptr);
-//void __wrap_free(void *ptr) {
-////  printf("Free: @%p\n", ptr);
-//  __real_free(ptr);
-//}
-
-//void *__real_realloc(void *ptr, size_t newsize);
-//void *__wrap_realloc(void *ptr, size_t newsize) {
-////  printf("Realloc: newsize %d, @%p\n", newsize, ptr);
-//  void *lptr = __real_realloc(ptr, newsize);
-////  printf("Realloc: newptr, @%p\n", lptr);
-//  return lptr;
-//}
-//}
-
-#define HTTP_API
-
 int main() {
-    printf("\r\n--- Starting new run ---\r\n");
+    std::cout<<std::endl<<"--- Starting new run ---"<<std::endl;
 
-//    printf("Get UTC time...\r\n");
-
-    // set time
+//    Hided it because we supposed linux already synchronized a time 
 //    ntp_set_time_cycle();
 
-//    time_t ctTime = time(NULL);
-//    printf("Time is set to (UTC): %s\r\n", ctime(&ctTime));
+    time_t ctTime = time(NULL);
+    std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
-    // cloud
+    // gateway
     arrow_gateway_t gateway;
+    
+    // gateway configuration
     arrow_gateway_config_t gate_config;
+    
+    // device
     arrow_device_t device;
 
-#if defined(HTTP_API)
-    printf("register gateway via API\r\n");
+    std::cout<<"register gateway via API"<<std::endl;
     while ( arrow_connect_gateway(&gateway) < 0) {
-      printf("arrow gateway connect fail...\r\n");
+      std::cerr<<"arrow gateway connect fail..."<<std::endl;
       sleep(5);
     }
 
-//    arrow_prepare_gateway(&gateway);
-//    arrow_gateway_add_hid(&gateway, "e8f4e6f957006d0e338ef0513336b75e943d4f5b");
-
-//    arrow_gateway_config_init(&gate_config);
-//    gate_config.type = IBM;
-
-//    arrow_gateway_config_add_organizationId(&gate_config, "awxmvb");
-//    arrow_gateway_config_add_gatewayType(&gate_config, "gateway-local");
-//    arrow_gateway_config_add_gatewayId(&gate_config, "probook-20689dc1b689");
-//    arrow_gateway_config_add_authToken(&gate_config, "token");
-//    arrow_gateway_config_add_authMethod(&gate_config, "K5(gCm1RndOxinoObz");
-
+    // try to get a gateway configuration
     while ( arrow_config(&gateway, &gate_config) < 0 ) {
-      printf("arrow gateway config fail...\r\n");
+      std::cerr<<"arrow gateway config fail...";
       sleep(5);
     }
 
+    // type of the configuration: 0 - IoT configuration
     std::cout<<"config: "<<gate_config.type<<std::endl;
 
     // device registaration
-    printf("register device via API\r\n");
-//    arrow_prepare_device(&gateway, &device);
-//    arrow_device_add_uid(&device, "probook-20689dc1b689-notebook");
+    std::cout<<"register device via API"<<std::endl;
 
     while (arrow_connect_device(&gateway, &device) < 0 ) {
-      printf("device connect fail...\r\n");
+      std::cerr<<"device connect fail..."<<std::endl;
       sleep(1);
     }
 
-    printf("send telemetry via API\r\n");
-#endif
-    {
-    FILE *fp = fopen("/etc/sensors3.conf", "r");
+    std::cout<<"send telemetry via API"<<std::endl;
+    
+    
+    // init the sensors (libsensors4-devel)
     int ret = sensors_init( NULL );
-    printf("load sensors %d\r\n", ret);
-
-//    sensors_cleanup();
-
-
-    if (fp) fclose(fp);
+    if ( ret ) {
+      std::cerr<<"sensors init failed"<<std::endl;
+      return 1;
     }
 
     const sensors_chip_name *chip;
@@ -120,6 +78,8 @@ int main() {
     const sensors_subfeature *sub1;
     int chip_number = 2;
 
+    
+    // now find the temperature sensors on my laptop!
     chip = sensors_get_detected_chips(NULL, &chip_number);
 
     char chip_name[512];
@@ -147,6 +107,9 @@ int main() {
       printf("no R mode - core 1\r\n");
       return -1;
     }
+    
+    // sub0 and sub1 - is the termerature sensors
+    // we can get a temperature value by sensors_get_value()
 
     probook_data_t data;
     double tmp;
@@ -154,14 +117,15 @@ int main() {
     data.temperature_core0 = tmp;
     sensors_get_value(chip, sub1->number, &tmp);
     data.temperature_core1 = tmp;
-//    while ( arrow_send_telemetry(&device, &data) < 0) {
-//      printf("arrow: send telemetry fail\r\n");
-//    }
+    while ( arrow_send_telemetry(&device, &data) < 0) {
+      std::cout<<"arrow: send telemetry fail"<<std::endl;
+      sleep(1);
+    }
 
-    // MQTT
-    printf("mqtt connect...\r\n");
+    // init MQTT
+    std::cout<<"mqtt connect..."<<std::endl;
     while ( mqtt_connect(&gateway, &device, &gate_config) < 0 ) {
-      printf("mqtt connect fail\r\n");
+      std::cerr<<"mqtt connect fail"<<std::endl;
       sleep(1);
     } //every sec try to connect
 
@@ -172,9 +136,9 @@ int main() {
       data.temperature_core0 = tmp;
       sensors_get_value(chip, sub1->number, &tmp);
       data.temperature_core1 = tmp;
-      printf("mqtt publish [%d]: T(%4.2f)...\r\n", i++, tmp);
+      std::cout<<"mqtt publish ["<<i++<<"]: T("<<tmp<<")..."<<std::endl;
       if ( mqtt_publish(&device, &data) < 0 ) {
-        printf("mqtt publish failure...");
+        std::cerr<<"mqtt publish failure..."<<std::endl;
         mqtt_disconnect();
         while (mqtt_connect(&gateway, &device, &gate_config) < 0) { sleep(1);}
       }
@@ -183,7 +147,5 @@ int main() {
     arrow_device_free(&device);
     arrow_gateway_free(&gateway);
 
-
-    printf("\r\ndisconnecting....\r\n");
-    printf("\r\nTest complete.\r\n");
+    std::cout<<std::endl<<"disconnecting...."<<std::endl;
 }

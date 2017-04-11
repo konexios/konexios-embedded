@@ -1,0 +1,5 @@
+.build/
+*.cfg
+*.qbs
+*.elf
+*.bin

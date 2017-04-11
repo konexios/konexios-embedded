@@ -1,21 +1,17 @@
-ST-LINK programmer - https://github.com/texane/stlink.git
-Use it for flashing Nucleo board and SensorTile Cradle
+The ACN embedded
 
-flashing The Nucleo board
-st-flash write arrow-0.1.elf.bin 0x8000000
+This repository contains a several embedded project using the acn-sdk-c
 
-arrow-0.1.elf.bin - mbed firmware
+aris	-		The ARIS board project
+			Actually there are two different version of this project in the two repository branches:
+			master branch contains the usual version of WINC1500 driver
+			ARIS_NetX branch contains the NetX vertion of WINC1500 driver
 
+linux	-		just a simple Linux project
 
-flashing The SensorTile
-in a folder steval/Utilities/BootLoader/STM32L476RG
-st-flash write BootLoaderL4.bin 0x08000000
+mbed	-		The stm32-nucleo project
 
-and
+SenseAbility.cydsn -	The Cypress CY8CKIT-042-BLE SeanseAbility2.0 project
 
-in a folder steval/Projects/SensorTile/Applications/DataLog/gcc after compiling st firmware
-st-flash write .build/DataLog_USB_gcc.bin 0x08004000
-
-DataLog_USB_gcc.bin - stm32cube based firmware
-
+xtensa	-		The SX_ULPGN (QCA4010) project
 

@@ -26,19 +26,10 @@
 #include "wifi_server_thread.h"
 #include <ntp/ntp.h>
 #include <arrow/connection.h>
-//#include <arrow/mqtt.h>
-//#include <json/telemetry.h>
+#include <arrow/mqtt.h>
 
 ioport_port_pin_t led1 = IOPORT_PORT_00_PIN_14;
 ioport_port_pin_t led2 = IOPORT_PORT_06_PIN_00;
-
-//#define TEST
-#if defined(TEST)
-#define test_http_request(request, name) \
-    DBG(#name "\t"); \
-    if ( ( request ) < 0 ) { DBG("[fail]"); } \
-    else { DBG("[OK]"); }
-#endif
 
 static int count_wdt = 0;
 static int _stop_wdt = 0;
@@ -49,7 +40,6 @@ void wifiIRQIsr( external_irq_callback_args_t *p_args ) {
 }
 
 void timer_wdt_cb(rtc_callback_args_t *p_args) {
-    //DBG("-\r\n");
     SSP_PARAMETER_NOT_USED(p_args);
     if (count_wdt ++ < 60*8 || ( _stop_wdt ) )
         g_watchdog.p_api->refresh(g_watchdog.p_ctrl);
@@ -83,37 +73,31 @@ void wifi_thread_entry(void) {
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
 
 
-    TRACE("wifi init\r\n");
+    TRACE("wifi thread\r\n");
 
     feed_wdt();
     winc1500_init();
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
 
     if ( ap_mode_lvl == IOPORT_LEVEL_LOW ) {
-        if ( ota_mode_lvl != IOPORT_LEVEL_LOW ) {
 force_ap:
             DBG("init AP mode %d", count_wdt);
             stop_wdt();
             net_ap_init();
             server_run();
-        } else {
-            DBG("init OTA mode");
-//            net_ota_init();
 
-        }
-
-        ioport_level_t lvl1;
-        int i = 0;
-        while(1) {
-            feed_wdt();
-            server_run();
-            if ( (i++ % 50) == 0 ) {
-                g_ioport.p_api->pinRead(led1, &lvl1);
-                if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1, IOPORT_LEVEL_HIGH);
-                else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
+            ioport_level_t lvl1;
+            int i = 0;
+            while(1) {
+                feed_wdt();
+                server_run();
+                if ( (i++ % 50) == 0 ) {
+                    g_ioport.p_api->pinRead(led1, &lvl1);
+                    if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1, IOPORT_LEVEL_HIGH);
+                    else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
+                }
+                tx_thread_sleep ( CONV_MS_TO_TICK(10) );
             }
-            tx_thread_sleep ( CONV_MS_TO_TICK(10) );
-        }
     }
 
     feed_wdt();
@@ -123,22 +107,28 @@ force_ap:
         goto force_ap;
     }
 
-//    if ( ota_mode_lvl == IOPORT_LEVEL_LOW ) {
-//        DBG("init OTA mode (STA)");
-//        net_ota_init();
-//        ioport_level_t lvl1;
-//        int i=0;
-//        while(1) {
-//            if ( (i++ % 25) == 0 ) {
-//                g_ioport.p_api->pinRead(led1, &lvl1);
-//                if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
-//                else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
-//            }
-//            tx_thread_sleep ( CONV_MS_TO_TICK(10) );
-//        }
-//    }
-//
-//    net_set_timeout(2000);
+
+    if ( ota_mode_lvl == IOPORT_LEVEL_LOW ) {
+        DBG("init OTA mode");
+        net_ota_init();
+        ioport_level_t lvl1;
+        int i=0;
+        while(1) {
+            feed_wdt();
+            if ( (i++ % 25) == 0 ) {
+                g_ioport.p_api->pinRead(led1, &lvl1);
+                if (lvl1==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
+                else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
+            }
+            tx_thread_sleep ( CONV_MS_TO_TICK(10) );
+        }
+
+    }
+
+    tstrM2mRev info;
+    nm_get_firmware_info(&info);
+    DBG("WINC1500 firmware %d.%d.%d", info.u8FirmwareMajor, info.u8FirmwareMinor, info.u8FirmwarePatch);
+
 
     feed_wdt();
     ntp_set_time_cycle();
@@ -151,13 +141,6 @@ force_ap:
     arrow_gateway_t gateway;
     arrow_gateway_config_t gate_config;
     arrow_device_t device;
-
-#ifdef TEST
-    test_http_request(arrow_connect_gateway(&gateway), arrow gateway connect);
-    test_http_request(arrow_checkin(&gateway), arrow gateway checkin);
-    test_http_request(arrow_heartbeat(&gateway), arrow gateway hearbeat);
-    test_http_request(arrow_connect_device(&gateway, &device), arrow devce connect);
-#else
 
     feed_wdt();
     while ( arrow_connect_gateway(&gateway) < 0) {
@@ -179,7 +162,7 @@ force_ap:
     }
 
     TRACE("send telemetry\r\n");
-#endif
+
     sensor_data_t data_read[5];
     uint8_t subscriber_id;
     feed_wdt();
@@ -191,19 +174,7 @@ force_ap:
         TRACE("wait the sensors data...\r\n");
         tx_thread_sleep(CONV_MS_TO_TICK(1000));
     }
-#ifdef TEST
-    test_http_request(arrow_send_telemetry(&device, &data_read[0]), arrow device telemetry);
-    test_http_request(mqtt_connect(&gateway), arrow mqtt connect);
-    test_http_request(mqtt_publish(&device, &data_read[0]), arrow mqtt publish);
 
-    ioport_level_t lvl;
-    while (1) {
-        g_ioport.p_api->pinRead(led1, &lvl);
-        if (lvl==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
-        else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
-        tx_thread_sleep ( CONV_MS_TO_TICK(2*TELEMETRY_DELAY) );
-    }
-#else
     feed_wdt();
     while ( arrow_send_telemetry(&device, &data_read[0]) < 0 ) {
         TRACE("send telemetry fail\r\n");
@@ -247,7 +218,6 @@ force_ap:
         else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
         tx_thread_sleep ( CONV_MS_TO_TICK(TELEMETRY_DELAY) );
     }
-#endif
 
     DBG("Stopping\n");
 

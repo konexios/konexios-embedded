@@ -1,4 +1,25 @@
 ## Getting started
+
+It's needed a keys (api and secret) for any application in the acn-embedded repo.
+You may define it into an acn-sdk-c/private.h file:
+
+#ifndef ACN_SDK_C_PRIVATE_H_
+#define ACN_SDK_C_PRIVATE_H_
+
+#define DEFAULT_API_KEY "xxxxxx"
+#define DEFAULT_SECRET_KEY "yyyyy"
+#define DEV_ENV
+
+#endif
+
+
+or when execute make
+make API_KEY="xxxx" SEC_KEY="yyyyyy" DEV_ENV=1
+
+where DEV_ENV - define the development environment not a production environment:
+API address: pgsdev01.arrowconnect.io
+MQTT address: pgsdev01.arrowconnect.io
+
 Setting up the environment
 Follow the Internet of Everything Wireless System Release (I-WSR) 4.1 CS Hostless SDK Release Notes for install environment
 (80-YA116-4 Rev. B April 1, 2016) 4.2-4.2.1
@@ -53,10 +74,12 @@ cat eos/xtensa/config/tunable_input.txt | sed 's@\/home\/somebody\/Arrow\/QCA\/4
 Compile an application
 cd eos/xtensa
 make
-cd ../../tool/
-./qonstruct.sh --qons ./tmp/
 
+or 
 
+make API_KEY="xxxx" SEC_KEY="yyyyyy"
+
+After this in a ~/target/bin/ folder should be the raw_flashimage_AR401X_REV6_IOT_MP1_hostless_unidev_singleband_iot_arrow.bin file.
 
 ## How to flash
 Do not forget to replace TEST jumper to 2-3 place on the JP11 connector!
