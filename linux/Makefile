@@ -10,12 +10,14 @@ C_SDK_PATH = $(PWD)/../acn-sdk-c
 C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/linux
 -include $(C_SDK_MAKE_PATH)/Makefile.linux.def
 
-CPPSRCS  = $(wildcard $(PWD)/*.cpp)
+CSRCS 	 += $(shell find $(PWD)/acnsdkc -name "*.c")
+CPPSRCS  += $(wildcard $(PWD)/*.cpp)
 
 COBJS := $(CSRCS:%.c=%.o)
 CPPOBJS := $(CPPSRCS:%.cpp=%.o)
 CPPOBJS += $(COBJS)
 CPPDEPS := $(CPPSRCS:%.cpp=%.d)
+CPPDEPS += $(CSRCS:%.c=%.d)
 
 LIBRARY_PATHS = -L$(C_SDK_PATH) -L$(PWD)/.build
 LIBRARIES = -lsensors -lacnsdkc
