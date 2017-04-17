@@ -128,10 +128,13 @@ int main() {
       std::cerr<<"mqtt connect fail"<<std::endl;
       sleep(1);
     } //every sec try to connect
+    
+    mqtt_subscribe();
 
     int i = 0;
     while (true) {
-      sleep(5); // every 5 sec send data via mqtt
+      // every 5 sec send data via mqtt
+      mqtt_yield(5000);
       sensors_get_value(chip, sub0->number, &tmp);
       data.temperature_core0 = tmp;
       sensors_get_value(chip, sub1->number, &tmp);
