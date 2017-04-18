@@ -3,3 +3,5 @@
 *.qbs
 *.elf
 *.bin
+*.o
+*.d

@@ -17,9 +17,20 @@ extern "C" {
 #include <unistd.h>
 #include <stdio.h>
 #include <sensors/sensors.h>
+#include <arrow/events.h>
 }
 
 #include <iostream>
+
+static int test_cmd_proc(const char *str) {
+  printf("test: [%s]", str);
+  return 0;
+}
+
+static int fail_cmd_proc(const char *str) {
+  printf("fail: [%s]", str);
+  return -1;
+}
 
 int main() {
     std::cout<<std::endl<<"--- Starting new run ---"<<std::endl;
@@ -129,6 +140,9 @@ int main() {
       sleep(1);
     } //every sec try to connect
     
+    // FIXME just for a test
+    add_cmd_handler("test", &test_cmd_proc);
+    add_cmd_handler("fail", &fail_cmd_proc);
     mqtt_subscribe();
 
     int i = 0;
