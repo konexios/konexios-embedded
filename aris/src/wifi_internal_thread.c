@@ -10,8 +10,12 @@
 #include "wifi_thread.h"
 #include "wifi_internal_thread.h"
 #include "driver/include/m2m_wifi.h"
+#include "ledcmd.h"
 
 #define INT_STACK_LEN 0x1000
+
+
+extern uint32_t ledmask;
 
 static TX_THREAD net_wifi_thread;
 static int thread_start = 0;
@@ -25,7 +29,7 @@ VOID net_wifi_internal_thread (ULONG initial_input) {
     while(1) {
         tx_thread_sleep ( CONV_MS_TO_TICK(10) );
         while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) { }
-        if ( ( i++ % 100 ) == 0 ) {
+        if ( ( i++ % 100 ) == 0 && !is_blue_led_hold() ) {
             g_ioport.p_api->pinRead(IOPORT_PORT_06_PIN_00, &lvl);
             if (lvl==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(IOPORT_PORT_06_PIN_00 ,IOPORT_LEVEL_HIGH);
             else g_ioport.p_api->pinWrite(IOPORT_PORT_06_PIN_00 ,IOPORT_LEVEL_LOW);

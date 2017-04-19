@@ -25,6 +25,7 @@
 #include "string.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <debug.h>
 
 
 /**********************************************************************************************************************
@@ -64,12 +65,7 @@ void TRACE_write( char* str, uint8_t strLen );
 
 #define TRACE( str )    TRACE_write( str, (uint8_t)strlen(str) );
 
-#define DBG_LINE_SIZE 150
-
 int trace_created();
-void dbg_line(const char *fmt, ...);
-
-#define DBG(...) dbg_line(__VA_ARGS__)
 
 #define DBGby8(ptr, lines) { DBG("dump {%p}:", (ptr)); int i= 0; for(;i<lines; i++) DBG("%02x %02x %02x %02x %02x %02x %02x %02x", (ptr)[0+i*8], (ptr)[1+i*8], (ptr)[2+i*8], (ptr)[3+i*8], (ptr)[4+i*8], (ptr)[5+i*8], (ptr)[6+i*8], (ptr)[7+i*8]); }
 
