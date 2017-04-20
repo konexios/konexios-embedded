@@ -1,0 +1,8 @@
+*.o
+*.d
+*.inc
+*.bin
+*.hex
+*.elf
+.build
+*.qbs
