@@ -250,6 +250,23 @@ CppApplication {
 //    }
 
     Group {
+        name: "Makefile"
+        files: [
+            "Makefile",
+            "../acn-sdk-c/platforms/nucleo/Makefile*"
+        ]
+    }
+
+    Group {
+        name: "platforms"
+        prefix: "../acn-sdk-c/platforms/nucleo/"
+        files: [
+            "time/*.h",
+            "bsd/*.h"
+        ]
+    }
+
+    Group {
         name: "iks"
         files: [
             "X_NUCLEO_COMMON/D*/*.h",

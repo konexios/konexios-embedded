@@ -20,7 +20,8 @@ C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/xtensa
 
 INCLUDES += \
 	-I$(C_SDK_PATH) \
-	-I$(C_SDK_PATH)/include
+	-I$(C_SDK_PATH)/include \
+	-I$(C_SDK_MAKE_PATH)
 
 
 CFLAGS = $(COPTS) $(DEFINES) $(INCLUDES) 
@@ -32,6 +33,7 @@ RM = rm -f
 
 CSRCS := app_start.c main.c
 CSRCS += $(wildcard arrow_*.c)
+CSRCS += $(shell find $(PWD)/acnsdkc -name "*.c")
 
 OBJS := $(CSRCS:%.c=%.o)
 DEPS := $(CSRCS:%.c=%.d)
@@ -97,7 +99,7 @@ firmware:
 	cp $(PWD)/config/index.html $(SRC_IOE)/demo/sdk_flash/
 	cd $(SRC_IOE)/tool && ./qonstruct.sh --qons ./tmp/
 
-all: $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
+all: libacnsdkc.a $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
 
 clean:
 	$(foreach d, $(SUBDIRS), make -C $(d) clean;)

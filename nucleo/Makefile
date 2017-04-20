@@ -21,6 +21,10 @@ CPPSRCS += $(shell find $(PWD)/Components -name "*.cpp")
 CPPSRCS += $(shell find $(PWD)/NetworkSocketAPI -name "*.cpp")
 CSRCS += $(shell find $(PWD)/X_NUCLEO_IDW01M1 -name "*.c")
 CSRCS += $(wildcard $(PWD)/*.c)
+CSRCS += $(wildcard $(PWD)/acnsdkc/arrow/*.c)
+CSRCS += $(wildcard $(PWD)/acnsdkc/bsd/*.c)
+CSRCS += $(wildcard $(PWD)/acnsdkc/time/*.c)
+CSRCS += $(wildcard $(PWD)/acnsdkc/json/*.c)
 
 COBJS := $(CSRCS:%.c=%.o)
 CPPOBJS := $(CPPSRCS:%.cpp=%.o)
@@ -30,12 +34,14 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 SYS_OBJECTS = $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.o)
 
 INCLUDES += -I$(PWD) \
-	    -I$(PWD)/mbed \
-	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE \
-	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM \
-	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4 \
-	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_NUCLEO_F401RE \
-	    -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM 
+            -I$(PWD)/mbed \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4 \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_NUCLEO_F401RE \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM
+
+INCLUDES += -I$(C_SDK_MAKE_PATH)
 
 LIBRARY_PATHS = -L$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM -L$(PWD)/.build
 LIBRARIES = -lmbed -lacnsdkc
@@ -45,7 +51,7 @@ LINKER_SCRIPT = $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/STM32F401XE.l
 INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1
 INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1/Spwf/utils
 INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1/Spwf_API \
-	    -I$(PWD)/X_NUCLEO_IDW01M1/Spwf/inc
+            -I$(PWD)/X_NUCLEO_IDW01M1/Spwf/inc
 INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1/Spwf_API/utils
 
 # NetworkSocketAPI
@@ -53,13 +59,13 @@ INCLUDES += -I$(PWD)/NetworkSocketAPI
  
 # # IKS
 INCLUDES += -I$(PWD)/Components \
-	    -I$(PWD)/Components/Common \
-	    -I$(PWD)/Components/Interfaces \
-	    -I$(PWD)/Components/hts221 \
-	    -I$(PWD)/X_NUCLEO_COMMON/DevI2C/ \
-	    -I$(PWD)/X_NUCLEO_COMMON/DevSPI \
-	    -I$(PWD)/X_NUCLEO_COMMON/DbgMCU \
-	    -I$(PWD)/TARGET_NUCLEO_F401RE
+            -I$(PWD)/Components/Common \
+            -I$(PWD)/Components/Interfaces \
+            -I$(PWD)/Components/hts221 \
+            -I$(PWD)/X_NUCLEO_COMMON/DevI2C/ \
+            -I$(PWD)/X_NUCLEO_COMMON/DevSPI \
+            -I$(PWD)/X_NUCLEO_COMMON/DbgMCU \
+            -I$(PWD)/TARGET_NUCLEO_F401RE
 
 # DNS
 INCLUDES += -I$(PWD)/DnsQuery

@@ -38,7 +38,7 @@ int TCPSocketConnection::connect(const char *host, uint16_t port) {
     int ret = TCPSocket::connect(host, port);
     if (ret < 0) {
         TCPSocket::close();
-        ERR("Could not connect");
+        DBG("Could not connect");
     } else
         _is_connected = true;
     return ret;
@@ -49,7 +49,7 @@ int TCPSocketConnection::connect(const SocketAddress &address) {
     int ret = TCPSocket::connect(address);
     if (ret < 0) {
         TCPSocket::close();
-        ERR("Could not connect");
+        DBG("Could not connect");
     } else
         _is_connected = true;
     return ret;
