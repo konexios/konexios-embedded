@@ -27,6 +27,8 @@
 #include <ntp/ntp.h>
 #include <arrow/connection.h>
 #include <arrow/mqtt.h>
+#include <arrow/events.h>
+#include "ledcmd.h"
 
 ioport_port_pin_t led1 = IOPORT_PORT_00_PIN_14;
 ioport_port_pin_t led2 = IOPORT_PORT_06_PIN_00;
@@ -78,6 +80,9 @@ void wifi_thread_entry(void) {
     feed_wdt();
     winc1500_init();
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
+    tstrM2mRev info;
+    nm_get_firmware_info(&info);
+    DBG("WINC1500 firmware %d.%d.%d", info.u8FirmwareMajor, info.u8FirmwareMinor, info.u8FirmwarePatch);
 
     if ( ap_mode_lvl == IOPORT_LEVEL_LOW ) {
 force_ap:
@@ -124,11 +129,6 @@ force_ap:
         }
 
     }
-
-    tstrM2mRev info;
-    nm_get_firmware_info(&info);
-    DBG("WINC1500 firmware %d.%d.%d", info.u8FirmwareMajor, info.u8FirmwareMinor, info.u8FirmwarePatch);
-
 
     feed_wdt();
     ntp_set_time_cycle();
@@ -186,10 +186,11 @@ force_ap:
         tx_thread_sleep(CONV_MS_TO_TICK(1000));
     } //every sec try to connect
 
+    add_cmd_handler("ledctrl", led_ctrl);
+    mqtt_subscribe();
+
     ioport_level_t lvl;
     while (1) {
-        //Reset_Handler();
-        // console trace management
         uint32_t data_read_len = DATA_QUEUE_read( subscriber_id, data_read, 5, TX_WAIT_FOREVER);
         for( uint32_t i=0 ; i<data_read_len; i++ ) {
             char tmpStr[ 250 ];
@@ -208,15 +209,19 @@ force_ap:
                 TRACE("mqtt publish failure...\r\n");
                 mqtt_disconnect();
                 while (mqtt_connect(&gateway, &device, &gate_config) < 0) {tx_thread_sleep(CONV_MS_TO_TICK(1000));}
+                mqtt_subscribe();
             } else {
                 feed_wdt();
             }
         }
 
-        g_ioport.p_api->pinRead(led1, &lvl);
-        if (lvl==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
-        else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
-        tx_thread_sleep ( CONV_MS_TO_TICK(TELEMETRY_DELAY) );
+        if ( ! is_orange_led_hold() ) {
+            g_ioport.p_api->pinRead(led1, &lvl);
+            if (lvl==IOPORT_LEVEL_LOW) g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_HIGH);
+            else g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
+        }
+
+        mqtt_yield(TELEMETRY_DELAY);
     }
 
     DBG("Stopping\n");
