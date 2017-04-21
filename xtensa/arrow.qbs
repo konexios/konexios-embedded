@@ -1,5 +1,5 @@
 import qbs
-import qbs.Environment
+//import qbs.Environment
 import qbs.FileInfo
 
 Project {
@@ -12,11 +12,11 @@ CppApplication {
     property string projectName: ("iot_arrow")
     name: projectName+".elf"
     property string target: "QCA4010"
-    property string FW: Environment.getEnv("FW")
-    property string THREADXDIR: Environment.getEnv("THREADXDIR")
-    property string INTERNALDIR: Environment.getEnv("INTERNALDIR")
-    property string IMAGEDIR: Environment.getEnv("IMAGEDIR")
-    property string LIBDIR: Environment.getEnv("LIBDIR")
+    property string FW: 'Environment.getEnv("FW")'
+    property string THREADXDIR: 'Environment.getEnv("THREADXDIR")'
+    property string INTERNALDIR: 'Environment.getEnv("INTERNALDIR")'
+    property string IMAGEDIR: 'Environment.getEnv("IMAGEDIR")'
+    property string LIBDIR: 'Environment.getEnv("LIBDIR")'
     type: ["application", "elf"]
     files: [ "*.h", "*.c" ]
 

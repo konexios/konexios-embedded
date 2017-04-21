@@ -86,10 +86,6 @@ void shell_add_gpio_configurations(void)
 
 A_UINT8 currentDeviceId = 0;
 extern void user_pre_init(void);
-//extern console_cmd_t cust_cmds[];
-//extern int cust_cmds_num;
-//extern void task_execute_cli_cmd();
-
 
 #define GPIO_IN_TEST 0
 #define GPIO_OUT_TEST 1
@@ -118,24 +114,31 @@ A_BOOL arrow_gpio_check() {
 }
 
 qcom_timer_t wdt_timer;
+static int wdt_counter = 0;
 void qcom_task_timer_handler(unsigned int alarm, void *data) {
-  A_PRINTF("timer done %d: %p\r\n", alarm, data);
-  qcom_sys_reset();
+  A_PRINTF("timer done %d: %p counter %d\r\n", alarm, data, wdt_counter);
+  if ( wdt_counter++ < 60 ) {
+    qcom_watchdog_feed();
+  } else {
+    if (wdt_counter > 70) qcom_sys_reset();
+  }
 }
 
 
 void wdt_init() {
-  A_PRINTF("qcom watchdog start\r\n");
-  qcom_watchdog(0, 60);
-  qcom_timer_init(&wdt_timer, qcom_task_timer_handler, NULL, 60 * 1000, ONESHOT);
-  qcom_timer_start(&wdt_timer);
+//  qcom_timer_init(&wdt_timer, qcom_task_timer_handler, NULL, 1000, PERIODIC);
+//  qcom_timer_start(&wdt_timer);
+  int state = qcom_watchdog(APP_WDT_USER_DBG, 30);
+  A_PRINTF("qcom watchdog start %d\r\n", state);
   qcom_watchdog_feed();
 }
 
 void wdt_feed() {
+  wdt_counter = 0;
+  A_PRINTF("wdt feed\r\n");
   qcom_watchdog_feed();
-  qcom_timer_stop(&wdt_timer);
-  qcom_timer_start(&wdt_timer);
+//  qcom_timer_stop(&wdt_timer);
+//  qcom_timer_start(&wdt_timer);
 }
 
 void main_entry(ULONG which_thread) {
@@ -143,11 +146,8 @@ void main_entry(ULONG which_thread) {
   SSP_PARAMETER_NOT_USED(which_thread);
 
   user_pre_init();
-
   arrow_gpio_init();
-
   temperature_init();
-
   wdt_init();
 
   if ( arrow_gpio_check() ) {
@@ -158,6 +158,7 @@ force_ap:
     while(1) {
       qcom_thread_msleep(5000);
       wdt_feed();
+      if ( 0 ) goto force_ap;
     }
   } else {
     A_UINT32 ip = 0;
@@ -173,7 +174,13 @@ force_ap:
     char pass[32];
     if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
       DBG("No wifi settings!");
+#if defined(DEFAULT_WIFI_SSID) && defined(DEFAULT_WIFI_PASS) && defined(DEFAULT_WIFI_SEC)
+      strcpy(ssid, DEFAULT_WIFI_SSID);
+      strcpy(pass, DEFAULT_WIFI_PASS);
+      sec = DEFAULT_WIFI_SEC;
+#else
       goto force_ap;
+#endif
     }
     auth = (sec >> 16);
     sec &= 0x00ffff;

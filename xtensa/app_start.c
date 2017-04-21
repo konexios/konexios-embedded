@@ -11,10 +11,10 @@
 extern void user_main(void);
 
 void app_start(void) {
-        QCOM_SYS_START_PARA_t sysStartPara;
+  QCOM_SYS_START_PARA_t sysStartPara;
 
-        sysStartPara.isMccEnabled = 0;
-        sysStartPara.numOfVdev = 1;
+  sysStartPara.isMccEnabled = 0;
+  sysStartPara.numOfVdev = 1;
 
 #if defined(FPGA)
     #if defined(ENABLED_MCC_MODE)
