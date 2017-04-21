@@ -194,7 +194,7 @@ force_ap:
         uint32_t data_read_len = DATA_QUEUE_read( subscriber_id, data_read, 5, TX_WAIT_FOREVER);
         for( uint32_t i=0 ; i<data_read_len; i++ ) {
             char tmpStr[ 250 ];
-            snprintf( tmpStr, 250, "[Console] index (%d): T=%4.2f H=%4.2f A={%4.2f,%4.2f,%4.2f} G={%4.2f,%4.2f}\r\n",
+            DBG("[Console] index (%d): T=%4.2f H=%4.2f A={%4.2f,%4.2f,%4.2f} G={%4.2f,%4.2f}",
                     (int)data_read[i].index,
                     data_read[i].hygro.temperature,
                     data_read[i].hygro.humidity,
@@ -203,7 +203,6 @@ force_ap:
                     data_read[i].acc.z_rates,
                     data_read[i].gyro.x_rates,
                     data_read[i].gyro.y_rates);
-            TRACE( tmpStr );
 
             if ( mqtt_publish(&device, &data_read[i]) < 0 ) {
                 TRACE("mqtt publish failure...\r\n");

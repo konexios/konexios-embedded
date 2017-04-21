@@ -125,7 +125,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/synergy/ssp/src/framework/el/tx/tx_src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/synergy/ssp/inc/framework/el/nxd}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/synergy/ssp/src/framework/el/nxd_bsd/nxd_bsd_src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/DRIVERS/WINC1500_19.4.4}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/DRIVERS/WINC1500_19.5.2}&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1680606254" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -192,7 +192,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/default"/>
 						<entry excluding="mqtt/client/src/linux|mqtt/client/src/FreeRTOS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acnsdkc"/>
-						<entry excluding="DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500_19.5.2|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="DRIVERS/WINC1500_19.4.4|DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="synergy"/>
 					</sourceEntries>
 				</configuration>
@@ -373,7 +373,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/default"/>
 						<entry excluding="mqtt/client/src/linux|mqtt/client/src/FreeRTOS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acnsdkc"/>
-						<entry excluding="DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500_19.5.2|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="DRIVERS/WINC1500_19.4.4|DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="synergy"/>
 					</sourceEntries>
 				</configuration>
