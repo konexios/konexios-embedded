@@ -183,8 +183,8 @@ void wifi_thread_entry(void) {
     TRACE("mqtt connecting...\r\n");
     feed_wdt();
     while ( mqtt_connect(&gateway, &device, &gate_config) < 0 ) {tx_thread_sleep(CONV_MS_TO_TICK(1000));} //every sec try to connect
+    mqtt_subscribe();
 
-//    ioport_level_t lvl;
     TRACE("telemetry data sending...\r\n");
     while (1) {
         // console trace management
@@ -199,26 +199,22 @@ void wifi_thread_entry(void) {
                     data_read[i].acc.z_rates,
                     data_read[i].gyro.x_rates,
                     data_read[i].gyro.y_rates);
-
-            TRACE("mqtt data publishing...\r\n");
             if ( mqtt_publish(&device, &data_read[i]) < 0 ) {
                 TRACE("mqtt publish failure...\r\n");
                 mqtt_disconnect();
                 while (mqtt_connect(&gateway, &device, &gate_config) < 0) {tx_thread_sleep(CONV_MS_TO_TICK(1000));}
+                mqtt_subscribe();
             }
-            DBG("mqtt publish done");
             feed_wdt();
         }
-        tx_thread_sleep ( CONV_MS_TO_TICK(TELEMETRY_DELAY) );
+        mqtt_yield(TELEMETRY_DELAY);
     }
 #endif
 
     DBG("Stopping\n");
 
     mqtt_disconnect();
-
     arrow_device_free(&device);
     arrow_gateway_free(&gateway);
-
 }
 
