@@ -76,26 +76,23 @@ OBJECTS := $(SRCS:%.c=%.o)
 OBJECTS += $(ASRCS:%.s=%.o)
 
 
-INCLUDE_PATHS = -I$(ACN_SDK_C_PATH) \
-		-I$(ACN_SDK_C_PATH)/include \
-		-I$(ACN_SDK_C_PATH)/src/wolfSSL \
-		-I$(ACN_SDK_C_PATH)/src/wolfSSL/wolfssl
+INCLUDE_PATHS = $(INCLUDES)
 		
 INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
-		-I$(PRJ_PATH)/WiFi/Inc \
-		-I$(PWD)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
-		-I$(PWD)/Drivers/CMSIS/Include \
-		-I$(PWD)/Drivers/STM32L4xx_HAL_Driver/Inc \
-    -I$(PWD)/Drivers/BSP/B-L475E-IOT01 \
-    -I$(PWD)/Drivers/BSP/Components/Common \
-    -I$(PWD)/Drivers/BSP/Components/es_wifi \
-    -I$(PWD)/Drivers/BSP/Components/vl53l0x \
-    -I$(PWD)/Drivers/BSP/Components/lis3mdl \
-		-I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/include \
-		-I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
-		-I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
-    -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
-		-I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
+                 -I$(PRJ_PATH)/WiFi/Inc \
+                 -I$(PWD)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+                 -I$(PWD)/Drivers/CMSIS/Include \
+                 -I$(PWD)/Drivers/STM32L4xx_HAL_Driver/Inc \
+                 -I$(PWD)/Drivers/BSP/B-L475E-IOT01 \
+                 -I$(PWD)/Drivers/BSP/Components/Common \
+                 -I$(PWD)/Drivers/BSP/Components/es_wifi \
+                 -I$(PWD)/Drivers/BSP/Components/vl53l0x \
+                 -I$(PWD)/Drivers/BSP/Components/lis3mdl \
+                 -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/include \
+                 -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+                 -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
+                 -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
+                 -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
 		
 
 LIBRARY_PATHS = -L$(PRJ_PATH)/$(OBJDIR)

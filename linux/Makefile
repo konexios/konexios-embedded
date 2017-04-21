@@ -3,7 +3,6 @@ default: all
 APP_NAME = linux_arrow
 APP_OUT = ${APP_NAME}.elf
 
-
 PROJECT = arrow
 
 C_SDK_PATH = $(PWD)/../acn-sdk-c

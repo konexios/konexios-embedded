@@ -148,7 +148,7 @@ int setsockopt(int sockfd, int level, int optname,
           if ( optval ) {
             struct timeval *tv = ((struct timeval*)(optval));
             _sockets[sockfd].timeout = tv->tv_sec * 1000 + tv->tv_usec / 1000;
-            DBG("set timeout %d", _sockets[sockfd].timeout);
+//            DBG("set timeout %d", _sockets[sockfd].timeout);
           }
           return 0;
         }

@@ -69,15 +69,6 @@
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Global variables ----------------------------------------------------------*/
-
-static float    TEMPERATURE_Value;
-static float    HUMIDITY_Value;
-static float    PRESSURE_Value;
-static int16_t  ACC_Value[3];
-static float    GYR_Value[3];
-static int16_t  MAG_Value[3];
-static uint16_t PROXIMITY_Value;
-
 /* Private function prototypes -----------------------------------------------*/
 /* Functions Definition ------------------------------------------------------*/
 
@@ -91,38 +82,32 @@ int init_sensors(void)
 {
   int ret = 0;
   
-  if (HSENSOR_OK != BSP_HSENSOR_Init()) 
-  {
+  if (HSENSOR_OK != BSP_HSENSOR_Init()) {
     DBG("BSP_HSENSOR_Init() returns %d\n", ret);
     ret = -1;
   }
   
-  if (TSENSOR_OK != BSP_TSENSOR_Init())
-  {  
+  if (TSENSOR_OK != BSP_TSENSOR_Init()) {
     DBG("BSP_TSENSOR_Init() returns %d\n", ret);
     ret = -1;
   }
   
-  if (PSENSOR_OK != BSP_PSENSOR_Init())
-  {  
+  if (PSENSOR_OK != BSP_PSENSOR_Init()) {
     DBG("BSP_PSENSOR_Init() returns %d\n", ret);
     ret = -1;
   }
   
-  if (MAGNETO_OK != BSP_MAGNETO_Init()) 
-  {  
+  if (MAGNETO_OK != BSP_MAGNETO_Init()) {
     DBG("BSP_MAGNETO_Init() returns %d\n", ret);
     ret = -1;
   }
 
-  if (GYRO_OK != BSP_GYRO_Init()) 
-  {  
+  if (GYRO_OK != BSP_GYRO_Init()) {
     DBG("BSP_GYRO_Init() returns %d\n", ret);
     ret = -1;
   }
   
-  if (ACCELERO_OK != BSP_ACCELERO_Init()) 
-  {  
+  if (ACCELERO_OK != BSP_ACCELERO_Init()) {
     DBG("BSP_ACCELERO_Init() returns %d\n", ret);
     ret = -1;
   }
@@ -135,37 +120,18 @@ int init_sensors(void)
 /**
   * @brief  fill the payload with the sensor values
   * @param  none
-  * @param PayloadBuffer is the char pointer for the Payload buffer to be filled
-  * @param PayloadSize size of the above buffer
+  * @param sensor_data_t is the char pointer for the data to be filled
   * @retval 0 in case of success
   *         -1 in case of failure
   */
-int PrepareMqttPayload(sensors_data_t *sd)
-{
+int PrepareMqttPayload(sensors_data_t *sd) {
   sd->temperature = BSP_TSENSOR_ReadTemp();
-  DBG("BSP_TSENSOR_ReadTemp %.2f", sd->temperature);
-
   sd->humidity = BSP_HSENSOR_ReadHumidity();
-  DBG("BSP_HSENSOR_ReadHumidity %.2f", sd->humidity);
-
   sd->pressure = BSP_PSENSOR_ReadPressure();
-  DBG("BSP_PSENSOR_ReadPressure %.2f", sd->pressure);
-  
   sd->proximity = VL53L0X_PROXIMITY_GetDistance();
-  DBG("VL53L0X_PROXIMITY_GetDistance %d", sd->proximity);
-       
   BSP_ACCELERO_AccGetXYZ(sd->acc);
-
-  DBG("ACC GetXYZ {%d, %d, %d}", sd->acc[0], sd->acc[1], sd->acc[2]);
-     
-  BSP_GYRO_GetXYZ(sd->gyr);
-
-  DBG("GYR GetXYZ {%.2f, %.2f, %.2f}", sd->gyr[0], sd->gyr[1], sd->gyr[2]);
-     
-  BSP_MAGNETO_GetXYZ(sd->mag);
-
-  DBG("MAG GetXYZ {%d, %d, %d}", sd->mag[0], sd->mag[1], sd->mag[2]);
-  
+  BSP_GYRO_GetXYZ(sd->gyr);     
+  BSP_MAGNETO_GetXYZ(sd->mag);  
   return 0;
 }
 

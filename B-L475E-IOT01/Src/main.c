@@ -418,6 +418,7 @@ void StartDefaultTask(void const * argument)
   WIFI_Ecn_t security_mode = WIFI_ECN_WPA_WPA2_PSK;
   uint8_t macAddress[6];
   int wifiConnectCounter = 0;
+  char time_buffer[30];
 
   osDelay(1000);
   printf("new start\r\n");
@@ -514,9 +515,17 @@ void StartDefaultTask(void const * argument)
   for(;;) {
     MX_IWDG_Feed();
     ctTime = time(NULL);
-    DBG("Time (UTC): %s", ctime(&ctTime));
-    printf("Time (UTC): %s\r\n", ctime(&ctTime));
+
+    snprintf(time_buffer, 30, "%s", ctime(&ctTime));
+    time_buffer[strlen(time_buffer)-1] = '\0';
+    DBG("Time (UTC): %s", time_buffer);
+    printf("Time (UTC): %s\r\n", time_buffer);
     PrepareMqttPayload(&data);
+    DBG("publish: temp(%.2f) acc{%.2f, %.2f, %.2f}",
+        data.temperature,
+        (float)data.acc[0],
+        (float)data.acc[1],
+        (float)data.acc[2]);
     if ( mqtt_publish(&device, &data) < 0 ) {
       DBG("mqtt publish failed...");
       mqtt_disconnect();
