@@ -22,9 +22,6 @@ CPPDEPS += $(CSRCS:%.c=%.d)
 LIBRARY_PATHS = -L$(C_SDK_PATH) -L$(PWD)/.build
 LIBRARIES = -lsensors -lacnsdkc
 
-INCLUDES += -I$(C_SDK_PATH) \
-     	    -I$(C_SDK_PATH)/include
-
 LD_FLAGS = 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc
 
