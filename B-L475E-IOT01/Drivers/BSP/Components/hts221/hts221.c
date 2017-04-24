@@ -219,13 +219,15 @@ float HTS221_T_ReadTemp(uint16_t DeviceAddr)
   T0_out = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
   T1_out = (((uint16_t)buffer[3]) << 8) | (uint16_t)buffer[2];
 
-  SENSOR_IO_ReadMultiple(DeviceAddr, (HTS221_TEMP_OUT_L_REG | 0x80), buffer, 2);
+  SENSOR_IO_ReadMultiple(DeviceAddr, (HTS221_TEMP_OUT_L_REG | 0x80), buffer, 2); // read 0x2A and 0x2B
 
   T_out = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
+  T_out = T_out / 10;
 
-  tmp_f = (float)(T_out - T0_out) * (float)(T1_degC - T0_degC) / (float)(T1_out - T0_out)  +  T0_degC;
+  tmp_f = (float)(T_out - T0_out) * (float)(T1_degC - T0_degC) * 10;
+  tmp_f = tmp_f / (float)(T1_out - T0_out)  +  T0_degC * 10;
 
-  return tmp_f;
+  return tmp_f / 10;
 }
 
 /**

@@ -107,6 +107,8 @@ else
   CC_FLAGS += -DNDEBUG -Os
 endif
 
+CC_FLAGS += -DUSE_LPS22HB_TEMP
+
 .PHONY: all lst size
 
 all: $(PROJECT).bin $(PROJECT).hex size

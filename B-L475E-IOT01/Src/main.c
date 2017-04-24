@@ -536,7 +536,6 @@ void StartDefaultTask(void const * argument)
     }
     BSP_LED_Toggle(LED_GREEN);
     mqtt_yield(TELEMETRY_DELAY);
-    //    osDelay(TELEMETRY_DELAY);
   }
 }
 
