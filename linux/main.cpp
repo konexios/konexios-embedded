@@ -18,6 +18,7 @@ extern "C" {
 #include <stdio.h>
 #include <sensors/sensors.h>
 #include <arrow/events.h>
+#include <arrow/state.h>
 }
 
 #include <iostream>
@@ -72,6 +73,16 @@ int main() {
       std::cerr<<"device connect fail..."<<std::endl;
       sleep(1);
     }
+
+    std::cout<<"------------------------"<<std::endl;
+
+    arrow_get_state(&device);
+
+    add_state("temperature", "on");
+
+    arrow_post_state_update(&device);
+
+    arrow_get_state(&device);
 
     std::cout<<"send telemetry via API"<<std::endl;
     
