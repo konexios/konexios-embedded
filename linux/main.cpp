@@ -19,6 +19,7 @@ extern "C" {
 #include <sensors/sensors.h>
 #include <arrow/events.h>
 #include <arrow/state.h>
+#include <arrow/devicecommand.h>
 }
 
 #include <iostream>
@@ -76,13 +77,8 @@ int main() {
 
     std::cout<<"------------------------"<<std::endl;
 
-    arrow_get_state(&device);
-
-    add_state("temperature", "on");
-
+    add_state("led", "on");
     arrow_post_state_update(&device);
-
-    arrow_get_state(&device);
 
     std::cout<<"send telemetry via API"<<std::endl;
     
@@ -154,6 +150,8 @@ int main() {
     // FIXME just for a test
     add_cmd_handler("test", &test_cmd_proc);
     add_cmd_handler("fail", &fail_cmd_proc);
+    arrow_state_mqtt_run(&device);
+
     mqtt_subscribe();
 
     int i = 0;

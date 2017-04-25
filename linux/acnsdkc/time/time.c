@@ -22,5 +22,5 @@ void get_time(char *ts) {
   sprintf(ts, "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", 1900+tmp->tm_year, tmp->tm_mon+1, tmp->tm_mday,
           tmp->tm_hour, tmp->tm_min, tmp->tm_sec, ms);
 //  printf("ts: %s\r\n", ts);
-  strcpy(ts, "2017-02-01T12:56:03.602Z");
+//  strcpy(ts, "2017-02-01T12:56:03.602Z");
 }
