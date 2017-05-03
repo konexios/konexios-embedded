@@ -264,7 +264,6 @@ int main() {
 		  als.read(data.als);
 		  data.abmienceInLux = als.getAbmienceInLux();
 		  data.pir = pir.read();
-		  DBG("pir %d", pir_int);
 		  pir_int = INT_CLEAR;
 		  if ( mqtt_publish(&device, &data) < 0 ) {
 			  DBG("mqtt publish failure...");
