@@ -26,6 +26,7 @@ Required:
 #include <arrow/devicecommand.h>
 #include "ArrowMotor.h"
 #include "LEDBallast.h"
+#include "DLBSmotor.h"
 
 #define TITLE   "==Hello World=="
 NHD_C0216CZ lcd;
@@ -41,19 +42,37 @@ WizFi250Interface eth;
 
 // Sensors
 NOA1305 als;
+NCS36000 pir;
+
+#if 0
 #define INT_SET		1
 #define INT_CLEAR	0
-
-NCS36000 pir;
 int pir_int = INT_CLEAR;
 void pir_routine() {
 	pir_int = INT_SET;
 	DBG("PIR movement detected");
 }
-
-
-// variable to represent interrupt.
 int als_int = INT_CLEAR;
+void als_isr() {
+		als_int = INT_SET;
+}
+#endif
+
+DLBSmotor rotor;
+static int rotor_cmd(const char *str) {
+	DBG("cmd: [%s]", str);
+	JsonNode *_main = json_decode(str);
+	JsonNode *_rpm = json_find_member(_main, "rpm");
+	if ( !_rpm ) return -1;
+	if ( _rpm->number_ == 0 ) {
+		rotor.stop();
+	} else {
+		if ( _rpm->number_ < BLDC_MIN_RPM || _rpm->number_ > BLDC_MAX_RPM ) return -1;
+		rotor.start(_rpm->number_);
+	}
+	json_delete(_main);
+	return 0;
+}
 
 Arrow_Motor motor;
 static int motor_rotate(const char *str) {
@@ -95,12 +114,6 @@ static int led_on(const char *str) {
 }
 
 
-void als_isr()
-{
-		// make the variable as 1 to indicate interrupt.
-		als_int = INT_SET;
-}
-
 int main() {
 
 	lcd.init();
@@ -108,26 +121,6 @@ int main() {
 
 	wait(1);
 	DBG("==== START =====");
-
-	// Initialize ALS
-	 	if (als.init() != ALS_SUCCESS) {
-	 		lcd.displayString("ALS initialization failed");
-	 		return -1;
-	 	} else {
-	 		lcd.displayString("ALS initialization successful");
-	 		DBG("ALS initialization successful");
-	 		wait(1);
-	 	}
-
-	 	// Enabled ALS interrupt
-	 	if (als.registerCallback(2000, ABOVE, &als_isr) != ALS_SUCCESS) {
-	 		lcd.displayString("ALS interrupt enable failed");
-	 		return -1;
-	 	} else {
-	 		lcd.displayString("ALS interrupt enabled");
-	 		DBG("ALS interrupt enabled");
-	 		wait(1);
-	 	}
 
 #if defined(USE_POE_SHIELD)
 	 	uint8_t mac[6];
@@ -173,10 +166,9 @@ int main() {
 	 	} else {
 	 		lcd.displayString("WIFI initialized");
 	 		DBG("WIFI initialized");
-	 		wait(2);
 	 	}
 
-	 	int ret =0;
+	 	int ret = 0;
 	 	if ((ret = eth.connect(SECURE, SSID, PASS)) != 0) {
 	 		// exit if joining access point is not successful.
 	 		lcd.displayString("Hotspot connection failed");
@@ -188,8 +180,55 @@ int main() {
 	 	}
 
 	 	DBG("ip: %s\r\n", eth.getIPAddress());
-#endif
 
+	 	UDPSocket udp;
+	 	udp.init();
+
+	 	udp.bind(32000);
+	 	udp.set_blocking(true, 3000);
+	 	Endpoint ep;
+	 	ep.set_address("0.pool.ntp.org", 123);
+
+	 	char payload[56] = {
+	 		 		0x23, 0, 0, 0, 0, 0, 0, 0,
+	 				0x0, 0, 0, 0, 0, 0, 0, 0,
+	 				0x0, 0, 0, 0, 0, 0, 0, 0,
+	 				0x0, 0, 0, 0, 0, 0, 0, 0,
+	 				0x0, 0, 0, 0, 0, 0, 0, 0,
+	 				0x83, 0xaa, 0x7e, 0x80, 0, 0, 0, 0,
+	 				0x0, 0, 0, 0, 0, 0, 0, 0
+	 		 	};
+	 		 	char pay_ans[100];
+
+	 	ret = udp.sendTo(ep, payload, 48);
+	 	DBG("ret = %d", ret);
+
+//	 	Endpoint ep1;
+	 	ret = udp.receiveFrom(ep, pay_ans, 48);
+	 	DBG("ret = %d", ret);
+
+#endif
+	 	//Initialize ALS
+		if (als.init() != ALS_SUCCESS) {
+			lcd.displayString("ALS initialization failed");
+			return -1;
+		} else {
+			lcd.displayString("ALS initialization successful");
+			DBG("ALS initialization successful");
+			wait(1);
+		}
+
+#if 0
+		// Enabled ALS interrupt
+		if (als.registerCallback(2000, ABOVE, &als_isr) != ALS_SUCCESS) {
+			lcd.displayString("ALS interrupt enable failed");
+			return -1;
+		} else {
+			lcd.displayString("ALS interrupt enabled");
+			DBG("ALS interrupt enabled");
+		}
+
+		//Initialize PIR
 	 	ret = pir.registerCallback(pir_routine);
 	 	if ( ret != PIR_SUCCESS ) {
 	 		DBG("PIR callback registered fail...");
@@ -197,13 +236,16 @@ int main() {
 	 		DBG("PIR callback registered");
 	 	}
 
-//	 	motor.enable(MOTOR1);
-//	 	motor.rotate(MOTOR1, 360);
-//	 	motor.disable(MOTOR1);
-//	 	motor.enable(MOTOR2);
-//	 	motor.rotate(MOTOR2, 360);
-//	 	motor.disable(MOTOR2);
+		  if(als_int == INT_SET) {
+			  lcd.displayString("ALS Interrupt generated");
+			  als_int = INT_CLEAR;
+		  }
+		  lcd.displayString("Light intensity");
+#endif
+
+	 	//Initialize LEDs
 	 	led.init();
+	 	rotor.init();
 
 	 	time_t now = time(NULL);
 	 	DBG("test time %d", now);
@@ -217,17 +259,20 @@ int main() {
 	  arrow_gateway_config_t gate_config;
 	  arrow_device_t device;
 
+	  lcd.displayString("gateway connect...");
 	  while ( arrow_connect_gateway(&gateway) < 0) {
 		  DBG("arrow gateway connection fail");
 		  wait_ms(1000);
 	  }
 
+	  lcd.displayString("get configuration...");
 	  while ( arrow_config( &gateway, &gate_config ) < 0 ) {
 		  DBG("arrow gateway config fail");
 		  wait_ms(1000);
 	  }
 
 	  DBG("init device...");
+	  lcd.displayString("device init...");
 	  while ( arrow_connect_device(&gateway, &device) < 0 ) {
 		  DBG("arrow device connection fail");
 		  wait_ms(1000);
@@ -235,17 +280,11 @@ int main() {
 
 	  gevk_data_t data;
 
-	  if(als_int == INT_SET) {
-		  lcd.displayString("ALS Interrupt generated");
-		  wait(0.2);
-		  // reset the interrupt flag
-		  als_int = INT_CLEAR;
-	  }
-	  lcd.displayString("Light intensity");
 	  // read the light intensity from als.
 	  als.read(data.als);
 	  data.abmienceInLux = als.getAbmienceInLux();
 
+	  lcd.displayString("send telemetry...");
 	  while ( arrow_send_telemetry(&device, &data) < 0 ) {
 		  DBG("send telemetry fail");
 	  }
@@ -257,6 +296,7 @@ int main() {
 
 	  add_cmd_handler("motor", motor_rotate);
 	  add_cmd_handler("led", led_on);
+	  add_cmd_handler("rotor", rotor_cmd);
 
 	  mqtt_subscribe();
 
@@ -264,14 +304,14 @@ int main() {
 		  als.read(data.als);
 		  data.abmienceInLux = als.getAbmienceInLux();
 		  data.pir = pir.read();
+#if 0
 		  pir_int = INT_CLEAR;
+#endif
 		  if ( mqtt_publish(&device, &data) < 0 ) {
 			  DBG("mqtt publish failure...");
 			  mqtt_disconnect();
 			  while (mqtt_connect(&gateway, &device, &gate_config) < 0) {wait_ms(1000);}
 			  mqtt_subscribe();
-		  } else {
-//			  feed_wdt();
 		  }
 		  mqtt_yield(TELEMETRY_DELAY);
     }

@@ -27,6 +27,8 @@ LIBS_PREFIX		:=
 MBED_LIBS       := rtos
 INCDIRS			+= $(GCC4MBED_DIR)/IDK/include/
 
+TL_PATH = C:\GNUToolchain\bin
+
 include $(GCC4MBED_DIR)/build/idk.mk
 
 DEFINES += -DUSE_POE_SHIELD

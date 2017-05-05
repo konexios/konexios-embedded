@@ -101,6 +101,7 @@ int wifi_gethostbyname(char *addr, uint32_t *_ip) {
 #else
 	int ret = WizFi250::getInstance()->getHostByName((char*)addr, (char *)ip);
 	inet_pton(ip, _ip);
+	DBG("dns ret %d", ret);
 #endif
 	return ret;
 }
@@ -203,7 +204,6 @@ int wifi_socket_connect(int socket, const sockaddr *saddr, socklen_t addrlen) {
   _tcp_socket *tcps = static_cast<_tcp_socket*>(sockets_stack[socket].s);
   char ip[16];
   inet_ntop(&haddr, ip);
-  DBG(" TCP connect : host %s %d", ip, htons(dest_addr_in->sin_port))
   return tcps->connect(ip, htons(dest_addr_in->sin_port));
 }
 
@@ -219,7 +219,6 @@ int wifi_socket_setopt(int socket, int level, int optname,
             struct timeval *tv = ((struct timeval *)(optval));
             int timeout = tv->tv_sec*1000 + (tv->tv_usec/1000);
             if ( timeout > 0 ) {
-            	DBG("set timeout %d", timeout);
               sockets_stack[socket].s->set_blocking(false, timeout);
             }
           }
