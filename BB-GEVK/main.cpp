@@ -178,35 +178,6 @@ int main() {
 	 		lcd.displayString("Hotspot connection successful");
 	 		DBG("WIFI connected to hotspot");
 	 	}
-
-	 	DBG("ip: %s\r\n", eth.getIPAddress());
-
-	 	UDPSocket udp;
-	 	udp.init();
-
-	 	udp.bind(32000);
-	 	udp.set_blocking(true, 3000);
-	 	Endpoint ep;
-	 	ep.set_address("0.pool.ntp.org", 123);
-
-	 	char payload[56] = {
-	 		 		0x23, 0, 0, 0, 0, 0, 0, 0,
-	 				0x0, 0, 0, 0, 0, 0, 0, 0,
-	 				0x0, 0, 0, 0, 0, 0, 0, 0,
-	 				0x0, 0, 0, 0, 0, 0, 0, 0,
-	 				0x0, 0, 0, 0, 0, 0, 0, 0,
-	 				0x83, 0xaa, 0x7e, 0x80, 0, 0, 0, 0,
-	 				0x0, 0, 0, 0, 0, 0, 0, 0
-	 		 	};
-	 		 	char pay_ans[100];
-
-	 	ret = udp.sendTo(ep, payload, 48);
-	 	DBG("ret = %d", ret);
-
-//	 	Endpoint ep1;
-	 	ret = udp.receiveFrom(ep, pay_ans, 48);
-	 	DBG("ret = %d", ret);
-
 #endif
 	 	//Initialize ALS
 		if (als.init() != ALS_SUCCESS) {
