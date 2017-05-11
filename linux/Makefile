@@ -63,7 +63,7 @@ clean:
 size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 
-run:
+run: $(APP_OUT)
 	@./$(APP_OUT)
 
 all: libacnsdkc.a $(CPPOBJS) $(APP_OUT)
