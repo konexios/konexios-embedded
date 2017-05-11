@@ -271,6 +271,9 @@ int main() {
 
 	  mqtt_subscribe();
 
+	  int count = 0;
+	  const int max_count = 10;
+	  int old_pir = pir.read();
 	  while(1) {
 		  als.read(data.als);
 		  data.abmienceInLux = als.getAbmienceInLux();
@@ -278,12 +281,16 @@ int main() {
 #if 0
 		  pir_int = INT_CLEAR;
 #endif
-		  if ( mqtt_publish(&device, &data) < 0 ) {
-			  DBG("mqtt publish failure...");
-			  mqtt_disconnect();
-			  while (mqtt_connect(&gateway, &device, &gate_config) < 0) {wait_ms(1000);}
-			  mqtt_subscribe();
+		  if ( data.pir != old_pir || count++ >= max_count ) {
+			  count = 0;
+			  old_pir = data.pir;
+			  if ( mqtt_publish(&device, &data) < 0 ) {
+				  DBG("mqtt publish failure...");
+				  mqtt_disconnect();
+				  while (mqtt_connect(&gateway, &device, &gate_config) < 0) {wait_ms(1000);}
+				  mqtt_subscribe();
+			  }
 		  }
-		  mqtt_yield(TELEMETRY_DELAY);
+		  mqtt_yield(TELEMETRY_DELAY / max_count);
     }
 }
