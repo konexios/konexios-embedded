@@ -21,7 +21,7 @@ Press "Finish"
 6. Set up the config.cfg file if you need 
 ( Board COMM Port = COM1 or another )
 
-7. You already have binary file for a flashing the board but I can to rebuild it
+7. You already have a binary file for a flashing the board but you can to rebuild it
 In this case replace
 TL_PATH = C:\GNUToolchain\bin
 by the actual path of the toolchain
