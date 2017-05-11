@@ -14,15 +14,15 @@ extern "C" {
 #include <json/telemetry.h>
 #include <ntp/ntp.h>
 #include <time/time.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sensors/sensors.h>
 #include <arrow/events.h>
 #include <arrow/state.h>
 #include <arrow/devicecommand.h>
+#include <stdio.h>
 }
 
 #include <iostream>
+
+extern int get_telemetry_data(void *data);
 
 static int test_cmd_proc(const char *str) {
   printf("test: [%s]", str);
@@ -82,59 +82,9 @@ int main() {
 
     std::cout<<"send telemetry via API"<<std::endl;
     
-    
-    // init the sensors (libsensors4-devel)
-    int ret = sensors_init( NULL );
-    if ( ret ) {
-      std::cerr<<"sensors init failed"<<std::endl;
-      return 1;
-    }
-
-    const sensors_chip_name *chip;
-    const sensors_feature *feature;
-    const sensors_subfeature *sub0;
-    const sensors_subfeature *sub1;
-    int chip_number = 2;
-
-    
-    // now find the temperature sensors on my laptop!
-    chip = sensors_get_detected_chips(NULL, &chip_number);
-
-    char chip_name[512];
-    sensors_snprintf_chip_name(chip_name, 512, chip);
-    printf("chip %s - %d\r\n", chip_name, chip_number);
-
-    int feature_number = 1;
-    feature = sensors_get_features(chip, &feature_number);
-    if ( feature->type != SENSORS_FEATURE_TEMP ) {
-      printf("check SENSORS_FEATURE_TEMP fail\r\n");
-      return -1;
-    }
-
-    sub0 = sensors_get_subfeature(chip, feature, SENSORS_SUBFEATURE_TEMP_INPUT);
-    if ( ! sub0->flags & SENSORS_MODE_R ) {
-      printf("no R mode - core 0\r\n");
-      return -1;
-    }
-
-    feature_number = 2;
-    feature = sensors_get_features(chip, &feature_number);
-    if ( feature->type != SENSORS_FEATURE_TEMP ) return -1;
-    sub1 = sensors_get_subfeature(chip, feature, SENSORS_SUBFEATURE_TEMP_INPUT);
-    if ( ! sub1->flags & SENSORS_MODE_R ) {
-      printf("no R mode - core 1\r\n");
-      return -1;
-    }
-    
-    // sub0 and sub1 - is the termerature sensors
-    // we can get a temperature value by sensors_get_value()
-
     probook_data_t data;
-    double tmp;
-    sensors_get_value(chip, sub0->number, &tmp);
-    data.temperature_core0 = tmp;
-    sensors_get_value(chip, sub1->number, &tmp);
-    data.temperature_core1 = tmp;
+    get_telemetry_data(&data);
+
     while ( arrow_send_telemetry(&device, &data) < 0) {
       std::cout<<"arrow: send telemetry fail"<<std::endl;
       sleep(1);
@@ -157,12 +107,11 @@ int main() {
     int i = 0;
     while (true) {
       // every 5 sec send data via mqtt
-      mqtt_yield(5000);
-      sensors_get_value(chip, sub0->number, &tmp);
-      data.temperature_core0 = tmp;
-      sensors_get_value(chip, sub1->number, &tmp);
-      data.temperature_core1 = tmp;
-      std::cout<<"mqtt publish ["<<i++<<"]: T("<<tmp<<")..."<<std::endl;
+      mqtt_yield(TELEMETRY_DELAY);
+      get_telemetry_data(&data);
+      std::cout<<"mqtt publish ["<<i++
+              <<"]: T("<<data.temperature_core0
+              <<", "<<data.temperature_core1<<")..."<<std::endl;
       if ( mqtt_publish(&device, &data) < 0 ) {
         std::cerr<<"mqtt publish failure..."<<std::endl;
         mqtt_disconnect();
