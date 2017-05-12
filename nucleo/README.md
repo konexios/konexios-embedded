@@ -70,3 +70,18 @@ st-flash write .build/DataLog_USB_gcc.bin 0x08004000
 DataLog_USB_gcc.bin - stm32cube based firmware
 
 
+
+## How to set up a WiFi ##
+There is an easy way: just to write this into a private.h file
+add the following strings into:
+#define DEFAULT_WIFI_SSID "YourSSID"
+#define DEFAULT_WIFI_PASS "YourPASS"
+#define DEFAULT_WIFI_SEC 3
+
+For the Nucleo board there are several security values:
+0 - OPEN
+1 - WEP
+2 -  WPA
+3 - WPA2
+
+If your don't define even one of three parameters board will restore this one from flash memory. You also can save wifi settings into the flash. For this you should connect to NUCLEO_WIFI net (the board automatically go to AP mode if it couldnt to restore wifi settings) and go to 172.20.59.1 address in a browser. And where you should to fill the form and press "Save" button.

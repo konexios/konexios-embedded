@@ -107,8 +107,6 @@ force_ap:
       add_file("index.html", arrow_config_page);
       add_file("404.html", arrow_done_page); // cgi
 
-//      wifi_file_list();
-//      wait(0.5);
       WDT_Feed();
       while(1) {
         WDT_Feed();
