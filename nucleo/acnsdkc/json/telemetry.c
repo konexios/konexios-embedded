@@ -13,7 +13,7 @@
 #ifdef SENSOR_TILE
 #include <stdio.h>
 #include "steval_stlcx01v1.h"
-char *telemetry_serialize(arrow_device_t *device, sensor_data_t *d) {
+char *telemetry_serialize(arrow_device_t *device, void *d) {
   SensorTile *data = (SensorTile *)d;
   printf("--------- stlcx serialize ---------\r\n");
   while ( ! data->sync() ) {
@@ -53,7 +53,7 @@ char *telemetry_serialize(arrow_device_t *device, sensor_data_t *d) {
 }
 #else
 #include "x_nucleo_iks01a1_data.h"
-char *telemetry_serialize(arrow_device_t *device, sensor_data_t *d) {
+char *telemetry_serialize(arrow_device_t *device, void *d) {
   X_NUCLEO_IKS01A1_data *data = (X_NUCLEO_IKS01A1_data *)d;
   JsonNode *_node = json_mkobject();
   json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
