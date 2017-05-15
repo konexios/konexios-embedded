@@ -9,12 +9,13 @@
 #include "json/telemetry.h"
 #include <config.h>
 #include <json/json.h>
+#include <json/data.h>
 #include <debug.h>
 #include <stdio.h>
 
 static char tmpdata[50];
 
-char *telemetry_serialize(arrow_device_t *device, sensor_data_t *d) {
+char *telemetry_serialize(arrow_device_t *device, void *d) {
   sensors_data_t *data = (sensors_data_t *)d;
   JsonNode *_node = json_mkobject();
   int ret;

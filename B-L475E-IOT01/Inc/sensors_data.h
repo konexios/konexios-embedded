@@ -53,6 +53,7 @@
 #endif
 
 #include <json/telemetry.h>
+#include <json/data.h>
 
 int init_sensors(void);
 int PrepareMqttPayload(sensors_data_t *data);

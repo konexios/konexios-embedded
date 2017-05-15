@@ -29,6 +29,7 @@
 #include "arrow_temperature.h"
 
 #include <arrow/storage.h>
+#include <json/data.h>
 #define PRINTF_ENBALE 1
 
 //TX_THREAD sdk_thread;
