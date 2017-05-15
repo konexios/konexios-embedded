@@ -115,7 +115,7 @@ lst: $(APP_OUT).lst
 size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 	
-flash:
+flash: $(APP_OUT)
 	st-flash write $(APP_OUT).bin 0x8000000
 
 all: libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin

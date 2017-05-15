@@ -107,8 +107,6 @@ force_ap:
       add_file("index.html", arrow_config_page);
       add_file("404.html", arrow_done_page); // cgi
 
-//      wifi_file_list();
-//      wait(0.5);
       WDT_Feed();
       while(1) {
         WDT_Feed();
@@ -246,13 +244,12 @@ force_ap:
     int i = 0;
     while (true) {
       WDT_Feed();
-      float tmp;
 #ifdef SENSOR_TILE
       tmp = mems_expansion_board->getTemperature();
 #else
       mems_expansion_board->getData(&data);
 #endif
-      printf("mqtt publish [%d]: T(%4.2f)...\r\n", i++, tmp);
+      printf("mqtt publish [%d]: T(%4.2f)...\r\n", i++, data.ht_temperature);
       if ( mqtt_publish(&device, &data) < 0 ) {
         printf("mqtt publish failure...");
         mqtt_disconnect();
