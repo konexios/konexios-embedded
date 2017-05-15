@@ -23,21 +23,20 @@ Required:
 #include <arrow/connection.h>
 #include <arrow/mqtt.h>
 #include <json/telemetry.h>
+#include <json/data.h>
 #include <arrow/devicecommand.h>
+#include <arrow/storage.h>
 #include "ArrowMotor.h"
 #include "LEDBallast.h"
 #include "DLBSmotor.h"
 
-#define TITLE   "==Hello World=="
+#define TITLE   "==Arrow DEMO=="
 NHD_C0216CZ lcd;
 
 #if defined (USE_POE_SHIELD)
 W5100Interface eth;
 #else
 WizFi250Interface eth;
-#define SECURE WizFi250::SEC_AUTO
-#define SSID "Mera-guest"
-#define PASS "guest@Mera"
 #endif
 
 // Sensors
@@ -169,7 +168,11 @@ int main() {
 	 	}
 
 	 	int ret = 0;
-	 	if ((ret = eth.connect(SECURE, SSID, PASS)) != 0) {
+	 	char ssid[64];
+	 	char pass[64];
+	 	int secure = 0;
+	 	restore_wifi_setting(ssid, pass, &secure);
+	 	if ((ret = eth.connect(secure, ssid, pass)) != 0) {
 	 		// exit if joining access point is not successful.
 	 		lcd.displayString("Hotspot connection failed");
 	 		DBG("Connection to access point failed");
