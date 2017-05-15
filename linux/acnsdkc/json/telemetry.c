@@ -9,9 +9,10 @@
 #include "json/telemetry.h"
 #include <config.h>
 #include <json/json.h>
+#if defined(__probook_4540s__)
+#include "json/probook.h"
 
-
-char *telemetry_serialize(arrow_device_t *device, sensor_data_t *data) {
+char *telemetry_serialize(arrow_device_t *device, void *data) {
     JsonNode *_node = json_mkobject();
     probook_data_t *pro_data = (probook_data_t *)data;
     json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
@@ -21,3 +22,20 @@ char *telemetry_serialize(arrow_device_t *device, sensor_data_t *data) {
     json_delete(_node);
     return tmp;
 }
+
+#else
+#include "json/pm.h"
+
+char *telemetry_serialize(arrow_device_t *device, void *data) {
+    JsonNode *_node = json_mkobject();
+    pm_data_t *pm_data = (pm_data_t *)data;
+    json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
+    json_append_member(_node, "f|PM25", json_mknumber(pm_data->pm_2_5));
+    json_append_member(_node, "f|PM10", json_mknumber(pm_data->pm_10));
+    char *tmp = json_encode(_node);
+    json_delete(_node);
+    return tmp;
+}
+
+
+#endif

@@ -5,6 +5,7 @@
 #include <sensors/sensors.h>
 #else
 #include <stdlib.h>
+#include <json/pm.h>
 #endif
 
 
@@ -62,9 +63,9 @@ int get_telemetry_data(void *d) {
     sensors_get_value(chip, sub1->number, &tmp);
     data->temperature_core1 = tmp;
 #else
-  probook_data_t *data = (probook_data_t *)d;
-  data->temperature_core0 = rand()%5 + 25;
-  data->temperature_core1 = rand()%5 + 30;
+  pm_data_t *data = (pm_data_t *)d;
+  data->pm_2_5 = rand()%5 + 25;
+  data->pm_10 = rand()%5 + 30;
 #endif
   return 0;
 }

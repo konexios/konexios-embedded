@@ -18,6 +18,11 @@ extern "C" {
 #include <arrow/state.h>
 #include <arrow/devicecommand.h>
 #include <stdio.h>
+#if defined(__probook_4540s__)
+#include <json/probook.h>
+#else
+#include <json/pm.h>
+#endif
 }
 
 #include <iostream>
@@ -82,7 +87,11 @@ int main() {
 
     std::cout<<"send telemetry via API"<<std::endl;
     
+#if defined(__probook_4540s__)
     probook_data_t data;
+#else
+    pm_data_t data;
+#endif
     get_telemetry_data(&data);
 
     while ( arrow_send_telemetry(&device, &data) < 0) {
@@ -109,9 +118,15 @@ int main() {
       // every 5 sec send data via mqtt
       mqtt_yield(TELEMETRY_DELAY);
       get_telemetry_data(&data);
+#if defined(__probook_4540s__)
       std::cout<<"mqtt publish ["<<i++
               <<"]: T("<<data.temperature_core0
               <<", "<<data.temperature_core1<<")..."<<std::endl;
+#else
+      std::cout<<"mqtt publish ["<<i++
+              <<"]: T("<<data.pm_2_5
+              <<", "<<data.pm_10<<")..."<<std::endl;
+#endif
       if ( mqtt_publish(&device, &data) < 0 ) {
         std::cerr<<"mqtt publish failure..."<<std::endl;
         mqtt_disconnect();
