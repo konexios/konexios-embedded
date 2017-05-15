@@ -23,6 +23,7 @@ Required:
 #include <arrow/connection.h>
 #include <arrow/mqtt.h>
 #include <json/telemetry.h>
+#include <json/data.h>
 #include <arrow/devicecommand.h>
 #include <arrow/storage.h>
 #include "ArrowMotor.h"

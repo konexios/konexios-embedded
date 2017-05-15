@@ -91,7 +91,7 @@ int get_wifi_mac_address(char *mac) {
 	return 0;
 }
 
-int wifi_gethostbyname(char *addr, uint32_t *_ip) {
+int wifi_gethostbyname(const char *addr, uint32_t *_ip) {
 	char ip[16];
 	memset(ip, 0, 16);
 
@@ -181,8 +181,6 @@ int wifi_socket_recvfrom(int socket, void *buf, size_t len,
   if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
   if ( !sockets_stack[socket].s ) return -1;
   DBG("recv from [%d] %d", socket, len);
-  char ip[16];
-  int port;
   _endpoint addr;
   _udp_socket *udp = static_cast<_udp_socket*>(sockets_stack[socket].s);
   int ret = udp->receiveFrom(addr, (char *)buf, len);
@@ -190,9 +188,9 @@ int wifi_socket_recvfrom(int socket, void *buf, size_t len,
   if ( ret < 0 ) return -1;
   struct sockaddr_in *saddr_in = (struct sockaddr_in*)src_addr;
   uint32_t _ip;
-  inet_pton(ip, &_ip);
+  inet_pton(addr.get_address(), &_ip);
   memcpy(&saddr_in->sin_addr.s_addr, &_ip, 4);
-  saddr_in->sin_port = port;
+  saddr_in->sin_port = addr.get_port();
   return ret;
 }
 

@@ -17,7 +17,7 @@ extern "C" {
 
 int get_wifi_mac_address(char *mac);
 
-int wifi_gethostbyname(char *addr, uint32_t *ip);
+int wifi_gethostbyname(const char *addr, uint32_t *ip);
 
 int wifi_socket(int protocol_family, int socket_type, int protocol);
 

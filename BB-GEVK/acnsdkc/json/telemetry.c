@@ -9,10 +9,11 @@
 #include "json/telemetry.h"
 #include <config.h>
 #include <json/json.h>
+#include <json/data.h>
 #include <debug.h>
 
 
-char *telemetry_serialize(arrow_device_t *device, sensor_data_t *data) {
+char *telemetry_serialize(arrow_device_t *device, void *data) {
     JsonNode *_node = json_mkobject();
     gevk_data_t *sens_data = (gevk_data_t *)data;
     json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
