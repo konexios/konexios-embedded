@@ -88,6 +88,13 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
 }
 
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
+#if defined(DEFAULT_WIFI_SSID) \
+  && defined(DEFAULT_WIFI_PASS) \
+  && defined(DEFAULT_WIFI_SEC)
+  strcpy(ssid, DEFAULT_WIFI_SSID);
+  strcpy(pass, DEFAULT_WIFI_PASS);
+  *sec = DEFAULT_WIFI_SEC;
+#else
   if ( mem.magic != FLASH_MAGIC_NUMBER ) {
     FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
     return -1;
@@ -103,5 +110,6 @@ int restore_wifi_setting(char *ssid, char *pass, int *sec) {
   strcpy(pass, mem.pass);
   DBG("--- flash load %s", mem.pass);
   *sec = mem.sec;
+#endif
   return 0;
 }

@@ -50,13 +50,14 @@
 
 #include <debug.h>
 #include <time/time.h>
+#include <time/watchdog.h>
 #include <ntp/ntp.h>
 #include <arrow/connection.h>
 #include <arrow/mqtt.h>
+#include <arrow/storage.h>
 
 /* Private variables ---------------------------------------------------------*/
 static UART_HandleTypeDef console_uart;
-IWDG_HandleTypeDef hiwdg;
 RNG_HandleTypeDef hrng;
 RTC_HandleTypeDef hrtc;
 
@@ -76,12 +77,9 @@ static sensors_data_t data;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void Error_Handler(void);
-static void MX_GPIO_Init(void);
 static void MX_RTC_Init(void);
 static void MX_RNG_Init(void);
 static void Console_UART_Init(void);
-static void MX_IWDG_Init(void);
-static void MX_IWDG_Feed(void);
 void StartDefaultTask(void const * argument);
 
 
@@ -99,11 +97,10 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
-  MX_IWDG_Init();
+  wdt_start();
 
   /* Initialize all configured peripherals */
   BSP_LED_Init(LED_GREEN);
-  MX_GPIO_Init();
   MX_RTC_Init();
   MX_RNG_Init();
 
@@ -268,29 +265,9 @@ static void Console_UART_Init(void)
   BSP_COM_Init(COM1,&console_uart);
 }
 
-/* IWDG init function */
-static void MX_IWDG_Init(void)
-{
-
-  hiwdg.Instance = IWDG;
-  hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
-  hiwdg.Init.Window = 4095;
-  hiwdg.Init.Reload = 4095;
-  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-}
-
-static void MX_IWDG_Feed(void) {
-  HAL_IWDG_Refresh(&hiwdg);
-}
-
 /* RNG init function */
 static void MX_RNG_Init(void)
 {
-
   hrng.Instance = RNG;
   if (HAL_RNG_Init(&hrng) != HAL_OK)
   {
@@ -349,56 +326,6 @@ static void MX_RTC_Init(void)
 
 }
 
-
-/** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-*/
-static void MX_GPIO_Init(void)
-{
-
-//  GPIO_InitTypeDef GPIO_InitStruct;
-
-  /* GPIO Ports Clock Enable */
-//  __HAL_RCC_GPIOE_CLK_ENABLE();
-//  __HAL_RCC_GPIOA_CLK_ENABLE();
-//  __HAL_RCC_GPIOC_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-//  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-//  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-//  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
-
-//  /*Configure GPIO pin : PE3 */
-//  GPIO_InitStruct.Pin = GPIO_PIN_3;
-//  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-//  GPIO_InitStruct.Pull = GPIO_NOPULL;
-//  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-//  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PA5 --PA9-- */
-//  GPIO_InitStruct.Pin = GPIO_PIN_5;  //|GPIO_PIN_9;
-//  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-//  GPIO_InitStruct.Pull = GPIO_NOPULL;
-//  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-//  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-//  /*Configure GPIO pin : PC9 */
-//  GPIO_InitStruct.Pin = GPIO_PIN_9;
-//  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-//  GPIO_InitStruct.Pull = GPIO_NOPULL;
-//  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-//  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-}
-
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
@@ -406,8 +333,8 @@ static void MX_GPIO_Init(void)
 #define WIFI_PRODUCT_INFO_SIZE                      ES_WIFI_MAX_SSID_NAME_SIZE
 #define  WIFI_CONNECT_MAX_ATTEMPT_COUNT  3
 
-const char *ssid = "Mera-guest";
-const char  *psk = "guest@Mera";
+const char ssid[64];
+const char psk[64];
 static char moduleinfo[WIFI_PRODUCT_INFO_SIZE];
 
 
@@ -415,22 +342,21 @@ static char moduleinfo[WIFI_PRODUCT_INFO_SIZE];
 void StartDefaultTask(void const * argument)
 {
   SSP_PARAMETER_NOT_USED(argument);
-  WIFI_Ecn_t security_mode = WIFI_ECN_WPA_WPA2_PSK;
+  WIFI_Ecn_t security_mode; //WIFI_ECN_WPA_WPA2_PSK;
+  restore_wifi_setting(ssid, psk, &security_mode);
   uint8_t macAddress[6];
   int wifiConnectCounter = 0;
   char time_buffer[30];
 
-  osDelay(1000);
-  printf("new start\r\n");
+  msleep(1000);
+  printf("----- new start ------\r\n");
   DBG("init L475 iot node");
-
-  DBG("init wifi driver");
 
   HAL_RTCStateTypeDef st;
   st = HAL_RTC_GetState(&hrtc);
 
   init_sensors();
-  MX_IWDG_Feed();
+  wdt_feed();
 
   WIFI_Status_t wifiRes;
   wifiRes = WIFI_Init();
@@ -468,7 +394,6 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
-  MX_IWDG_Feed();
   ntp_set_time_cycle();
 
   st = HAL_RTC_GetState(&hrtc);
@@ -476,67 +401,20 @@ void StartDefaultTask(void const * argument)
 
   time_t ctTime;
   ctTime = time(NULL);
- DBG("Time is set to (UTC): %s", ctime(&ctTime));
+  DBG("Time is set to (UTC): %s", ctime(&ctTime));
 
- MX_IWDG_Feed();
-  while ( arrow_connect_gateway(&gateway) < 0 ) {
-    DBG("arrow gateway connection fail");
-    msleep(1000);
-  }
-
-  MX_IWDG_Feed();
-  while ( arrow_config(&gateway, &gate_config) < 0 ) {
-    DBG("arrow gateway config failed");
-    msleep(1000);
-  }
-
-  MX_IWDG_Feed();
-  while( arrow_connect_device(&gateway, &device) < 0 ) {
-    DBG("arrow device connection failed");
-    msleep(1000);
-  }
+  arrow_initialize_routine();
 
   PrepareMqttPayload(&data);
 
-  MX_IWDG_Feed();
-  while( arrow_send_telemetry(&device, &data) ) {
-    DBG("arrow send telemetry fail...");
-    msleep(1000);
-  }
+  arrow_send_telemetry_routine(&data);
 
-  MX_IWDG_Feed();
-  while( mqtt_connect(&gateway, &device, &gate_config) < 0 ) {
-    DBG("mqtt connect fail...");
-    msleep(1000);
-  }
-  MX_IWDG_Feed();
-  mqtt_subscribe();
+  arrow_mqtt_connect_routine();
 
-  for(;;) {
-    MX_IWDG_Feed();
-    ctTime = time(NULL);
+  arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
 
-    snprintf(time_buffer, 30, "%s", ctime(&ctTime));
-    time_buffer[strlen(time_buffer)-1] = '\0';
-    DBG("Time (UTC): %s", time_buffer);
-    printf("Time (UTC): %s\r\n", time_buffer);
-    PrepareMqttPayload(&data);
-    DBG("publish: temp(%.2f) acc{%.2f, %.2f, %.2f}",
-        data.temperature,
-        (float)data.acc[0],
-        (float)data.acc[1],
-        (float)data.acc[2]);
-    if ( mqtt_publish(&device, &data) < 0 ) {
-      DBG("mqtt publish failed...");
-      mqtt_disconnect();
-      while( mqtt_connect(&gateway, &device, &gate_config) < 0 ) {
-        msleep(1000);
-      }
-      mqtt_subscribe();
-    }
-    BSP_LED_Toggle(LED_GREEN);
-    mqtt_yield(TELEMETRY_DELAY);
-  }
+  arrow_close();
+
 }
 
 /**

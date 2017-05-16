@@ -131,7 +131,13 @@ int PrepareMqttPayload(sensors_data_t *sd) {
   sd->proximity = VL53L0X_PROXIMITY_GetDistance();
   BSP_ACCELERO_AccGetXYZ(sd->acc);
   BSP_GYRO_GetXYZ(sd->gyr);     
-  BSP_MAGNETO_GetXYZ(sd->mag);  
+  BSP_MAGNETO_GetXYZ(sd->mag);
+  DBG("data: temp(%.2f) acc{%.2f, %.2f, %.2f}",
+      sd->temperature,
+      (float)sd->acc[0],
+      (float)sd->acc[1],
+      (float)sd->acc[2]);
+  BSP_LED_Toggle(LED_GREEN);
   return 0;
 }
 
