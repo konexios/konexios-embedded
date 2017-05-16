@@ -64,9 +64,6 @@ RTC_HandleTypeDef hrtc;
 osThreadId defaultTaskHandle;
 osMutexId myMutexHandle;
 
-static arrow_gateway_t gateway;
-static arrow_gateway_config_t gate_config;
-static arrow_device_t device;
 static sensors_data_t data;
 
 /* USER CODE BEGIN PV */
@@ -346,7 +343,6 @@ void StartDefaultTask(void const * argument)
   restore_wifi_setting(ssid, psk, &security_mode);
   uint8_t macAddress[6];
   int wifiConnectCounter = 0;
-  char time_buffer[30];
 
   msleep(1000);
   printf("----- new start ------\r\n");
