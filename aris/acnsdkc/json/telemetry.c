@@ -8,10 +8,12 @@
 
 #include "json/telemetry.h"
 #include <json/json.h>
+#include <sensors_data.h>
 #include <config.h>
 
-char *telemetry_serialize(arrow_device_t *device, sensor_data_t *data) {
+char *telemetry_serialize(arrow_device_t *device, void *d) {
     JsonNode *_node = json_mkobject();
+    sensor_data_t *data = (sensor_data_t *)d;
     json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
     json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(data->hygro.temperature));
     json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(data->hygro.humidity));
