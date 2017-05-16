@@ -15,21 +15,10 @@ extern "C" {
 #include <arrow/mqtt.h>
 #include <ntp/ntp.h>
 #include <arrow/storage.h>
-#include "stm32f4xx_hal_iwdg.h"
+#include <time/watchdog.h>
 }
 #include <stdio.h>
-
-IWDG_HandleTypeDef hiwdg;
-void WDT_Init(void) {
-    hiwdg.Instance = IWDG;
-    hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
-    hiwdg.Init.Reload = 0xfff;
-    HAL_IWDG_Init(&hiwdg);
-}
-
-void WDT_Feed(void) {
-    HAL_IWDG_Refresh(&hiwdg);
-}
+#include "wifi_module.h"
 
 #ifndef SENSOR_TILE
 #include "x_nucleo_iks01a1.h"
@@ -43,14 +32,6 @@ static SensorTile *mems_expansion_board = new SensorTile;
 Serial pc(SERIAL_TX, SERIAL_RX);
 static SpwfSAInterface spwf(PA_9, PA_10, PC_12, PC_8, PA_12, true);
 DigitalIn button(USER_BUTTON);
-
-void print_free() {
-  int test_int_stack;
-  int *test_int = new int;
-  printf("stack/heap - %08x/%08x\r\n", (int)(&test_int_stack), (int)test_int);
-  printf("free - %d\r\n", (int)(&test_int_stack-test_int));
-  delete test_int;
-}
 
 void add_file(const char *name, char *payload) {
   char *http_resp = new char[1024];
@@ -67,17 +48,27 @@ void add_file(const char *name, char *payload) {
   delete []http_resp;
 }
 
-#include "wifi_module.h"
+static int get_telemetry_data(void *data) {
+  static int i = 0;
+#ifdef SENSOR_TILE
+      tmp = mems_expansion_board->getTemperature();
+#else
+      mems_expansion_board->getData((X_NUCLEO_IKS01A1_data*)data);
+#endif
+      printf("data [%d]: T(%4.2f)...\r\n", i++, ((X_NUCLEO_IKS01A1_data*)data)->ht_temperature);
+      return 0;
+}
+
 int main() {
-  WDT_Init();
-    printf("\r\n--- Starting new run ---\r\n");
+  wdt_start();
+  printf("\r\n--- Starting new run ---\r\n");
 
     int err;
     char ssid[64];
     char pass[64];
     nsapi_security_t security;
     err = restore_wifi_setting(ssid, pass, (int*)&security);
-    WDT_Feed();
+    wdt_feed();
 
     printf("@button %d\r\n", button.read());
     if (button == 0 || err < 0) {
@@ -107,16 +98,15 @@ force_ap:
       add_file("index.html", arrow_config_page);
       add_file("404.html", arrow_done_page); // cgi
 
-      WDT_Feed();
       while(1) {
-        WDT_Feed();
+        wdt_feed();
         wait_ms(1000);
       }
     }
 
     printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
     printf("connecting to AP\r\n");
-    WDT_Feed();
+    wdt_feed();
 
     int try_connect = 5;
     do {
@@ -131,135 +121,29 @@ force_ap:
 
     const char *ip = spwf.get_ip_address();
     const char *mac = spwf.get_mac_address();
-    pc.printf("IP Address is: %s\r\n", (ip) ? ip : "No IP");
-    pc.printf("MAC Address is: %s\r\n", (mac) ? mac : "No MAC");
+    printf("IP Address is: %s\r\n", (ip) ? ip : "No IP");
+    printf("MAC Address is: %s\r\n", (mac) ? mac : "No MAC");
 
-    pc.printf("Get UTC time...\r\n");
+    printf("Get UTC time...\r\n");
 
-    WDT_Feed();
     // set time
     ntp_set_time_cycle();
 
     time_t ctTime = time(NULL);
-    pc.printf("Time is set to (UTC): %s\r\n", ctime(&ctTime));
+    printf("Time is set to (UTC): %s\r\n", ctime(&ctTime));
 
-    arrow_gateway_t gateway;
-    arrow_gateway_config_t gate_conf;
+    arrow_initialize_routine();
 
-    WDT_Feed();
-    printf("register gateway via API %p\r\n", &gateway);
-    while ( arrow_connect_gateway(&gateway) < 0 ) {
-      printf("arrow gateway connection fail\r\n");
-      wait(1);
-    }
-
-    WDT_Feed();
-    while ( arrow_config(&gateway, &gate_conf) < 0 ) {
-      printf("arrow gateway config fail...\r\n");
-      wait(1);
-    }
-
-//    bool ok;
-
-//#ifdef TEST
-//    ok = requestGetGateway(resp);
-//    printf("GET gateways\t\t[%s]\r\n", ok?"OK":"fail");
-//    if ( !ok ) return -1;
-//#endif
-
-//#ifdef TEST
-//    ok = requestGatewayReg(gw, resp);
-//    printf("POST gateways\t\t[%s]\r\n", ok?"OK":"fail");
-//    if ( !ok ) return -1;
-//#else
-//    while ( ok = requestGatewayReg(gw, resp) != true ) wait(5);
-//    std::cout<<"hid "<<gw.hid()<<"\r\n";
-//#endif
-
-//#ifdef TEST
-//    ok = requestHeartbeat(gw.hid(), resp);
-//    printf("HEARTBEAT gateway\t\t[%s]\r\n", ok?"OK":"fail");
-//    if ( !ok ) return -1;
-
-//    ok = requestCheckin(gw.hid(), resp);
-//    printf("CHECKIN gateway\t\t[%s]\r\n", ok?"OK":"fail");
-//    if ( !ok ) return -1;
-
-//    ok = requestGetConfig(gw.hid(), resp);
-//    printf("GET Config gateway\t\t[%s]\r\n", ok?"OK":"fail");
-//    if ( !ok ) return -1;
-//#endif
-
-    // device registaration
-    WDT_Feed();
-    printf("register device via API\r\n");
-    arrow_device_t device;
-    while ( arrow_connect_device(&gateway, &device) < 0 ) {
-      printf("arrow: device connection fail\r\n");
-    }
-
-//    ok = requestDeviceReg(dev, resp);
-//#ifdef TEST
-//    printf("REG device\t\t[%s]\r\n", ok?"OK":"fail");
-//#endif
-//    if ( !ok ) return -1;
-//    std::cout<<"deviceHid "<<dev.hid()<<"\r\n";
-
-//#ifdef SENSOR_TILE
-//    std::cout<<"init the sensortile\r\n";
-//    arrow::stlcx01v1 ext_board;
-//#else
-//    std::cout<<"init the IKS board\r\n";
-//    arrow::iks01a1 ext_board(mems_expansion_board);
-//#endif
-//    ext_board.setDeviceHid(dev.hid());
-
-    WDT_Feed();
     X_NUCLEO_IKS01A1_data data;
     mems_expansion_board->getData(&data);
-    printf("send telemetry via API\r\n");
-    while ( arrow_send_telemetry(&device, &data) < 0) {
-      printf("arrow: send telemetry fail\r\n");
-    }
 
-//    ok = requestTelemetry(ext_board.serialize(), resp);
-//#ifdef TEST
-//    printf("TELEMETRY device\t\t[%s]\r\n", ok?"OK":"fail");
-//#endif
-//    if ( !ok ) {
-//      printf("request telemetery fail\r\n");
-//      return -1;
-//    }
+    arrow_send_telemetry_routine(&data);
 
+    arrow_mqtt_connect_routine();
 
-    // MQTT
-    WDT_Feed();
-    printf("mqtt connect...\r\n");
-    while ( mqtt_connect(&gateway, &device, &gate_conf) < 0 ) {
-      printf("mqtt connect fail\r\n");
-      wait(1);
-    } //every sec try to connect
+    arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
-    WDT_Feed();
-    int i = 0;
-    while (true) {
-      WDT_Feed();
-#ifdef SENSOR_TILE
-      tmp = mems_expansion_board->getTemperature();
-#else
-      mems_expansion_board->getData(&data);
-#endif
-      printf("mqtt publish [%d]: T(%4.2f)...\r\n", i++, data.ht_temperature);
-      if ( mqtt_publish(&device, &data) < 0 ) {
-        printf("mqtt publish failure...");
-        mqtt_disconnect();
-        while (mqtt_connect(&gateway, &device, &gate_conf) < 0) { wait(1);}
-      }
-      wait_ms(TELEMETRY_DELAY); // every n sec send data via mqtt
-    }
-
-
-    pc.printf("\r\ndisconnecting....\r\n");
+    printf("\r\ndisconnecting....\r\n");
     spwf.disconnect();
-    pc.printf("\r\nTest complete.\r\n");
+    return 0;
 }
