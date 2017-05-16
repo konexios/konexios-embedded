@@ -32,6 +32,7 @@ static SensorTile *mems_expansion_board = new SensorTile;
 Serial pc(SERIAL_TX, SERIAL_RX);
 static SpwfSAInterface spwf(PA_9, PA_10, PC_12, PC_8, PA_12, true);
 DigitalIn button(USER_BUTTON);
+DigitalOut led(LED1);
 
 void add_file(const char *name, char *payload) {
   char *http_resp = new char[1024];
@@ -55,12 +56,14 @@ static int get_telemetry_data(void *data) {
 #else
       mems_expansion_board->getData((X_NUCLEO_IKS01A1_data*)data);
 #endif
+      led = !led;
       printf("data [%d]: T(%4.2f)...\r\n", i++, ((X_NUCLEO_IKS01A1_data*)data)->ht_temperature);
       return 0;
 }
 
 int main() {
   wdt_start();
+  led = 1;
   printf("\r\n--- Starting new run ---\r\n");
 
     int err;
@@ -104,6 +107,7 @@ force_ap:
       }
     }
 
+    led = !led;
     printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
     printf("connecting to AP\r\n");
     wdt_feed();
@@ -126,6 +130,7 @@ force_ap:
 
     printf("Get UTC time...\r\n");
 
+    led = !led;
     // set time
     ntp_set_time_cycle();
 
