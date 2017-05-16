@@ -261,7 +261,10 @@ int main() {
 	  add_cmd_handler("led", led_on);
 	  add_cmd_handler("rotor", rotor_cmd);
 
+      lcd.displayString("mqtt connecting...");
       arrow_mqtt_connect_routine();
+
+      lcd.displayString("send telemetry");
       arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
       arrow_close();
