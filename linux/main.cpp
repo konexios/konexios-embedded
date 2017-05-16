@@ -48,42 +48,11 @@ int main() {
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
-    // gateway
-    arrow_gateway_t gateway;
-    
-    // gateway configuration
-    arrow_gateway_config_t gate_config;
-    
-    // device
-    arrow_device_t device;
-
-    std::cout<<"register gateway via API"<<std::endl;
-    while ( arrow_connect_gateway(&gateway) < 0) {
-      std::cerr<<"arrow gateway connect fail..."<<std::endl;
-      sleep(5);
-    }
-
-    // try to get a gateway configuration
-    while ( arrow_config(&gateway, &gate_config) < 0 ) {
-      std::cerr<<"arrow gateway config fail...";
-      sleep(5);
-    }
-
-    // type of the configuration: 0 - IoT configuration
-    std::cout<<"config: "<<gate_config.type<<std::endl;
-
-    // device registaration
-    std::cout<<"register device via API"<<std::endl;
-
-    while (arrow_connect_device(&gateway, &device) < 0 ) {
-      std::cerr<<"device connect fail..."<<std::endl;
-      sleep(1);
-    }
+    arrow_initialize_routine();
 
     std::cout<<"------------------------"<<std::endl;
 
-    add_state("led", "on");
-    arrow_post_state_update(&device);
+    arrow_update_state("led", "on");
 
     std::cout<<"send telemetry via API"<<std::endl;
     
@@ -94,48 +63,16 @@ int main() {
 #endif
     get_telemetry_data(&data);
 
-    while ( arrow_send_telemetry(&device, &data) < 0) {
-      std::cout<<"arrow: send telemetry fail"<<std::endl;
-      sleep(1);
-    }
+    arrow_send_telemetry_routine(&data);
 
-    // init MQTT
-    std::cout<<"mqtt connect..."<<std::endl;
-    while ( mqtt_connect(&gateway, &device, &gate_config) < 0 ) {
-      std::cerr<<"mqtt connect fail"<<std::endl;
-      sleep(1);
-    } //every sec try to connect
-    
-    // FIXME just for a test
     add_cmd_handler("test", &test_cmd_proc);
     add_cmd_handler("fail", &fail_cmd_proc);
-    arrow_state_mqtt_run(&device);
 
-    mqtt_subscribe();
+    arrow_mqtt_connect_routine();
+    arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+    // endless
 
-    int i = 0;
-    while (true) {
-      // every 5 sec send data via mqtt
-      mqtt_yield(TELEMETRY_DELAY);
-      get_telemetry_data(&data);
-#if defined(__probook_4540s__)
-      std::cout<<"mqtt publish ["<<i++
-              <<"]: T("<<data.temperature_core0
-              <<", "<<data.temperature_core1<<")..."<<std::endl;
-#else
-      std::cout<<"mqtt publish ["<<i++
-              <<"]: T("<<data.pm_2_5
-              <<", "<<data.pm_10<<")..."<<std::endl;
-#endif
-      if ( mqtt_publish(&device, &data) < 0 ) {
-        std::cerr<<"mqtt publish failure..."<<std::endl;
-        mqtt_disconnect();
-        while (mqtt_connect(&gateway, &device, &gate_config) < 0) { sleep(1);}
-      }
-    }
-
-    arrow_device_free(&device);
-    arrow_gateway_free(&gateway);
+    arrow_close();
 
     std::cout<<std::endl<<"disconnecting...."<<std::endl;
 }

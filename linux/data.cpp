@@ -62,10 +62,14 @@ int get_telemetry_data(void *d) {
     data->temperature_core0 = tmp;
     sensors_get_value(chip, sub1->number, &tmp);
     data->temperature_core1 = tmp;
+    std::cout<<"mqtt publish: T("<<data->temperature_core0
+            <<", "<<data->temperature_core1<<")..."<<std::endl;
 #else
   pm_data_t *data = (pm_data_t *)d;
   data->pm_2_5 = rand()%5 + 25;
   data->pm_10 = rand()%5 + 30;
+  std::cout<<"mqtt publish: T("<<data->pm_2_5
+          <<", "<<data->pm_10<<")..."<<std::endl;
 #endif
   return 0;
 }
