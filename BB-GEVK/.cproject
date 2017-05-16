@@ -161,6 +161,9 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="acn-sdk-c/platforms|acn-sdk-c/skeleton|acn-sdk-c/platforms/aris" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/semiconductor/bsd"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/semiconductor/json"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/semiconductor/time"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

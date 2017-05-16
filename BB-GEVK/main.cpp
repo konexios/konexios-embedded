@@ -112,6 +112,26 @@ static int led_on(const char *str) {
 	return 0;
 }
 
+static int get_telemetry_data(void *d) {
+	static int count = 0;
+	const int max_count = 10;
+    int old_pir_data = 0;
+	gevk_data_t *data = (gevk_data_t *)d;
+	als.read(data->als);
+	data->abmienceInLux = als.getAbmienceInLux();
+	old_pir_data = data->pir;
+	data->pir = pir.read();
+#if 0
+		  pir_int = INT_CLEAR;
+#endif
+    if ( old_pir_data != data->pir || count++ >= max_count ) {
+    	count = 0;
+    	DBG("data PIR(%d), ALS{%d,%4.2f}", data->pir, data->als, data->abmienceInLux);
+    	return 0;
+    }
+    return -1;
+}
+
 
 int main() {
 
@@ -229,71 +249,20 @@ int main() {
 	 	/*time_t*/ now = time(NULL);
 	 	DBG("date : %s", ctime(&now));
 
-	  arrow_gateway_t gateway;
-	  arrow_gateway_config_t gate_config;
-	  arrow_device_t device;
-
-	  lcd.displayString("gateway connect...");
-	  while ( arrow_connect_gateway(&gateway) < 0) {
-		  DBG("arrow gateway connection fail");
-		  wait_ms(1000);
-	  }
-
-	  lcd.displayString("get configuration...");
-	  while ( arrow_config( &gateway, &gate_config ) < 0 ) {
-		  DBG("arrow gateway config fail");
-		  wait_ms(1000);
-	  }
-
-	  DBG("init device...");
-	  lcd.displayString("device init...");
-	  while ( arrow_connect_device(&gateway, &device) < 0 ) {
-		  DBG("arrow device connection fail");
-		  wait_ms(1000);
-	  }
+	  lcd.displayString("gateway and device connecting...");
+	  arrow_initialize_routine();
 
 	  gevk_data_t data;
+	  get_telemetry_data(&data);
 
-	  // read the light intensity from als.
-	  als.read(data.als);
-	  data.abmienceInLux = als.getAbmienceInLux();
-
-	  lcd.displayString("send telemetry...");
-	  while ( arrow_send_telemetry(&device, &data) < 0 ) {
-		  DBG("send telemetry fail");
-	  }
-
-	  while ( mqtt_connect(&gateway, &device, &gate_config) < 0 ) {
-		  DBG("mqtt connect fail");
-		  wait_ms(1000);
-	  } //every sec try to connect
+	  arrow_send_telemetry_routine(&data);
 
 	  add_cmd_handler("motor", motor_rotate);
 	  add_cmd_handler("led", led_on);
 	  add_cmd_handler("rotor", rotor_cmd);
 
-	  mqtt_subscribe();
+      arrow_mqtt_connect_routine();
+      arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
-	  int count = 0;
-	  const int max_count = 10;
-	  int old_pir = pir.read();
-	  while(1) {
-		  als.read(data.als);
-		  data.abmienceInLux = als.getAbmienceInLux();
-		  data.pir = pir.read();
-#if 0
-		  pir_int = INT_CLEAR;
-#endif
-		  if ( data.pir != old_pir || count++ >= max_count ) {
-			  count = 0;
-			  old_pir = data.pir;
-			  if ( mqtt_publish(&device, &data) < 0 ) {
-				  DBG("mqtt publish failure...");
-				  mqtt_disconnect();
-				  while (mqtt_connect(&gateway, &device, &gate_config) < 0) {wait_ms(1000);}
-				  mqtt_subscribe();
-			  }
-		  }
-		  mqtt_yield(TELEMETRY_DELAY / max_count);
-    }
+      arrow_close();
 }

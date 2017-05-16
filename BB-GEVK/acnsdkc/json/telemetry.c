@@ -10,7 +10,6 @@
 #include <config.h>
 #include <json/json.h>
 #include <json/data.h>
-#include <debug.h>
 
 
 char *telemetry_serialize(arrow_device_t *device, void *data) {
@@ -23,7 +22,6 @@ char *telemetry_serialize(arrow_device_t *device, void *data) {
     json_append_member(_node, "f|lux", json_mknumber(sens_data->abmienceInLux));
     json_append_member(_node, "i|pir", json_mknumber(sens_data->pir));
     char *tmp = json_encode(_node);
-    DBG("telemetry: %s", tmp);
     json_delete(_node);
     return tmp;
 }
