@@ -6,6 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
+#include "arrow/storage.h"
 #include <stdio.h>
 #include <debug.h>
 #include <driver/include/m2m_types.h>
@@ -93,6 +94,13 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
 }
 
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
+#if defined(DEFAULT_WIFI_SSID) \
+    && defined(DEFAULT_WIFI_PASS) \
+    && defined(DEFAULT_WIFI_SEC)
+    strcpy(ssid, DEFAULT_WIFI_SSID);
+    strcpy(pass, DEFAULT_WIFI_PASS);
+    *sec = DEFAULT_WIFI_SEC;
+#else
     if ( !flash_read ) read_flash();
     int *client_magic = (int*)flash;
     if ( (int)*client_magic != (int)MAGIC_NUMBER_FLASH ) {
@@ -109,5 +117,6 @@ int restore_wifi_setting(char *ssid, char *pass, int *sec) {
     strcpy(ssid, client_ssid);
     strcpy(pass, client_pass);
     memcpy(sec, client_sec, sizeof(int));
+#endif
     return 0;
 }
