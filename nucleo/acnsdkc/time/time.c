@@ -7,6 +7,8 @@
  */
 
 #include "time/time.h"
+#include "us_ticker_api.h"
+#include <mbed/wait_api.h>
 
 void get_time(char *ts) {
   struct tm *tmp;

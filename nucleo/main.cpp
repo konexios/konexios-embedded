@@ -65,6 +65,7 @@ int main() {
   wdt_start();
   led = 1;
   printf("\r\n--- Starting new run ---\r\n");
+  rand();
 
     int err;
     char ssid[64];
@@ -77,7 +78,7 @@ int main() {
     if (button == 0 || err < 0) {
 force_ap:
       spwf.create_ap(MAIN_WLAN_SSID, MAIN_WLAN_CHANNEL);
-      char *arrow_config_page =
+      const char *arrow_config_page =
           "<html><head><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'/>"
           "<style>body{font-size:xx-large;font-family:'Arial';} input{font-size:xx-large;width:100%;padding:12px 20px;margin:8px 0;box-sizing:border-box;} button{background-color:white;color:black;border:2px solid #blue;padding:15px 32px;font-size:xx-large;}</style></head>"
           "<body><div style='padding: 20px;'><h1>Arrow Connect</h1><h3>ARIS Board Wi-Fi settings</h3><br>"
@@ -92,14 +93,14 @@ force_ap:
           "<button type='submit' formmethod='get' formenctype=\"text/plain\" formaction='firstset.cgi' formname='configure' value='save'>Save</button>"
           "</form></div></body></html>\r\n";
 
-      char *arrow_done_page =
+      const char *arrow_done_page =
           "<html><head><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'/>"
           "<style>body{font-size:xx-large;font-family:'Arial';}</style></head>"
           "<body><div style='padding: 20px;'><h1>DONE</h1><h3>Wi-Fi configuration was saved</h3>"
           "</div></body></html>\r\n";
 
-      add_file("index.html", arrow_config_page);
-      add_file("404.html", arrow_done_page); // cgi
+      add_file("index.html", (char*)arrow_config_page);
+      add_file("404.html", (char*)arrow_done_page); // cgi
 
       while(1) {
         wdt_feed();
@@ -134,6 +135,7 @@ force_ap:
     // set time
     ntp_set_time_cycle();
 
+    srand(time(NULL));
     time_t ctTime = time(NULL);
     printf("Time is set to (UTC): %s\r\n", ctime(&ctTime));
 

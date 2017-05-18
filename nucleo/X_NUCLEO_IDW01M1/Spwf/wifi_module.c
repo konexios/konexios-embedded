@@ -1866,7 +1866,7 @@ void Process_Buffer(uint8_t * ptr)
 * @retval None
 */
 
-void Process_Wind_Indication(uint8_t *process_buff_ptr)
+void Process_Wind_Indication(const uint8_t *process_buff_ptr)
 {
   char * pStr = (char*)process_buff_ptr;
   char Indication_No[2]; 
@@ -2192,7 +2192,7 @@ void Process_Wind_Indication(uint8_t *process_buff_ptr)
                       } else if ( strcmp(prm, "PWD") == 0 ) {
                         strcpy(remote_config.pass, value);
                         // workaround last parameter
-                        Process_Wind_Indication("+WIND:1:Poweron (150410-c2e37a3-SPWF01S)");
+                        Process_Wind_Indication((uint8_t*)"+WIND:1:Poweron (150410-c2e37a3-SPWF01S)");
                       } else if ( strcmp(prm, "Auth mode") == 0 ) {
                         printf("Auth %s!!!\r\n", value);
                         switch(atoi(value)) {

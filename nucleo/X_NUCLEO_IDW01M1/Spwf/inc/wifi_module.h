@@ -299,7 +299,7 @@ WiFi_Status_t GET_Configuration_Value(char* sVar_name,uint32_t *aValue);
 WiFi_Status_t SET_Configuration_Addr(char* sVar_name,char* addr);
 WiFi_Status_t Display_Help_Text(void);
 WiFi_Status_t SET_Power_State(WiFi_Power_State_t state);
-void Process_Wind_Indication(uint8_t *process_buff_ptr);
+void Process_Wind_Indication(const uint8_t *process_buff_ptr);
 void Process_WiFi_Indication_Cmd(event_s_TypeDef * event_pop_s1);
 //void USART2_SendBuffer(USART_TypeDef* USARTx, uint8_t *pData, uint8_t length);
 WiFi_Status_t Read_WiFi_SSID(char *string);
