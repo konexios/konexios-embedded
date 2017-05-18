@@ -6,7 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include <time.h>
+#include <time/time.h>
 #include <arrow/mem.h>
 
 void get_time(char *ts) {
