@@ -276,7 +276,7 @@ typedef enum WiFi_Power_State_t
 } WiFi_Power_State_t;
 
 typedef enum WiFi_AT_CMD_Response_t {
-  Process_Event =0,
+  Process_Event =0
 } WiFi_AT_CMD_Response_t;
 
 #ifdef WIFI_USE_VCOM

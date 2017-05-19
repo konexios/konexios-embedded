@@ -39,7 +39,7 @@ enum nsapi_error_t {
     NSAPI_ERROR_DNS_FAILURE   = -3008,     /*!< DNS failed to complete successfully */
     NSAPI_ERROR_DHCP_FAILURE  = -3009,     /*!< DHCP failed to complete successfully */
     NSAPI_ERROR_AUTH_FAILURE  = -3010,     /*!< connection to access point faield */
-    NSAPI_ERROR_DEVICE_ERROR  = -3011,     /*!< failure interfacing with the network procesor */
+    NSAPI_ERROR_DEVICE_ERROR  = -3011      /*!< failure interfacing with the network procesor */
 };
 
 /** Enum of socket protocols
@@ -51,7 +51,7 @@ enum nsapi_error_t {
  */
 enum nsapi_protocol_t {
    NSAPI_TCP, /*!< Socket is of TCP type */
-   NSAPI_UDP, /*!< Socket is of UDP type */
+   NSAPI_UDP  /*!< Socket is of UDP type */
 };
 
 /*  Enum of standardized stack option levels
@@ -60,7 +60,7 @@ enum nsapi_protocol_t {
  */
 enum nsapi_level_t {
     NSAPI_STACK,  /*!< Stack option level */
-    NSAPI_SOCKET, /*!< Socket option level */
+    NSAPI_SOCKET  /*!< Socket option level */
 };
 
 /*  Enum of standardized stack options
@@ -75,7 +75,7 @@ enum nsapi_option_t {
     NSAPI_KEEPALIVE, /*!< Enables sending of keepalive messages */
     NSAPI_LINGER,    /*!< Keeps close from returning until queues empty */
     NSAPI_SNDBUF,    /*!< Sets send buffer size */
-    NSAPI_RCVBUF,    /*!< Sets recv buffer size */
+    NSAPI_RCVBUF     /*!< Sets recv buffer size */
 };
 
 
