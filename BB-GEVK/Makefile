@@ -31,7 +31,7 @@ TL_PATH = C:\GNUToolchain\bin
 
 include $(GCC4MBED_DIR)/build/idk.mk
 
-DEFINES += -DUSE_POE_SHIELD
+DEFINES += -DUSE_POE_SHIELD -Werror
 
 LIBS_PREFIX += $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/NCS36510/acnsdkc/libacnsdkc.a
 include $(GCC4MBED_DIR)/acn-embedded/acn-sdk-c/platforms/semiconductor/Makefile.onsemi
