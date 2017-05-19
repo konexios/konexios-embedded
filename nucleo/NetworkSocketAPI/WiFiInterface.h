@@ -30,7 +30,7 @@ enum nsapi_security_t {
     NSAPI_SECURITY_NONE = 0,   /*!< open access point */
     NSAPI_SECURITY_WEP,        /*!< phrase conforms to WEP */
     NSAPI_SECURITY_WPA,        /*!< phrase conforms to WPA */
-    NSAPI_SECURITY_WPA2,       /*!< phrase conforms to WPA2 */
+    NSAPI_SECURITY_WPA2        /*!< phrase conforms to WPA2 */
 };
 
 /** WiFiInterface class

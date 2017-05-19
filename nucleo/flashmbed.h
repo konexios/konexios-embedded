@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#define FLASH_MAGIC_NUMBER 0x08808103
+#include <config.h>
 
 int write_flash(char *flash, size_t size);
 char *flash_start();

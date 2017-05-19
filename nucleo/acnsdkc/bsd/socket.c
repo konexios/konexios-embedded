@@ -64,13 +64,13 @@ int setsockopt(int sockfd, int level, int optname,
 }
 
 int bind(int sock, const struct sockaddr *addr, socklen_t addrlen) {
-
+  return -1;
 }
 
 int listen(int sock, int backlog) {
-
+  return -1;
 }
 
 int accept(int sock, struct sockaddr *addr, socklen_t *addrlen) {
-
+  return -1;
 }

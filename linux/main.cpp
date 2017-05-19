@@ -73,6 +73,8 @@ int main() {
     // endless
 
     arrow_close();
+    free_cmd_handler();
+    arrow_state_mqtt_stop();
 
     std::cout<<std::endl<<"disconnecting...."<<std::endl;
 }

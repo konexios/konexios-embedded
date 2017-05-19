@@ -42,7 +42,7 @@ int find_free_sock() {
 
 static SocketStarter _sock_start;
 
-int wifi_gethostbyname(char *addr, uint32_t *ip) {
+int wifi_gethostbyname(const char *addr, uint32_t *ip) {
   NetworkStack *iface = WiFi::get_interface();
   if (iface) {
     SocketAddress ipaddr;

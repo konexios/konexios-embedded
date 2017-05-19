@@ -95,7 +95,7 @@
 typedef enum GpioWriteValue
 { 
   GPIO_OFF      = 0,
-  GPIO_ON,
+  GPIO_ON
 } GpioWriteValue;
 
 typedef enum GpioPin
@@ -122,14 +122,14 @@ typedef enum wifi_bool
 {
   WIFI_FALSE         = 0,
   WIFI_TRUE          = 1,
-  Undefine      = 0xFF
+  Undefine           = 0xFF
 } wifi_bool;
 
 typedef enum WiFi_Priv_Mode
 {
   None          = 0, 
   WEP           = 1,
-  WPA_Personal  = 2,
+  WPA_Personal  = 2
 } WiFi_Priv_Mode;
 
 /********** Wi-Fi Error *************/
@@ -174,9 +174,9 @@ typedef enum WiFi_Status_t
 
 typedef enum power_mode
 {
-  wifi_active        = 0,
-  wifi_reactive      = 1,
-  wifi_sleep      = 2,
+  wifi_active       = 0,
+  wifi_reactive     = 1,
+  wifi_sleep        = 2
 } power_mode;
 
 typedef enum tx_power_level
@@ -184,14 +184,14 @@ typedef enum tx_power_level
   low           = 0,
   medium        = 1,
   high          = 2,
-  max           = 3,
+  max           = 3
 } tx_power_level;
 
 typedef enum dhcp_mode
 {
   off           = 0,
   on            = 1,
-  custom        = 2,
+  custom        = 2
 } dhcp_mode;
 
 typedef struct wifi_security

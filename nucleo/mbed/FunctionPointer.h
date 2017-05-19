@@ -60,7 +60,7 @@ public:
     }
 };
 
-typedef FunctionPointerArg1<void, void> FunctionPointer;
+typedef Callback<void()> FunctionPointer;
 
 
 } // namespace mbed

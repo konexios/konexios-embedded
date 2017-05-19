@@ -17,10 +17,12 @@ extern "C" {
 #include "stm32f4xx_hal_def.h"
 #include "stm32f4xx_hal_flash.h"
 
+#include <arrow/storage.h>
+
 static uint8_t __eeprom[0x4000] __attribute__((section(".eeprom"), used));
 
 char *flash_start() {
-  return __eeprom;
+  return (char*)__eeprom;
 }
 
 int write_flash(char *flash, size_t size) {
@@ -41,7 +43,7 @@ int write_flash(char *flash, size_t size) {
   }
   int data, i = 0;
   char *raw = flash;
-  while(i < size ) {
+  while( i < (int)size ) {
     data = *(raw + i);
     HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(__eeprom+i), data);
     i++;

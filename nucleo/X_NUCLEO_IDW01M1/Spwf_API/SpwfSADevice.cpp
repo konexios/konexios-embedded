@@ -111,7 +111,7 @@ int SpwfSADevice::init(void)
     config.power=wifi_active;
     config.power_level=high;
     config.dhcp=on;//use DHCP IP address
-    config.ap_config_page_name = "index.html";
+    config.ap_config_page_name = (char*)"index.html";
     
     /*Initialize the tickers*/
     wifi_isr.attach_us(Wifi_ticker, 1000); //decreasing the time period to 1ms may be causing overrun issue with UART?

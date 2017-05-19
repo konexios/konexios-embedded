@@ -19,7 +19,7 @@ int wifi_mac_address(char *addr) {
   if (iface) {
     const char *mac = iface->get_mac_address();
     for (int i=0; i<6; i++){
-      int p;
+      unsigned int p;
       int ret = sscanf(mac+i*3, "%02x", &p);
       if ( ret != 1 ) return -1;
       addr[i] = p;
