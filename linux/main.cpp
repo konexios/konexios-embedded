@@ -23,6 +23,9 @@ extern "C" {
 #else
 #include <json/pm.h>
 #endif
+
+#include <arrow/device_action.h>
+#include <arrow/device_api.h>
 }
 
 #include <iostream>
@@ -48,7 +51,18 @@ int main() {
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
+    arrow_device_find_by(1, find_by(f_size, "1"));
+    arrow_device_find_by_hid("f8400f12182e53e39c4f300bddaff9007b59991b");
+
+    std::cout<<"------------------------"<<std::endl;
+
     arrow_initialize_routine();
+
+    std::cout<<"------------------------"<<std::endl;
+
+    arrow_list_device_action(current_device());
+    arrow_list_action_type();
+    arrow_device_find_by(3, find_by(f_size, "1"), find_by(f_page, "1"), find_by(f_uid, "000001"));
 
     std::cout<<"------------------------"<<std::endl;
 

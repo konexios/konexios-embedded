@@ -102,15 +102,20 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
 ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
   SSP_PARAMETER_NOT_USED(flags);
   uint16_t recv_len;
-  WIFI_Status_t ret = WIFI_ReceiveData(sockfd, buf, len, &recv_len, _sockets[sockfd].timeout);
-  switch (ret) {
-    case WIFI_STATUS_TIMEOUT:
-      recv_len = -1;
-    break;
-    default:
-    break;
+  int received = 0;
+  while ( received < len ) {
+    int chunk = ( len - received > ES_WIFI_PAYLOAD_SIZE )? ES_WIFI_PAYLOAD_SIZE : len - received;
+    WIFI_Status_t ret = WIFI_ReceiveData(sockfd, buf + received, chunk, &recv_len, _sockets[sockfd].timeout);
+    switch (ret) {
+      case WIFI_STATUS_TIMEOUT:
+        if ( !received ) return -1;
+      break;
+      default:
+        received += recv_len;
+      break;
+    }
   }
-  return recv_len;
+  return received;
 }
 
 ssize_t recvfrom(int sock, void *buf, size_t size, int flags,
