@@ -7,6 +7,7 @@
 
 #include "WiFi_c.h"
 
+#include <time/time.h>
 #include <debug.h>
 #include <TCPSocketConnection.h>
 #include <UDPSocket.h>
