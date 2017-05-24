@@ -84,7 +84,12 @@ int get_wifi_mac_address(char *mac) {
 	if ( ret < 0 ) return ret;
 	uint32_t mac32[6];
 	ret = sscanf(mac_str, "%02X:%02X:%02X:%02X:%02X:%02X",
-			mac32, mac32+1, mac32+2, mac32+3, mac32+4, mac32+5);
+			(unsigned int *)mac32,
+			(unsigned int *)mac32+1,
+			(unsigned int *)mac32+2,
+			(unsigned int *)mac32+3,
+			(unsigned int *)mac32+4,
+			(unsigned int *)mac32+5);
 	if ( ret != 6 ) return -1;
 	for (int i = 0; i < 6; i++) mac[i] = mac32[i]&0x00ff;
 	mac[6] = 0;

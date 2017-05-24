@@ -17,10 +17,10 @@
 #include <debug.h>
 
 int check_mgc() {
-  int *c = flash_read();
-//  if ( *c != FLASH_MAGIC_NUMBER ) {
-//    return 0;
-//  }
+  int *c = (int *)flash_read();
+  if ( *c != (int) FLASH_MAGIC_NUMBER ) {
+    return 0;
+  }
   return 1;
 }
 
@@ -42,7 +42,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
   flash_mem_t mem;
   memcpy(&mem, flash_read(), sizeof(flash_mem_t));
   strcpy(mem.gateway_hid, gateway->hid);
-  int ret = flash_write(&mem, sizeof(flash_mem_t));
+  int ret = flash_write((char *)&mem, sizeof(flash_mem_t));
   DBG("flash read %d", ret);
 }
 
@@ -77,7 +77,7 @@ void save_device_info(arrow_device_t *device) {
 #if defined(__IBM__)
   strcpy(mem.device_eid, device->eid);
 #endif
-  flash_write(&mem, sizeof(flash_mem_t));
+  flash_write((char *)&mem, sizeof(flash_mem_t));
 }
 
 void save_wifi_setting(const char *ssid, const char *pass, int sec) {
@@ -86,7 +86,7 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
   strcpy(mem.ssid, ssid);
   strcpy(mem.pass, pass);
   mem.sec = sec;
-  flash_write(&mem, sizeof(flash_mem_t));
+  flash_write((char *)&mem, sizeof(flash_mem_t));
 }
 
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
