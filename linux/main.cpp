@@ -23,6 +23,11 @@ extern "C" {
 #else
 #include <json/pm.h>
 #endif
+
+#include <arrow/device_action.h>
+#include <arrow/device_api.h>
+#include <arrow/device_type.h>
+#include <arrow/gateway_api.h>
 }
 
 #include <iostream>
@@ -48,7 +53,29 @@ int main() {
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
+    arrow_gateway_find("1d1c97b53d2d28965e1f4eae2f2e430994671b51");
+    arrow_device_type_list();
+    device_type_t dev;
+    device_type_init(&dev, 1, "testname", "test description");
+    device_type_add_telemetry(&dev, 0, "temperature", "float", "temp desc");
+//    arrow_device_type_create(&dev);
+    device_type_free(&dev);
+
+//    arrow_device_find_by(1, find_by(f_size, "1"));
+//    arrow_device_find_by_hid("f8400f12182e53e39c4f300bddaff9007b59991b");
+//    arrow_list_action_type();
+
+    std::cout<<"------------------------"<<std::endl;
+
     arrow_initialize_routine();
+
+    std::cout<<"------------------------"<<std::endl;
+
+//    arrow_list_device_action(current_device());
+//    arrow_update_device(current_gateway(), current_device());
+    arrow_list_device_events(current_device(), 1, find_by(f_size, "1"));
+    arrow_list_device_logs(current_device(), 1, find_by(f_size, "1"));
+    arrow_error_device(current_device(), "unknown error");
 
     std::cout<<"------------------------"<<std::endl;
 
@@ -63,7 +90,7 @@ int main() {
 #endif
     get_telemetry_data(&data);
 
-    arrow_send_telemetry_routine(&data);
+//    arrow_send_telemetry_routine(&data);
 
     add_cmd_handler("test", &test_cmd_proc);
     add_cmd_handler("fail", &fail_cmd_proc);
