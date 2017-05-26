@@ -16,7 +16,7 @@
 #include "StorageEEPROM.h"
 #include <debug.h>
 
-int check_mgc() {
+static int check_mgc(void) {
   int *c = (int *)flash_read();
   if ( *c != (int) FLASH_MAGIC_NUMBER ) {
     return 0;

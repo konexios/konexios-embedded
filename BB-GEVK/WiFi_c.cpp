@@ -7,8 +7,6 @@
 
 #include "WiFi_c.h"
 
-#include <time/time.h>
-#include <debug.h>
 #include <TCPSocketConnection.h>
 #include <UDPSocket.h>
 #include "Shields.h"
@@ -17,6 +15,8 @@
 extern "C" {
 #endif
 #include <ctype.h>
+#include <time/time.h>
+#include <debug.h>
 
 #define MAX_SOCKETS 8
 
@@ -50,20 +50,20 @@ public:
   }
 };
 
-int find_free_sock() {
+static int find_free_sock(void) {
   for(int i=0; i<MAX_SOCKETS; i++) if ( !sockets_stack[i].s ) return i;
   return -1;
 }
 
 static SocketStarter _sock_start;
 
-int inet_ntop(uint32_t *src, char *dst) {
+static int inet_ntop(uint32_t *src, char *dst) {
 	char *tmp = (char *)src;
 	sprintf(dst, "%u.%u.%u.%u", tmp[0], tmp[1], tmp[2], tmp[3]);
 	return 0;
 }
 
-int inet_pton(char *src, uint32_t *dst) {
+static int inet_pton(char *src, uint32_t *dst) {
 	char *tmp = (char *)dst;
 	int ret = sscanf(src, "%u.%u.%u.%u",
 			(unsigned int*)(tmp+0),
