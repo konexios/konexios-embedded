@@ -16,17 +16,20 @@
 static Serial screen(USBTX, USBRX);
 
 char dbg_buffer[DBG_LINE_SIZE];
+Mutex dbg_mtx;
 
 extern "C" {
 
 void dbg_line(const char *fmt, ...) {
 	va_list args;
+	dbg_mtx.lock();
 	va_start(args, fmt);
 	*dbg_buffer = 0x0;
-	vsnprintf(dbg_buffer, DBG_LINE_SIZE-2, fmt, args);
+	vsnprintf(dbg_buffer, DBG_LINE_SIZE-3, fmt, args);
 	strcat(dbg_buffer, "\r\n");
 	screen.printf(dbg_buffer);
 	va_end(args);
+	dbg_mtx.unlock();
 }
 
 }

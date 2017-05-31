@@ -76,3 +76,8 @@ int listen(int sock, int backlog) {
 int accept(int sock, struct sockaddr *addr, socklen_t *addrlen) {
 	return -1;
 }
+
+int select(int nfds, fd_set *readfds, fd_set *writefds,
+		   fd_set *exceptfds, struct timeval *timeout) {
+	return -1;
+}

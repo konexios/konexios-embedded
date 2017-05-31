@@ -93,7 +93,6 @@ int get_wifi_mac_address(char *mac) {
 			(unsigned int *)mac32+5);
 	if ( ret != 6 ) return -1;
 	for (int i = 0; i < 6; i++) mac[i] = mac32[i]&0x00ff;
-	mac[6] = 0;
 	return 0;
 }
 
@@ -162,7 +161,7 @@ int wifi_socket_recv(int socket, void *buf, size_t len) {
   if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
   if ( !sockets_stack[socket].s ) return -1;
   _tcp_socket *tcps = static_cast<_tcp_socket*>(sockets_stack[socket].s);
-  int ret = tcps->receive((char *)buf, len);
+  int ret = tcps->receive_all((char *)buf, len);
   return ret;
 }
 

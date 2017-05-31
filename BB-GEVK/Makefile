@@ -27,13 +27,13 @@ LIBS_PREFIX		:=
 MBED_LIBS       := rtos
 INCDIRS			+= $(GCC4MBED_DIR)/IDK/include/
 
-TL_PATH = C:\GNUToolchain\bin
-# TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
+#TL_PATH = C:\GNUToolchain\bin
+TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\5.4 2016q2\bin"
 
 include $(GCC4MBED_DIR)/build/idk.mk
 
-DEFINES += -DUSE_POE_SHIELD
+DEFINES += -DUSE_POE_SHIELD -DDEBUG -Os # -Wl,--wrap=malloc -Wl,--wrap=free
 # -Wimplicit-function-declaration -Werror -Wpedantic
 
 LIBS_PREFIX += $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/NCS36510/acnsdkc/libacnsdkc.a

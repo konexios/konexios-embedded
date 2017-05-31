@@ -160,7 +160,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="acn-sdk-c/platforms|acn-sdk-c/skeleton|acn-sdk-c/platforms/aris" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="axtls-code/config|axtls-code/axtlswrap|axtls-code/docsrc|axtls-code/httpd|axtls-code/bindings|axtls-code/www|axtls-code/samples|acn-sdk-c/platforms|acn-sdk-c/skeleton|acn-sdk-c/platforms/aris" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/default/wolf/crypt"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/semiconductor/bsd"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/semiconductor/json"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/semiconductor/time"/>
@@ -188,4 +189,5 @@
 			<resource resourceType="PROJECT" workspacePath="/BB-GEVK"/>
 		</configuration>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

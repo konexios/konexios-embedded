@@ -28,14 +28,14 @@ public:
 
 	char *read() {
 		SerCAT25M02 flash(&spi,262144,256);
-		return flash.read(2, _flash_size, _flash);
+		return flash.read(_flash_size / 256, _flash_size, _flash);
 	}
 	int write(char *mem, size_t size) {
 		if ( !mem ) return -1;
 		SerCAT25M02 flash(&spi,262144,256);
 		memcpy(_flash, mem, size);
 		DBG("write flash %d %p %p", _flash_size, flash, _flash);
-		bool b = flash.write(2, _flash_size, _flash);
+		bool b = flash.write(_flash_size / 256, _flash_size, _flash);
 		DBG("write res %d", b);
 		if( !b ) return -1;
 		return 0;
@@ -45,7 +45,7 @@ public:
 SPI StorageEEPROM::spi = SPI(PinName::p5,PinName::p6,PinName::p4);
 //SerCAT25M02 *StorageEEPROM::flash = NULL;
 
-static StorageEEPROM __storage(1024);
+static StorageEEPROM __storage(512);
 
 #if defined(__cplusplus)
 extern "C" {

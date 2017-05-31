@@ -26,6 +26,7 @@ static int check_mgc(void) {
 
 int restore_gateway_info(arrow_gateway_t *gateway) {
   DBG("restore gateway info");
+	return -1;
   if (check_mgc()) {
     flash_mem_t *mem = (flash_mem_t *)flash_read();
     if ( utf8check(mem->gateway_hid) && strlen(mem->gateway_hid) > 0 ) {
@@ -40,14 +41,17 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
 void save_gateway_info(const arrow_gateway_t *gateway) {
   DBG("new registration");
   flash_mem_t mem;
+  DBG("write to %p", flash_read());
   memcpy(&mem, flash_read(), sizeof(flash_mem_t));
   strcpy(mem.gateway_hid, gateway->hid);
+  mem.magic = FLASH_MAGIC_NUMBER;
   int ret = flash_write((char *)&mem, sizeof(flash_mem_t));
-  DBG("flash read %d", ret);
+  DBG("flash write %d", ret);
 }
 
 int restore_device_info(arrow_device_t *device) {
 	DBG("restore device info");
+	return -1;
   if (check_mgc()) {
     flash_mem_t *mem = (flash_mem_t *)flash_read();
     if ( !mem ) {
