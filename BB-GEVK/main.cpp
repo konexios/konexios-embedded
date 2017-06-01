@@ -38,12 +38,10 @@ W5100Interface eth;
 WizFi250Interface eth;
 #endif
 
-#if 0
 NHD_C0216CZ lcd;
 // Sensors
 NOA1305 als;
 NCS36000 pir;
-#endif
 
 #if 0
 #define INT_SET		1
@@ -59,7 +57,7 @@ void als_isr() {
 }
 #endif
 
-#if 0
+/*
 DLBSmotor rotor;
 static int rotor_cmd(const char *str) {
 	DBG("cmd: [%s]", str);
@@ -75,6 +73,7 @@ static int rotor_cmd(const char *str) {
 	json_delete(_main);
 	return 0;
 }
+*/
 
 Arrow_Motor motor;
 static int motor_rotate(const char *str) {
@@ -129,24 +128,18 @@ static int get_telemetry_data(void *d) {
 #endif
     if ( old_pir_data != data->pir || count++ >= max_count ) {
     	count = 0;
-    	DBG("-%s-", get_api_key());
     	DBG("data PIR(%d), ALS{%d,%4.2f}", data->pir, data->als, data->abmienceInLux);
     	return 0;
     }
     return -1;
 }
-#endif
+
 
 int main() {
-
-#if 0
 	lcd.init();
 	lcd.displayString(TITLE);
-#endif
-
 	wait(1);
 	DBG("==== START =====");
-
 
 #if defined(USE_POE_SHIELD)
 	 	uint8_t mac[6];
@@ -161,10 +154,10 @@ int main() {
 //#endif
 	 	if (!ret) {
 	 		DBG("Initialized, MAC: %s", eth.getMACAddress());
-//	 		lcd.displayString("MAC SET");
+	 		lcd.displayString("MAC SET");
 	 	} else {
 	 		DBG("Error eth.init() - ret = %d", ret);
-//	 		lcd.displayString("ERROR !!!\nMAC NOT SET");
+	 		lcd.displayString("ERROR !!!\nMAC NOT SET");
 	 		return -1;
 	 	}
 
@@ -172,12 +165,12 @@ int main() {
 	 	ret = eth.connect();
 	 	if (!ret) {
 	 		DBG("IP: %s, MASK: %s, GW: %s",eth.getIPAddress(),eth.getNetworkMask(),eth.getGateway());
-//	 		lcd.clearDisplay();
-//	 		lcd.displayStringToPos("IP : ", 1, 1);
-//	 		lcd.displayStringToPos(eth.getIPAddress(), 2, 1);
+	 		lcd.clearDisplay();
+	 		lcd.displayStringToPos("IP : ", 1, 1);
+	 		lcd.displayStringToPos(eth.getIPAddress(), 2, 1);
 	 	}else{
 	 		DBG("Error eth.connect() - ret = %d", ret);
-//	 		lcd.displayString("ERROR !!!\nExiting Demo");
+	 		lcd.displayString("ERROR !!!\nExiting Demo");
 	 		return -1;
 	 	}
 
@@ -210,7 +203,6 @@ int main() {
 	 	}
 #endif
 
-#if 0
 	 	//Initialize ALS
 		if (als.init() != ALS_SUCCESS) {
 			lcd.displayString("ALS initialization failed");
@@ -220,7 +212,6 @@ int main() {
 			DBG("ALS initialization successful");
 			wait(1);
 		}
-#endif
 
 #if 0
 		// Enabled ALS interrupt
@@ -247,11 +238,9 @@ int main() {
 		  lcd.displayString("Light intensity");
 #endif
 
-#if 0
 	 	//Initialize LEDs
 	 	led.init();
-	 	rotor.init();
-#endif
+//	 	rotor.init();
 
 	 	time_t now = time(NULL);
 	 	DBG("test time %d", now);
@@ -261,23 +250,23 @@ int main() {
 	 	/*time_t*/ now = time(NULL);
 	 	DBG("date : %s", ctime(&now));
 
-//	  lcd.displayString("gateway and device connecting...");
+	  lcd.displayString("gateway and device connecting...");
 	  arrow_initialize_routine();
 
 	  gevk_data_t data;
-//	  while( get_telemetry_data(&data) < 0 ) ;
+	  while( get_telemetry_data(&data) < 0 ) ;
 
 	  arrow_send_telemetry_routine(&data);
 
-//	  add_cmd_handler("motor", motor_rotate);
-//	  add_cmd_handler("led", led_on);
+	  add_cmd_handler("motor", motor_rotate);
+	  add_cmd_handler("led", led_on);
 //	  add_cmd_handler("rotor", rotor_cmd);
 
-//      lcd.displayString("mqtt connecting...");
-//      arrow_mqtt_connect_routine();
+      lcd.displayString("mqtt connecting...");
+      arrow_mqtt_connect_routine();
 
-//      lcd.displayString("send telemetry");
-//      arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+      lcd.displayString("send telemetry");
+      arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
       arrow_close();
 }
