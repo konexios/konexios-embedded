@@ -29,6 +29,7 @@ extern "C" {
 #include <arrow/device_type.h>
 #include <arrow/gateway_api.h>
 #include <arrow/telemetry_api.h>
+#include <arrow/testsuite.h>
 }
 
 #include <iostream>
@@ -115,6 +116,8 @@ int main() {
 
     add_cmd_handler("test", &test_cmd_proc);
     add_cmd_handler("fail", &fail_cmd_proc);
+
+    arrow_test_gateway(current_gateway());
 
     arrow_mqtt_connect_routine();
     arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
