@@ -28,6 +28,7 @@ extern "C" {
 #include <arrow/device_api.h>
 #include <arrow/device_type.h>
 #include <arrow/gateway_api.h>
+#include <arrow/telemetry_api.h>
 }
 
 #include <iostream>
@@ -52,6 +53,21 @@ int main() {
 
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
+#if 0
+    telemetry_response_data_list_t tel_data;
+    if ( arrow_telemetry_find_by_device_hid("f8400f12182e53e39c4f300bddaff9007b59991b",
+                                       &tel_data,
+                                       3,
+                                       find_by(fromTimestamp, "2017-05-20T07:02:34.944Z"),
+                                       find_by(toTimestamp, "2017-05-25T07:02:34.944Z"),
+                                       find_by(f_size, "3")) == 0 ) {
+      printf("size: %d\r\n", tel_data.size);
+      telemetry_data_info_t *tdata = tel_data.data;
+      for (int i=0; i<tel_data.size; i++) {
+        printf("d hid: %s - %s - %s\r\n", tdata->deviceHid, tdata->name, tdata->type);
+        tdata = tdata->next;
+      }
+    }
 
     arrow_gateway_find("1d1c97b53d2d28965e1f4eae2f2e430994671b51");
     arrow_device_type_list();
@@ -66,11 +82,12 @@ int main() {
 //    arrow_list_action_type();
 
     std::cout<<"------------------------"<<std::endl;
-
+#endif
     arrow_initialize_routine();
 
     std::cout<<"------------------------"<<std::endl;
 
+#if 0
 //    arrow_list_device_action(current_device());
 //    arrow_update_device(current_gateway(), current_device());
     arrow_list_device_events(current_device(), 1, find_by(f_size, "1"));
@@ -78,7 +95,7 @@ int main() {
     arrow_error_device(current_device(), "unknown error");
 
     std::cout<<"------------------------"<<std::endl;
-
+#endif
     arrow_update_state("led", "on");
 
     std::cout<<"send telemetry via API"<<std::endl;
@@ -90,7 +107,11 @@ int main() {
 #endif
     get_telemetry_data(&data);
 
-//    arrow_send_telemetry_routine(&data);
+    arrow_send_telemetry_routine(&data);
+
+    pm_data_t datas[3] = { data, data, data };
+
+    arrow_telemetry_batch_create(current_device(), datas, 3);
 
     add_cmd_handler("test", &test_cmd_proc);
     add_cmd_handler("fail", &fail_cmd_proc);

@@ -9,6 +9,8 @@ C_SDK_PATH = $(PWD)/../acn-sdk-c
 C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/linux
 -include $(C_SDK_MAKE_PATH)/Makefile.linux.def
 
+INCLUDES += $(C_SDK_PATH)/src/
+
 CSRCS 	 += $(shell find $(PWD)/acnsdkc -name "*.c")
 CPPSRCS  += $(wildcard $(PWD)/*.cpp)
 
