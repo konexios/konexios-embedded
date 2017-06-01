@@ -162,6 +162,7 @@ int wifi_socket_recv(int socket, void *buf, size_t len) {
   if ( !sockets_stack[socket].s ) return -1;
   _tcp_socket *tcps = static_cast<_tcp_socket*>(sockets_stack[socket].s);
   int ret = tcps->receive_all((char *)buf, len);
+  DBG("receive all %d", ret);
   return ret;
 }
 

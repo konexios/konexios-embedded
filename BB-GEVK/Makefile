@@ -33,8 +33,10 @@ TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
 
 include $(GCC4MBED_DIR)/build/idk.mk
 
-DEFINES += -DUSE_POE_SHIELD -DDEBUG -Os # -Wl,--wrap=malloc -Wl,--wrap=free
+DEFINES += -DUSE_POE_SHIELD -DDEBUG -Os 
+# -Wl,--wrap=malloc -Wl,--wrap=free
 # -Wimplicit-function-declaration -Werror -Wpedantic
+LD_FLAGS += -Wl,--wrap=calloc 
 
 LIBS_PREFIX += $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/NCS36510/acnsdkc/libacnsdkc.a
 include $(GCC4MBED_DIR)/acn-embedded/acn-sdk-c/platforms/semiconductor/Makefile.onsemi
