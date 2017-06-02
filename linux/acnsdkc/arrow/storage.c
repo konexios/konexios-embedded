@@ -17,7 +17,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
     printf("already registred\r\n");
     int ret = fscanf(fp, "%s", hid);
     if ( ret == 1 ) {
-      arrow_gateway_add_hid(gateway, hid);
+      arrow_gateway_set_hid(gateway, hid);
       fclose(fp);
       return 0;
     }
@@ -29,7 +29,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
   printf("new registration\r\n");
   FILE *fp;
   fp = fopen("gateway.cfg", "w");
-  fprintf(fp, "%s\n", gateway->hid);
+  fprintf(fp, "%s\n", P_VALUE(gateway->hid) );
   fclose(fp);
 }
 
