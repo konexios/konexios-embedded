@@ -39,7 +39,6 @@ void soc_close(int socket) {
 }
 
 ssize_t send(int sockfd, const void *buf, size_t len, int flags) {
-	DBG("send |%d, %d|", sockfd, len);
   return wifi_socket_send(sockfd, buf, len);
 }
 
@@ -49,7 +48,6 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
 }
 
 ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
-	DBG("recv |%d, %d|", sockfd, len);
   return wifi_socket_recv(sockfd, buf, len);
 }
 
@@ -59,7 +57,6 @@ ssize_t recvfrom(int sock, void *buf, size_t size, int flags,
 }
 
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
- DBG("connect |%d|", sockfd);
   return wifi_socket_connect(sockfd, addr, addrlen);
 }
 

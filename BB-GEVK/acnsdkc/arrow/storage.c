@@ -31,7 +31,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
     flash_mem_t *mem = (flash_mem_t *)flash_read();
     if ( utf8check(mem->gateway_hid) && strlen(mem->gateway_hid) > 0 ) {
     	DBG("restore gateway hid %s", mem->gateway_hid);
-      arrow_gateway_add_hid(gateway, mem->gateway_hid);
+      arrow_gateway_set_hid(gateway, mem->gateway_hid);
       return 0;
     }
   }
@@ -43,7 +43,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
   flash_mem_t mem;
   DBG("write to %p", flash_read());
   memcpy(&mem, flash_read(), sizeof(flash_mem_t));
-  strcpy(mem.gateway_hid, gateway->hid);
+  strcpy(mem.gateway_hid, P_VALUE(gateway->hid));
   mem.magic = FLASH_MAGIC_NUMBER;
   int ret = flash_write((char *)&mem, sizeof(flash_mem_t));
   DBG("flash write %d", ret);
@@ -77,7 +77,7 @@ int restore_device_info(arrow_device_t *device) {
 void save_device_info(arrow_device_t *device) {
   flash_mem_t mem;
   memcpy(&mem, flash_read(), sizeof(flash_mem_t));
-  strcpy(mem.device_hid, device->hid);
+  strcpy(mem.device_hid, P_VALUE(device->hid));
 #if defined(__IBM__)
   strcpy(mem.device_eid, device->eid);
 #endif

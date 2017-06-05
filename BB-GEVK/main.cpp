@@ -38,7 +38,7 @@ W5100Interface eth;
 WizFi250Interface eth;
 #endif
 
-NHD_C0216CZ lcd;
+//NHD_C0216CZ lcd;
 // Sensors
 NOA1305 als;
 NCS36000 pir;
@@ -57,8 +57,8 @@ void als_isr() {
 }
 #endif
 
-/*
-DLBSmotor rotor;
+
+static DLBSmotor rotor;
 static int rotor_cmd(const char *str) {
 	DBG("cmd: [%s]", str);
 	JsonNode *_main = json_decode(str);
@@ -73,9 +73,9 @@ static int rotor_cmd(const char *str) {
 	json_delete(_main);
 	return 0;
 }
-*/
 
-Arrow_Motor motor;
+
+static Arrow_Motor motor;
 static int motor_rotate(const char *str) {
 	DBG("cmd: [%s]", str);
 	MOTOR_T channel;
@@ -93,7 +93,7 @@ static int motor_rotate(const char *str) {
 	return 0;
 }
 
-LEDBallast led;
+static LEDBallast led;
 static int led_on(const char *str) {
 	DBG("cmd: [%s]", str);
 	LEDCHANNEL_T channel;
@@ -136,8 +136,8 @@ static int get_telemetry_data(void *d) {
 
 
 int main() {
-	lcd.init();
-	lcd.displayString(TITLE);
+//	lcd.init();
+//	lcd.displayString(TITLE);
 	wait(1);
 	DBG("==== START =====");
 
@@ -154,10 +154,10 @@ int main() {
 //#endif
 	 	if (!ret) {
 	 		DBG("Initialized, MAC: %s", eth.getMACAddress());
-	 		lcd.displayString("MAC SET");
+//	 		lcd.displayString("MAC SET");
 	 	} else {
 	 		DBG("Error eth.init() - ret = %d", ret);
-	 		lcd.displayString("ERROR !!!\nMAC NOT SET");
+//	 		lcd.displayString("ERROR !!!\nMAC NOT SET");
 	 		return -1;
 	 	}
 
@@ -165,50 +165,50 @@ int main() {
 	 	ret = eth.connect();
 	 	if (!ret) {
 	 		DBG("IP: %s, MASK: %s, GW: %s",eth.getIPAddress(),eth.getNetworkMask(),eth.getGateway());
-	 		lcd.clearDisplay();
-	 		lcd.displayStringToPos("IP : ", 1, 1);
-	 		lcd.displayStringToPos(eth.getIPAddress(), 2, 1);
+//	 		lcd.clearDisplay();
+//	 		lcd.displayStringToPos("IP : ", 1, 1);
+//	 		lcd.displayStringToPos(eth.getIPAddress(), 2, 1);
 	 	}else{
 	 		DBG("Error eth.connect() - ret = %d", ret);
-	 		lcd.displayString("ERROR !!!\nExiting Demo");
+//	 		lcd.displayString("ERROR !!!\nExiting Demo");
 	 		return -1;
 	 	}
 
 #else
-	 	lcd.displayString("try to init WIFI");
+//	 	lcd.displayString("try to init WIFI");
 
 	 	if (eth.init() != 0) {
 	 		// exit if initialization falied.
-	 		lcd.displayString("WIFI initialization failed");
+//	 		lcd.displayString("WIFI initialization failed");
 	 		DBG("WIFI initialization failed");
 	 		return 1;
 	 	} else {
-	 		lcd.displayString("WIFI initialized");
+//	 		lcd.displayString("WIFI initialized");
 	 		DBG("WIFI initialized");
 	 	}
 
 	 	int ret = 0;
-	 	char ssid[64];
-	 	char pass[64];
+	 	char ssid[32];
+	 	char pass[32];
 	 	int secure = 0;
 	 	restore_wifi_setting(ssid, pass, &secure);
 	 	if ((ret = eth.connect(secure, ssid, pass)) != 0) {
 	 		// exit if joining access point is not successful.
-	 		lcd.displayString("Hotspot connection failed");
+//	 		lcd.displayString("Hotspot connection failed");
 	 		DBG("Connection to access point failed");
 	 		return 1;
 	 	} else {
-	 		lcd.displayString("Hotspot connection successful");
+//	 		lcd.displayString("Hotspot connection successful");
 	 		DBG("WIFI connected to hotspot");
 	 	}
 #endif
 
 	 	//Initialize ALS
 		if (als.init() != ALS_SUCCESS) {
-			lcd.displayString("ALS initialization failed");
+//			lcd.displayString("ALS initialization failed");
 			return -1;
 		} else {
-			lcd.displayString("ALS initialization successful");
+//			lcd.displayString("ALS initialization successful");
 			DBG("ALS initialization successful");
 			wait(1);
 		}
@@ -240,7 +240,7 @@ int main() {
 
 	 	//Initialize LEDs
 	 	led.init();
-//	 	rotor.init();
+	 	rotor.init();
 
 	 	time_t now = time(NULL);
 	 	DBG("test time %d", now);
@@ -250,23 +250,24 @@ int main() {
 	 	/*time_t*/ now = time(NULL);
 	 	DBG("date : %s", ctime(&now));
 
-	  lcd.displayString("gateway and device connecting...");
-	  arrow_initialize_routine();
+	 	add_cmd_handler("motor", motor_rotate);
+	 	add_cmd_handler("led", led_on);
+	 	add_cmd_handler("rotor", rotor_cmd);
 
-	  gevk_data_t data;
-	  while( get_telemetry_data(&data) < 0 ) ;
+//	  lcd.displayString("gateway and device connecting...");
+	 	arrow_initialize_routine();
 
-	  arrow_send_telemetry_routine(&data);
+	 	gevk_data_t data;
+	 	while( get_telemetry_data(&data) < 0 ) ;
 
-	  add_cmd_handler("motor", motor_rotate);
-	  add_cmd_handler("led", led_on);
-//	  add_cmd_handler("rotor", rotor_cmd);
+	 	arrow_send_telemetry_routine(&data);
 
-      lcd.displayString("mqtt connecting...");
-      arrow_mqtt_connect_routine();
+	 	//      lcd.displayString("mqtt connecting...");
+	 	arrow_mqtt_connect_routine();
 
-      lcd.displayString("send telemetry");
-      arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+	 	//      lcd.displayString("send telemetry");
+	 	arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
-      arrow_close();
+	 	arrow_close();
+	 	return 0;
 }
