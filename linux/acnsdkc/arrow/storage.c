@@ -65,7 +65,7 @@ int restore_device_info(arrow_device_t *device) {
 void save_device_info(arrow_device_t *device) {
   FILE *fp;
   fp = fopen("device.cfg", "w");
-  fprintf(fp, "%s\n", device->hid);
+  fprintf(fp, "%s\n", P_VALUE(device->hid));
 #if defined(__IBM__)
   fprintf(fp, "%s\n", device->eid);
 #endif
