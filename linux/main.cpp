@@ -30,6 +30,65 @@ extern "C" {
 #include <arrow/gateway_api.h>
 #include <arrow/telemetry_api.h>
 #include <arrow/testsuite.h>
+
+#if defined(MEMORY_TEST)
+#include <malloc.h>
+int m_counter = 0;
+int f_counter = 0;
+int alloc_size = 0;
+int free_size = 0;
+
+void *__real_malloc(size_t);
+void *__wrap_malloc(size_t p) {
+  m_counter ++;
+  void *pt = __real_malloc(p);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+//  printf("alloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
+void *__real_realloc(void *, size_t);
+void *__wrap_realloc(void *p, size_t s) {
+//  m_counter++;
+  int l = malloc_usable_size(p);
+  alloc_size -= l;
+  void *pt = __real_realloc(p, s);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+//  printf("realloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
+void *__real_calloc(size_t, size_t);
+void *__wrap_calloc(size_t p, size_t s) {
+  m_counter++;
+  void *pt = __real_calloc(p, s);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+//  printf("calloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
+char *__real_strdup(const char *s);
+char *__wrap_strdup(const char *s) {
+  m_counter++;
+  char *pt = __real_strdup(s);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+  printf("strdup [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
+void __real_free(void *);
+void __wrap_free(void *p) {
+  f_counter++;
+  uint32_t len = malloc_usable_size(p);
+  free_size += len;
+//  printf("free [%d] %d/%d\r\n", f_counter, len, free_size);
+  __real_free(p);
+}
+#endif
 }
 
 #include <iostream>
@@ -98,6 +157,8 @@ int main() {
     std::cout<<"------------------------"<<std::endl;
 #endif
     arrow_update_state("led", "on");
+    add_cmd_handler("test", &test_cmd_proc);
+    add_cmd_handler("fail", &fail_cmd_proc);
 
     std::cout<<"send telemetry via API"<<std::endl;
     
@@ -106,6 +167,7 @@ int main() {
 #else
     pm_data_t data;
 #endif
+
     get_telemetry_data(&data);
 
     arrow_send_telemetry_routine(&data);
@@ -114,18 +176,54 @@ int main() {
 
     arrow_telemetry_batch_create(current_device(), datas, 3);
 
-    add_cmd_handler("test", &test_cmd_proc);
-    add_cmd_handler("fail", &fail_cmd_proc);
+//    arrow_test_gateway(current_gateway());
 
-    arrow_test_gateway(current_gateway());
+    CREATE_TEST_SUITE(p, "a53f0aa3e8bf7806ff5b8770ad4d9d3477d534c9");
+    arrow_test_device(current_device(), &p);
+    printf("test device result hid {%s}\r\n", P_VALUE(p.result_hid));
+
+    arrow_test_begin(&p);
+    // start test procedure
+    arrow_test_step_begin(&p, 1);
+    //test temperature
+    get_telemetry_data(&data);
+    if ( sizeof(data) > 1 ) {
+      arrow_test_step_success(&p, 1);
+    } else {
+      arrow_test_step_fail(&p, 1, "no temp sensor");
+    }
+
+#if defined(SKIP_LED)
+    // where is no LED, skiping...
+    arrow_test_step_skip(&p, 2);
+#else
+    arrow_test_step_begin(&p, 2);
+    arrow_test_step_fail(&p, 2, "no LED");
+#endif
+
+    arrow_test_step_begin(&p, 3);
+    // check ARM
+#if defined(__arm__)
+    arrow_test_step_success(&p, 3);
+#else
+    arrow_test_step_fail(&p, 3, "not ARM");
+#endif
+    // end test
+    arrow_test_end(&p);
 
     arrow_mqtt_connect_routine();
     arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
-    // endless
+//     endless
 
     arrow_close();
     free_cmd_handler();
     arrow_state_mqtt_stop();
 
+#if defined(MEMORY_TEST)
+    printf("----------------------\r\n");
+    printf("counter: %d %d\r\n", m_counter, f_counter);
+    printf("size:    %d %d\r\n", alloc_size, free_size);
+    printf("----------------------\r\n");
+#endif
     std::cout<<std::endl<<"disconnecting...."<<std::endl;
 }
