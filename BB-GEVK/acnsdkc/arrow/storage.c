@@ -31,7 +31,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
     flash_mem_t *mem = (flash_mem_t *)flash_read();
     if ( utf8check(mem->gateway_hid) && strlen(mem->gateway_hid) > 0 ) {
     	DBG("restore gateway hid %s", mem->gateway_hid);
-      arrow_gateway_set_hid(gateway, mem->gateway_hid);
+      property_copy( &gateway->hid, p_const(mem->gateway_hid));
       return 0;
     }
   }
@@ -62,7 +62,7 @@ int restore_device_info(arrow_device_t *device) {
       return -1;
     }
     DBG("read device hid %s", mem->device_hid);
-    arrow_device_set_hid(device, mem->device_hid);
+    P_COPY(device->hid, p_const(mem->device_hid));
   #if defined(__IBM__)
     if ( !utf8check(mem->device_eid) || strlen(mem->device_eid) == 0 ) {
       return -1;

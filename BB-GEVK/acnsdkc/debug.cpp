@@ -13,6 +13,8 @@
 #include "mbed.h"
 #include "Shields.h"
 
+#if defined(DEBUG)
+
 static Serial screen(USBTX, USBRX);
 
 char dbg_buffer[DBG_LINE_SIZE];
@@ -33,4 +35,6 @@ void dbg_line(const char *fmt, ...) {
 }
 
 }
+
+#endif
 

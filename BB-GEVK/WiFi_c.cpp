@@ -75,16 +75,22 @@ static int inet_pton(char *src, uint32_t *dst) {
 }
 
 int get_wifi_mac_address(char *mac) {
-	char mac_str[26];
+	char mac_str[20];
 	int ret = 0;
 #if defined(USE_POE_SHIELD)
-	strcpy(mac_str, eth.getMACAddress());
+	strncpy(mac_str, eth.getMACAddress(), sizeof(mac_str));
 #else
 	ret =  WizFi250::getInstance()->getMacAddress(mac_str);
 #endif
 	if ( ret < 0 ) return ret;
+
 	uint32_t mac32[6];
+#if GCC_VERSION <= 50201
+	for (int i = 0; i < 6; i++) mac[i] = tolower(mac[i]);
+	ret = sscanf(mac_str, "%x:%x:%x:%x:%x:%x",
+#else
 	ret = sscanf(mac_str, "%02X:%02X:%02X:%02X:%02X:%02X",
+#endif
 			(unsigned int *)mac32,
 			(unsigned int *)mac32+1,
 			(unsigned int *)mac32+2,

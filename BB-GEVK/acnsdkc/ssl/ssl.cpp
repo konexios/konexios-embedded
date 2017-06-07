@@ -48,6 +48,7 @@ static void cli_wolfSSL_Logging_cb(const int logLevel,
 static int recv_ssl(WOLFSSL *wsl, char* buf, int sz, void* vp) {
     SSP_PARAMETER_NOT_USED(wsl);
     int *sock = (int *)vp;
+    SSP_PARAMETER_NOT_USED(sock);
     if ( sz < 0 ) return sz;
     uint32_t got = 0;
     got = (uint32_t)recv(_socket, buf, (uint32_t)sz, 0);
@@ -60,6 +61,7 @@ static int recv_ssl(WOLFSSL *wsl, char* buf, int sz, void* vp) {
 static int send_ssl(WOLFSSL *wsl, char* buf, int sz, void* vp) {
     SSP_PARAMETER_NOT_USED(wsl);
     int *sock = (int *)vp;
+    SSP_PARAMETER_NOT_USED(sock);
     if ( sz < 0 ) return sz;
     uint32_t sent = 0;
     sent = (uint32_t)send(_socket, buf, (uint32_t)sz, 0);
