@@ -27,8 +27,8 @@ LIBS_PREFIX		:=
 MBED_LIBS       := rtos
 INCDIRS			+= $(GCC4MBED_DIR)/IDK/include/
 
-TL_PATH = C:\GNUToolchain\bin
-# TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2015q4\bin"
+# TL_PATH = C:\GNUToolchain\bin
+TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2015q4\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\5.4 2016q2\bin"
 
@@ -36,7 +36,7 @@ include $(GCC4MBED_DIR)/build/idk.mk
 
 # You may comment the needless shields
 DEFINES += -DUSE_POE_SHIELD
-#DEFINES += -DUSE_DLBS_MOTOR
+DEFINES += -DUSE_DLBS_MOTOR
 DEFINES += -DUSE_STEP_MOTOR
 DEFINES += -DUSE_LED_BALLAST
 #DEFINES += -DUSE_LCD
@@ -45,8 +45,7 @@ DEFINES += -DDEBUG
 DEFINES += -Os # -fno-inline-functions
 # -Wimplicit-function-declaration -Werror -Wpedantic 
 # -Wl,--wrap=malloc -Wl,--wrap=free
-
-LD_FLAGS += -Wl,--wrap=calloc 
+# LD_FLAGS += -Wl,--wrap=calloc 
 
 LIBS_PREFIX += $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/NCS36510/acnsdkc/libacnsdkc.a
 include $(GCC4MBED_DIR)/acn-embedded/acn-sdk-c/platforms/semiconductor/Makefile.onsemi

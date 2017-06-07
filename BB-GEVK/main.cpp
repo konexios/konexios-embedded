@@ -150,7 +150,6 @@ static int get_telemetry_data(void *d) {
     return -1;
 }
 
-
 int main() {
 	LCD_INIT;
 
@@ -273,8 +272,6 @@ int main() {
 
 	 	/*time_t*/ now = time(NULL);
 	 	DBG("date : %s", ctime(&now));
-
-
 
 	  	LCD("gateway and device connecting...");
 	 	arrow_initialize_routine();
