@@ -18,6 +18,8 @@ extern "C" {
 #include <arrow/state.h>
 #include <arrow/devicecommand.h>
 #include <stdio.h>
+#include <crypt/md5sum.h>
+#include <crypt/crypt.h>
 #if defined(__probook_4540s__)
 #include <json/probook.h>
 #else
@@ -193,7 +195,7 @@ int main() {
       arrow_test_step_fail(&p, 1, "no temp sensor");
     }
 
-#if defined(SKIP_LED)
+#if !defined(SKIP_LED)
     // where is no LED, skiping...
     arrow_test_step_skip(&p, 2);
 #else
@@ -210,6 +212,33 @@ int main() {
 #endif
     // end test
     arrow_test_end(&p);
+
+    static char buffer[200000];
+    FILE *fp;
+    int size = 0;
+    fp = fopen("/home/danila/Arrow/acn-embedded/B-L475E-IOT01/arrow.bin", "rb");
+    if (fp) {
+      int n = 0;
+      md5_chunk_init();
+        while ( (n = fread(buffer + size, 1, 1, fp)) ){
+          md5_chunk(buffer + size, 1);
+          size++;
+        }
+        char md5hash[100];
+        char md5hash_str[100];
+        md5_chunk_hash(md5hash);
+        hex_encode(md5hash_str, md5hash, 16);
+        printf("md5 sum %s", md5hash_str);
+        printf("read %d\r\n", size);
+    }
+    char md5hash[100];
+    char md5hash_str[100];
+
+    md5sum(md5hash, buffer, size);
+
+hex_encode(md5hash_str, md5hash, 16);
+
+printf("md5 sum %s", md5hash_str);
 
     arrow_mqtt_connect_routine();
     arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
