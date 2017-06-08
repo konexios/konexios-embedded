@@ -37,7 +37,8 @@ DLBSmotor::~DLBSmotor() {
 }
 
 int DLBSmotor::init() {
-	if(bldc.init(&DLBSmotor::bldcHndlr) != BLDC_SUCCESS) {
+// &DLBSmotor::bldcHndlr
+	if(bldc.init(NULL) != BLDC_SUCCESS) {
 		DBG("BLDC Shield init failed");
 		return -1;
 	}

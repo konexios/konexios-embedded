@@ -30,14 +30,6 @@ WOLFSSL_CTX     *ctx;
 WOLFSSL         *ssl;
 static int _socket = -1;
 
-void *__real_calloc(size_t num, size_t size);
-void *__wrap_calloc(size_t num, size_t size) {
-	void *p = malloc(num * size);
-//	DBG("calloc %d %d = %p", num, size, p);
-	memset(p, 0x0, num * size);
-	return p;
-}
-
 #ifdef DEBUG_WOLFSSL
 static void cli_wolfSSL_Logging_cb(const int logLevel,
                                   const char *const logMessage) {
@@ -48,10 +40,11 @@ static void cli_wolfSSL_Logging_cb(const int logLevel,
 static int recv_ssl(WOLFSSL *wsl, char* buf, int sz, void* vp) {
     SSP_PARAMETER_NOT_USED(wsl);
     int *sock = (int *)vp;
+    SSP_PARAMETER_NOT_USED(sock);
     if ( sz < 0 ) return sz;
     uint32_t got = 0;
     got = (uint32_t)recv(_socket, buf, (uint32_t)sz, 0);
-    DBG("recv ssl %d [%d]", got, sz);
+//    DBG("recv ssl %d [%d]", got, sz);
     if (got == 0)  return -2;  // IO_ERR_WANT_READ;
     return (int)got;
 }
@@ -60,10 +53,11 @@ static int recv_ssl(WOLFSSL *wsl, char* buf, int sz, void* vp) {
 static int send_ssl(WOLFSSL *wsl, char* buf, int sz, void* vp) {
     SSP_PARAMETER_NOT_USED(wsl);
     int *sock = (int *)vp;
+    SSP_PARAMETER_NOT_USED(sock);
     if ( sz < 0 ) return sz;
     uint32_t sent = 0;
     sent = (uint32_t)send(_socket, buf, (uint32_t)sz, 0);
-    DBG("send ssl %d [%d]", sent, sz);
+//    DBG("send ssl %d [%d]", sent, sz);
     if (sent == 0)
         return -2;  // IO_ERR_WANT_WRITE
     return (int)sent;
@@ -120,36 +114,13 @@ int ssl_connect(int sock) {
     return 0;
 }
 
-/*static char *data_p = NULL;
-int size_p = 0;
 int ssl_recv(int sock, char *data, int len) {
-	if ( !size_p ) {
-		size_p = ssl_read(_ssl, (uint8_t **) &data_p);
-		if ( size_p < 0 ) return size_p;
-	}
-	if ( size_p ) {
-		int chunk = len < size_p ? len : size_p;
-		memcpy(data, data_p, chunk);
-		size_p -= chunk;
-		data_p += chunk;
-		return chunk;
-	}
-	return 0;
-}
-
-int ssl_send(int sock, char* data, int length) {
-    if ( sock < 0 ) return -1;
-    return ssl_write(_ssl, (uint8_t*)data, length);
-}*/
-
-
-int ssl_recv(int sock, char *data, int len) {
-	DBG("ssl r[%d]", len);
+//	DBG("ssl r[%d]", len);
 	return wolfSSL_read(ssl, data, (int)len);
 }
 
 int ssl_send(int sock, char* data, int length) {
-	DBG("ssl w[%d]", length);
+//	DBG("ssl w[%d]", length);
 	return wolfSSL_write(ssl, data, (int)length);
 }
 
@@ -159,9 +130,6 @@ int ssl_close(int sock) {
 	wolfSSL_free(ssl);
 	wolfSSL_CTX_free(ctx);
 	wolfSSL_Cleanup();
-	/*ssl_free(_ssl);
-	DBG("close ssl ctx")
-	ssl_ctx_free(_ssl_ctx);*/
 	DBG("close done");
 	return 0;
 }
