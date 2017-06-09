@@ -18,8 +18,9 @@ extern "C" {
 #include <arrow/state.h>
 #include <arrow/devicecommand.h>
 #include <stdio.h>
-#include <crypt/md5sum.h>
-#include <crypt/crypt.h>
+#include <ssl/md5sum.h>
+#include <ssl/crypt.h>
+#include <arrow/utf8.h>
 #if defined(__probook_4540s__)
 #include <json/probook.h>
 #else
