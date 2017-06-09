@@ -221,7 +221,6 @@ int main() {
 	 	//Initialize ALS
 		if (als.init() != ALS_SUCCESS) {
 			LCD("ALS initialization failed");
-			return -1;
 		} else {
 			LCD("ALS initialization successful");
 			DBG("ALS initialization successful");
