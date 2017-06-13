@@ -26,7 +26,8 @@ LIBRARY_PATHS = -L$(C_SDK_PATH) -L$(PWD)/.build
 LIBRARIES = -lsensors -lacnsdkc
 
 LD_FLAGS = 
-LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc 
+LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc
+LD_SYS_LIBS += -lcurl 
 # -Wl,--wrap=malloc,--wrap=free,--wrap=realloc,--wrap=calloc,--wrap=valloc,--wrap=aligned_alloc,--wrap=memalign,--wrap=pvalloc,--wrap=posix_memalign,--wrap=strdup
 
 
@@ -69,6 +70,8 @@ size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 
 run: $(APP_OUT)
+	@if [ -e update.file ]; then mv update.file $(APP_OUT); chmod a+x $(APP_OUT); fi
 	@./$(APP_OUT)
+	
 
 all: libacnsdkc.a $(CPPOBJS) $(APP_OUT)
