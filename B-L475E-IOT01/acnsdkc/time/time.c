@@ -98,7 +98,7 @@ time_t time(time_t *timer) {
   return t;
 }
 
-int stime(time_t *timer) {
+int stime(const time_t *timer) {
   RTC_TimeTypeDef stime;
   RTC_DateTypeDef sdate;
   struct tm *_tm = localtime(timer);

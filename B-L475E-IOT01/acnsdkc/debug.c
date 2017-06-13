@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <semphr.h>
+#include <usbd_cdc_if.h>
 
 static char dbg_buf[DBG_LINE_SIZE];
 static SemaphoreHandle_t xMutex = NULL;
@@ -33,7 +34,7 @@ void dbg_line(const char *fmt, ...) {
     vsnprintf(dbg_buf, DBG_LINE_SIZE-2, fmt, args);
     strcat(dbg_buf, "\r\n");
     int dbg_len = strlen(dbg_buf);
-    CDC_Transmit_FS(dbg_buf, dbg_len);
+    CDC_Transmit_FS((uint8_t*)dbg_buf, dbg_len);
     va_end(args);
 //    xSemaphoreGive( xMutex );
 //  }

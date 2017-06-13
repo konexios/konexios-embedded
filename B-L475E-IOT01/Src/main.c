@@ -79,6 +79,13 @@ static void MX_RNG_Init(void);
 static void Console_UART_Init(void);
 void StartDefaultTask(void const * argument);
 
+int rand(void) {
+  if (hrng.State == HAL_RNG_STATE_RESET) {
+    __RNG_CLK_ENABLE();
+    MX_RNG_Init();
+  }
+  return HAL_RNG_GetRandomNumber(&hrng);
+}
 
 int main(void)
 {
@@ -103,7 +110,6 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   
-  volatile int i = 0;
   BSP_LED_Off(LED_GREEN);
   for(int i = 0; i < 10000; i++) ;
   BSP_LED_On(LED_GREEN);
@@ -135,7 +141,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1024);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1200);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -330,8 +336,8 @@ static void MX_RTC_Init(void)
 #define WIFI_PRODUCT_INFO_SIZE                      ES_WIFI_MAX_SSID_NAME_SIZE
 #define  WIFI_CONNECT_MAX_ATTEMPT_COUNT  3
 
-const char ssid[64];
-const char psk[64];
+static char ssid[64];
+static char psk[64];
 static char moduleinfo[WIFI_PRODUCT_INFO_SIZE];
 
 
@@ -340,13 +346,14 @@ void StartDefaultTask(void const * argument)
 {
   SSP_PARAMETER_NOT_USED(argument);
   WIFI_Ecn_t security_mode; //WIFI_ECN_WPA_WPA2_PSK;
-  restore_wifi_setting(ssid, psk, &security_mode);
+  restore_wifi_setting(ssid, psk, (int*)&security_mode);
   uint8_t macAddress[6];
   int wifiConnectCounter = 0;
 
   msleep(1000);
   printf("----- new start ------\r\n");
   DBG("init L475 iot node");
+  DBG("{%s, %s}", ssid, psk);
 
   HAL_RTCStateTypeDef st;
   st = HAL_RTC_GetState(&hrtc);
@@ -378,8 +385,9 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to get MAC address\n");
   }
   /* Connect to the specified SSID. */
+
   do {
-    DBG("Connecting to AP: %s  Attempt %d/%d ...",ssid, ++wifiConnectCounter,WIFI_CONNECT_MAX_ATTEMPT_COUNT);
+    DBG("Connecting to AP: %s  Attempt %d/%d ...", ssid, ++wifiConnectCounter,WIFI_CONNECT_MAX_ATTEMPT_COUNT);
     wifiRes = WIFI_Connect(ssid, psk, security_mode);
     if (wifiRes == WIFI_STATUS_OK) break;
   } while (wifiConnectCounter < WIFI_CONNECT_MAX_ATTEMPT_COUNT);

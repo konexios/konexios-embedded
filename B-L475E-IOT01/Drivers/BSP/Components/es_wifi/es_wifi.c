@@ -609,18 +609,14 @@ static ES_WIFI_Status_t ReceiveLongDataLen(ES_WIFIObject_t *Obj,  char *pdata, u
   
   if (len >= AT_OK_STRING_LEN)  
   {
-    if(strstr((char *)pdata + len - AT_OK_STRING_LEN, AT_OK_STRING))
-    {
+    if(strstr((char *)pdata + len - AT_OK_STRING_LEN, AT_OK_STRING)) {
       *ReadData = len - AT_OK_STRING_LEN;
       return ES_WIFI_STATUS_OK; 
-    }
-    else
-    {     
+    } else {
       memcpy(Obj->CmdData, pdata + len - AT_OK_STRING_LEN, AT_OK_STRING_LEN);
       rlen = Obj->fops.IO_Receive(Obj->CmdData + AT_OK_STRING_LEN, AT_OK_STRING_LEN, Obj->Timeout);
       
-      if(strstr((char *) Obj->CmdData + rlen, AT_OK_STRING))
-      {
+      if(strstr((char *) Obj->CmdData + rlen, AT_OK_STRING)) {
         *ReadData = len + rlen - AT_OK_STRING_LEN;
         return ES_WIFI_STATUS_OK; 
       }
@@ -644,8 +640,10 @@ static ES_WIFI_Status_t AT_RequestReceiveData(ES_WIFIObject_t *Obj, uint8_t* cmd
   {
     if(Obj->fops.IO_Receive(Obj->CmdData, 2, Obj->Timeout) == 2) /* Read Prompt */
     {
-      if (Reqlen <= AT_OK_STRING_LEN) return ReceiveShortDataLen(Obj,pdata, Reqlen ,ReadData);
-      if (Reqlen >  AT_OK_STRING_LEN) return ReceiveLongDataLen(Obj,pdata, Reqlen ,ReadData);
+      if (Reqlen <= AT_OK_STRING_LEN)
+        return ReceiveShortDataLen(Obj,pdata, Reqlen ,ReadData);
+      else
+        return ReceiveLongDataLen(Obj,pdata, Reqlen ,ReadData);
     }
   }  
   return ES_WIFI_STATUS_IO_ERROR;

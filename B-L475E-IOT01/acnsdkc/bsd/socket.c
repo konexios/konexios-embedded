@@ -19,7 +19,12 @@ typedef struct {
   int timeout;
 } int_wifi_socket_t;
 
-int_wifi_socket_t _sockets[SOCKET_MAX_COUNT] = {-1};
+int_wifi_socket_t _sockets[SOCKET_MAX_COUNT] = {
+  {-1, 0, 0 },
+  {-1, 0, 0 },
+  {-1, 0, 0 },
+  {-1, 0, 0 }
+};
 
 struct hostent* gethostbyname(const char *name) {
   static struct hostent s_hostent;
@@ -27,7 +32,7 @@ struct hostent* gethostbyname(const char *name) {
   static unsigned long s_hostent_addr;
   static unsigned long *s_phostent_addr[2];
   uint32_t ipaddr = 0;
-  if ( WIFI_GetHostAddress(name, &ipaddr) != WIFI_STATUS_OK ) return NULL;
+  if ( WIFI_GetHostAddress((char*)name, (uint8_t*)&ipaddr) != WIFI_STATUS_OK ) return NULL;
   s_hostent_addr = ipaddr;
   s_phostent_addr[0] = &s_hostent_addr;
   s_phostent_addr[1] = NULL;
@@ -41,12 +46,14 @@ struct hostent* gethostbyname(const char *name) {
 }
 
 int socket(int protocol_family, int socket_type, int protocol) {
+  SSP_PARAMETER_NOT_USED(protocol_family);
   WIFI_Protocol_t prot;
   int socket = -1;
   for(int i=0; i<SOCKET_MAX_COUNT; i++) {
     if ( _sockets[i].socket < 0 ) {
       // free sock!
       socket = i;
+      break;
     }
   }
 
@@ -83,7 +90,7 @@ void soc_close(int socket) {
 ssize_t send(int sockfd, const void *buf, size_t len, int flags) {
   SSP_PARAMETER_NOT_USED(flags);
   uint16_t send_len;
-  WIFI_SendData(sockfd, buf, len, &send_len, _sockets[sockfd].timeout);
+  WIFI_SendData(sockfd, (uint8_t*)buf, len, &send_len, _sockets[sockfd].timeout);
   return send_len;
 }
 
@@ -94,21 +101,22 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
   struct sockaddr_in *rem_addr = (struct sockaddr_in*) dest_addr;
   if ( dest_addr && addrlen != sizeof (struct sockaddr_in) ) return -1;
 
-  WIFI_SendDataTo(sockfd, buf, len, &send_len, &rem_addr->sin_addr.s_addr,
+  WIFI_SendDataTo(sockfd, (uint8_t*)buf, len, &send_len, (uint8_t*)&rem_addr->sin_addr.s_addr,
                   htons(rem_addr->sin_port), _sockets[sockfd].timeout);
   return send_len;
 }
 
 ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
   SSP_PARAMETER_NOT_USED(flags);
-  uint16_t recv_len;
+  uint16_t recv_len = 0;
   int received = 0;
-  while ( received < len ) {
+  while ( received < (int)len ) {
     int chunk = ( len - received > ES_WIFI_PAYLOAD_SIZE )? ES_WIFI_PAYLOAD_SIZE : len - received;
-    WIFI_Status_t ret = WIFI_ReceiveData(sockfd, buf + received, chunk, &recv_len, _sockets[sockfd].timeout);
+    WIFI_Status_t ret = WIFI_ReceiveData(sockfd, (uint8_t*)buf + received, chunk, &recv_len, _sockets[sockfd].timeout);
     switch (ret) {
       case WIFI_STATUS_TIMEOUT:
         if ( !received ) return -1;
+        else return received;
       break;
       default:
         received += recv_len;
@@ -135,7 +143,7 @@ int connect(int socket,
   if ( addrlen != sizeof(struct sockaddr_in) ) return -1;
   struct sockaddr_in *rem_addr = (struct sockaddr_in *) addr;
   if( WIFI_OpenClientConnection(socket, _sockets[socket].type, "",
-                                &rem_addr->sin_addr.s_addr,
+                                (uint8_t*)&rem_addr->sin_addr.s_addr,
                                 htons(rem_addr->sin_port),
                                 0 ) == WIFI_STATUS_OK ) {
     return 0;

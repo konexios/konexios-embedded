@@ -97,8 +97,9 @@ INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
 
 LIBRARY_PATHS = -L$(PRJ_PATH)/$(OBJDIR)
 LINKER_SCRIPT = $(PRJ_PATH)/STM32L475VG_FLASH.ld
-LIBRARIES += -lacnsdkc
-
+LIBRARIES += -lacnsdkc 
+LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
+# -Wl,--wrap,strdup
 # -Wl,--wrap,main -Wl,--wrap,_malloc_r -Wl,--wrap,_free_r -Wl,--wrap,_realloc_r
 
 ifeq ($(DEBUG), 1)

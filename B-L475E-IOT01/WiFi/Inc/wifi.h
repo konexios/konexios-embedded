@@ -58,7 +58,7 @@
 /* Exported constants --------------------------------------------------------*/
 #define WIFI_MAX_SSID_NAME            100
 #define WIFI_MAX_PSWD_NAME            100
-#define WIFI_MAX_APS                  100
+#define WIFI_MAX_APS                  20
 #define WIFI_MAX_CONNECTIONS          4
 #define WIFI_MAX_MODULE_NAME          100
 #define WIFI_MAX_CONNECTED_STATIONS   2

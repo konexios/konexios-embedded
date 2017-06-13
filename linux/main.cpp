@@ -213,7 +213,7 @@ int main() {
 #endif
     // end test
     arrow_test_end(&p);
-
+/*
     static char buffer[200000];
     FILE *fp;
     int size = 0;
@@ -240,6 +240,8 @@ int main() {
 hex_encode(md5hash_str, md5hash, 16);
 
 printf("md5 sum %s", md5hash_str);
+
+*/
 
     arrow_mqtt_connect_routine();
     arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);

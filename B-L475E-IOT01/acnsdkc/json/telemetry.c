@@ -19,7 +19,7 @@ char *telemetry_serialize(arrow_device_t *device, void *d) {
   sensors_data_t *data = (sensors_data_t *)d;
   JsonNode *_node = json_mkobject();
   int ret;
-  json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
+  json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(P_VALUE(device->hid)));
   json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(data->temperature));
   json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(data->humidity));
   json_append_member(_node, TELEMETRY_BAROMETER, json_mknumber(data->pressure));

@@ -15,12 +15,13 @@
 flash_mem_t mem __attribute__((section("UNINIT_FIXED_LOC")));
 
 int restore_gateway_info(arrow_gateway_t *gateway) {
+  return -1;
   if ( mem.magic != (int) FLASH_MAGIC_NUMBER ) {
     FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
     return -1;
   }
   if ( utf8check(mem.gateway_hid) && strlen(mem.gateway_hid) ) {
-    arrow_gateway_add_hid(gateway, mem.gateway_hid);
+    property_copy(&gateway->hid, p_const(mem.gateway_hid));
     DBG("--- flash load %s", mem.gateway_hid);
     return 0;
   }
@@ -28,18 +29,19 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
 }
 
 void save_gateway_info(const arrow_gateway_t *gateway) {
-  if ( gateway && strlen(gateway->hid) < 64 ) {
+  if ( gateway && P_SIZE(gateway->hid) < 64 ) {
     uint32_t magic = FLASH_MAGIC_NUMBER;
     if (FLASH_update((uint32_t)&mem.magic, &magic, sizeof(magic)) < 0) {
       DBG("Failed updating the wifi configuration in FLASH");
     }
-    if (FLASH_update((uint32_t)mem.gateway_hid, gateway->hid, strlen(gateway->hid)+1) < 0) {
+    if (FLASH_update((uint32_t)mem.gateway_hid, P_VALUE(gateway->hid), P_SIZE(gateway->hid)+1) < 0) {
       DBG("Failed updating the wifi configuration in FLASH");
     }
   }
 }
 
 int restore_device_info(arrow_device_t *device) {
+  return -1;
   if ( mem.magic != (int) FLASH_MAGIC_NUMBER ) {
     FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
     return -1;
@@ -47,27 +49,27 @@ int restore_device_info(arrow_device_t *device) {
   if ( !utf8check(mem.device_hid) || !strlen(mem.device_hid) ) {
     return -1;
   }
-  arrow_device_set_hid(device, mem.device_hid);
+  property_copy(&device->hid, p_const(mem.device_hid));
   DBG("--- flash load %s", mem.device_hid);
 #if defined(__IBM__)
   if ( !utf8check(mem.device_eid) || !strlen(mem.device_eid) ) {
     return -1;
   }
-  arrow_device_set_eid(device, mem.device_eid);
+  property_copy(&device->eid, p_const(mem.device_eid));
 #endif
   return 0;
 }
 
 void save_device_info(arrow_device_t *device) {
   if ( device ) {
-    if ( strlen(device->hid) < 64 ) {
-      if (FLASH_update((uint32_t)mem.device_hid, device->hid, strlen(device->hid)+1) < 0) {
+    if ( P_SIZE(device->hid) < 64 ) {
+      if (FLASH_update((uint32_t)mem.device_hid, P_VALUE(device->hid), P_SIZE(device->hid)+1) < 0) {
         DBG("Failed updating the wifi configuration in FLASH");
       }
     }
 #if defined(__IBM__)
-    if ( strlen(device->eid) < 64 ) {
-      if (FLASH_update((uint32_t)mem.device_eid, device->eid, strlen(device->eid)+1) < 0) {
+    if ( P_SIZE(device->eid) < 64 ) {
+      if (FLASH_update((uint32_t)mem.device_eid, P_VALUE(device->eid), P_SIZE(device->eid)+1) < 0) {
         DBG("Failed updating the wifi configuration in FLASH");
       }
     }

@@ -61,7 +61,6 @@
 /* Exported Constants --------------------------------------------------------*/
 #define ES_WIFI_PAYLOAD_SIZE     1200
 /* Exported macro-------------------------------------------------------------*/
-#define MIN(a, b)  ((a) < (b) ? (a) : (b))
    
 typedef int8_t (*IO_Init_Func)( void);
 typedef int8_t (*IO_DeInit_Func)( void);

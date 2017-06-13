@@ -122,7 +122,7 @@ int FLASH_write_at(uint32_t address, uint64_t *pData, uint32_t len_bytes)
   __disable_irq();
 #endif
   
-  for (i = 0; i < len_bytes; i += 8)
+  for (i = 0; i < (int)len_bytes; i += 8)
   {
     if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD,
         address + i,
@@ -132,7 +132,7 @@ int FLASH_write_at(uint32_t address, uint64_t *pData, uint32_t len_bytes)
     }
   }
   /* Memory check */
-  for (i = 0; i < len_bytes; i += 4)
+  for (i = 0; i < (int)len_bytes; i += 4)
   {
     uint32_t *dst = (uint32_t *)(address + i);
     uint32_t *src = ((uint32_t *) pData) + (i/4);

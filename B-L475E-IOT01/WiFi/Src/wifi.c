@@ -46,6 +46,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "wifi.h"
+#define MIN(a,b)        (((a) < (b)) ? (a) : (b))
 
 /* Private define ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -292,7 +293,7 @@ WIFI_Status_t WIFI_GetHostAddress( char* location, uint8_t* ipaddr)
   */
 WIFI_Status_t WIFI_OpenClientConnection(uint32_t socket, WIFI_Protocol_t type, const char* name, uint8_t* ipaddr, uint16_t port, uint16_t local_port)
 {
-  WIFI_Status_t ret = WIFI_STATUS_ERROR;
+//  WIFI_Status_t ret = WIFI_STATUS_ERROR;
   ES_WIFI_Conn_t conn;
   
   conn.Number = socket;

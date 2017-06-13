@@ -124,7 +124,8 @@ int init_sensors(void)
   * @retval 0 in case of success
   *         -1 in case of failure
   */
-int PrepareMqttPayload(sensors_data_t *sd) {
+int PrepareMqttPayload(void *v) {
+  sensors_data_t *sd = (sensors_data_t*)v;
   sd->temperature = BSP_TSENSOR_ReadTemp();
   sd->humidity = BSP_HSENSOR_ReadHumidity();
   sd->pressure = BSP_PSENSOR_ReadPressure();
