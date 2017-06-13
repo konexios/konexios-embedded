@@ -15,7 +15,6 @@
 flash_mem_t mem __attribute__((section("UNINIT_FIXED_LOC")));
 
 int restore_gateway_info(arrow_gateway_t *gateway) {
-  return -1;
   if ( mem.magic != (int) FLASH_MAGIC_NUMBER ) {
     FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
     return -1;
@@ -41,7 +40,6 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
 }
 
 int restore_device_info(arrow_device_t *device) {
-  return -1;
   if ( mem.magic != (int) FLASH_MAGIC_NUMBER ) {
     FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
     return -1;
