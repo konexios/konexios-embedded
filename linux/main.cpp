@@ -179,7 +179,10 @@ int main() {
 
     arrow_telemetry_batch_create(current_device(), datas, 3);
 
-//    arrow_test_gateway(current_gateway());
+    CREATE_TEST_SUITE(gate_test, "384f9d6832ce2272f18f3ee8597e0f108f6a8109");
+    arrow_test_gateway(current_gateway(), &gate_test);
+
+    sleep(60);
 
     CREATE_TEST_SUITE(p, "a53f0aa3e8bf7806ff5b8770ad4d9d3477d534c9");
     arrow_test_device(current_device(), &p);
