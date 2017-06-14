@@ -6,8 +6,9 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/mem.h"
 #include <qcom_common.h>
+#include <qcom_misc.h>
+#include <arrow/mem.h>
 
 void bzero(void *s, size_t n) {
   A_MEMSET(s, 0, n);
@@ -17,12 +18,12 @@ void bcopy(const void *src, void *dest, size_t n) {
   A_MEMCPY(dest, src, n);
 }
 
-#if !defined(malloc_module_init)
-void *realloc(void *ptrmem, size_t size) {
-  qcom_mem_free(ptrmem);
-  return qcom_mem_alloc(size);
+char *strndup (const char *__string, size_t __n) {
+  char *p = malloc(__n + 1);
+  strncpy(p, __string, __n);
+  p[__n] = 0x0;
+  return p;
 }
-#endif
 
 char *strcat(char *dest, const char *src) {
   char *rdest = dest;
@@ -49,4 +50,13 @@ char *strncat(char *dest, const char *src, size_t n) {
     while (n-- && (*dest++ = *src++))
       ;
     return ret;
+}
+
+typedef int (*__compar_fn_t) (const void *, const void *);
+void qsort(void *__base, size_t __nmemb, size_t __size, __compar_fn_t __compar) {
+  SSP_PARAMETER_NOT_USED(__base);
+  SSP_PARAMETER_NOT_USED(__nmemb);
+  SSP_PARAMETER_NOT_USED(__size);
+  SSP_PARAMETER_NOT_USED(__compar);
+  // FIXME need qsort func!
 }

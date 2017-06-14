@@ -6,7 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "crypt/crypt.h"
+#include "ssl/crypt.h"
 
 #include <qcom_common.h>
 #include <qcom_crypto.h>

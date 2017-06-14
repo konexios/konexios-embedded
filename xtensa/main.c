@@ -30,6 +30,9 @@
 
 #include <arrow/storage.h>
 #include <json/data.h>
+#include <time/watchdog.h>
+#include <arrow/devicecommand.h>
+#include <arrow/software_update.h>
 #define PRINTF_ENBALE 1
 
 //TX_THREAD sdk_thread;
@@ -114,32 +117,20 @@ A_BOOL arrow_gpio_check() {
   return TRUE;
 }
 
-qcom_timer_t wdt_timer;
-static int wdt_counter = 0;
-void qcom_task_timer_handler(unsigned int alarm, void *data) {
-  A_PRINTF("timer done %d: %p counter %d\r\n", alarm, data, wdt_counter);
-  if ( wdt_counter++ < 60 ) {
-    qcom_watchdog_feed();
-  } else {
-    if (wdt_counter > 70) qcom_sys_reset();
-  }
+int get_data(void *data) {
+  A_PRINTF("get data\n");
+  rssi_data_t *sig = (rssi_data_t *)data;
+//  A_STATUS status =
+  qcom_sta_get_rssi(currentDeviceId, &sig->rssi);
+  unsigned short temp;
+  tmp106_reg_read(&temp);
+  sig->temperature = (float)temp / 256.0;
+  A_PRINTF("data {%d, %d}\n", sig->rssi, (int)sig->temperature);
 }
 
-
-void wdt_init() {
-//  qcom_timer_init(&wdt_timer, qcom_task_timer_handler, NULL, 1000, PERIODIC);
-//  qcom_timer_start(&wdt_timer);
-  int state = qcom_watchdog(APP_WDT_USER_DBG, 30);
-  A_PRINTF("qcom watchdog start %d\r\n", state);
-  qcom_watchdog_feed();
-}
-
-void wdt_feed() {
-  wdt_counter = 0;
-  A_PRINTF("wdt feed\r\n");
-  qcom_watchdog_feed();
-//  qcom_timer_stop(&wdt_timer);
-//  qcom_timer_start(&wdt_timer);
+static int test_cmd_proc(const char *str) {
+  A_PRINTF("test: [%s]", str);
+  return 0;
 }
 
 void main_entry(ULONG which_thread) {
@@ -149,7 +140,7 @@ void main_entry(ULONG which_thread) {
   user_pre_init();
   arrow_gpio_init();
   temperature_init();
-  wdt_init();
+  wdt_start();
 
   if ( arrow_gpio_check() ) {
 force_ap:
@@ -163,9 +154,6 @@ force_ap:
     }
   } else {
     A_UINT32 ip = 0;
-    arrow_gateway_t gateway;
-    arrow_gateway_config_t gate_config;
-    arrow_device_t device;
     rssi_data_t sig;
 
     A_PRINTF("try to connect %d\n", currentDeviceId);
@@ -201,71 +189,24 @@ force_ap:
     //  qcom_sntp_show_config();
     //  qcom_enable_sntp_client(1);
     wdt_feed();
+    arrow_gateway_software_update("no"); // FIXME
+
+    add_cmd_handler("test", &test_cmd_proc);
 
     ntp_set_time_cycle();
 
     DBG("head free %d", qcom_mem_heap_get_free_size());
 
-    wdt_feed();
-    while (arrow_connect_gateway(&gateway) < 0) {
-      DBG("arrow gateway connect fail\r\n");
-      qcom_thread_msleep(1000);
-    }
-
-    wdt_feed();
-    while ( arrow_config(&gateway, &gate_config) < 0 ) {
-      DBG("arrow gateway config fail...");
-      qcom_thread_msleep(5000);
-    }
-
-    DBG("config: %d", gate_config.type);
-
-    wdt_feed();
-    while (arrow_connect_device(&gateway, &device) < 0 ) {
-      DBG("device connect fail...");
-      qcom_thread_msleep(5000);
-    }
+    arrow_initialize_routine();
 
     // send via API
-    A_STATUS status = qcom_sta_get_rssi(currentDeviceId, &sig.rssi);
-    unsigned short temp;
-    tmp106_reg_read(&temp);
-    sig.temperature = (float)temp / 256.0;
+    get_data(&sig);
+    arrow_send_telemetry_routine(&sig);
 
-    wdt_feed();
-    if ( status == A_OK )  {
-      DBG("send data %d", sig.rssi);
-      while ( arrow_send_telemetry(&device, &sig) < 0) {
-        DBG("arrow: send telemetry fail");
-      }
-    }
+    arrow_mqtt_connect_routine();
+    arrow_mqtt_send_telemetry_routine(get_data, &sig);
 
-    wdt_feed();
-    while ( mqtt_connect(&gateway, &device, &gate_config) < 0 ) {
-      DBG("mqtt connect fail");
-      qcom_thread_msleep(10000);
-    } //every 5 sec try to connect
-
-    while(1) {
-      qcom_thread_msleep(5000);
-      unsigned short temp;
-      tmp106_reg_read(&temp);
-      A_PRINTF("temperature %d\r\n", (temp / 256));
-      sig.temperature = (float)temp / 256.0;
-      A_STATUS status = qcom_sta_get_rssi(currentDeviceId, &sig.rssi);
-      if ( status == A_OK )  {
-        if ( mqtt_publish(&device, &sig) < 0 ) {
-          DBG("mqtt publish failure...");
-          mqtt_disconnect();
-          while (mqtt_connect(&gateway, &device, &gate_config) < 0) { qcom_thread_msleep(5000); }
-        } else {
-          wdt_feed();
-        }
-      }
-    }
-
-    arrow_device_free(&device);
-    arrow_gateway_free(&gateway);
+    arrow_close();
   }
 }
 

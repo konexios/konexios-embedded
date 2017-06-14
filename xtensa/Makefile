@@ -21,7 +21,8 @@ C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/xtensa
 INCLUDES += \
 	-I$(C_SDK_PATH) \
 	-I$(C_SDK_PATH)/include \
-	-I$(C_SDK_MAKE_PATH)
+	-I$(C_SDK_MAKE_PATH) \
+	-I$(C_SDK_MAKE_PATH)/../default
 
 
 CFLAGS = $(COPTS) $(DEFINES) $(INCLUDES) 
@@ -31,15 +32,13 @@ CC = xt-xcc
 AR = xt-ar
 RM = rm -f
 
-CSRCS := app_start.c main.c
+CSRCS := app_start.c main.c swat_wmiconfig_ota.c
 CSRCS += $(wildcard arrow_*.c)
 CSRCS += $(shell find $(PWD)/acnsdkc -name "*.c")
 
 OBJS := $(CSRCS:%.c=%.o)
 DEPS := $(CSRCS:%.c=%.d)
-LIBS := $(LIBDIR)/lib${APP_NAME}.a \
-	$(LIBDIR)/libpatches_iot.a\
-	$(LIBDIR)/libpatches.a \
+LIBS := \
 	$(LIBDIR)/libhost_dset_api.a \
     	$(LIBDIR)/libhttppatches.a \
     	$(LIBDIR)/libsntppatches.a \
@@ -69,11 +68,14 @@ LDFLAGS = -nostdlib -Wl,-EL -Wl,--gc-sections \
 	-u app_start \
 	-Wl,-static \
 	-Wl,--start-group \
-	-ladc -luartserp -lconsole -lramcust -lserport -lacnsdkc -lqcomcrypto -ljson \
+	-lgcc -ladc -luartserp -lconsole -lramcust -lserport -lacnsdkc -lqcomcrypto -ljson \
+	-l${APP_NAME} \
+	-lpatches_iot \
+	-lpatches \
 	$(LIBS)	\
 	-Wl,--end-group \
 	$(IMAGEDIR)/rom.addrs.ld \
-	-lgcc -Wl,-Map,$(APP_NAME).map
+	-Wl,-Map,$(APP_NAME).map
 
 
 ifneq ($(MAKECMDGOALS),clean)

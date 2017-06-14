@@ -42,7 +42,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
     return -1;
   }
   DBG("gateway set %s", gatehid);
-  arrow_gateway_add_hid(gateway, gatehid);
+  property_copy(&gateway->hid, p_stack(gatehid));
   return 0;
 }
 
@@ -58,8 +58,8 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
     DBG("WriteToFlash: Failed to create RW dset");
 //    return -1;
   }
-  strcpy(flash_data.gateway_hid, gateway->hid);
-  DBG("flash write: %s", gateway->hid);
+  strcpy(flash_data.gateway_hid, P_VALUE(gateway->hid));
+  DBG("flash write: %s", P_VALUE(gateway->hid));
   status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
              0, DSET_MEDIA_NVRAM, NULL, NULL);
 
@@ -75,19 +75,19 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
 
 int restore_device_info(arrow_device_t *device) {
   char *devhid = NULL;
-  char *deveid = NULL;
   if ( !flash_read ) read_flash();
   devhid = flash_data.device_hid;
+  if ( !utf8check(devhid) || strlen(devhid)==0 ) {
+    return -1;
+  }
+  property_copy(&device->hid, p_stack(devhid));
+#if defined(__IBM__)
+  char *deveid = NULL;
   deveid = flash_data.device_eid;
   if ( !utf8check(devhid) || strlen(devhid)==0 ) {
     return -1;
   }
-  arrow_device_set_hid(device, devhid);
-#if defined(__IBM__)
-  if ( !utf8check(devhid) || strlen(devhid)==0 ) {
-    return -1;
-  }
-  arrow_device_set_eid(device, deveid);
+  property_copy(&device->eid, p_stack(deveid);
 #endif
   return 0;
 }
@@ -103,8 +103,8 @@ void save_device_info(arrow_device_t *device) {
     DBG("WriteToFlash: Failed to create RW dset");
     return;
   }
-  strcpy(flash_data.device_hid, device->hid);
-  DBG("flash write: %s", device->hid);
+  strcpy(flash_data.device_hid, P_VALUE(device->hid));
+  DBG("flash write: %s", P_VALUE(device->hid));
 #if defined(__IBM__)
   strcpy(flash_data.device_eid, device->eid);
   DBG("flash write: %s", device->eid);
@@ -147,6 +147,14 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
 
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
   if ( !flash_read ) read_flash();
+
+#if defined(DEFAULT_WIFI_SSID)  \
+  && defined(DEFAULT_WIFI_PASS) \
+  && defined(DEFAULT_WIFI_SEC)
+  strcpy(ssid, DEFAULT_WIFI_SSID);
+  strcpy(pass, DEFAULT_WIFI_PASS);
+  *sec = DEFAULT_WIFI_SEC;
+#else
   char *tmp = flash_data.ssid;
   if ( !utf8check(tmp) || strlen(tmp)==0 ) {
     DBG("there is no SSID");
@@ -166,5 +174,6 @@ int restore_wifi_setting(char *ssid, char *pass, int *sec) {
     DBG("there is no SEC");
     return -1;
   }
+#endif
   return 0;
 }

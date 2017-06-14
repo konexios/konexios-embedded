@@ -8,9 +8,63 @@
 
 #include "bsd/socket.h"
 #include <debug.h>
+#include <arrow/mem.h>
 #include <qcom_common.h>
+#include <qcom/select_api.h>
 
 static int address_count = 0;
+
+typedef struct _sock_info_ {
+  int sock;
+  struct timeval timeout;
+  struct _sock_info_ *next;
+} sock_info_t;
+
+static sock_info_t *__info = NULL;
+
+void add_socktimer(int sock, struct timeval tv) {
+  sock_info_t *t = (sock_info_t *)malloc(sizeof(sock_info_t));
+  t->next = NULL;
+  t->sock = sock;
+  t->timeout = tv;
+  sock_info_t *last = __info;
+  if ( !last ) {
+    __info = t;
+  } else {
+    while ( last->next ) last = last->next;
+    last->next = t;
+  }
+}
+
+void get_sock_timer(int sock, struct timeval* tv) {
+  sock_info_t *last = __info;
+  while ( last ) {
+    if ( last->sock == sock ) {
+      *tv = last->timeout;
+    }
+    last = last->next;
+  }
+}
+
+void rm_sock_timer(int sock) {
+  sock_info_t *last = __info;
+  sock_info_t *pre = NULL;
+  while ( last ) {
+    if ( last->sock == sock ) {
+      if ( !pre ) {
+        pre = __info;
+        __info = last->next;
+        free(pre);
+      } else {
+        pre->next = last->next;
+        free(last);
+      }
+      return;
+    }
+    pre = last;
+    last = last->next;
+  }
+}
 
 static A_UINT32
 _inet_addr(A_CHAR *str) {
@@ -68,4 +122,92 @@ struct hostent *gethostbyname(const char *name) {
     DBG("qcom dns client resolving %d", status);
   }
   return NULL;
+}
+
+int socket(int protocol_family, int socket_type, int protocol) {
+  return qcom_socket(protocol_family, socket_type, protocol);
+}
+
+void soc_close(int socket) {
+  rm_sock_timer(socket);
+  qcom_socket_close(socket);
+}
+
+ssize_t send(int sockfd, const void *buf, size_t len, int flags) {
+  return qcom_send(sockfd, (char*)buf, len, flags);
+}
+
+ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
+               const struct sockaddr *dest_addr, socklen_t addrlen) {
+  return qcom_sendto(sockfd, (char*)buf, len, flags,
+                     (struct sockaddr *)dest_addr, addrlen);
+}
+
+ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
+  struct timeval tv;
+  q_fd_set rset;
+  A_INT32 ret;
+
+  FD_ZERO(&rset);
+  get_sock_timer(sockfd, &tv);
+
+  FD_SET(sockfd, &rset);
+  if ((ret = qcom_select(sockfd + 1, &rset, 0, 0, &tv)) <= 0) {
+    if (ret == 0) return (-1);
+    else return (ret);
+  }
+  return qcom_recv(sockfd, buf, len, flags);
+}
+
+ssize_t recvfrom(int sock, void *buf, size_t size, int flags,
+                 struct sockaddr *src_addr, socklen_t *addrlen) {
+  return qcom_recvfrom(sock, buf, size, flags, src_addr, addrlen);
+}
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+  return qcom_connect(sockfd, (struct sockaddr *)addr, addrlen);
+}
+
+int setsockopt(int sockfd, int level, int optname,
+               const void *optval, socklen_t optlen) {
+  if ( level == SOL_SOCKET ) {
+    switch(optname) {
+      case SO_RCVTIMEO:
+      case SO_SNDTIMEO:
+        if ( optlen == sizeof(struct timeval) ) {
+          if ( optval ) {
+            struct timeval *tv = ((struct timeval*)(optval));
+            add_socktimer(sockfd, *tv);
+//            DBG("set timeout %d", _sockets[sockfd].timeout);
+          }
+          return 0;
+        }
+      return -3;
+      break;
+    }
+  }
+  return qcom_setsockopt(sockfd, level, optname, (void*)optval, optlen);
+}
+
+int bind(int sock, const struct sockaddr *addr, socklen_t addrlen) {
+  SSP_PARAMETER_NOT_USED(sock);
+  SSP_PARAMETER_NOT_USED(addr);
+  SSP_PARAMETER_NOT_USED(addrlen);
+  // FIXME implementation
+  return -1;
+}
+
+int listen(int sock, int backlog) {
+  SSP_PARAMETER_NOT_USED(sock);
+  SSP_PARAMETER_NOT_USED(backlog);
+  // FIXME implementation
+  return -1;
+}
+
+int accept(int sock, struct sockaddr *addr, socklen_t *addrlen) {
+  SSP_PARAMETER_NOT_USED(sock);
+  SSP_PARAMETER_NOT_USED(addr);
+  SSP_PARAMETER_NOT_USED(addrlen);
+  // FIXME implementation
+  return -1;
 }
