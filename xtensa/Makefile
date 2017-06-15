@@ -39,40 +39,46 @@ CSRCS += $(shell find $(PWD)/acnsdkc -name "*.c")
 OBJS := $(CSRCS:%.c=%.o)
 DEPS := $(CSRCS:%.c=%.d)
 LIBS := \
-	$(LIBDIR)/libhost_dset_api.a \
-    	$(LIBDIR)/libhttppatches.a \
-    	$(LIBDIR)/libsntppatches.a \
-    	$(LIBDIR)/libdnspatches.a \
-    	$(LIBDIR)/libotapatches.a \
-    	$(LIBDIR)/libstrrclpatches.a \
-    	$(LIBDIR)/libipv6patches.a \
-    	$(LIBDIR)/libsslpatches.a \
-        $(LIBDIR)/libcryptopatches.a \
-        $(LIBDIR)/libcrypto_mgmt.a \
-        $(LIBDIR)/libcrypto_aes.a \
-        $(LIBDIR)/libcrypto_chacha20_poly1305.a \
-        $(LIBDIR)/libcrypto_des.a \
-        $(LIBDIR)/libcrypto_srp.a \
-        $(LIBDIR)/libcrypto_hmacsha384.a \
-        $(LIBDIR)/libcrypto_hmacsha256.a \
-        $(LIBDIR)/libcrypto_hmacsha1.a \
-        $(LIBDIR)/libwhalpatches.a \
-        $(LIBDIR)/lib_ezxml.a \
-        $(LIBDIR)/libssdp.a 
+	-lgcc \
+	-ladc \
+	-luartserp \
+	-lconsole \
+	-lramcust \
+	-lserport \
+	-lqcomcrypto \
+	-ljson \
+	-lpatches_iot \
+	-lpatches \
+	-lhost_dset_api \
+	-lhttppatches \
+	-lsntppatches \
+	-ldnspatches \
+	-lotapatches \
+	-lstrrclpatches \
+	-lipv6patches \
+	-lsslpatches \
+        -lcryptopatches \
+        -lcrypto_mgmt \
+        -lcrypto_aes \
+        -lcrypto_chacha20_poly1305 \
+        -lcrypto_des \
+        -lcrypto_srp \
+        -lcrypto_hmacsha384 \
+        -lcrypto_hmacsha256 \
+        -lcrypto_hmacsha1 \
+        -lwhalpatches \
+        -l_ezxml \
+        -lssdp 
 
 LDFLAGS = -nostdlib -Wl,-EL -Wl,--gc-sections \
-	-L$(IMAGEDIR)  \
-	-L. \
-	-L$(LIBDIR) \
+	-L$(IMAGEDIR) -L$(LIBDIR) -L. \
 	-Tsdk_shell.ld \
 	-u app_start \
 	-Wl,-static \
 	-Wl,--start-group \
-	-lgcc -ladc -luartserp -lconsole -lramcust -lserport -lacnsdkc -lqcomcrypto -ljson \
 	-l${APP_NAME} \
-	-lpatches_iot \
-	-lpatches \
-	$(LIBS)	\
+	-lacnsdkc \
+	$(LIBS) \
 	-Wl,--end-group \
 	$(IMAGEDIR)/rom.addrs.ld \
 	-Wl,-Map,$(APP_NAME).map
@@ -93,7 +99,7 @@ $(DEMO_LIB): $(OBJS)
 libacnsdkc.a:
 	cd $(C_SDK_PATH) && make -f $(C_SDK_MAKE_PATH)/Makefile.xtensa
 
-$(DEMO_OUT): libacnsdkc.a $(LIBS) $(LDS)
+$(DEMO_OUT): libacnsdkc.a 
 	@mkdir -p $(IMAGEDIR)
 	$(CC) $(LDFLAGS) -o $@ 
 	

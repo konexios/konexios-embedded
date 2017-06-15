@@ -66,13 +66,10 @@ void rm_sock_timer(int sock) {
   }
 }
 
-static A_UINT32
-_inet_addr(A_CHAR *str) {
+A_UINT32 _inet_addr(A_CHAR *str) {
     A_UINT32 ipaddr;
     A_UINT32 data[4];
-    A_INT32 ret;
-
-    ret = A_SSCANF(str, "%3d.%3d.%3d.%3d", data, data + 1, data + 2, data + 3);
+    A_INT32 ret = A_SSCANF(str, "%3d.%3d.%3d.%3d", data, data + 1, data + 2, data + 3);
     if (ret < 0) {
         return 0;
     } else {

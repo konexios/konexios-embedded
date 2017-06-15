@@ -15,25 +15,11 @@
 #include <debug.h>
 #include <time/watchdog.h>
 #include <time/time.h>
-
-static A_UINT32
-_inet_addr(A_CHAR *str) {
-    A_UINT32 ipaddr;
-    A_UINT32 data[4];
-    A_INT32 ret;
-
-    ret = A_SSCANF(str, "%3d.%3d.%3d.%3d", data, data + 1, data + 2, data + 3);
-    if (ret < 0) {
-        return 0;
-    } else {
-        ipaddr = data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
-    }
-    return ipaddr;
-}
+#include <bsd/socket.h>
 
 extern A_UINT8 currentDeviceId;
 
-int arrow_gateway_software_update(const char *url) {
+int qca_gateway_software_update(const char *url) {
   A_UINT32 resp_code,length;
   DBG("url %s", url);
   char *sch_end = strstr((char*)url, "://");

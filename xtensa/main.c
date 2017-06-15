@@ -48,11 +48,10 @@ TX_THREAD main_thread;
 #define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
 
 #endif
-//TX_BYTE_POOL sdk_pool;
-TX_BYTE_POOL main_pool;
 
-//void qcom_wps_event_process_cb(A_UINT8 ucDeviceID, QCOM_WPS_EVENT_TYPE uEventID,
-//                    qcom_wps_event_t *pEvtBuffer, void *qcom_wps_event_handler_arg);
+extern int qca_gateway_software_update(const char *);
+
+TX_BYTE_POOL main_pool;
 
 typedef struct shell_gpio_info_s {
     unsigned int pin_num;
@@ -141,6 +140,7 @@ void main_entry(ULONG which_thread) {
   arrow_gpio_init();
   temperature_init();
   wdt_start();
+  arrow_gateway_software_update_set_cb(qca_gateway_software_update);
 
   if ( arrow_gpio_check() ) {
 force_ap:
@@ -189,7 +189,6 @@ force_ap:
     //  qcom_sntp_show_config();
     //  qcom_enable_sntp_client(1);
     wdt_feed();
-    arrow_gateway_software_update("no"); // FIXME
 
     add_cmd_handler("test", &test_cmd_proc);
 
@@ -210,42 +209,15 @@ force_ap:
   }
 }
 
-//void shell_host_entry(ULONG which_thread) {
-//    user_pre_init();
-//    qcom_enable_print(PRINTF_ENBALE);
-
-//    console_setup();
-//    console_reg_cmds(cust_cmds, cust_cmds_num);
-
-//    A_PRINTF("cli started ---------------\n");
-////    while(1){qcom_thread_msleep(1000);};
-//    task_execute_cli_cmd();
-//    /* Never returns */
-//}
-
 void user_main(void)
 {
   malloc_module_init();
-//  qcom_new_pool(BYTE_POOL_SIZE);
-//    tx_byte_pool_create(&sdk_pool, "shell pool", TX_POOL_CREATE_DYNAMIC, BYTE_POOL_SIZE);
-//    {
-//        CHAR *pointer;
-//        tx_byte_allocate(&sdk_pool, (VOID **) & pointer, PSEUDO_HOST_STACK_SIZE, TX_NO_WAIT);
-
-//        tx_thread_create(&sdk_thread, "cdrtest thread", shell_host_entry,
-//                         0, pointer, PSEUDO_HOST_STACK_SIZE, 16, 16, 4, TX_AUTO_START);
-//    }
-
-//    tx_byte_pool_create(&main_pool, "main pool", TX_POOL_CREATE_DYNAMIC, BYTE_POOL_SIZE);
-    {
-        CHAR *pointer = (CHAR*)mem_alloc(BYTE_POOL_SIZE);//buffer_real;
-//        tx_byte_allocate(&main_pool, (VOID **) & pointer, PSEUDO_HOST_STACK_SIZE, TX_NO_WAIT);
-
-        tx_thread_create(&main_thread, "cdrtest", main_entry,
-                         0, pointer, PSEUDO_HOST_STACK_SIZE,
-                         16, 16, 4, TX_AUTO_START);
-    }
-
-    cdr_threadx_thread_init();
+  {
+    CHAR *pointer = (CHAR*)mem_alloc(BYTE_POOL_SIZE);
+    tx_thread_create(&main_thread, "cdrtest", main_entry,
+                     0, pointer, PSEUDO_HOST_STACK_SIZE,
+                     16, 16, 4, TX_AUTO_START);
+  }
+  cdr_threadx_thread_init();
 }
 
