@@ -27,7 +27,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
   if (check_mgc()) {
     flash_mem_t *mem = (flash_mem_t *)flash_start();
     if ( utf8check(mem->gateway_hid) && strlen(mem->gateway_hid) > 0 ) {
-      arrow_gateway_add_hid(gateway, mem->gateway_hid);
+      property_copy(&gateway->hid, p_const(mem->gateway_hid));
       return 0;
     }
   }
@@ -38,7 +38,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
   printf("new registration\r\n");
   flash_mem_t mem;
   memcpy(&mem, flash_start(), sizeof(flash_mem_t));
-  strcpy(mem.gateway_hid, gateway->hid);
+  strcpy(mem.gateway_hid, P_VALUE(gateway->hid));
   write_flash((char*)&mem, sizeof(flash_mem_t));
 }
 
@@ -48,12 +48,12 @@ int restore_device_info(arrow_device_t *device) {
     if ( !utf8check(mem->device_hid) || strlen(mem->device_hid) == 0 ) {
       return -1;
     }
-    arrow_device_set_hid(device, mem->device_hid);
+    property_copy(&device->hid, p_const(mem->device_hid));
   #if defined(__IBM__)
     if ( !utf8check(mem->device_eid) || strlen(mem->device_eid) == 0 ) {
       return -1;
     }
-    arrow_device_set_eid(device, mem->device_eid);
+    property_copy(&device->eid, p_const(mem->device_eid));
   #endif
     return 0;
   }
@@ -63,9 +63,9 @@ int restore_device_info(arrow_device_t *device) {
 void save_device_info(arrow_device_t *device) {
   flash_mem_t mem;
   memcpy(&mem, flash_start(), sizeof(flash_mem_t));
-  strcpy(mem.device_hid, device->hid);
+  strcpy(mem.device_hid, P_VALUE(device->hid));
 #if defined(__IBM__)
-  strcpy(mem.device_eid, device->eid);
+  strcpy(mem.device_eid, P_VALUE(device->eid));
 #endif
   write_flash((char *)&mem, sizeof(flash_mem_t));
 }

@@ -56,7 +56,7 @@ char *telemetry_serialize(arrow_device_t *device, void *d) {
 char *telemetry_serialize(arrow_device_t *device, void *d) {
   X_NUCLEO_IKS01A1_data *data = (X_NUCLEO_IKS01A1_data *)d;
   JsonNode *_node = json_mkobject();
-  json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
+  json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(P_VALUE(device->hid)));
   json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(data->ht_temperature));
   json_append_member(_node, "f|lpsTemperature", json_mknumber(data->pt_temperature));
   json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(data->humidity));

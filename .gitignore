@@ -1,3 +1,5 @@
 *.qbs.user
 build-*
 .metadata
+*.log
+*.sh
