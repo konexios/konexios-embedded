@@ -41,7 +41,8 @@ DEFINES += -DUSE_STEP_MOTOR
 DEFINES += -DUSE_LED_BALLAST
 #DEFINES += -DUSE_LCD
 DEFINES += -DDEBUG 
-DEFINES += -Os # -fno-inline-functions
+DEFINES += -Os 
+# -fno-inline-functions
 # -Wimplicit-function-declaration -Werror -Wpedantic 
 # -Wl,--wrap=malloc -Wl,--wrap=free
 # LD_FLAGS += -Wl,--wrap=calloc 
