@@ -21,6 +21,9 @@
 
 #define nnet_send(sock, str) send((sock), (uint8_t*)(str), (uint16_t)strlen(str), 0)
 
+extern int cmp_meth(const char *str);
+extern char *get_meth(int i);
+
 int receive_request(SOCKET sock, http_request_t *res, char *buf, size_t *bufsize, size_t *len) {
     int ret;
     if ( (ret = recv(sock, (uint8_t*)buf, 20, 0)) < 0 ) return ret;
@@ -68,12 +71,12 @@ int receive_request(SOCKET sock, http_request_t *res, char *buf, size_t *bufsize
 
     ret = cmp_meth(buf);
     if ( ret < 0 ) {
-        res->meth = NULL;
+        property_copy(&res->meth, p_null());
     } else {
-        res->meth = (uint8_t*)get_meth(ret);
+        property_copy(&res->meth, p_stack((uint8_t*)get_meth(ret)));
     }
     DBG("meth: {%s}", res->meth);
-    if ( !res->meth ) return -1;
+    if ( IS_EMPTY(res->meth) ) return -1;
 
     memmove(buf, &buf[crlfPos+2], *len - (size_t)(crlfPos + 2) + 1 );
     *len -= (size_t)(crlfPos + 2);
@@ -256,14 +259,14 @@ void server_run() {
     DBG("+++ on accept %d", childfd);
 
     while(1) {
-        req.meth = NULL;
+        property_copy(&req.meth, p_null());
         size_t buf_len;
         if ( receive_request(childfd, &req, client_buf, &need_read, &buf_len) < 0) {
             TRACE("unknown request\r\n");
             tx_thread_sleep(CONV_MS_TO_TICK(100));
         }
 
-        switch( cmp_meth((char*)req.meth) ) {
+        switch( cmp_meth(P_VALUE(req.meth)) ) {
             case GET: {
                 TRACE("send response\r\n");
                 char *pl =
