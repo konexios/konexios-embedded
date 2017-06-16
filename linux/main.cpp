@@ -147,12 +147,6 @@ int main() {
     std::cout<<"------------------------"<<std::endl;
 #endif
 
-    property_copy(&current_gateway()->hid, p_const("1f70a702f4de19f834df941445a2c2401ad573f0"));
-    CREATE_TEST_SUITE(gate_test, "384f9d6832ce2272f18f3ee8597e0f108f6a8109");
-    arrow_test_gateway(current_gateway(), &gate_test);
-
-//    sleep(600);
-
     arrow_initialize_routine();
 
     std::cout<<"------------------------"<<std::endl;
@@ -185,6 +179,21 @@ int main() {
     pm_data_t datas[3] = { data, data, data };
 
     arrow_telemetry_batch_create(current_device(), datas, 3);
+
+    CREATE_TEST_SUITE(gate_test, "384f9d6832ce2272f18f3ee8597e0f108f6a8109");
+    arrow_test_gateway(current_gateway(), &gate_test);
+
+    arrow_test_begin(&gate_test);
+    // start test procedure
+    arrow_test_step_begin(&gate_test, 1);
+    //test temperature
+    if ( 1 ) {
+      arrow_test_step_success(&gate_test, 1);
+    } else {
+      arrow_test_step_fail(&gate_test, 1, "no temp sensor");
+    }
+    // end test
+    arrow_test_end(&gate_test);
 
     CREATE_TEST_SUITE(p, "a53f0aa3e8bf7806ff5b8770ad4d9d3477d534c9");
     arrow_test_device(current_device(), &p);
