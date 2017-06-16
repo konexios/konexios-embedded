@@ -27,7 +27,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
 //    memset(flash_ptr, 0x00, 250);
 //    flash_storage_write((uint8_t*)flash, 512);
     if ( utf8check(flash_ptr) && strlen(flash_ptr) > 0 ) {
-        arrow_gateway_add_hid(gateway, flash_ptr);
+        property_copy(&gateway->hid, p_const(flash_ptr));
         return 0;
     }
     return -1;
@@ -36,8 +36,8 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
 void save_gateway_info(const arrow_gateway_t *gateway) {
     if ( !flash_read ) read_flash();
     char *flash_ptr = flash + 256;
-    if ( gateway->hid ) {
-        strcpy(flash_ptr, gateway->hid);
+    if ( !IS_EMPTY(gateway->hid) ) {
+        strcpy(flash_ptr, P_VALUE(gateway->hid));
     } else {
         *flash_ptr = 0x0;
     }
@@ -51,13 +51,13 @@ int restore_device_info(arrow_device_t *device) {
     if ( !utf8check(flash_ptr) || strlen(flash_ptr) == 0 ) {
         return -1;
     }
-    arrow_device_set_hid(device, flash_ptr);
+    property_copy(&device->hid, p_const(flash_ptr));
 #if defined(__IBM__)
     flash_ptr = flash + 256 + 124 + 64;
     if ( !utf8check(flash_ptr) || strlen(flash_ptr) == 0 ) {
         return -1;
     }
-    arrow_device_set_eid(device, flash_ptr);
+    property_copy(&device->eid, p_const(flash_ptr));
 #endif
     return 0;
 }
@@ -65,11 +65,11 @@ int restore_device_info(arrow_device_t *device) {
 void save_device_info(arrow_device_t *device) {
     if ( !flash_read ) read_flash();
     char *flash_ptr = flash + 256 + 124;
-    if ( device->hid ) strcpy(flash_ptr, device->hid);
+    if ( !IS_EMPTY(device->hid) ) strcpy(flash_ptr, P_VALUE(device->hid));
     else *flash_ptr = 0x0;
 #if defined(__IBM__)
     flash_ptr = flash + 256 + 124 + 64;
-    if ( device->eid ) strcpy(flash_ptr, device->eid);
+    if ( !IS_EMPTY(device->eid) ) strcpy(flash_ptr, P_VALUE(device->eid));
     else *flash_ptr = 0x0;
 #endif
     flash_storage_write((uint8_t*)flash, 512);
