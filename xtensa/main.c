@@ -137,6 +137,7 @@ void main_entry(ULONG which_thread) {
   SSP_PARAMETER_NOT_USED(which_thread);
 
   user_pre_init();
+  A_PRINTF("--- Demo Xtensa ---\n");
   arrow_gpio_init();
   temperature_init();
   wdt_start();

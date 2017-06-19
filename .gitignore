@@ -3,3 +3,4 @@ build-*
 .metadata
 *.log
 *.sh
+*.exp

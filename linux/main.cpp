@@ -109,7 +109,7 @@ static int fail_cmd_proc(const char *str) {
 }
 
 int main() {
-    std::cout<<std::endl<<"--- Starting new run try ---"<<std::endl;
+    std::cout<<std::endl<<"--- Demo Linux ---"<<std::endl;
 
 //    Hided it because we supposed linux already synchronized a time 
 //    ntp_set_time_cycle();

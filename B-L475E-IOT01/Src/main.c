@@ -351,8 +351,7 @@ void StartDefaultTask(void const * argument)
   int wifiConnectCounter = 0;
 
   msleep(1000);
-  printf("----- new start ------\r\n");
-  DBG("init L475 iot node");
+  DBG("--- Demo B-L475E-IOT01 ---\r\n");
   DBG("{%s, %s}", ssid, psk);
 
   HAL_RTCStateTypeDef st;

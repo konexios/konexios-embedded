@@ -64,7 +64,7 @@ static int get_telemetry_data(void *data) {
 int main() {
   wdt_start();
   led = 1;
-  printf("\r\n--- Starting new run ---\r\n");
+  printf("\r\n--- Demo Nucleo ---\r\n");
   rand();
 
     int err;
