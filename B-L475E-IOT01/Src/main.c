@@ -417,7 +417,6 @@ void StartDefaultTask(void const * argument)
   arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
 
   arrow_close();
-
 }
 
 /**

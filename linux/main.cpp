@@ -202,7 +202,7 @@ int main() {
     arrow_test_begin(&p);
     // start test procedure
     arrow_test_step_begin(&p, 1);
-    //test temperature
+    // test temperature
     get_telemetry_data(&data);
     if ( sizeof(data) > 1 ) {
       arrow_test_step_success(&p, 1);
@@ -250,15 +250,12 @@ int main() {
     char md5hash_str[100];
 
     md5sum(md5hash, buffer, size);
-
-hex_encode(md5hash_str, md5hash, 16);
-
-printf("md5 sum %s", md5hash_str);
-
+    hex_encode(md5hash_str, md5hash, 16);
+    printf("md5 sum %s", md5hash_str);
 */
     arrow_mqtt_connect_routine();
     arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
-//     endless
+    // endless
 
     arrow_close();
     free_cmd_handler();

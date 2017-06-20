@@ -30,7 +30,7 @@ Required:
 #include "LEDBallast.h"
 #include "DLBSmotor.h"
 
-#define TITLE   "==Arrow DEMO=="
+#define TITLE   "--- Demo BB-GEVK ---"
 
 #if defined (USE_POE_SHIELD)
 W5100Interface eth;
