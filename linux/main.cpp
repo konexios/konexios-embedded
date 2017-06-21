@@ -175,7 +175,7 @@ int main() {
     get_telemetry_data(&data);
 
     arrow_send_telemetry_routine(&data);
-
+#if 0
     pm_data_t datas[3] = { data, data, data };
 
     arrow_telemetry_batch_create(current_device(), datas, 3);
@@ -253,6 +253,7 @@ int main() {
     hex_encode(md5hash_str, md5hash, 16);
     printf("md5 sum %s", md5hash_str);
 */
+#endif
     arrow_mqtt_connect_routine();
     arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
     // endless
