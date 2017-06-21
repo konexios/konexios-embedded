@@ -16,6 +16,13 @@
 #include "StorageEEPROM.h"
 #include <debug.h>
 
+#if defined(DEV_ENV)
+#define CONF_TYPE 1
+#else
+#define CONF_TYPE 0
+#endif
+
+
 static int check_mgc(void) {
   int *c = (int *)flash_read();
   if ( *c != (int) FLASH_MAGIC_NUMBER ) {
@@ -27,6 +34,8 @@ static int check_mgc(void) {
 int restore_gateway_info(arrow_gateway_t *gateway) {
   if (check_mgc()) {
     flash_mem_t *mem = (flash_mem_t *)flash_read();
+    DBG("read type %d", mem->type);
+    if ( mem->type != CONF_TYPE ) return -1;
     if ( utf8check(mem->gateway_hid) && strlen(mem->gateway_hid) > 0 ) {
     	DBG("restore gateway hid %s", mem->gateway_hid);
       property_copy( &gateway->hid, p_const(mem->gateway_hid));
@@ -53,6 +62,7 @@ int restore_device_info(arrow_device_t *device) {
     	DBG("eeprom mem is NULL");
     	return -1;
     }
+    if ( mem->type != CONF_TYPE ) return -1;
     if ( !utf8check(mem->device_hid) || strlen(mem->device_hid) == 0 ) {
       return -1;
     }
@@ -76,7 +86,9 @@ void save_device_info(arrow_device_t *device) {
 #if defined(__IBM__)
   strcpy(mem.device_eid, device->eid);
 #endif
+  mem.type = CONF_TYPE;
   flash_write((char *)&mem, sizeof(flash_mem_t));
+  DBG("write type %d", mem.type);
 }
 
 void save_wifi_setting(const char *ssid, const char *pass, int sec) {

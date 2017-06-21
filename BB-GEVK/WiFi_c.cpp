@@ -153,6 +153,7 @@ int wifi_socket_close(int socket) {
   if ( !sockets_stack[socket].s ) return -1;
   delete sockets_stack[socket].s;
   memset(&sockets_stack[socket], 0x00, sizeof(sock_info_t));
+  sockets_stack[socket].cid = -1;
   return 0;
 }
 
@@ -228,6 +229,7 @@ int wifi_socket_setopt(int socket, int level, int optname,
             struct timeval *tv = ((struct timeval *)(optval));
             int timeout = tv->tv_sec*1000 + (tv->tv_usec/1000);
             if ( timeout > 0 ) {
+//            	DBG("to {%d}", timeout);
               sockets_stack[socket].s->set_blocking(false, timeout);
             }
           }

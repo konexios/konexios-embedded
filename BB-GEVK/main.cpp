@@ -132,7 +132,7 @@ static int led_on(const char *str) {
 
 static int get_telemetry_data(void *d) {
 	static int count = 0;
-	const int max_count = 10;
+	const int max_count = 20;
     int old_pir_data = 0;
 	gevk_data_t *data = (gevk_data_t *)d;
 	als.read(data->als);
