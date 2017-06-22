@@ -34,9 +34,9 @@ public:
 		if ( !mem ) return -1;
 		SerCAT25M02 flash(&spi,262144,256);
 		memcpy(_flash, mem, size);
-		DBG("write flash %d %p %p", _flash_size, flash, _flash);
+		// DBG("write flash %d %p %p", _flash_size, flash, _flash);
 		bool b = flash.write(_flash_size / 256, _flash_size, _flash);
-		DBG("write res %d", b);
+		// DBG("write res %d", b);
 		if( !b ) return -1;
 		return 0;
 	}

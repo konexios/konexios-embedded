@@ -22,6 +22,7 @@ Required:
 #include <ntp/ntp.h>
 #include <arrow/connection.h>
 #include <arrow/mqtt.h>
+#include <arrow/gateway_api.h>
 #include <json/telemetry.h>
 #include <json/data.h>
 #include <arrow/devicecommand.h>
@@ -132,7 +133,7 @@ static int led_on(const char *str) {
 
 static int get_telemetry_data(void *d) {
 	static int count = 0;
-	const int max_count = 10;
+	const int max_count = 20;
     int old_pir_data = 0;
 	gevk_data_t *data = (gevk_data_t *)d;
 	als.read(data->als);
@@ -145,6 +146,11 @@ static int get_telemetry_data(void *d) {
     if ( old_pir_data != data->pir || count++ >= max_count ) {
     	count = 0;
     	DBG("data PIR(%d), ALS{%d,%4.2f}", data->pir, data->als, data->abmienceInLux);
+    	static int heardbeat = 0;
+    	if ( heardbeat++  > 1 ) {
+    		arrow_gateway_heartbeat(current_gateway());
+    		heardbeat = 0;
+    	}
     	return 0;
     }
     return -1;
