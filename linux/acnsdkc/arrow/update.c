@@ -8,7 +8,10 @@
 
 #include <stdio.h>
 #include <curl/curl.h>
-//#include <curl/easy.h>
+#include <ssl/md5sum.h>
+#include <debug.h>
+#include <arrow/mem.h>
+#include <arrow/utf8.h>
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -16,9 +19,10 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
   return written;
 }
 
+#define pagefilename "update.file"
+
 int arrow_gateway_software_update(const char *url) {
   CURL *curl;
-  static const char *pagefilename = "update.file";
   FILE *pagefile;
 
   curl_global_init(CURL_GLOBAL_ALL);
@@ -44,5 +48,29 @@ int arrow_gateway_software_update(const char *url) {
   }
   /* cleanup curl stuff */
   curl_easy_cleanup(curl);
+  return 0;
+}
+
+int arrow_software_update(const char *url,
+                          const char *checksum,
+                          const char *from,
+                          const char *to) {
+
+  if ( arrow_gateway_software_update(url) < 0 ) return -1;
+  FILE *fp = fopen(pagefilename, "rb");
+  if ( !fp ) return -1;
+  int n = 0;
+  char buffer[1];
+  md5_chunk_init();
+  while ( (n = fread(buffer, 1, 1, fp)) ){
+    md5_chunk(buffer, 1);
+  }
+  char md5hash[40];
+  char md5hash_str[40];
+  md5_chunk_hash(md5hash);
+  hex_encode(md5hash_str, md5hash, 16);
+  DBG("md5 sum %s", md5hash_str);
+  if ( strcmp(md5hash_str, checksum) != 0 ) return -1;
+  DBG("%s -> %s", from, to);
   return 0;
 }

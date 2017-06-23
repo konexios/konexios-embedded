@@ -34,6 +34,8 @@ extern "C" {
 #include <arrow/telemetry_api.h>
 #include <arrow/testsuite.h>
 
+#include <arrow/software_release.h>
+
 #if defined(MEMORY_TEST)
 #include <malloc.h>
 int m_counter = 0;
@@ -108,6 +110,11 @@ static int fail_cmd_proc(const char *str) {
   return -1;
 }
 
+extern "C" int arrow_software_update(const char *url,
+                                 const char *checksum,
+                                 const char *from,
+                                 const char *to);
+
 int main() {
     std::cout<<std::endl<<"--- Demo Linux ---"<<std::endl;
 
@@ -148,6 +155,7 @@ int main() {
 #endif
 
     arrow_initialize_routine();
+    arrow_software_release_set_cb(&arrow_software_update);
 
     std::cout<<"------------------------"<<std::endl;
 
