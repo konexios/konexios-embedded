@@ -8,10 +8,6 @@
 
 extern "C" {
 #include <config.h>
-#include <arrow/device.h>
-#include <arrow/connection.h>
-#include <arrow/mqtt.h>
-#include <json/telemetry.h>
 #include <ntp/ntp.h>
 #include <time/time.h>
 #include <arrow/events.h>
@@ -27,6 +23,7 @@ extern "C" {
 #include <json/pm.h>
 #endif
 
+#include <arrow/routine.h>
 #include <arrow/device_action.h>
 #include <arrow/device_api.h>
 #include <arrow/device_type.h>

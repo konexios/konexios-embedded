@@ -19,7 +19,7 @@
 #include <arrow/mem.h>
 #include <time/time.h>
 #include <ntp/ntp.h>
-#include <arrow/connection.h>
+#include <arrow/routine.h>
 #include <json/telemetry.h>
 #include <arrow/mqtt.h>
 #include <debug.h>

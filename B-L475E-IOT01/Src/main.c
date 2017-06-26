@@ -52,7 +52,7 @@
 #include <time/time.h>
 #include <time/watchdog.h>
 #include <ntp/ntp.h>
-#include <arrow/connection.h>
+#include <arrow/routine.h>
 #include <arrow/mqtt.h>
 #include <arrow/storage.h>
 

@@ -11,7 +11,7 @@
 #include "SPWFInterface.h"
 #include "flashmbed.h"
 extern "C" {
-#include <arrow/connection.h>
+#include <arrow/routine.h>
 #include <arrow/mqtt.h>
 #include <ntp/ntp.h>
 #include <arrow/storage.h>

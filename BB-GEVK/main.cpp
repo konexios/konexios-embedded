@@ -20,7 +20,7 @@ Required:
 
 #include <debug.h>
 #include <ntp/ntp.h>
-#include <arrow/connection.h>
+#include <arrow/routine.h>
 #include <arrow/mqtt.h>
 #include <arrow/gateway_api.h>
 #include <json/telemetry.h>
