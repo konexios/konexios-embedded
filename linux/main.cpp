@@ -12,7 +12,7 @@ extern "C" {
 #include <time/time.h>
 #include <arrow/events.h>
 #include <arrow/state.h>
-#include <arrow/devicecommand.h>
+#include <arrow/device_command.h>
 #include <stdio.h>
 #include <ssl/md5sum.h>
 #include <ssl/crypt.h>
@@ -24,9 +24,8 @@ extern "C" {
 #endif
 
 #include <arrow/routine.h>
-#include <arrow/device_action.h>
-#include <arrow/device_api.h>
-#include <arrow/device_type.h>
+#include <arrow/api/device/action.h>
+#include <arrow/api/device/type.h>
 #include <arrow/gateway_api.h>
 #include <arrow/telemetry_api.h>
 #include <arrow/testsuite.h>

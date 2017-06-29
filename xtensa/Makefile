@@ -1,36 +1,83 @@
-# Copyright (c) 2015 Qualcomm Atheros, Inc.
-# All Rights Reserved.
-# Qualcomm Atheros Confidential and Proprietary.
-# $ATH_LICENSE_TARGET_MK$
-#
 default: all
 
-#.EXPORT_ALL_VARIABLES:
-
 APP_NAME = iot_arrow
+
+# DBG=-g3
+CC_NAME = xcc
+GCC_BIN =
+GCC_PREFIX = xt
+PLATFORM = xtensa
+SDK_PATH = $(abspath ../acn-sdk-c/)
+
+COMMON_FLAGS := $(DBG) \
+  -Os \
+  -Wall \
+  -Wextra \
+  -Wpointer-arith \
+  -Wundef \
+  -Werror \
+  -Wl,-EL \
+  -fno-inline-functions \
+  -nostdlib \
+  -mlongcalls \
+  -ffunction-sections
+
+CC_FLAGS = $(COMMON_FLAGS)
+CC_SYMBOLS := \
+ -DAR6K \
+ -DAR6002 \
+ -TARG:unaligned_loads=1 \
+ -DIOT_BUILD_FLAG \
+ -DAR6002_REV7 \
+ -include $(INTERNALDIR)/include/fwconfig_AR6006.h \
+ -Wno-return-type \
+ -DATHOS \
+ -DATH_TARGET \
+ -DHTTP_ENABLED \
+ -DDEBUG
+
+ifdef DEV_ENV
+CC_SYMBOLS += -DDEV_ENV
+endif
+ # -DCONFIG_HOSTLESS
+
+ifeq ($(AR6002_REV7_VER), 5) # {
+CC_SYMBOLS += -DNUM_OF_VDEVS=2 \
+  -DAR6002_REV75
+endif # }
+
+ifeq ($(AR6002_REV7_VER), 6) # {
+CC_SYMBOLS += -DNUM_OF_VDEVS=2 \
+  -DAR6002_REV76
+endif # }
+
+ifeq ($(FPGA_FLAG),1) # {
+CC_SYMBOLS += -DFPGA
+endif # }
+
+INCLUDES += $(SDK_INCLUDES) \
+ -I$(FW)/include/AR6002/hw/include \
+ -I$(PWD) \
+ -I$(FW)/include/qcom \
+ -I$(FW)/include \
+ -I$(FW)/include/AR6002/ \
+ -I$(FW)/include/AR6K/ \
+ -I$(THREADXDIR)/include/ \
+ -I$(INTERNALDIR)/include \
+ -I$(INTERNALDIR)/include/os \
+ -I$(INTERNALDIR)/include/whal \
+ -I$(FW)/demo/ezxml
+
 
 IMAGEDIR := $(SRC_IOE)/image
 DEMO_OUT = $(IMAGEDIR)/${APP_NAME}.out
 DEMO_LIB = $(LIBDIR)/lib${APP_NAME}.a
 
-C_SDK_PATH = $(PWD)/../acn-sdk-c
-C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/xtensa
-
--include $(C_SDK_MAKE_PATH)/Makefile.xtensa.def
-
-INCLUDES += \
-	-I$(C_SDK_PATH) \
-	-I$(C_SDK_PATH)/include \
-	-I$(C_SDK_MAKE_PATH) \
-	-I$(C_SDK_MAKE_PATH)/../default
+-include $(SDK_PATH)/Makefile.sdk
 
 
-CFLAGS = $(COPTS) $(DEFINES) $(INCLUDES) 
+CFLAGS = $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES)
 # -Wl,--wrap,console_setup -Wl,--wrap,_time
-
-CC = xt-xcc
-AR = xt-ar
-RM = rm -f
 
 CSRCS := app_start.c main.c swat_wmiconfig_ota.c
 CSRCS += $(wildcard arrow_*.c)
@@ -57,18 +104,18 @@ LIBS := \
 	-lstrrclpatches \
 	-lipv6patches \
 	-lsslpatches \
-        -lcryptopatches \
-        -lcrypto_mgmt \
-        -lcrypto_aes \
-        -lcrypto_chacha20_poly1305 \
-        -lcrypto_des \
-        -lcrypto_srp \
-        -lcrypto_hmacsha384 \
-        -lcrypto_hmacsha256 \
-        -lcrypto_hmacsha1 \
-        -lwhalpatches \
-        -l_ezxml \
-        -lssdp 
+	-lcryptopatches \
+	-lcrypto_mgmt \
+	-lcrypto_aes \
+	-lcrypto_chacha20_poly1305 \
+	-lcrypto_des \
+	-lcrypto_srp \
+	-lcrypto_hmacsha384 \
+	-lcrypto_hmacsha256 \
+	-lcrypto_hmacsha1 \
+	-lwhalpatches \
+	-l_ezxml \
+	-lssdp
 
 LDFLAGS = -nostdlib -Wl,-EL -Wl,--gc-sections \
 	-L$(IMAGEDIR) -L$(LIBDIR) -L. \
@@ -96,8 +143,8 @@ $(DEMO_LIB): $(OBJS)
 	@mkdir -p $(LIBDIR)
 	$(AR) ru $@ $^
 
-libacnsdkc.a:
-	cd $(C_SDK_PATH) && make -f $(C_SDK_MAKE_PATH)/Makefile.xtensa
+libacnsdkc.a: $(SDK_TARGET)
+	@echo Build: $(SDK_TARGET)
 
 $(DEMO_OUT): libacnsdkc.a 
 	@mkdir -p $(IMAGEDIR)
@@ -109,9 +156,8 @@ firmware:
 
 all: libacnsdkc.a $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
 
-clean:
+clean::
 	$(foreach d, $(SUBDIRS), make -C $(d) clean;)
-	cd $(C_SDK_PATH) && make -C $(C_SDK_PATH) -f $(C_SDK_MAKE_PATH)/Makefile.xtensa clean
 	$(RM) $(OBJS)
 	$(RM) $(DEMO_LIB)
 	$(RM) $(DEMO_OUT)

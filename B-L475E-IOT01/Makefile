@@ -1,14 +1,54 @@
-ACN_SDK_C_LIB = acnsdkc.a
-ACN_SDK_C_PATH = $(PWD)/../acn-sdk-c
-
--include $(ACN_SDK_C_PATH)/platforms/l475/Makefile.l475.def
-
-OBJDIR = .build
+default: all
 VPATH = .. 
 
-PROJECT = arrow
-
 PRJ_PATH = $(PWD)
+GCC_BIN =
+PROJECT = arrow
+LIBDIR	= .build
+WOLFSSL = yes
+CJSON		= yes
+GCC_BIN =
+GCC_PREFIX = arm-none-eabi
+PLATFORM = l475
+SDK_PATH = $(abspath ../acn-sdk-c/)
+
+FLOAT_ABI = hard
+
+CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI)
+COMMON_FLAGS = -c -Wall -Wextra \
+               -Wno-unused-parameter \
+               -Wno-missing-field-initializers \
+               -fmessage-length=0 \
+               -fno-exceptions \
+               -fno-builtin \
+               -ffunction-sections \
+               -fdata-sections \
+               -funsigned-char \
+               -MMD -fno-delete-null-pointer-checks \
+               -fomit-frame-pointer \
+               $(CPU)
+
+CC_FLAGS = $(COMMON_FLAGS) -Os -std=gnu99 -MP
+CPPC_FLAGS = $(COMMON_FLAGS) -Os -std=gnu++98 -fno-rtti -Wvla -MP
+ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS) -Os
+
+
+CC_SYMBOLS = -DTOOLCHAIN_GCC \
+       -DTOOLCHAIN_GCC_ARM \
+       -DSTM32L475xx \
+       -DUSE_HAL_DRIVER \
+       -DUSE_STM32L475E_IOT01 \
+       -DUSE_IOEXPANDER \
+       -D__stm32l475iot__ \
+       -DDEBUG
+# -Werror
+
+ifdef DEV_ENV
+CC_SYMBOLS += -DDEV_ENV
+endif
+
+LD_FLAGS = -Wl,--gc-sections $(CPU)
+LD_SYS_LIBS = -lm -lc -lgcc -lnosys
 
 SRCS += $(PRJ_PATH)/Src/main.c
 SRCS += $(PRJ_PATH)/Src/freertos.c
@@ -75,8 +115,9 @@ ASRCS = Src/startup_stm32l475xx.s
 OBJECTS := $(SRCS:%.c=%.o)
 OBJECTS += $(ASRCS:%.s=%.o)
 
+-include $(SDK_PATH)/Makefile.sdk
 
-INCLUDE_PATHS = $(INCLUDES)
+INCLUDE_PATHS = $(SDK_INCLUDES)
 		
 INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
                  -I$(PRJ_PATH)/WiFi/Inc \
@@ -95,7 +136,7 @@ INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
 		
 
-LIBRARY_PATHS = -L$(PRJ_PATH)/$(OBJDIR)
+LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
 LINKER_SCRIPT = $(PRJ_PATH)/STM32L475VG_FLASH.ld
 LIBRARIES += -lacnsdkc 
 LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
@@ -133,8 +174,7 @@ all: $(PROJECT).bin $(PROJECT).hex size
 	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDE_PATHS) -o $@ $<
 
 
-
-$(PROJECT).elf: $(ACN_SDK_C_LIB) $(OBJECTS) $(SYS_OBJECTS) $(LINKER_SCRIPT)
+$(PROJECT).elf: $(SDK_TARGET) $(OBJECTS) $(SYS_OBJECTS) $(LINKER_SCRIPT)
 	$(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
 
 
@@ -146,10 +186,6 @@ $(PROJECT).hex: $(PROJECT).elf
 
 $(PROJECT).lst: $(PROJECT).elf
 	@$(OBJDUMP) -Sdh $< > $@
-	
-$(ACN_SDK_C_LIB): 
-	$(MAKEDIR) $(PWD)/$(OBJDIR)
-	@$ cd $(ACN_SDK_C_PATH) && make -f platforms/l475/Makefile.l475 LIBDIR=$(PWD)/$(OBJDIR)
 
 lst: $(PROJECT).lst
 
@@ -162,11 +198,11 @@ flash: $(PROJECT).bin
 
 DEPS = $(OBJECTS:.o=.d) $(SYS_OBJECTS:.o=.d)
 
-clean :
-	cd $(ACN_SDK_C_PATH) && make -f platforms/l475/Makefile.l475 LIBDIR=$(PWD)/$(OBJDIR) clean
-	rm -rf $(OBJECTS)
-	rm -rf $(DEPS)
-	$(RM) $(OBJDIR)
+clean::
+	$(RM) $(OBJECTS)
+	$(RM) $(PROJECT)*
+	$(RM) $(DEPS)
+	$(RMDIR) $(LIBDIR)
 	
 -include $(DEPS)
 

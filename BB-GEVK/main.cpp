@@ -25,7 +25,7 @@ Required:
 #include <arrow/gateway_api.h>
 #include <json/telemetry.h>
 #include <json/data.h>
-#include <arrow/devicecommand.h>
+#include <arrow/device_command.h>
 #include <arrow/storage.h>
 #include "ArrowMotor.h"
 #include "LEDBallast.h"

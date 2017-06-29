@@ -31,7 +31,7 @@
 #include <arrow/storage.h>
 #include <json/data.h>
 #include <time/watchdog.h>
-#include <arrow/devicecommand.h>
+#include <arrow/device_command.h>
 #include <arrow/software_update.h>
 #define PRINTF_ENBALE 1
 

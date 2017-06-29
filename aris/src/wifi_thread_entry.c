@@ -27,7 +27,7 @@
 #include <ntp/ntp.h>
 #include <arrow/routine.h>
 #include <arrow/mqtt.h>
-#include <arrow/devicecommand.h>
+#include <arrow/device_command.h>
 #include <arrow/events.h>
 
 ioport_port_pin_t led1 = IOPORT_PORT_00_PIN_14;

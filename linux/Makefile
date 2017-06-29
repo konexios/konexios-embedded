@@ -3,15 +3,42 @@ default: all
 APP_NAME = linux_arrow
 APP_OUT = ${APP_NAME}.elf
 
-PROJECT = arrow
+PROJECT = arrow 
+LIBDIR = .build
+WOLFSSL = yes
+CJSON = yes
+GCC_BIN =
+GCC_PREFIX =
+PLATFORM = linux
+SDK_PATH = $(abspath ../acn-sdk-c/)
 
-C_SDK_PATH = $(PWD)/../acn-sdk-c
+COMMON_FLAGS = -Os \
+               -Wall \
+               -Wextra \
+               -Wno-unused-parameter \
+               -Wno-missing-field-initializers \
+               -fmessage-length=0 \
+               -fno-exceptions \
+               -fno-builtin \
+               -ffunction-sections \
+               -fdata-sections \
+               -funsigned-char \
+               -MMD \
+               -fno-delete-null-pointer-checks \
+               -fomit-frame-pointer
+CC_FLAGS = $(COMMON_FLAGS) -std=gnu11 -MP
+CPPC_FLAGS = $(COMMON_FLAGS) -std=gnu++98 -fno-rtti -MP
+ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
+CC_SYMBOLS = -DTOOLCHAIN_GCC \
+       -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE -Werror -Wpedantic -Wno-variadic-macros -O0 -g
 
--include $(C_SDK_PATH)/Makefile.wolf
-undefine SRC
+ifdef PROBOOK
+CC_SYMBOLS += -D__probook_4540s__
+endif
 
-C_SDK_MAKE_PATH = $(C_SDK_PATH)/platforms/linux
--include $(C_SDK_MAKE_PATH)/Makefile.linux.def
+-include $(SDK_PATH)/Makefile.sdk
+
+$(info $(CC))
 
 CSRCS 	 += $(shell find $(PWD)/acnsdkc -name "*.c")
 CPPSRCS  += $(wildcard $(PWD)/*.cpp)
@@ -22,7 +49,7 @@ CPPOBJS += $(COBJS)
 CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 CPPDEPS += $(CSRCS:%.c=%.d)
 
-LIBRARY_PATHS = -L$(C_SDK_PATH) -L$(PWD)/.build
+LIBRARY_PATHS = -L$(PWD)/$(LIBDIR)
 LIBRARIES = -lsensors -lacnsdkc
 
 LD_FLAGS = 
@@ -45,25 +72,25 @@ endif
 endif
 endif
 
+INCLUDES += $(SDK_INCLUDES)
+
 .c.o:
-	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) $< -o $@
+	$(CC) $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
+
 .cpp.o:
-	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) $< -o $@
+	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 
-libacnsdkc.a:
-	@echo $(PWD)
-	if [ ! -e $(PWD)/.build ]; then mkdir $(PWD)/.build; fi
-	cd $(C_SDK_PATH) && $(MAKE) -f $(C_SDK_MAKE_PATH)/Makefile.linux LIBDIR="$(PWD)/.build" CPATH="$(PWD)"
+libacnsdkc.a: $(SDK_TARGET)
+	@echo Build: $(SDK_TARGET)
 
-$(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) libacnsdkc.a
+$(APP_OUT): libacnsdkc.a $(CPPOBJS) $(SYS_OBJECTS)
 	  @echo "build $(APP_OUT)"
 	  $(LD) $(LD_FLAGS) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
 	
-clean:
+clean::
 	$(RM) $(OBJDIR) 
 	$(RM) $(CPPOBJS)
 	$(RM) $(CPPDEPS)
-	cd $(C_SDK_PATH) && $(MAKE) -f $(C_SDK_MAKE_PATH)/Makefile.linux clean LIBDIR="$(PWD)/.build"
 	$(RM) $(APP_OUT)
 	
 size: $(APP_OUT)
