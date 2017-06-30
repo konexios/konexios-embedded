@@ -27,10 +27,11 @@ LIBS_PREFIX		:=
 MBED_LIBS       := rtos
 INCDIRS			+= $(GCC4MBED_DIR)/IDK/include/
 
-TL_PATH = C:\GNUToolchain\bin
+TL_PATH ?= C:\GNUToolchain\bin
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2015q4\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\5.4 2016q2\bin"
+
 
 include $(GCC4MBED_DIR)/build/idk.mk
 
@@ -65,5 +66,7 @@ INCDIRS += $(subst $(inc),,$(SDK_INCLUDES))
 LIBS_PREFIX += $(SDK_TARGET)
 
 include $(GCC4MBED_DIR)/build/gcc4mbed.mk
+
+default: all
 
 clean: sdk_clean
