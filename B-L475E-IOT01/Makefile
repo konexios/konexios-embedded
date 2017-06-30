@@ -198,7 +198,7 @@ flash: $(PROJECT).bin
 
 DEPS = $(OBJECTS:.o=.d) $(SYS_OBJECTS:.o=.d)
 
-clean::
+clean: sdk_clean
 	$(RM) $(OBJECTS)
 	$(RM) $(PROJECT)*
 	$(RM) $(DEPS)

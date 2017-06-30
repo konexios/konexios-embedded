@@ -156,7 +156,7 @@ firmware:
 
 all: libacnsdkc.a $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
 
-clean::
+clean: sdk_clean
 	$(foreach d, $(SUBDIRS), make -C $(d) clean;)
 	$(RM) $(OBJS)
 	$(RM) $(DEMO_LIB)

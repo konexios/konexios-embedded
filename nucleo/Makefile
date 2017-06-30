@@ -157,7 +157,7 @@ $(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a
 	  @echo "build $(APP_OUT)"
 	  $(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
 	
-clean::
+clean: sdk_clean
 	$(RMDIR) $(LIBDIR)
 	$(RM) $(CPPOBJS)
 	

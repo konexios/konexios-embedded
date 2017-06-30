@@ -86,9 +86,8 @@ libacnsdkc.a: $(SDK_TARGET)
 $(APP_OUT): libacnsdkc.a $(CPPOBJS) $(SYS_OBJECTS)
 	  @echo "build $(APP_OUT)"
 	  $(LD) $(LD_FLAGS) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
-	
-clean::
-	$(RM) $(OBJDIR) 
+
+clean: sdk_clean
 	$(RM) $(CPPOBJS)
 	$(RM) $(CPPDEPS)
 	$(RM) $(APP_OUT)
