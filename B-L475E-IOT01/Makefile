@@ -156,21 +156,21 @@ CC_FLAGS += -DUSE_LPS22HB_TEMP
 all: $(PROJECT).bin $(PROJECT).hex size
 
 .asm.o:
-	+@$(MAKEDIR) $(dir $@)
+	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 .s.o:
-	+@$(MAKEDIR) $(dir $@)
+	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 .S.o:
-	+@$(MAKEDIR) $(dir $@)
+	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 
 .c.o:
-	+@$(MAKEDIR) $(dir $@)
+	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDE_PATHS) -o $@ $<
 
 .cpp.o:
-	+@$(MAKEDIR) $(dir $@)
+	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDE_PATHS) -o $@ $<
 
 
@@ -199,10 +199,10 @@ flash: $(PROJECT).bin
 DEPS = $(OBJECTS:.o=.d) $(SYS_OBJECTS:.o=.d)
 
 clean: sdk_clean
-	$(RM) $(OBJECTS)
-	$(RM) $(PROJECT)*
-	$(RM) $(DEPS)
-	$(RMDIR) $(LIBDIR)
+	$(RM) $(OBJECTS) $(QUIET)
+	$(RM) $(PROJECT)* $(QUIET)
+	$(RM) $(DEPS) $(QUIET)
+	$(RMDIR) $(LIBDIR) $(QUIET)
 	
 -include $(DEPS)
 

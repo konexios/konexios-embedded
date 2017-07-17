@@ -80,14 +80,12 @@ INCLUDES += $(SDK_INCLUDES)
 .cpp.o:
 	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 
-libacnsdkc.a: $(SDK_TARGET)
-	@echo Build: $(SDK_TARGET)
-
-$(APP_OUT): libacnsdkc.a $(CPPOBJS) $(SYS_OBJECTS)
+$(APP_OUT): $(SDK_TARGET) $(CPPOBJS) $(SYS_OBJECTS)
 	  @echo "build $(APP_OUT)"
 	  $(LD) $(LD_FLAGS) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
-
+	
 clean: sdk_clean
+	$(RMDIR) $(LIBDIR)
 	$(RM) $(CPPOBJS)
 	$(RM) $(CPPDEPS)
 	$(RM) $(APP_OUT)
@@ -100,4 +98,4 @@ run: $(APP_OUT)
 	@./$(APP_OUT)
 	
 
-all: libacnsdkc.a $(CPPOBJS) $(APP_OUT)
+all: $(APP_OUT) $(CPPOBJS)

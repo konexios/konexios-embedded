@@ -55,6 +55,8 @@ ifeq ($(FPGA_FLAG),1) # {
 CC_SYMBOLS += -DFPGA
 endif # }
 
+SDK_INCLUDES += -I$(FW)/include -I$(FW)/include/qcom
+
 INCLUDES += $(SDK_INCLUDES) \
  -I$(FW)/include/AR6002/hw/include \
  -I$(PWD) \
@@ -143,18 +145,15 @@ $(DEMO_LIB): $(OBJS)
 	@mkdir -p $(LIBDIR)
 	$(AR) ru $@ $^
 
-libacnsdkc.a: $(SDK_TARGET)
-	@echo Build: $(SDK_TARGET)
-
-$(DEMO_OUT): libacnsdkc.a 
-	@mkdir -p $(IMAGEDIR)
+$(DEMO_OUT): $(SDK_TARGET)
+	@mkdir -p $(IMAGEDIR) $(QUIET)
 	$(CC) $(LDFLAGS) -o $@ 
 	
 firmware:
 	cp $(PWD)/config/index.html $(SRC_IOE)/demo/sdk_flash/
 	cd $(SRC_IOE)/tool && ./qonstruct.sh --qons ./tmp/
 
-all: libacnsdkc.a $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
+all: $(SDK_TARGET) $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
 
 clean: sdk_clean
 	$(foreach d, $(SUBDIRS), make -C $(d) clean;)

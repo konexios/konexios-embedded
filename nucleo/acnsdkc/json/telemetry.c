@@ -27,7 +27,7 @@ char *telemetry_serialize(arrow_device_t *device, void *d) {
   json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
 
   if ( data->hasTemperature() )
-    json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(data->getTemperature()));
+    json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(TO_FAHRENHEIT(data->getTemperature())));
   if ( data->hasHumidity() )
     json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(data->getHumidity()));
   json_append_member(_node, TELEMETRY_BAROMETER, json_mknumber(data->getPressure()));
@@ -57,7 +57,7 @@ char *telemetry_serialize(arrow_device_t *device, void *d) {
   X_NUCLEO_IKS01A1_data *data = (X_NUCLEO_IKS01A1_data *)d;
   JsonNode *_node = json_mkobject();
   json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(P_VALUE(device->hid)));
-  json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(data->ht_temperature));
+  json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(TO_FAHRENHEIT(data->ht_temperature)));
   json_append_member(_node, "f|lpsTemperature", json_mknumber(data->pt_temperature));
   json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(data->humidity));
   json_append_member(_node, TELEMETRY_BAROMETER, json_mknumber(data->pressure));

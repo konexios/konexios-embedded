@@ -20,8 +20,8 @@ else
 endif
 CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI)
 COMMON_FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -Werror -Wpedantic -Wno-variadic-macros
-CC_FLAGS = -c $(COMMON_FLAGS) $(CPU) -Os -std=gnu11 -include mbed_config.h -MP
-CPPC_FLAGS = -c $(COMMON_FLAGS) $(CPU) -Os -std=gnu++98 -fno-rtti -Wvla -include mbed_config.h -MP
+CC_FLAGS = $(COMMON_FLAGS) $(CPU) -Os -std=gnu11 -include mbed_config.h -MP
+CPPC_FLAGS = $(COMMON_FLAGS) $(CPU) -Os -std=gnu++98 -fno-rtti -Wvla -include mbed_config.h -MP
 ASM_FLAGS = -x assembler-with-cpp -c $(COMMON_FLAGS) $(CPU) -Os
 
 CC_SYMBOLS = -D__MBED__=1 \
@@ -73,6 +73,7 @@ endif
 LD_FLAGS =-Wl,--gc-sections -Wl,--wrap,main $(CPU)
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 
+SDK_INCLUDES += -I$(PWD)/
 
 -include $(SDK_PATH)/Makefile.sdk
 
@@ -146,9 +147,9 @@ endif
 endif
 
 .c.o:
-	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) $< -o $@
+	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 .cpp.o:
-	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) $< -o $@
+	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 
 libacnsdkc.a: $(SDK_TARGET)
 	@echo BUILD: $(PWD)
