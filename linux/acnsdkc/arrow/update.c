@@ -74,3 +74,16 @@ int arrow_software_update(const char *url,
   DBG("%s -> %s", from, to);
   return 0;
 }
+
+// this function will be executed when firmware file download complete
+int arrow_release_download_complete(const char *buf, int size) {
+  FILE *test;
+  test=fopen(pagefilename,"wb");
+  if (!test) {
+    DBG("Unable to open file!");
+    return -1;
+  }
+  fwrite(buf, 1, size, test);
+  fclose(test);
+  return 0;
+}
