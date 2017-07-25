@@ -68,6 +68,7 @@ int socket(int protocol_family, int socket_type, int protocol) {
       if( WIFI_OpenClientConnection(socket, prot, "",
                                     NULL, 0,
                                     0 ) != WIFI_STATUS_OK ) {
+        DBG("Client Connection failed");
         socket = -1;
       }
     break;
@@ -76,7 +77,7 @@ int socket(int protocol_family, int socket_type, int protocol) {
   }
   _sockets[socket].socket = socket;
   _sockets[socket].type = prot;
-  _sockets[socket].timeout = 10000;
+  _sockets[socket].timeout = 3000;
 
   return socket;
 
@@ -114,6 +115,7 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
     int chunk = ( len - received > ES_WIFI_PAYLOAD_SIZE )? ES_WIFI_PAYLOAD_SIZE : len - received;
     WIFI_Status_t ret = WIFI_ReceiveData(sockfd, (uint8_t*)buf + received, chunk, &recv_len, _sockets[sockfd].timeout);
     switch (ret) {
+      case WIFI_STATUS_ERROR:
       case WIFI_STATUS_TIMEOUT:
         if ( !received ) return -1;
         else return received;

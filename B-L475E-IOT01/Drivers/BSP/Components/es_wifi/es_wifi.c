@@ -638,14 +638,17 @@ static ES_WIFI_Status_t AT_RequestReceiveData(ES_WIFIObject_t *Obj, uint8_t* cmd
 {
   if(Obj->fops.IO_Send(cmd, strlen((char*)cmd), Obj->Timeout) > 0)
   {
-    if(Obj->fops.IO_Receive(Obj->CmdData, 2, Obj->Timeout) == 2) /* Read Prompt */
-    {
-      if (Reqlen <= AT_OK_STRING_LEN)
-        return ReceiveShortDataLen(Obj,pdata, Reqlen ,ReadData);
-      else
-        return ReceiveLongDataLen(Obj,pdata, Reqlen ,ReadData);
+    switch(Obj->fops.IO_Receive(Obj->CmdData, 2, Obj->Timeout)) {
+      case 2: /* Read Prompt */ {
+        if (Reqlen <= AT_OK_STRING_LEN)
+          return ReceiveShortDataLen(Obj,pdata, Reqlen ,ReadData);
+        else
+          return ReceiveLongDataLen(Obj,pdata, Reqlen ,ReadData);
+      }
+      break;
+      case -1: /* Timeout */ return ES_WIFI_STATUS_TIMEOUT;
     }
-  }  
+  }
   return ES_WIFI_STATUS_IO_ERROR;
 }
 
@@ -1686,6 +1689,7 @@ ES_WIFI_Status_t ES_WIFI_SendDataTo(ES_WIFIObject_t *Obj,
 ES_WIFI_Status_t ES_WIFI_ReceiveData(ES_WIFIObject_t *Obj, uint8_t Socket, uint8_t *pdata, uint16_t Reqlen, uint16_t *Receivedlen, uint32_t Timeout)
 {
   ES_WIFI_Status_t ret = ES_WIFI_STATUS_ERROR;  
+  Obj->Timeout = Timeout;
   
   if(Reqlen <= ES_WIFI_PAYLOAD_SIZE )
   {
@@ -1702,8 +1706,14 @@ ES_WIFI_Status_t ES_WIFI_ReceiveData(ES_WIFIObject_t *Obj, uint8_t Socket, uint8
         ret = AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
         if(ret == ES_WIFI_STATUS_OK)
         {  
-         sprintf((char*)Obj->CmdData,"R0=\r");
+         sprintf((char*)Obj->CmdData,"R0\r");
           ret = AT_RequestReceiveData(Obj, Obj->CmdData, (char *)pdata, Reqlen, Receivedlen);
+          if ( ret != ES_WIFI_STATUS_OK ) {
+            // try to fix last cmd fail
+            sprintf((char*)Obj->CmdData,"P0=%d\r", Socket);
+            AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
+            // should be failed
+          }
         }
       }
       else

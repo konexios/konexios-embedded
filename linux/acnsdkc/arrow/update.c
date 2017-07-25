@@ -75,15 +75,30 @@ int arrow_software_update(const char *url,
   return 0;
 }
 
-// this function will be executed when firmware file download complete
-int arrow_release_download_complete(const char *buf, int size) {
-  FILE *test;
-  test=fopen(pagefilename,"wb");
-  if (!test) {
-    DBG("Unable to open file!");
-    return -1;
+static FILE *test = NULL;
+static int file_size = 0;
+// this function will be executed when http client get a chunk of payload
+int arrow_release_download_payload(property_t *buf, const char *payload, int size) {
+  SSP_PARAMETER_NOT_USED(buf);
+  if ( !test ) {
+    test = fopen(pagefilename,"wb");
+    if (!test) {
+      DBG("Unable to open file!");
+      return -1;
+    }
   }
-  fwrite(buf, 1, size, test);
+  file_size += size;
+  DBG("filesze = %d", file_size);
+  fwrite(payload, 1, size, test);
+  fflush(test);
+  return 0;
+}
+
+// this function will be executed when firmware file download complete
+int arrow_release_download_complete(property_t *buf) {
+  SSP_PARAMETER_NOT_USED(buf);
+  DBG("file size = %d", file_size);
+  file_size = 0;
   fclose(test);
   return 0;
 }

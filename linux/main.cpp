@@ -112,7 +112,8 @@ extern "C" int arrow_software_update(const char *url,
                                  const char *to);
 
 // extern the firmware callback
-extern "C" int arrow_release_download_complete(const char *buf, int size);
+extern "C" int arrow_release_download_payload(property_t *buf, const char *payload, int size);
+extern "C" int arrow_release_download_complete(property_t *);
 
 int main() {
     std::cout<<std::endl<<"--- Demo Linux ---"<<std::endl;
@@ -120,8 +121,10 @@ int main() {
 //    Hided it because we supposed linux already synchronized a time 
 //    ntp_set_time_cycle();
 
-    // set up the firmware downloaded callback
-    arrow_software_release_dowload_complete_set(arrow_release_download_complete);
+    // set up the firmware downloaded callbacks
+    arrow_software_release_dowload_set_cb(
+          arrow_release_download_payload,
+          arrow_release_download_complete);
 
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;

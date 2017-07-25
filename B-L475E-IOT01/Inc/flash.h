@@ -65,6 +65,7 @@ int FLASH_update(uint32_t dst_addr, const void *data, uint32_t size);
 int FLASH_write_at(uint32_t address, uint64_t *pData, uint32_t len_bytes);
 uint32_t FLASH_get_bank(uint32_t addr);
 int FLASH_get_pageInBank(uint32_t addr);
+uint32_t FLASH_get_boot_bank();
 int FLASH_set_boot_bank(uint32_t bank);
 #else
 int FLASH_write_at(uint32_t address, uint32_t *pData, uint32_t len_bytes);
