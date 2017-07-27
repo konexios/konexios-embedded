@@ -26,7 +26,7 @@ int wdt_start() {
 
 int wdt_feed() {
   wdt_counter = 0;
-  A_PRINTF("wdt feed\r\n");
+//  A_PRINTF("wdt feed\r\n");
   qcom_watchdog_feed();
 //  qcom_timer_stop(&wdt_timer);
 //  qcom_timer_start(&wdt_timer);

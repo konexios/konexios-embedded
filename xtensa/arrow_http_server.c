@@ -16,6 +16,7 @@
 #include <qcom_system.h>
 #include <qcom_common.h>
 #include <qcom_network.h>
+#include <arrow/sys.h>
 
 static int currentDeviceId = 0;
 
@@ -191,7 +192,7 @@ static void swat_process_tlv(void* cxt, void* buf)
     if ( find_tlv(ev, "Reboot", tmp) == 0 ) {
       //   reset board
       A_PRINTF("RESET THE BOARD!: %s\n",tmp);
-      qcom_sys_reset();
+      reboot();
     }
 
     find_tlv(ev, "ssid", ssid);

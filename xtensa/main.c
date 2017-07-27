@@ -33,6 +33,7 @@
 #include <time/watchdog.h>
 #include <arrow/device_command.h>
 #include <arrow/software_update.h>
+#include <arrow/software_release.h>
 #define PRINTF_ENBALE 1
 
 //TX_THREAD sdk_thread;
@@ -132,6 +133,9 @@ static int test_cmd_proc(const char *str) {
   return 0;
 }
 
+#include "arrow_ota.h"
+extern void reboot(void);
+
 void main_entry(ULONG which_thread) {
 
   SSP_PARAMETER_NOT_USED(which_thread);
@@ -142,6 +146,7 @@ void main_entry(ULONG which_thread) {
   temperature_init();
   wdt_start();
   arrow_gateway_software_update_set_cb(qca_gateway_software_update);
+  arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
 
   if ( arrow_gpio_check() ) {
 force_ap:
