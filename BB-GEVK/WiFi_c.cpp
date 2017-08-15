@@ -9,7 +9,13 @@
 
 #include <TCPSocketConnection.h>
 #include <UDPSocket.h>
-#include "Shields.h"
+#if defined (USE_POE_SHIELD)
+#include "W5100Interface.h"
+#elif defined (USE_WIFI_SHIELD)
+#include "WizFi250Interface.h"
+#elif defined (USE_QUADRO_SHIELD)
+#include "Quadro.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,11 +32,17 @@ extern W5100Interface eth;
 #define _tcp_socket W5100_TCPSocketConnection
 #define _socket W5100_Socket
 #define _endpoint W5100_Endpoint
-#else
+#elif defined (USE_WIFI_SHIELD)
 #define _udp_socket UDPSocket
 #define _tcp_socket TCPSocketConnection
 #define _socket Socket
 #define _endpoint Endpoint
+#elif defined (USE_QUADRO_SHIELD)
+extern Quadro eth;
+#define _udp_socket QUADRO_UDPSocket
+#define _tcp_socket QUADRO_TCPSocketConnection
+#define _socket QUADRO_Socket
+#define _endpoint QUADRO_Endpoint
 #endif
 
 typedef struct {
@@ -79,8 +91,10 @@ int get_wifi_mac_address(char *mac) {
 	int ret = 0;
 #if defined(USE_POE_SHIELD)
 	strncpy(mac_str, eth.getMACAddress(), sizeof(mac_str));
-#else
+#elif defined(USE_WIFI_SHIELD)
 	ret =  WizFi250::getInstance()->getMacAddress(mac_str);
+#elif defined(USE_QUADRO_SHIELD)
+	return eth.getmacaddress(mac);
 #endif
 	if ( ret < 0 ) return ret;
 
@@ -105,14 +119,16 @@ int get_wifi_mac_address(char *mac) {
 int wifi_gethostbyname(const char *addr, uint32_t *_ip) {
 	char ip[16];
 	memset(ip, 0, 16);
-
+    int ret = -1;
 #if defined(USE_POE_SHIELD)
-	int ret = eth.gethostbyname(addr, _ip);
+	ret = eth.gethostbyname(addr, _ip);
 //	DBG("get host [%d] %s - %08x", ret, addr, *_ip);
-#else
-	int ret = WizFi250::getInstance()->getHostByName((char*)addr, (char *)ip);
+#elif defined(USE_WIFI_SHIELD)
+	ret = WizFi250::getInstance()->getHostByName((char*)addr, (char *)ip);
 	inet_pton(ip, _ip);
 	DBG("dns ret %d", ret);
+#elif defined(USE_QUADRO_SHIELD)
+	ret = eth.gethostbyname(addr, _ip);
 #endif
 	return ret;
 }
@@ -245,7 +261,37 @@ int wifi_socket_setopt(int socket, int level, int optname,
   return -1;
 }
 
+#if defined(USE_QUADRO_SHIELD)
 
+int wifi_ssl_socket_connect(int sock) {
+	if ( sock < 0 || sock > MAX_SOCKETS ) return -1;
+	if ( !sockets_stack[sock].s ) return -1;
+	_tcp_socket *tcps = static_cast<_tcp_socket*>(sockets_stack[sock].s);
+	return tcps->ssl_connect();
+}
+
+int wifi_ssl_socket_read(int sock, char *data, int len) {
+	if ( sock < 0 || sock > MAX_SOCKETS ) return -1;
+	if ( !sockets_stack[sock].s ) return -1;
+	_tcp_socket *tcps = static_cast<_tcp_socket*>(sockets_stack[sock].s);
+	return tcps->ssl_read_all(data, len);
+}
+
+int wifi_ssl_socket_write(int sock, char *data, int len) {
+	if ( sock < 0 || sock > MAX_SOCKETS ) return -1;
+	if ( !sockets_stack[sock].s ) return -1;
+	_tcp_socket *tcps = static_cast<_tcp_socket*>(sockets_stack[sock].s);
+	return tcps->ssl_send(data, len);
+}
+
+int wifi_ssl_socket_close(int sock) {
+	if ( sock < 0 || sock > MAX_SOCKETS ) return -1;
+	if ( !sockets_stack[sock].s ) return -1;
+	_tcp_socket *tcps = static_cast<_tcp_socket*>(sockets_stack[sock].s);
+	return tcps->ssl_close();
+}
+
+#endif // USE_QUADRO_SHIELD
 
 #ifdef __cplusplus
 }

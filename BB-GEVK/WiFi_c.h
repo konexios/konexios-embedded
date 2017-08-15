@@ -8,12 +8,13 @@
 #ifndef WIFI_C_H_
 #define WIFI_C_H_
 
+#include <bsd/socket.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <unint.h>
-#include <bsd/socket.h>
 
 int get_wifi_mac_address(char *mac);
 
@@ -36,6 +37,18 @@ int wifi_socket_recvfrom(int socket, void *buf, size_t len,
 int wifi_socket_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 
 int wifi_socket_setopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+
+#if defined(USE_QUADRO_SHIELD)
+
+int wifi_ssl_socket_connect(int sock);
+
+int wifi_ssl_socket_read(int sock, char *data, int len);
+
+int wifi_ssl_socket_write(int sock, char *data, int len);
+
+int wifi_ssl_socket_close(int sock);
+
+#endif // USE_QUADRO_SHIELD
 
 #ifdef __cplusplus
 }

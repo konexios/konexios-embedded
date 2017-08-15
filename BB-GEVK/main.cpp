@@ -16,7 +16,8 @@ Required:
 */
 
 #include "mbed.h"
-#include "Shields.h"
+#include "Mutex.h"
+rtos::Mutex shield_mutex;
 
 #include <debug.h>
 #include <ntp/ntp.h>
@@ -27,19 +28,22 @@ Required:
 #include <json/data.h>
 #include <arrow/device_command.h>
 #include <arrow/storage.h>
-#include "ArrowMotor.h"
-#include "LEDBallast.h"
-#include "DLBSmotor.h"
 
 #define TITLE   "--- Demo BB-GEVK ---"
 
 #if defined (USE_POE_SHIELD)
+#include "W5100Interface.h"
 W5100Interface eth;
-#else
+#elif defined (USE_WIFI_SHIELD)
+#include "WizFi250Interface.h"
 WizFi250Interface eth;
+#elif defined (USE_QUADRO_SHIELD)
+#include "Quadro.h"
+Quadro eth;
 #endif
 
 #if defined(USE_LCD)
+#include "NHD_C0216CZ_Lcd.h"
 NHD_C0216CZ lcd;
 #define LCD(x) lcd.displayString(x)
 #define LCD_INIT lcd.init(); LCD(TITLE);
@@ -52,6 +56,8 @@ NHD_C0216CZ lcd;
 #define LCD_TO_POS(s, x, y)
 #endif
 // Sensors
+#include "NOA1305_ALS.h"
+#include "NCS36000_PIR.h"
 NOA1305 als;
 NCS36000 pir;
 
@@ -70,6 +76,7 @@ void als_isr() {
 #endif
 
 #if defined(USE_DLBS_MOTOR)
+#include "DLBSmotor.h"
 static DLBSmotor rotor;
 static int rotor_cmd(const char *str) {
 	DBG("cmd: [%s]", str);
@@ -89,6 +96,7 @@ static int rotor_cmd(const char *str) {
 
 
 #if defined(USE_STEP_MOTOR)
+#include "ArrowMotor.h"
 static Arrow_Motor motor;
 static int motor_rotate(const char *str) {
 	DBG("cmd: [%s]", str);
@@ -109,6 +117,7 @@ static int motor_rotate(const char *str) {
 #endif
 
 #if defined(USE_LED_BALLAST)
+#include "LEDBallast.h"
 static LEDBallast led;
 static int led_on(const char *str) {
 	DBG("cmd: [%s]", str);
@@ -146,11 +155,13 @@ static int get_telemetry_data(void *d) {
     if ( old_pir_data != data->pir || count++ >= max_count ) {
     	count = 0;
     	DBG("data PIR(%d), ALS{%d,%4.2f}", data->pir, data->als, data->abmienceInLux);
+#if defined(USE_POE_SHIELD) || defined(USE_QUADRO_SHIELD)
     	static int heardbeat = 0;
     	if ( heardbeat++  > 1 ) {
     		arrow_gateway_heartbeat(current_gateway());
     		heardbeat = 0;
     	}
+#endif
     	return 0;
     }
     return -1;
@@ -195,7 +206,7 @@ int main() {
 	 		return -1;
 	 	}
 
-#else
+#elif defined(USE_WIFI_SHIELD)
 	 	LCD("try to init WIFI");
 
 	 	if (eth.init() != 0) {
@@ -222,6 +233,14 @@ int main() {
 	 		LCD("Hotspot connection successful");
 	 		DBG("WIFI connected to hotspot");
 	 	}
+#elif defined(USE_QUADRO_SHIELD)
+	 	 DBG("join to AP");
+	 	 char ssid[10];
+	 	 char pass[10];
+	 	 int secure = 0;
+	 	 restore_wifi_setting(ssid, pass, &secure);
+	 	 while( eth.wait_wifi_connect(ssid, pass, secure) < 0 )
+	 		 ;
 #endif
 
 	 	//Initialize ALS
