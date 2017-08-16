@@ -235,8 +235,9 @@ int main() {
 	 	}
 #elif defined(USE_QUADRO_SHIELD)
 	 	 DBG("join to AP");
-	 	 char ssid[10];
-	 	 char pass[10];
+	 	 eth.reset();
+	 	 char ssid[32];
+	 	 char pass[32];
 	 	 int secure = 0;
 	 	 restore_wifi_setting(ssid, pass, &secure);
 	 	 while( eth.wait_wifi_connect(ssid, pass, secure) < 0 )

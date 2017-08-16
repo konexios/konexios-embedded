@@ -35,6 +35,7 @@ typedef int __dummy_type;
 class Quadro {
 	Serial uart;
 	char *buffer;
+	DigitalInOut _reset;
 public:
 	Quadro();
 	virtual ~Quadro();
@@ -45,6 +46,7 @@ public:
 	int write(const char *buf, int size);
 	int gethostbyname(const char *host, uint32_t *ip);
 	int getmacaddress(char *mac);
+	int reset();
 	int wait_wifi_connect(const char *SSID, const char *pass, int sec);
 };
 

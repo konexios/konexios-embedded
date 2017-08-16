@@ -6,6 +6,7 @@
  */
 
 #include "Quadro.h"
+#include <time/time.h>
 
 #if !defined(USE_QUADRO_SHIELD)
 typedef int __dummy_type;
@@ -19,7 +20,7 @@ static char static_buffer[QUADRO_SIZE];
 static Quadro *main_eth = NULL;
 const char *basic_pattern[] = { "OK", "ERROR" };
 
-Quadro::Quadro(): uart(p0, p1), buffer(static_buffer) {
+Quadro::Quadro(): uart(p0, p1), buffer(static_buffer), _reset(p15) {
 	uart.baud(115200);
 	uart.format(8, SerialBase::None, 1);
 
@@ -29,6 +30,24 @@ Quadro::Quadro(): uart(p0, p1), buffer(static_buffer) {
 
 Quadro::~Quadro() {
 	// TODO Auto-generated destructor stub
+}
+
+int Quadro::reset() {
+	int wait_reboot = 1;
+	_reset.write(1);
+	msleep(100);
+	_reset.write(0);
+	while( wait_reboot ) {
+		if ( read_line(this->buffer, 256, 30000) > 0 ) {
+			if ( strstr(this->buffer, "Poweron") ) wait_reboot = 0;
+		} else {
+			DBG("reset quadro");
+			_reset.write(1);
+			msleep(100);
+			_reset.write(0);
+		}
+	}
+	return 0;
 }
 
 int Quadro::write(const char *buf, int size) {
@@ -71,8 +90,7 @@ int Quadro::read_line(char *buf, int chunk, int timeout_ms) {
 			t.reset();
 			buf[i++] = (char)uart.getc();
 			buf[i] = 0;
-			if ( strstr(buf, "\r\n") ||
-					i == chunk ) return i;
+			if ( ( i > 2 && buf[i-2] == '\r' && buf[i-1] == '\n' ) || i == chunk ) return i;
 		}
 	}
 	return ( i ? i : -1 );
