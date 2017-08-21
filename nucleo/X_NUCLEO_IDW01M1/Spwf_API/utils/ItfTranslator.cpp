@@ -200,7 +200,6 @@ void ind_wifi_socket_data_received(uint8_t socket_id, uint8_t * data_ptr, uint32
 
 void ind_wifi_http_data_available(uint8_t * data_ptr, uint32_t message_size)
 {
-  printf("void ind_wifi_http_data_available\r\n");
     //spwf->debug("\r\nrx>>\r\n");
     //memcpy(user_buffer, data_ptr, 511);
 }

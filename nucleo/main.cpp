@@ -16,6 +16,7 @@ extern "C" {
 #include <ntp/ntp.h>
 #include <arrow/storage.h>
 #include <time/watchdog.h>
+#include <arrow/software_release.h>
 }
 #include <stdio.h>
 #include "wifi_module.h"
@@ -61,10 +62,16 @@ static int get_telemetry_data(void *data) {
       return 0;
 }
 
+extern "C" {
+extern int arrow_release_download_payload(property_t *buf, const char *payload, int size);
+extern int arrow_release_download_complete(property_t *buf);
+}
+
 int main() {
+  __enable_irq();
   wdt_start();
   led = 1;
-  printf("\r\n--- Demo Nucleo ---\r\n");
+  printf("\r\n--- Demo Nucleo C ---\r\n");
   rand();
 
     int err;
@@ -77,7 +84,8 @@ int main() {
     printf("@button %d\r\n", button.read());
     if (button == 0 || err < 0) {
 force_ap:
-      spwf.create_ap(MAIN_WLAN_SSID, MAIN_WLAN_CHANNEL);
+      __NOP();
+      /*spwf.create_ap(MAIN_WLAN_SSID, MAIN_WLAN_CHANNEL);
       const char *arrow_config_page =
           "<html><head><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'/>"
           "<style>body{font-size:xx-large;font-family:'Arial';} input{font-size:xx-large;width:100%;padding:12px 20px;margin:8px 0;box-sizing:border-box;} button{background-color:white;color:black;border:2px solid #blue;padding:15px 32px;font-size:xx-large;}</style></head>"
@@ -105,20 +113,25 @@ force_ap:
       while(1) {
         wdt_feed();
         wait_ms(1000);
-      }
+      }*/
     }
+
+    arrow_software_release_dowload_set_cb(arrow_release_download_payload,
+                                          arrow_release_download_complete);
 
     led = !led;
     printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
     printf("connecting to AP\r\n");
-    wdt_feed();
 
     int try_connect = 5;
+    spwf.setTimeout(20000); // 20 sec waiting
+
     do {
+      wdt_feed();
       if( (err = spwf.connect(ssid,
                               pass,
                               security)) !=0 ) {
-          pc.printf("error connecting to AP.\r\n");
+          printf("error connecting to AP: %d\r\n", err);
           try_connect--;
       }
       if ( ! try_connect ) goto force_ap;
@@ -130,6 +143,7 @@ force_ap:
     printf("MAC Address is: %s\r\n", (mac) ? mac : "No MAC");
 
     printf("Get UTC time...\r\n");
+
 
     led = !led;
     // set time

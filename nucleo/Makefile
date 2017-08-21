@@ -1,7 +1,7 @@
 default: all
 
-APP_NAME = mbed_arrow
-APP_OUT = ${APP_NAME}.out
+APP_NAME = arrow
+APP_OUT = ${APP_NAME}.elf
 
 GCC_BIN = 
 PROJECT = arrow
@@ -83,15 +83,20 @@ CPPSRCS += $(shell find $(PWD)/X_NUCLEO_IDW01M1 -name "*.cpp")
 CPPSRCS += $(shell find $(PWD)/Components -name "*.cpp")
 CPPSRCS += $(shell find $(PWD)/NetworkSocketAPI -name "*.cpp")
 CSRCS += $(shell find $(PWD)/X_NUCLEO_IDW01M1 -name "*.c")
+# CSRCS += $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/ -name "*.c")
 CSRCS += $(wildcard $(PWD)/*.c)
 CSRCS += $(wildcard $(PWD)/acnsdkc/arrow/*.c)
 CSRCS += $(wildcard $(PWD)/acnsdkc/bsd/*.c)
 CSRCS += $(wildcard $(PWD)/acnsdkc/time/*.c)
 CSRCS += $(wildcard $(PWD)/acnsdkc/json/*.c)
 
+SSRCS += $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.S)
+
+SOBJS := $(SSRCS:%.S=%.o)
 COBJS := $(CSRCS:%.c=%.o)
 CPPOBJS := $(CPPSRCS:%.cpp=%.o)
 CPPOBJS += $(COBJS)
+CPPOBJS += $(SOBJS)
 CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 
 SYS_OBJECTS = $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.o)
@@ -163,10 +168,10 @@ clean: sdk_clean
 	$(RM) $(CPPOBJS)
 	
 $(APP_OUT).bin: $(APP_OUT)
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY) -R .eeprom -O binary $< $@
 
 $(APP_OUT).hex: $(APP_OUT)
-	@$(OBJCOPY) -O ihex $< $@
+	@$(OBJCOPY) -R .eeprom -O ihex $< $@
 
 $(APP_OUT).lst: $(APP_OUT)
 	@$(OBJDUMP) -Sdh $< > $@
@@ -177,7 +182,8 @@ size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 	
 flash: $(APP_OUT)
-	st-flash write $(APP_OUT).bin 0x8000000
+	st-flash write bootloader.bin 0x8000000
+	st-flash write $(APP_OUT).bin 0x8008000
 
 all: libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
 

@@ -67,6 +67,7 @@ public:
     //Implementation of NetworkStack
     virtual     const char *get_ip_address();
     virtual     const char *get_mac_address();
+    void setTimeout(int timeout_ms) { _spwf.setTimeout(timeout_ms); }
     
 protected:
     //Implementation of NetworkStack
