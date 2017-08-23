@@ -5,7 +5,10 @@
 /* Linker script to configure memory regions. */
 MEMORY
 {
-  FLASH (rx)         : ORIGIN = 0x00000000, LENGTH = 0x0400000  /*   4M */
+  BOOTLOADER (rx)    : ORIGIN = 0x00000000, LENGTH = 0x0002000  /*   8K */
+  BOOTLOADER2 (rx)   : ORIGIN = 0x00002000, LENGTH = 0x0002000  /*   8K */
+  FLASH (rx)         : ORIGIN = 0x00004000, LENGTH = 0x00FC000  /*  1M - 16K */
+  FLASHER (rx)       : ORIGIN = 0x00200000, LENGTH = 0x0100000  /*   1M */
   RAM (rwx)          : ORIGIN = 0x1FFE0000, LENGTH = 0x00A0000  /* 640K */
   DATA_FLASH (rx)    : ORIGIN = 0x40100000, LENGTH = 0x0010000  /*  64K */
   QSPI_FLASH (rx)    : ORIGIN = 0x60000000, LENGTH = 0x4000000  /*  64M, Change in QSPI section below also */

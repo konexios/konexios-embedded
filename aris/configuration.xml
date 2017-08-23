@@ -190,6 +190,10 @@
       <description>Watchdog Timer: Provides=[WDT]</description>
       <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
     </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_flash_hp" variant="" vendor="Renesas" version="1.1.0">
+      <description>Flash Memory: Provides=[Flash]</description>
+      <originalPack>Renesas.Synergy.1.1.0.pack</originalPack>
+    </component>
   </synergyComponentSelection>
   <synergyIcuConfiguration>
     <node id="board.icu.adc.adc0.scan_end" option="board.icu.common.irq.disabled"/>
@@ -264,8 +268,8 @@
     <node id="board.icu.eptpc.timer3_fall" option="board.icu.common.irq.disabled"/>
     <node id="board.icu.eptpc.timer4_fall" option="board.icu.common.irq.disabled"/>
     <node id="board.icu.eptpc.timer5_fall" option="board.icu.common.irq.disabled"/>
-    <node id="board.icu.fcu.fiferr" option="board.icu.common.irq.disabled"/>
-    <node id="board.icu.fcu.frdyi" option="board.icu.common.irq.disabled"/>
+    <node id="board.icu.fcu.fiferr" option="board.icu.common.irq.priority1"/>
+    <node id="board.icu.fcu.frdyi" option="board.icu.common.irq.priority1"/>
     <node id="board.icu.glcdc.line_detect" option="board.icu.common.irq.disabled"/>
     <node id="board.icu.glcdc.underflow_1" option="board.icu.common.irq.disabled"/>
     <node id="board.icu.glcdc.underflow_2" option="board.icu.common.irq.disabled"/>
@@ -551,27 +555,27 @@
   </synergyIcuConfiguration>
   <synergyMessagingConfiguration/>
   <synergyModuleConfiguration>
-    <module id="module.driver.cgc_on_cgc.1262747326">
+    <module id="module.driver.cgc_on_cgc.1428068317">
       <property id="module.driver.cgc.name" value="g_cgc"/>
     </module>
-    <module id="module.driver.elc_on_elc.389265035">
+    <module id="module.driver.elc_on_elc.1404665120">
       <property id="module.driver.elc.name" value="g_elc"/>
     </module>
-    <module id="module.driver.ioport_on_ioport.1663879723">
+    <module id="module.driver.ioport_on_ioport.1031908266">
       <property id="module.driver.ioport.name" value="g_ioport"/>
     </module>
-    <module id="module.framework.sf_spi_on_sf_spi.1947304690">
+    <module id="module.framework.sf_spi_on_sf_spi.1845491231">
       <property id="module.framework.sf_spi.name" value="g_sf_spi_device"/>
       <property id="module.framework.sf_spi.chipselect_port" value="module.framework.sf_spi.chipselect_port.PORT_05"/>
       <property id="module.framework.sf_spi.chipselect_pin" value="module.framework.sf_spi.chipselect_pin.PIN_07"/>
       <property id="module.framework.sf_spi.chipselectactive" value="module.framework.sf_spi.chipselectactive.low"/>
     </module>
-    <module id="module.framework.sf_spi_bus_on_sf_spi.416385832">
+    <module id="module.framework.sf_spi_bus_on_sf_spi.540333581">
       <property id="module.framework.sf_spi_bus.name" value="g_sf_spi_bus"/>
       <property id="module.framework.sf_spi_bus.spi_interface" value="module.framework.sf_spi_bus.spi_interface.rspi"/>
       <property id="module.framework.sf_spi_bus.channel" value="0"/>
     </module>
-    <module id="module.driver.spi_on_rspi.31069712">
+    <module id="module.driver.spi_on_rspi.1097355091">
       <property id="module.driver.spi.name" value="g_spi"/>
       <property id="module.driver.spi.channel" value="0"/>
       <property id="module.driver.spi.operating_mode" value="module.driver.spi.operating_mode.mode_master"/>
@@ -602,7 +606,7 @@
       <property id="module.driver.spi.rspi_next_access_delay_state" value="module.driver.spi.rspi_next_access_delay_state.disable"/>
       <property id="module.driver.spi.rspi_next_access_delay_count" value="module.driver.spi.rspi_next_access_delay_count.one"/>
     </module>
-    <module id="module.driver.external_irq_on_icu.1315786089">
+    <module id="module.driver.external_irq_on_icu.784710971">
       <property id="module.driver.external_irq.name" value="g_wifi_irq"/>
       <property id="module.driver.external_irq.channel" value="9"/>
       <property id="module.driver.external_irq.trigger" value="module.driver.external_irq.trigger.trig_falling"/>
@@ -611,29 +615,29 @@
       <property id="module.driver.external_irq.interrupt_enable" value="module.driver.external_irq.interrupt_enable.false"/>
       <property id="module.driver.external_irq.p_callback" value="wifiIRQIsr"/>
     </module>
-    <module id="module.framework.sf_el_ux_comms.1942266209">
+    <module id="module.framework.sf_el_ux_comms.267294320">
       <property id="module.framework.sf_comms.name" value="g_sf_trace"/>
     </module>
-    <module id="module.el.ux_device_class_cdc_acm.987896644">
+    <module id="module.el.ux_device_class_cdc_acm.1169796685">
       <property id="module.el.ux_device_class_cdc_acm.name" value="g_ux_device_class_cdc_acm0"/>
     </module>
-    <module id="module.el.ux.1962711769">
+    <module id="module.el.ux.1434574141">
       <property id="module.el.ux.name" value="g_ux0"/>
     </module>
-    <module id="module.framework.sf_el_ux.1430529413">
+    <module id="module.framework.sf_el_ux.1466287697">
       <property id="module.framework.sf_el_ux.name" value="g_sf_el_ux"/>
     </module>
-    <module id="module.framework.ux_src.2078275620"/>
-    <module id="module.framework.tx_src.867802365"/>
-    <module id="module.framework.sf_i2c_on_sf_i2c.881345987">
+    <module id="module.framework.ux_src.1827777104"/>
+    <module id="module.framework.tx_src.1349576717"/>
+    <module id="module.framework.sf_i2c_on_sf_i2c.279325207">
       <property id="module.framework.sf_i2c.name" value="g_sf_i2c_device_tempHum"/>
     </module>
-    <module id="module.framework.sf_i2c_bus_on_sf_i2c.532509329">
+    <module id="module.framework.sf_i2c_bus_on_sf_i2c.1327681300">
       <property id="module.framework.sf_i2c_bus.name" value="g_sf_i2c_bus0"/>
       <property id="module.framework.sf_i2c_bus.i2c_interface" value="module.framework.sf_i2c_bus.i2c_interface.riic"/>
       <property id="module.framework.sf_i2c_bus.channel" value="1"/>
     </module>
-    <module id="module.driver.i2c_on_riic.2145256289">
+    <module id="module.driver.i2c_on_riic.1218331050">
       <property id="module.driver.i2c.name" value="g_i2c_tempHum"/>
       <property id="module.driver.i2c.channel" value="1"/>
       <property id="module.driver.i2c.rate" value="module.driver.i2c.rate.rate_standard"/>
@@ -641,7 +645,7 @@
       <property id="module.driver.i2c.addr_mode" value="module.driver.i2c.addr_mode.addr_mode_7bit"/>
       <property id="module.driver.i2c.p_callback" value="NULL"/>
     </module>
-    <module id="module.driver.timer_on_gpt.469794423">
+    <module id="module.driver.timer_on_gpt.2025376152">
       <property id="module.driver.timer.name" value="g_timer"/>
       <property id="module.driver.timer.channel" value="0"/>
       <property id="module.driver.timer.mode" value="module.driver.timer.mode.mode_periodic"/>
@@ -656,27 +660,27 @@
       <property id="module.driver.timer.gtiocb_stop_level" value="module.driver.timer.gtiocb_stop_level.pin_level_low"/>
       <property id="module.driver.timer.p_callback" value="NULL"/>
     </module>
-    <module id="module.driver.sce_hash.887713947">
+    <module id="module.driver.sce_hash.1285777344">
       <property id="module.driver.sce_hash.name" value="g_sce_hash"/>
       <property id="module.driver.sce_hash.algorithm" value="module.driver.sce_hash.algorithm.sha256"/>
     </module>
-    <module id="module.driver.sce.1210964783">
+    <module id="module.driver.sce.2034823177">
       <property id="module.driver.sce.name" value="g_sce"/>
     </module>
-    <module id="module.driver.rtc_on_rtc.2082352347">
+    <module id="module.driver.rtc_on_rtc.246742657">
       <property id="module.driver.rtc.name" value="g_rtc"/>
       <property id="module.driver.rtc.clock_source" value="module.driver.rtc.clock_source.clock_source_loco"/>
       <property id="module.driver.rtc.error_adjustment_value" value="0"/>
       <property id="module.driver.rtc.error_adjustment_type" value="module.driver.rtc.error_adjustment_type.error_adjustment_none"/>
       <property id="module.driver.rtc.p_callback" value="NULL"/>
     </module>
-    <module id="module.framework.sf_spi_on_sf_spi.68682905">
+    <module id="module.framework.sf_spi_on_sf_spi.2028544515">
       <property id="module.framework.sf_spi.name" value="g_sf_spi_acc"/>
       <property id="module.framework.sf_spi.chipselect_port" value="module.framework.sf_spi.chipselect_port.PORT_04"/>
       <property id="module.framework.sf_spi.chipselect_pin" value="module.framework.sf_spi.chipselect_pin.PIN_13"/>
       <property id="module.framework.sf_spi.chipselectactive" value="module.framework.sf_spi.chipselectactive.low"/>
     </module>
-    <module id="module.driver.spi_on_rspi.940090820">
+    <module id="module.driver.spi_on_rspi.2009527358">
       <property id="module.driver.spi.name" value="g_spi_acc"/>
       <property id="module.driver.spi.channel" value="0"/>
       <property id="module.driver.spi.operating_mode" value="module.driver.spi.operating_mode.mode_master"/>
@@ -707,13 +711,13 @@
       <property id="module.driver.spi.rspi_next_access_delay_state" value="module.driver.spi.rspi_next_access_delay_state.disable"/>
       <property id="module.driver.spi.rspi_next_access_delay_count" value="module.driver.spi.rspi_next_access_delay_count.one"/>
     </module>
-    <module id="module.framework.sf_spi_on_sf_spi.1597223408">
+    <module id="module.framework.sf_spi_on_sf_spi.2119752359">
       <property id="module.framework.sf_spi.name" value="g_sf_spi_gyro"/>
       <property id="module.framework.sf_spi.chipselect_port" value="module.framework.sf_spi.chipselect_port.PORT_04"/>
       <property id="module.framework.sf_spi.chipselect_pin" value="module.framework.sf_spi.chipselect_pin.PIN_14"/>
       <property id="module.framework.sf_spi.chipselectactive" value="module.framework.sf_spi.chipselectactive.low"/>
     </module>
-    <module id="module.driver.spi_on_rspi.556012487">
+    <module id="module.driver.spi_on_rspi.1068002193">
       <property id="module.driver.spi.name" value="g_spi0"/>
       <property id="module.driver.spi.channel" value="0"/>
       <property id="module.driver.spi.operating_mode" value="module.driver.spi.operating_mode.mode_master"/>
@@ -744,10 +748,10 @@
       <property id="module.driver.spi.rspi_next_access_delay_state" value="module.driver.spi.rspi_next_access_delay_state.disable"/>
       <property id="module.driver.spi.rspi_next_access_delay_count" value="module.driver.spi.rspi_next_access_delay_count.one"/>
     </module>
-    <module id="module.driver.qspi_on_qspi.753114255">
+    <module id="module.driver.qspi_on_qspi.147958872">
       <property id="module.driver.qspi.name" value="g_flash"/>
     </module>
-    <module id="module.driver.watchdog_on_wdt.1445812542">
+    <module id="module.driver.watchdog_on_wdt.941666715">
       <property id="module.driver.watchdog.name" value="g_watchdog"/>
       <property id="module.driver.watchdog.start_mode" value="module.driver.watchdog.start_mode.register"/>
       <property id="module.driver.watchdog.start_wdt_after_cfg" value="module.driver.watchdog.start_mode.start_wdt_after_cfg.true"/>
@@ -759,25 +763,31 @@
       <property id="module.driver.watchdog.stop_control" value="module.driver.watchdog.stop_control.enable"/>
       <property id="module.driver.watchdog.nmi_callback" value="watchdog_cb"/>
     </module>
-    <module id="module.driver.rtc_on_rtc.439415359">
+    <module id="module.driver.rtc_on_rtc.1018483079">
       <property id="module.driver.rtc.name" value="g_for_wdt"/>
       <property id="module.driver.rtc.clock_source" value="module.driver.rtc.clock_source.clock_source_loco"/>
       <property id="module.driver.rtc.error_adjustment_value" value="0"/>
       <property id="module.driver.rtc.error_adjustment_type" value="module.driver.rtc.error_adjustment_type.error_adjustment_none"/>
       <property id="module.driver.rtc.p_callback" value="timer_wdt_cb"/>
     </module>
-    <context id="_hal.425932204">
-      <stack module="module.driver.cgc_on_cgc.1262747326"/>
-      <stack module="module.driver.elc_on_elc.389265035"/>
-      <stack module="module.driver.ioport_on_ioport.1663879723"/>
-      <stack module="module.framework.tx_src.867802365"/>
-      <stack module="module.driver.timer_on_gpt.469794423"/>
-      <stack module="module.driver.sce_hash.887713947">
-        <stack module="module.driver.sce.1210964783" requires="module.driver.sce"/>
+    <module id="module.driver.flash_on_flash_hp.806838019">
+      <property id="module.driver.flash.name" value="g_flash0"/>
+      <property id="module.driver.flash.data_flash_bgo" value="module.driver.flash.data_flash_bgo.disabled"/>
+      <property id="module.driver.flash.p_callback" value="NULL"/>
+    </module>
+    <context id="_hal.251582652">
+      <stack module="module.driver.cgc_on_cgc.1428068317"/>
+      <stack module="module.driver.elc_on_elc.1404665120"/>
+      <stack module="module.driver.ioport_on_ioport.1031908266"/>
+      <stack module="module.framework.tx_src.1349576717"/>
+      <stack module="module.driver.timer_on_gpt.2025376152"/>
+      <stack module="module.driver.sce_hash.1285777344">
+        <stack module="module.driver.sce.2034823177" requires="module.driver.sce"/>
       </stack>
-      <stack module="module.driver.rtc_on_rtc.2082352347"/>
-      <stack module="module.driver.watchdog_on_wdt.1445812542"/>
-      <stack module="module.driver.rtc_on_rtc.439415359"/>
+      <stack module="module.driver.rtc_on_rtc.246742657"/>
+      <stack module="module.driver.watchdog_on_wdt.941666715"/>
+      <stack module="module.driver.rtc_on_rtc.1018483079"/>
+      <stack module="module.driver.flash_on_flash_hp.806838019"/>
     </context>
     <context id="rtos.threadx.thread.147623994">
       <property id="_symbol" value="wifi_thread"/>
@@ -786,13 +796,13 @@
       <property id="rtos.threadx.thread.priority" value="7"/>
       <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
       <property id="rtos.threadx.thread.timeslice" value="1"/>
-      <stack module="module.framework.sf_spi_on_sf_spi.1947304690">
-        <stack module="module.driver.spi_on_rspi.31069712" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
-        <stack module="module.framework.sf_spi_bus_on_sf_spi.416385832" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
+      <stack module="module.framework.sf_spi_on_sf_spi.1845491231">
+        <stack module="module.driver.spi_on_rspi.1097355091" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
+        <stack module="module.framework.sf_spi_bus_on_sf_spi.540333581" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
       </stack>
-      <stack module="module.driver.external_irq_on_icu.1315786089"/>
-      <stack module="module.driver.qspi_on_qspi.753114255"/>
-      <object id="rtos.threadx.object.mutex.1160409100">
+      <stack module="module.driver.external_irq_on_icu.784710971"/>
+      <stack module="module.driver.qspi_on_qspi.147958872"/>
+      <object id="rtos.threadx.object.mutex.227608963">
         <property id="rtos.threadx.object.mutex.name" value="Wifi Mutex"/>
         <property id="rtos.threadx.object.mutex.symbol" value="wifi_mutex"/>
         <property id="rtos.threadx.object.mutex.inherit" value="rtos.threadx.object.mutex.inherit.disabled"/>
@@ -805,16 +815,16 @@
       <property id="rtos.threadx.thread.priority" value="6"/>
       <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
       <property id="rtos.threadx.thread.timeslice" value="1"/>
-      <stack module="module.framework.sf_el_ux_comms.1942266209">
-        <stack module="module.el.ux_device_class_cdc_acm.987896644" requires="module.framework.sf_el_ux_comms.requires.ux_device_class_cdc_acm">
-          <stack module="module.el.ux.1962711769" requires="module.el.ux_device_class_cdc_acm.requires.ux">
-            <stack module="module.framework.sf_el_ux.1430529413" requires="module.el.ux.requires.sf_el_ux"/>
+      <stack module="module.framework.sf_el_ux_comms.267294320">
+        <stack module="module.el.ux_device_class_cdc_acm.1169796685" requires="module.framework.sf_el_ux_comms.requires.ux_device_class_cdc_acm">
+          <stack module="module.el.ux.1434574141" requires="module.el.ux_device_class_cdc_acm.requires.ux">
+            <stack module="module.framework.sf_el_ux.1466287697" requires="module.el.ux.requires.sf_el_ux"/>
           </stack>
         </stack>
       </stack>
-      <stack module="module.framework.ux_src.2078275620">
-        <stack module="module.el.ux.1962711769" requires="module.el.ux_src.requires.ux">
-          <stack module="module.framework.sf_el_ux.1430529413" requires="module.el.ux.requires.sf_el_ux"/>
+      <stack module="module.framework.ux_src.1827777104">
+        <stack module="module.el.ux.1434574141" requires="module.el.ux_src.requires.ux">
+          <stack module="module.framework.sf_el_ux.1466287697" requires="module.el.ux.requires.sf_el_ux"/>
         </stack>
       </stack>
     </context>
@@ -825,23 +835,27 @@
       <property id="rtos.threadx.thread.priority" value="5"/>
       <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
       <property id="rtos.threadx.thread.timeslice" value="1"/>
-      <stack module="module.framework.sf_i2c_on_sf_i2c.881345987">
-        <stack module="module.driver.i2c_on_riic.2145256289" requires="module.framework.sf_i2c_on_sf_i2c.requires.i2c"/>
-        <stack module="module.framework.sf_i2c_bus_on_sf_i2c.532509329" requires="module.framework.sf_i2c_on_sf_i2c.requires.sf_i2c_bus"/>
+      <stack module="module.framework.sf_i2c_on_sf_i2c.279325207">
+        <stack module="module.driver.i2c_on_riic.1218331050" requires="module.framework.sf_i2c_on_sf_i2c.requires.i2c"/>
+        <stack module="module.framework.sf_i2c_bus_on_sf_i2c.1327681300" requires="module.framework.sf_i2c_on_sf_i2c.requires.sf_i2c_bus"/>
       </stack>
-      <stack module="module.framework.sf_spi_on_sf_spi.68682905">
-        <stack module="module.driver.spi_on_rspi.940090820" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
-        <stack module="module.framework.sf_spi_bus_on_sf_spi.416385832" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
+      <stack module="module.framework.sf_spi_on_sf_spi.2028544515">
+        <stack module="module.driver.spi_on_rspi.2009527358" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
+        <stack module="module.framework.sf_spi_bus_on_sf_spi.540333581" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
       </stack>
-      <stack module="module.framework.sf_spi_on_sf_spi.1597223408">
-        <stack module="module.driver.spi_on_rspi.556012487" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
-        <stack module="module.framework.sf_spi_bus_on_sf_spi.416385832" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
+      <stack module="module.framework.sf_spi_on_sf_spi.2119752359">
+        <stack module="module.driver.spi_on_rspi.1068002193" requires="module.framework.sf_spi_on_sf_spi.requires.spi"/>
+        <stack module="module.framework.sf_spi_bus_on_sf_spi.540333581" requires="module.framework.sf_spi_on_sf_spi.requires.sf_spi_bus"/>
       </stack>
     </context>
     <config id="config.driver.wdt">
       <property id="config.driver.wdt.param_checking_enable" value="config.driver.wdt.param_checking_enable.bsp"/>
     </config>
     <config id="config.el.ux"/>
+    <config id="config.driver.flash_hp">
+      <property id="config.driver.flash_hp.param_checking_enable" value="config.driver.flash_hp.param_checking_enable.bsp"/>
+      <property id="config.driver.flash_hp.param_code_flash_programming_enable" value="config.driver.flash_hp.param_code_flash_programming_enable.enabled"/>
+    </config>
     <config id="config.driver.cgc">
       <property id="config.driver.cgc.param_checking_enable" value="config.driver.cgc.param_checking_enable.bsp"/>
       <property id="config.driver.cgc.main_osc_wait" value="config.driver.cgc.main_osc_wait.wait_8163"/>

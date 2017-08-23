@@ -61,6 +61,10 @@ int get_telemetry_data(void *d) {
 }
 
 void wifi_thread_entry(void);
+#include "../synergy/ssp/src/driver/r_flash_hp/hw/target/hw_flash_hp_private.h"
+
+extern int arrow_release_download_payload(property_t *buf, const char *payload, int size);
+extern int arrow_release_download_complete(property_t *buf);
 
 /* WIFI Thread entry function */
 void wifi_thread_entry(void) {
@@ -82,6 +86,7 @@ void wifi_thread_entry(void) {
 
     wdt_feed();
     winc1500_init();
+
     g_ioport.p_api->pinWrite(led1 ,IOPORT_LEVEL_LOW);
     tstrM2mRev info;
     nm_get_firmware_info(&info);
@@ -138,7 +143,11 @@ force_ap:
     time_t now = time(NULL);
     DBG("date : %s", ctime(&now));
 
-    TRACE("----------------------\r\n");
+    TRACE("--------- START -------------\r\n");
+
+    // setting up the release download callbacks
+     arrow_software_release_dowload_set_cb(arrow_release_download_payload,
+                                           arrow_release_download_complete);
 
     arrow_initialize_routine();
 

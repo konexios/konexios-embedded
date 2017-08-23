@@ -2,6 +2,8 @@ Device R7FS7G2
 si SWD
 speed 1000
 loadfile aris.srec
+loadfile aris_boot.srec
+loadfile startup.srec
 r
 g
 exit

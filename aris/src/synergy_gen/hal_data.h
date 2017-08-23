@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "bsp_api.h"
 #include "common_data.h"
+#include "r_flash_hp.h"
+#include "r_flash_api.h"
 #include "r_rtc.h"
 #include "r_rtc_api.h"
 #include "r_wdt.h"
@@ -17,6 +19,16 @@
 #include "r_elc_api.h"
 #include "r_cgc.h"
 #include "r_cgc_api.h"
+/* Flash on Flash HP Instance */
+extern const flash_instance_t g_flash0;
+#ifdef NULL
+#define FLASH_CALLBACK_USED (0)
+#else
+#define FLASH_CALLBACK_USED (1)
+#endif
+#if FLASH_CALLBACK_USED
+void NULL(flash_callback_args_t * p_args);
+#endif
 /** RTC on RTC Instance. */
 extern const rtc_instance_t g_for_wdt;
 #ifdef timer_wdt_cb
