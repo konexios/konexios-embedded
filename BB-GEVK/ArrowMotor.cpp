@@ -8,6 +8,10 @@
 #include "ArrowMotor.h"
 #include <debug.h>
 
+#if !defined(USE_STEP_MOTOR)
+typedef int __dummy_type;
+#else
+
 Arrow_Motor::Arrow_Motor() : stepper{MOTOR1, MOTOR2} { }
 
 int Arrow_Motor::enable(MOTOR_T motor) {
@@ -81,3 +85,5 @@ int Arrow_Motor::steps(MOTOR_T motor, int step) {
 	DBG("motor driver 2 : motor rotated %d steps ...", step);
 	return 0;
 }
+
+#endif

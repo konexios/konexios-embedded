@@ -8,8 +8,12 @@
 #ifndef ARROWMOTOR_H_
 #define ARROWMOTOR_H_
 
+#if !defined(USE_STEP_MOTOR)
+typedef int __dummy_type;
+#else
+
 #include "mbed.h"
-#include "Shields.h"
+#include "AMIS30543D_Stpr.h"
 
 class Arrow_Motor {
 	AMIS30543D stepper[2];
@@ -23,5 +27,7 @@ public:
 	int steps(MOTOR_T motor, int step);
 	void disable(MOTOR_T motor);
 };
+
+#endif
 
 #endif /* ARROWMOTOR_H_ */

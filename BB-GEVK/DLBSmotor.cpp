@@ -7,6 +7,10 @@
 
 #include "DLBSmotor.h"
 
+#if !defined(USE_DLBS_MOTOR)
+typedef int __dummy_type;
+#else
+
 LV8907_BLDC DLBSmotor::bldc;
 
 //Interrupt handler for BLDC
@@ -61,3 +65,5 @@ int DLBSmotor::stop() {
 	bldc.motorOff();
 	return 0;
 }
+
+#endif

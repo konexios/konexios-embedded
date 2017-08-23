@@ -8,8 +8,12 @@
 #ifndef DLBSMOTOR_H_
 #define DLBSMOTOR_H_
 
+#if !defined(USE_DLBS_MOTOR)
+typedef int __dummy_type;
+#else
+
 #include "mbed.h"
-#include "Shields.h"
+#include "LV8907_BLDC.h"
 #include <debug.h>
 
 #define BLDC_MAX_RPM	13400
@@ -27,5 +31,7 @@ public:
 	int start(int RPM);
 	int stop();
 };
+
+#endif
 
 #endif /* DLBSMOTOR_H_ */
