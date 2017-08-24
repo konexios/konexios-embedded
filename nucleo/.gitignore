@@ -5,3 +5,5 @@
 *.out.*
 !mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.o
 *.qbs
+*.elf
+*.elf.*

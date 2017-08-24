@@ -91,6 +91,7 @@ CSRCS += $(wildcard $(PWD)/acnsdkc/time/*.c)
 CSRCS += $(wildcard $(PWD)/acnsdkc/json/*.c)
 
 SSRCS += $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.S)
+CSRCS += $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/*.c)
 
 SOBJS := $(SSRCS:%.S=%.o)
 COBJS := $(CSRCS:%.c=%.o)
@@ -159,11 +160,12 @@ endif
 libacnsdkc.a: $(SDK_TARGET)
 	@echo BUILD: $(PWD)
 
-$(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a
+$(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a bootloader
 	  @echo "build $(APP_OUT)"
 	  $(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
 	
 clean: sdk_clean
+	cd bootloader && make clean
 	$(RMDIR) $(LIBDIR)
 	$(RM) $(CPPOBJS)
 	
@@ -180,6 +182,9 @@ lst: $(APP_OUT).lst
 
 size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
+
+bootloader: bootloader.bin
+	cd bootloader && make clean && make && cp bootloader.bin ..
 	
 flash: $(APP_OUT)
 	st-flash write bootloader.bin 0x8000000

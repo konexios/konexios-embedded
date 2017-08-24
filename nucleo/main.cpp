@@ -84,8 +84,7 @@ int main() {
     printf("@button %d\r\n", button.read());
     if (button == 0 || err < 0) {
 force_ap:
-      __NOP();
-      /*spwf.create_ap(MAIN_WLAN_SSID, MAIN_WLAN_CHANNEL);
+      spwf.create_ap(MAIN_WLAN_SSID, MAIN_WLAN_CHANNEL);
       const char *arrow_config_page =
           "<html><head><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'/>"
           "<style>body{font-size:xx-large;font-family:'Arial';} input{font-size:xx-large;width:100%;padding:12px 20px;margin:8px 0;box-sizing:border-box;} button{background-color:white;color:black;border:2px solid #blue;padding:15px 32px;font-size:xx-large;}</style></head>"
@@ -113,7 +112,7 @@ force_ap:
       while(1) {
         wdt_feed();
         wait_ms(1000);
-      }*/
+      }
     }
 
     arrow_software_release_dowload_set_cb(arrow_release_download_payload,
