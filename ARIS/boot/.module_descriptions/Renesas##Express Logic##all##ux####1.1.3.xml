@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<synergyModuleDescription>
+    <config id="config.el.ux" path="ssp_cfg/framework/el/ux_user.h" version="0">
+        <content>
+        #if (${interface.framework.ux_src})
+        #include "ux_src_user.h"
+        #endif
+        </content>
+    </config>
+    <module config="config.el.ux" display="Framework|USB|${module.el.ux.name} USBX on ux" common="100" id="module.el.ux" version="1">
+        <constraint display="Module instances must have unique names">
+            "${interface.el.ux.${module.el.ux.name}}" === "1"
+        </constraint>
+        <requires interface="_rtos" />
+        <requires id="module.el.ux.requires.sf_el_ux" interface="interface.framework.sf_el_ux" display="Add USBX Port" />
+        <provides interface="interface.el.ux" />
+        <provides interface="interface.el.ux.${module.el.ux.name}" />
+        <property default="g_ux${_instance}" display="Name" id="module.el.ux.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.ux.name}")</constraint>
+        </property>
+    </module>
+</synergyModuleDescription>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<synergyModuleDescription>
+	<module display="Framework|Networking|${module.el.nx_telnet_server.name} NetX Telnet Server on nx_telnet_server" id="module.el.nx_telnet_server" version="1">
+        <constraint display="Module instances must have unique names">
+            "${interface.el.nx_telnet_server.${module.el.nx_telnet_server.name}}" === "1"
+        </constraint>
+        <requires interface="_rtos" />
+        <requires id="module.el.nx_telnet_server.requires.nx" interface="interface.el.nx" display="Add NetX" />        
+        <provides interface="interface.el.nx_telnet_server" />
+        <provides interface="interface.el.nx_telnet_server.${module.el.nx_telnet_server.name}" />
+        <property default="g_nx_telnet_server${_instance}" display="Name" id="module.el.nx_telnet_server.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.nx_telnet_server.name}")</constraint>
+        </property>
+	</module>
+</synergyModuleDescription>

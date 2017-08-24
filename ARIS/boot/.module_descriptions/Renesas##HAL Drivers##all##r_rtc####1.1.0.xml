@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+	<config id="config.driver.rtc" path="ssp_cfg/driver/r_rtc_cfg.h" version="0">
+		<property default="config.driver.rtc.param_checking_enable.bsp" display="Parameter Checking Enable" id="config.driver.rtc.param_checking_enable">
+			<option display="Default (BSP)" id="config.driver.rtc.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+			<option display="Enabled" id="config.driver.rtc.param_checking_enable.enabled" value="(1)"/>
+			<option display="Disabled" id="config.driver.rtc.param_checking_enable.disabled" value="(0)"/>
+		</property>
+		<content>#define RTC_CFG_PARAM_CHECKING_ENABLE ${config.driver.rtc.param_checking_enable}
+</content>
+	</config>
+	<module config="config.driver.rtc" display="Driver|Timers|${module.driver.rtc.name} RTC Driver on r_rtc" id="module.driver.rtc_on_rtc" version="1">
+        <constraint display="Requires Interrupt enabled">
+          ("${module.driver.rtc.p_callback}" === "NULL") || ("${board.icu.rtc.alarm}" != "board.icu.common.irq.disabled") || ("${board.icu.rtc.period}" != "board.icu.common.irq.disabled") || ("${board.icu.rtc.carry}" != "board.icu.common.irq.disabled")
+        </constraint>
+        <constraint display="Unique name required for each instance">
+            "${interface.driver.rtc.${module.driver.rtc.name}}" === "1"
+        </constraint>        
+        <provides interface="interface.driver.rtc" />
+        <provides interface="interface.driver.rtc_on_rtc" />
+        <provides interface="interface.driver.rtc.${module.driver.rtc.name}" />        
+        <property default="g_rtc${_instance}" display="Name" id="module.driver.rtc.name">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.rtc.name}")</constraint>
+        </property>
+		<property default="module.driver.rtc.clock_source.clock_source_loco" display="Clock Source" id="module.driver.rtc.clock_source">
+			<option display="Sub-Clock" id="module.driver.rtc.clock_source.clock_source_subclk" value="RTC_CLOCK_SOURCE_SUBCLK"/>
+			<option display="LOCO" id="module.driver.rtc.clock_source.clock_source_loco" value="RTC_CLOCK_SOURCE_LOCO"/>
+		</property>
+		<property default="0" display="Error Adjustment Value" id="module.driver.rtc.error_adjustment_value">
+			<constraint display="Value must be a non-negative integer">testInteger("${module.driver.rtc.error_adjustment_value}")  &amp;&amp; ("${module.driver.rtc.error_adjustment_value}" &gt;= 0)</constraint>
+           </property>
+		<property default="module.driver.rtc.error_adjustment_type.error_adjustment_none" display="Error Adjustment Type" id="module.driver.rtc.error_adjustment_type">
+			<option display="None" id="module.driver.rtc.error_adjustment_type.error_adjustment_none" value="RTC_ERROR_ADJUSTMENT_NONE"/>
+			<option display="Add Prescaler" id="module.driver.rtc.error_adjustment_type.error_adjustment_add_prescaler" value="RTC_ERROR_ADJUSTMENT_ADD_PRESCALER"/>
+			<option display="Subtract Prescaler" id="module.driver.rtc.error_adjustment_type.error_adjustment_subtract_prescaler" value="RTC_ERROR_ADJUSTMENT_SUBTRACT_PRESCALER"/>
+		</property>
+        <property default="NULL" display="Callback" id="module.driver.rtc.p_callback">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.rtc.p_callback}")</constraint>
+        </property>
+        <interrupt node="board.icu.rtc.alarm" />
+        <interrupt node="board.icu.rtc.period" />
+        <interrupt node="board.icu.rtc.carry" />
+        <header>
+            /** RTC on RTC Instance. */
+            extern const rtc_instance_t ${module.driver.rtc.name};
+#ifdef ${module.driver.rtc.p_callback}
+#define RTC_CALLBACK_USED_${module.driver.rtc.name} (0)
+#else
+#define RTC_CALLBACK_USED_${module.driver.rtc.name} (1)
+#endif
+#if RTC_CALLBACK_USED_${module.driver.rtc.name}
+void ${module.driver.rtc.p_callback}(rtc_callback_args_t * p_args);
+#endif
+        </header>
+		<includes>#include &quot;r_rtc.h&quot;
+#include &quot;r_rtc_api.h&quot;</includes>
+		<declarations>
+#if RTC_CALLBACK_USED_${module.driver.rtc.name}
+#if defined(__ICCARM__)
+#define ${module.driver.rtc.p_callback}_WEAK_ATTRIBUTE
+#pragma weak ${module.driver.rtc.p_callback}                            = ${module.driver.rtc.p_callback}_internal
+#elif defined(__GNUC__)
+#define ${module.driver.rtc.p_callback}_WEAK_ATTRIBUTE       __attribute__ ((weak, alias("${module.driver.rtc.p_callback}_internal")))
+#endif
+void ${module.driver.rtc.p_callback}(rtc_callback_args_t * p_args) ${module.driver.rtc.p_callback}_WEAK_ATTRIBUTE;
+#endif
+rtc_ctrl_t ${module.driver.rtc.name}_ctrl;
+const rtc_cfg_t ${module.driver.rtc.name}_cfg =
+{
+    .clock_source        = ${module.driver.rtc.clock_source},
+    .error_adjustment_value = ${module.driver.rtc.error_adjustment_value},
+    .error_adjustment_type = ${module.driver.rtc.error_adjustment_type},
+    .p_callback          = ${module.driver.rtc.p_callback},
+    .p_context           = &amp;${module.driver.rtc.name},
+};
+/* Instance structure to use this module. */
+const rtc_instance_t ${module.driver.rtc.name} = 
+{
+    .p_ctrl        = &amp;${module.driver.rtc.name}_ctrl,
+    .p_cfg         = &amp;${module.driver.rtc.name}_cfg,
+    .p_api         = &amp;g_rtc_on_rtc
+};
+
+#if RTC_CALLBACK_USED_${module.driver.rtc.name}
+/*******************************************************************************************************************//**
+ * @brief      This is a weak example callback function.  It should be overridden by defining a user callback function 
+ *             with the prototype below.
+ *               - void ${module.driver.rtc.p_callback}(rtc_callback_args_t * p_args)
+ *
+ * @param[in]  p_args  Callback arguments used to identify what caused the callback.
+ **********************************************************************************************************************/
+void ${module.driver.rtc.p_callback}_internal(rtc_callback_args_t * p_args);
+void ${module.driver.rtc.p_callback}_internal(rtc_callback_args_t * p_args)
+{
+	/** Do nothing. */
+    SSP_PARAMETER_NOT_USED(p_args);
+}
+#endif
+</declarations>
+	</module>
+</synergyModuleDescription>

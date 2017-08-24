@@ -1,0 +1,5 @@
+*.o
+*.d
+Debug/*
+.settings/*
+*.patch

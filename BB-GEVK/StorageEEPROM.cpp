@@ -7,7 +7,7 @@
 
 #include "StorageEEPROM.h"
 
-#include "Shields.h"
+#include "CAT25M02_EEPROM.h"
 #include <debug.h>
 
 class StorageEEPROM {

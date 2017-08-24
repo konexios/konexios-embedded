@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+    <config id="config.driver.sci_common" path="ssp_cfg/driver/r_sci_common_cfg.h" version="0">
+        <property id="config.driver.sci_common.async" display="Asychronous Mode (r_sci_uart)" default="config.driver.sci_common.async.disabled">
+            <option id="config.driver.sci_common.async.enabled" display="Enabled" value="1" />
+            <option id="config.driver.sci_common.async.disabled" display="Disabled" value="0" />
+        </property>     
+        <property id="config.driver.sci_common.spi" display="Simple SPI Mode (r_sci_spi)" default="config.driver.sci_common.spi.disabled">
+            <option id="config.driver.sci_common.spi.enabled" display="Enabled" value="1" />
+            <option id="config.driver.sci_common.spi.disabled" display="Disabled" value="0" />
+        </property>     
+        <property id="config.driver.sci_common.i2c" display="Simple I2C Mode (r_sci_i2c)" default="config.driver.sci_common.i2c.disabled">
+            <option id="config.driver.sci_common.i2c.enabled" display="Enabled" value="1" />
+            <option id="config.driver.sci_common.i2c.disabled" display="Disabled" value="0" />
+        </property>                 
+        <content>
+/** SPECIFY WHETHER TO INCLUDE ASYNCHRONOUS TRANSFER MODE
+ * 1 : included
+ * 0 : not included
+ */
+#define SCI_CFG_ASYNC_INCLUDED  (${config.driver.sci_common.async})
+
+/** SPECIFY WHETHER TO INCLUDE Simple SPI TRANSFER MODE
+ * 1 : included
+ * 0 : not included
+ */
+#define SCI_CFG_SPI_INCLUDED (${config.driver.sci_common.spi})
+
+/** SPECIFY WHETHER TO INCLUDE Simple I2C TRANSFER MODE
+ * 1 : included
+ * 0 : not included
+ */
+#define SCI_CFG_SIIC_INCLUDED  (${config.driver.sci_common.i2c})
+        </content>
+    </config>
+    <module config="config.driver.sci_common" display="Driver|Connectivity|SCI Common" id="module.driver.sci_common" common="1" version="1">
+        <provides interface="interface.driver.sci_common" />
+    </module>
+</synergyModuleDescription>

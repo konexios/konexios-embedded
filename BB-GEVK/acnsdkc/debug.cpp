@@ -11,14 +11,15 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "mbed.h"
-#include "Shields.h"
+#include "Serial.h"
+#include "Mutex.h"
 
 #if defined(DEBUG)
 
 static Serial screen(USBTX, USBRX);
 
 char dbg_buffer[DBG_LINE_SIZE];
-Mutex dbg_mtx;
+rtos::Mutex dbg_mtx;
 
 extern "C" {
 

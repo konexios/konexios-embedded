@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+    <config id="config.driver.gpt" path="ssp_cfg/driver/r_gpt_cfg.h" version="0">
+        <property default="config.driver.gpt.param_checking_enable.bsp" display="Parameter Checking" id="config.driver.gpt.param_checking_enable">
+            <option display="Default (BSP)" id="config.driver.gpt.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+            <option display="Enabled" id="config.driver.gpt.param_checking_enable.enabled" value="(1)"/>
+            <option display="Disabled" id="config.driver.gpt.param_checking_enable.disabled" value="(0)"/>
+        </property>
+        <content>#define GPT_CFG_PARAM_CHECKING_ENABLE ${config.driver.gpt.param_checking_enable}
+#define SYNERGY_NOT_DEFINED (0xFFFFFFFF)
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.0})
+    #define GPT_INSTANCE_CHANNEL_0     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_0     (0)
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.1})
+    #define GPT_INSTANCE_CHANNEL_1     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_1     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.2})
+    #define GPT_INSTANCE_CHANNEL_2     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_2     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.3})
+    #define GPT_INSTANCE_CHANNEL_3     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_3     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.4})
+    #define GPT_INSTANCE_CHANNEL_4     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_4     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.5})
+    #define GPT_INSTANCE_CHANNEL_5     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_5     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.6})
+    #define GPT_INSTANCE_CHANNEL_6     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_6     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.7})
+    #define GPT_INSTANCE_CHANNEL_7     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_7     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.8})
+    #define GPT_INSTANCE_CHANNEL_8     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_8     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.9})
+    #define GPT_INSTANCE_CHANNEL_9     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_9     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.10})
+    #define GPT_INSTANCE_CHANNEL_10     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_10     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.11})
+    #define GPT_INSTANCE_CHANNEL_11     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_11     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.12})
+    #define GPT_INSTANCE_CHANNEL_12     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_12     (0)                 
+#endif
+#if (SYNERGY_NOT_DEFINED != ${interface.driver.timer_on_gpt.13})
+    #define GPT_INSTANCE_CHANNEL_13     (1)
+#else
+    #define GPT_INSTANCE_CHANNEL_13     (0)                 
+#endif
+#undef SYNERGY_NOT_DEFINED
+</content>
+    </config>
+    <module config="config.driver.gpt" display="Driver|Timers|${module.driver.timer.name} Timer Driver on r_gpt" id="module.driver.timer_on_gpt" version="1">
+        <constraint display="Requires GPT${module.driver.timer.channel} Overflow Interrupt enabled">
+            "${module.driver.timer.p_callback}" === "NULL" || "${board.icu.gpt.gpt${module.driver.timer.channel}.counter_overflow}" != "board.icu.common.irq.disabled"
+        </constraint> 
+        <constraint display="Unique name required for each instance">
+            "${interface.driver.timer.${module.driver.timer.name}}" === "1"
+        </constraint>
+        <provides interface="interface.driver.timer" />
+        <provides interface="interface.driver.timer_on_gpt" />        
+        <provides interface="interface.driver.timer.${module.driver.timer.name}" />
+        <provides interface="interface.driver.timer_on_gpt.${module.driver.timer.channel}" />
+        <property default="g_timer${_instance}" display="Name" id="module.driver.timer.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.timer.name}")</constraint>
+        </property>
+        <property default="0" display="Channel" id="module.driver.timer.channel">
+            <constraint display="Value must be a non-negative integer">testInteger("${module.driver.timer.channel}")  &amp;&amp; ("${module.driver.timer.channel}" &gt;= 0)</constraint>
+        </property>
+        <property default="module.driver.timer.mode.mode_periodic" display="Mode" id="module.driver.timer.mode">
+            <option display="Periodic" id="module.driver.timer.mode.mode_periodic" value="TIMER_MODE_PERIODIC"/>
+            <option display="One Shot" id="module.driver.timer.mode.mode_one_shot" value="TIMER_MODE_ONE_SHOT"/>
+            <option display="PWM" id="module.driver.timer.mode.mode_pwm" value="TIMER_MODE_PWM"/>
+        </property>
+        <property default="10" display="Period Value" id="module.driver.timer.period">
+            <constraint display="Value must be a non-negative integer">testInteger("${module.driver.timer.period}")  &amp;&amp; ("${module.driver.timer.period}" &gt;= 0)</constraint>
+           </property>
+        <property default="module.driver.timer.unit.unit_period_msec" display="Period Unit" id="module.driver.timer.unit">
+            <option display="Raw Counts" id="module.driver.timer.unit.unit_period_raw_counts" value="TIMER_UNIT_PERIOD_RAW_COUNTS"/>
+			<option display="Nanoseconds" id="module.driver.timer.unit.unit_period_nsec" value="TIMER_UNIT_PERIOD_NSEC"/>
+			<option display="Microseconds" id="module.driver.timer.unit.unit_period_usec" value="TIMER_UNIT_PERIOD_USEC"/>
+			<option display="Milliseconds" id="module.driver.timer.unit.unit_period_msec" value="TIMER_UNIT_PERIOD_MSEC"/>
+			<option display="Seconds" id="module.driver.timer.unit.unit_period_sec" value="TIMER_UNIT_PERIOD_SEC"/>
+			<option display="Hertz" id="module.driver.timer.unit.unit_frequency_hz" value="TIMER_UNIT_FREQUENCY_HZ"/>
+			<option display="Kilohertz" id="module.driver.timer.unit.unit_frequency_khz" value="TIMER_UNIT_FREQUENCY_KHZ"/>
+        </property>
+        <property default="50" display="Duty Cycle Value" id="module.driver.timer.duty_cycle">
+            <constraint display="Value must be a non-negative integer">testInteger("${module.driver.timer.duty_cycle}")  &amp;&amp; ("${module.driver.timer.duty_cycle}" &gt;= 0)</constraint>
+           </property>
+        <property default="module.driver.timer.duty_cycle_unit.unit_percent" display="Duty Cycle Unit" id="module.driver.timer.duty_cycle_unit">
+            <option display="Unit Raw Counts" id="module.driver.timer.duty_cycle_unit.unit_raw_counts" value="TIMER_PWM_UNIT_RAW_COUNTS"/>
+            <option display="Unit Percent" id="module.driver.timer.unit.unit_percent" value="TIMER_PWM_UNIT_PERCENT"/>
+            <option display="Unit Percent X 1000" id="module.driver.timer.unit.unit_percent_x_1000" value="TIMER_PWM_UNIT_PERCENT_X_1000"/>
+        </property>
+        <property default="module.driver.timer.autostart.true" display="Auto Start" id="module.driver.timer.autostart">
+            <option display="True" id="module.driver.timer.autostart.true" value="true"/>
+            <option display="False" id="module.driver.timer.autostart.false" value="false"/>
+        </property>
+        <property default="module.driver.timer.gtioca_output_enabled.false" display="GTIOCA Output Enabled" id="module.driver.timer.gtioca_output_enabled">
+            <option display="True" id="module.driver.timer.gtioca_output_enabled.true" value="true"/>
+            <option display="False" id="module.driver.timer.gtioca_output_enabled.false" value="false"/>
+        </property>
+        <property default="module.driver.timer.gtioca_stop_level.pin_level_low" display="GTIOCA Stop Level" id="module.driver.timer.gtioca_stop_level">
+            <option display="Pin Level Low" id="module.driver.timer.gtioca_stop_level.pin_level_low" value="GPT_PIN_LEVEL_LOW"/>
+            <option display="Pin Level High" id="module.driver.timer.gtioca_stop_level.pin_level_high" value="GPT_PIN_LEVEL_HIGH"/>
+            <option display="Pin Level Retained" id="module.driver.timer.gtioca_stop_level.pin_level_retained" value="GPT_PIN_LEVEL_RETAINED"/>
+        </property>
+        <property default="module.driver.timer.gtiocb_output_enabled.false" display="GTIOCB Output Enabled" id="module.driver.timer.gtiocb_output_enabled">
+            <option display="True" id="module.driver.timer.gtiocb_output_enabled.true" value="true"/>
+            <option display="False" id="module.driver.timer.gtiocb_output_enabled.false" value="false"/>
+        </property>
+        <property default="module.driver.timer.gtiocb_stop_level.pin_level_low" display="GTIOCB Stop Level" id="module.driver.timer.gtiocb_stop_level">
+            <option display="Pin Level Low" id="module.driver.timer.gtiocb_stop_level.pin_level_low" value="GPT_PIN_LEVEL_LOW"/>
+            <option display="Pin Level High" id="module.driver.timer.gtiocb_stop_level.pin_level_high" value="GPT_PIN_LEVEL_HIGH"/>
+            <option display="Pin Level Retained" id="module.driver.timer.gtiocb_stop_level.pin_level_retained" value="GPT_PIN_LEVEL_RETAINED"/>
+        </property>
+        <property default="NULL" display="Callback" id="module.driver.timer.p_callback">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.driver.timer.p_callback}")</constraint>
+        </property>
+        <interrupt node="board.icu.gpt.gpt${module.driver.timer.channel}.counter_overflow" />
+        <header>
+            /** Timer on GPT Instance. */
+            extern const timer_instance_t ${module.driver.timer.name};
+#ifdef ${module.driver.timer.p_callback}
+#define TIMER_ON_GPT_CALLBACK_USED_${module.driver.timer.name} (0)
+#else
+#define TIMER_ON_GPT_CALLBACK_USED_${module.driver.timer.name} (1)
+#endif
+#if TIMER_ON_GPT_CALLBACK_USED_${module.driver.timer.name}
+void ${module.driver.timer.p_callback}(timer_callback_args_t * p_args);
+#endif
+        </header>
+        <includes>#include &quot;r_gpt.h&quot;
+#include &quot;r_timer_api.h&quot;</includes>
+        <declarations>
+#if TIMER_ON_GPT_CALLBACK_USED_${module.driver.timer.name}
+#if defined(__ICCARM__)
+#define ${module.driver.timer.p_callback}_WEAK_ATTRIBUTE
+#pragma weak ${module.driver.timer.p_callback}                            = ${module.driver.timer.p_callback}_internal
+#elif defined(__GNUC__)
+#define ${module.driver.timer.p_callback}_WEAK_ATTRIBUTE       __attribute__ ((weak, alias("${module.driver.timer.p_callback}_internal")))
+#endif
+void ${module.driver.timer.p_callback}(timer_callback_args_t * p_args) ${module.driver.timer.p_callback}_WEAK_ATTRIBUTE;
+#endif
+static timer_ctrl_t ${module.driver.timer.name}_ctrl;
+static const timer_on_gpt_cfg_t ${module.driver.timer.name}_extend =
+{
+    .gtioca = { .output_enabled = ${module.driver.timer.gtioca_output_enabled},
+                .stop_level     = ${module.driver.timer.gtioca_stop_level}
+              },
+    .gtiocb = { .output_enabled = ${module.driver.timer.gtiocb_output_enabled},
+                .stop_level     = ${module.driver.timer.gtiocb_stop_level}
+              }
+};
+static const timer_cfg_t ${module.driver.timer.name}_cfg =
+{
+    .mode                = ${module.driver.timer.mode},
+    .period              = ${module.driver.timer.period},
+    .unit                = ${module.driver.timer.unit},
+    .duty_cycle          = ${module.driver.timer.duty_cycle},
+    .duty_cycle_unit     = ${module.driver.timer.duty_cycle_unit},
+    .channel             = ${module.driver.timer.channel},
+    .autostart           = ${module.driver.timer.autostart},
+    .p_callback          = ${module.driver.timer.p_callback},
+    .p_context           = &amp;${module.driver.timer.name},
+    .p_extend            = &amp;${module.driver.timer.name}_extend
+};
+/* Instance structure to use this module. */
+const timer_instance_t ${module.driver.timer.name} = 
+{
+    .p_ctrl        = &amp;${module.driver.timer.name}_ctrl,
+    .p_cfg         = &amp;${module.driver.timer.name}_cfg,
+    .p_api         = &amp;g_timer_on_gpt
+};
+
+#if TIMER_ON_GPT_CALLBACK_USED_${module.driver.timer.name}
+/*******************************************************************************************************************//**
+ * @brief      This is a weak example callback function.  It should be overridden by defining a user callback function 
+ *             with the prototype below.
+ *               - void ${module.driver.timer.p_callback}(timer_callback_args_t * p_args)
+ *
+ * @param[in]  p_args  Callback arguments used to identify what caused the callback.
+ **********************************************************************************************************************/
+void ${module.driver.timer.p_callback}_internal(timer_callback_args_t * p_args);
+void ${module.driver.timer.p_callback}_internal(timer_callback_args_t * p_args)
+{
+	/** Do nothing. */
+	SSP_PARAMETER_NOT_USED(p_args);
+}
+#endif
+</declarations>
+    </module>
+</synergyModuleDescription>
