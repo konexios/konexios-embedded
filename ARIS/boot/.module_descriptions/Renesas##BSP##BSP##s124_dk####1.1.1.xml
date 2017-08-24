@@ -1,0 +1,508 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<synergyModuleDescription>
+    <config id="config.board.s124_dk" path="ssp_cfg/bsp/bsp_cfg.h" version="0">
+        <property id="config.mcu.s124_dk.package" display="Part package" default="config.mcu.s124_dk.package.fm" macro="BSP_CFG_MCU_PART_PACKAGE">
+            <option id="config.mcu.s124_dk.package.bj" display="BJ (BGA/121)" value="0x0" />
+            <option id="config.mcu.s124_dk.package.fm" display="FM (LQFP/64)" value="0x1" />
+            <option id="config.mcu.s124_dk.package.fp" display="FP (LQFP/100)" value="0x2" />
+            <option id="config.mcu.s124_dk.package.fb" display="FB (LQFP/144)" value="0x3" />
+            <option id="config.mcu.s124_dk.package.lj" display="LJ (LGA/100/7x7)" value="0x4" />
+            <option id="config.mcu.s124_dk.package.lk" display="LK (LGA/145)" value="0x5" />
+            <option id="config.mcu.s124_dk.package.nb" display="NB (WQFN/64)" value="0x6" />
+        </property>
+        <property id="config.mcu.s124_dk.memory" display="Part memory size" default="config.mcu.s124_dk.memory.7" macro="BSP_CFG_MCU_PART_MEMORY_SIZE">
+            <option id="config.mcu.s124_dk.memory.7" display="7 (128KB/16KB/4KB)" value="0x07" />
+            <option id="config.mcu.s124_dk.memory.6" display="6 (64KB/16KB/4KB)" value="0x06" />
+        </property>
+        <property id="config.mcu.s124_dk.core" display="Core and Frequency" default="config.mcu.s124_dk.group.2" macro="BSP_CFG_MCU_PART_CORE">
+            <option id="config.mcu.s124_dk.group.2" display="CM0+, 32MHz" value="0x02" />
+        </property>
+        <property id="config.mcu.s124_dk.series" display="Part series" default="config.mcu.s124_dk.series.1" macro="BSP_CFG_MCU_PART_SERIES">
+            <option id="config.mcu.s124_dk.series.1" display="Ultra-low Power (Up to 32MHz)" value="0x1" />
+        </property>
+        <property id="config.board_common.main" display="Main stack size (bytes)" default="0x1000" macro="BSP_CFG_STACK_MAIN_BYTES">
+            <constraint display="Value must be an integer multiple of 8 and between 8 and 0xFFFFFFFF">testInteger("${config.board_common.main}")  &amp;&amp; ("${config.board_common.main}" &gt; 0) &amp;&amp; ("${config.board_common.main}" % 8 == 0)&amp;&amp; 
+			("${config.board_common.main}" &lt;= 0xFFFFFFFF)</constraint>
+        </property>
+        <property id="config.board_common.process" display="Process stack size (bytes)" default="0" macro="BSP_CFG_STACK_PROCESS_BYTES">			
+            <constraint display="Value must be 0 or an integer multiple of 8 between 8 and 0xFFFFFFFF">testInteger("${config.board_common.process}")  &amp;&amp; ("${config.board_common.process}" &gt;= 0) &amp;&amp; ("${config.board_common.process}" % 8 == 0)&amp;&amp; 
+			("${config.board_common.process}" &lt;= 0xFFFFFFFF)</constraint>			
+        </property>
+        <property id="config.board_common.heap" display="Heap size (bytes) - A minimum of 4K (0x1000) is required if standard library functions are to be used." default="0x0" macro="BSP_CFG_HEAP_BYTES">
+            <constraint display="Value must be 0 or an integer multiple of 8 between 8 and 0xFFFFFFFF. A minimum of 4K (0x1000) is required if standard library functions are to be used.">testInteger("${config.board_common.heap}")  &amp;&amp; ("${config.board_common.heap}" &gt;= 0) &amp;&amp; ("${config.board_common.heap}" % 8 == 0)&amp;&amp; 
+			("${config.board_common.heap}" &lt;= 0xFFFFFFFF)</constraint>						
+        </property>				
+       <property default="config.mcu.s124.OFS0_Register.default" display="OFS0 register settings" id="config.mcu.s124.OFS0">
+			<option display="Select fields below" id="config.mcu.s124.OFS0_Register.default" value="(0)"/>
+        </property>
+		<property default="config.mcu.s124.OFS0.iwdt_start_mode.disabled" display="     IWDT Start Mode" id="config.mcu.s124.OFS0.iwdt_start_mode">
+			 <option display="IWDT is Disabled" id="config.mcu.s124.OFS0.iwdt_start_mode.disabled" value="1 &lt;&lt; 1"/>
+			 <option display="IWDT is automatically activated after a reset (Autostart mode)" id="config.mcu.s124.OFS0.iwdt_start_mode.enabled" value="0 &lt;&lt; 1"/>
+		</property>
+		<property default="config.mcu.s124.OFS0.iwdt_timeout.2048" display="     IWDT Timeout Period" id="config.mcu.s124.OFS0.iwdt_timeout">
+			 <option display="128 cycles" id="config.mcu.s124.OFS0.iwdt_timeout.128" value="0 &lt;&lt; 2"/>
+			 <option display="512 cycles" id="config.mcu.s124.OFS0.iwdt_timeout.512" value="1 &lt;&lt; 2"/>
+			 <option display="1024 cycles" id="config.mcu.s124.OFS0.iwdt_timeout.1024" value="2 &lt;&lt; 2"/>
+			 <option display="2048 cycles" id="config.mcu.s124.OFS0.iwdt_timeout.2048" value="3 &lt;&lt; 2"/>
+		</property>	
+		<property default="config.mcu.s124.OFS0.iwdt_divisor.128" display="     IWDT Dedicated Clock Frequency Divisor" id="config.mcu.s124.OFS0.iwdt_divisor">
+			 <option display="1" id="config.mcu.s124.OFS0.iwdt_divisor.1" value="0 &lt;&lt; 4"/>
+			 <option display="16" id="config.mcu.s124.OFS0.iwdt_divisor.16" value="2 &lt;&lt; 4"/>
+			 <option display="32" id="config.mcu.s124.OFS0.iwdt_divisor.32" value="3 &lt;&lt; 4"/>
+			 <option display="64" id="config.mcu.s124.OFS0.iwdt_divisor.64" value="4 &lt;&lt; 4"/>
+			 <option display="128" id="config.mcu.s124.OFS0.iwdt_divisor.128" value="15 &lt;&lt; 4"/>
+			 <option display="256" id="config.mcu.s124.OFS0.iwdt_divisor.256" value="5 &lt;&lt; 4"/>
+		</property>			
+		<property default="config.mcu.s124.OFS0.iwdt_window_end.0" display="     IWDT Window End Position" id="config.mcu.s124.OFS0.iwdt_window_end">
+			 <option display="75%" id="config.mcu.s124.OFS0.iwdt_window_end.75" value="0 &lt;&lt; 8"/>
+			 <option display="50%" id="config.mcu.s124.OFS0.iwdt_window_end.50" value="1 &lt;&lt; 8"/>
+			 <option display="25%" id="config.mcu.s124.OFS0.iwdt_window_end.25" value="2 &lt;&lt; 8"/>
+			 <option display=" 0% (no window end position)" id="config.mcu.s124.OFS0.iwdt_window_end.0" value="3 &lt;&lt; 8"/>
+		</property>			
+		<property default="config.mcu.s124.OFS0.iwdt_window_start.100" display="     IWDT Window Start Position" id="config.mcu.s124.OFS0.iwdt_window_start">
+			 <option display="25%" id="config.mcu.s124.OFS0.iwdt_window_start.25" value="0 &lt;&lt; 10"/>
+			 <option display="50%" id="config.mcu.s124.OFS0.iwdt_window_start.50" value="1 &lt;&lt; 10"/>
+			 <option display="75%" id="config.mcu.s124.OFS0.iwdt_window_start.75" value="2 &lt;&lt; 10"/>
+			 <option display="100% (no window start position)" id="config.mcu.s124.OFS0.iwdt_window_start.100" value="3 &lt;&lt; 10"/>
+		</property>	
+		<property default="config.mcu.s124.OFS0.iwdt_reset_interrupt.Reset" display="     IWDT Reset Interrupt Request Select" id="config.mcu.s124.OFS0.iwdt_reset_interrupt">
+			 <option display="NMI request or interrupt request is enabled" id="config.mcu.s124.OFS0.iwdt_reset_interrupt.NMI" value="0 &lt;&lt; 12"/>
+			 <option display="Reset is enabled" id="config.mcu.s124.OFS0.iwdt_reset_interrupt.Reset" value="1 &lt;&lt; 12"/>
+		</property>
+		<property default="config.mcu.s124.OFS0.iwdt_stop_control.stops" display="     IWDT Stop Control" id="config.mcu.s124.OFS0.iwdt_stop_control">
+			 <option display="Counting continues" id="config.mcu.s124.OFS0.iwdt_stop_control.continues" value="0 &lt;&lt; 14"/>
+			 <option display="Stop counting when in Sleep, Snooze mode, Software Standby, or Deep Software Standby mode" id="config.mcu.s124.OFS0.iwdt_stop_control.stops" value="1 &lt;&lt; 14"/>
+		</property>
+		<property default="config.mcu.s124.OFS0.wdt_start_mode.register" display="     WDT Start Mode Select" id="config.mcu.s124.OFS0.wdt_start_mode">
+			 <option display="Automatically activate WDT after a reset (auto-start mode)" id="config.mcu.s124.OFS0.wdt_start_mode.auto" value="0 &lt;&lt; 17"/>
+			 <option display="Stop WDT after a reset (register-start mode)" id="config.mcu.s124.OFS0.wdt_start_mode.register" value="1 &lt;&lt; 17"/>
+		</property>
+		<property default="config.mcu.s124.OFS0.wdt_timeout.16384" display="     WDT Timeout Period" id="config.mcu.s124.OFS0.wdt_timeout">
+			 <option display="1024 cycles" id="config.mcu.s124.OFS0.wdt_timeout.1024" value="0 &lt;&lt; 18"/>
+			 <option display="4096 cycles" id="config.mcu.s124.OFS0.wdt_timeout.4096" value="1 &lt;&lt; 18"/>
+			 <option display="8192 cycles" id="config.mcu.s124.OFS0.wdt_timeout.8192" value="2 &lt;&lt; 18"/>
+			 <option display="16384 cycles" id="config.mcu.s124.OFS0.wdt_timeout.16384" value="3 &lt;&lt; 18"/>
+		</property>	
+		<property default="config.mcu.s124.OFS0.wdt_divisor.128" display="     WDT Clock Frequency Division Ratio" id="config.mcu.s124.OFS0.wdt_divisor">
+			 <option display="4" id="config.mcu.s124.OFS0.wdt_divisor.4" value="1 &lt;&lt; 20"/>
+			 <option display="64" id="config.mcu.s124.OFS0.wdt_divisor.64" value="4 &lt;&lt; 20"/>
+			 <option display="128" id="config.mcu.s124.OFS0.wdt_divisor.128" value="15 &lt;&lt; 20"/>
+			 <option display="512" id="config.mcu.s124.OFS0.wdt_divisor.512" value="6 &lt;&lt; 20"/>
+			 <option display="2048" id="config.mcu.s124.OFS0.wdt_divisor.2048" value="7 &lt;&lt; 20"/>
+			 <option display="8192" id="config.mcu.s124.OFS0.wdt_divisor.8192" value="8 &lt;&lt; 20"/>
+		</property>			
+		<property default="config.mcu.s124.OFS0.wdt_window_end.0" display="     WDT Window End Position" id="config.mcu.s124.OFS0.wdt_window_end">
+			 <option display="75%" id="config.mcu.s124.OFS0.wdt_window_end.75" value="0 &lt;&lt; 24"/>
+			 <option display="50%" id="config.mcu.s124.OFS0.wdt_window_end.50" value="1 &lt;&lt; 24"/>
+			 <option display="25%" id="config.mcu.s124.OFS0.wdt_window_end.25" value="2 &lt;&lt; 24"/>
+			 <option display=" 0% (no window end position)" id="config.mcu.s124.OFS0.wdt_window_end.0" value="3 &lt;&lt; 24"/>
+		</property>			
+		<property default="config.mcu.s124.OFS0.wdt_window_start.100" display="     WDT Window Start Position" id="config.mcu.s124.OFS0.wdt_window_start">
+			 <option display="25%" id="config.mcu.s124.OFS0.wdt_window_start.25" value="0 &lt;&lt; 26"/>
+			 <option display="50%" id="config.mcu.s124.OFS0.wdt_window_start.50" value="1 &lt;&lt; 26"/>
+			 <option display="75%" id="config.mcu.s124.OFS0.wdt_window_start.75" value="2 &lt;&lt; 26"/>
+			 <option display="100% (no window start position)" id="config.mcu.s124.OFS0.wdt_window_start.100" value="3 &lt;&lt; 26"/>
+		</property>	
+		<property default="config.mcu.s124.OFS0.wdt_reset_interrupt.Reset" display="     WDT Reset Interrupt Request" id="config.mcu.s124.OFS0.wdt_reset_interrupt">
+			 <option display="NMI" id="config.mcu.s124.OFS0.wdt_reset_interrupt.NMI" value="0 &lt;&lt; 28"/>
+			 <option display="Reset" id="config.mcu.s124.OFS0.wdt_reset_interrupt.Reset" value="1 &lt;&lt; 28"/>
+		</property>
+		<property default="config.mcu.s124.OFS0.wdt_stop_control.stops" display="     WDT Stop Control" id="config.mcu.s124.OFS0.wdt_stop_control">
+			 <option display="Counting continues" id="config.mcu.s124.OFS0.wdt_stop_control.continues" value="0 &lt;&lt; 30"/>
+			 <option display="Stop counting when entering Sleep mode" id="config.mcu.s124.OFS0.wdt_stop_control.stops" value="1 &lt;&lt; 30"/>
+		</property>	
+				
+       <property default="config.mcu.s124.OFS1_Register.default" display="OFS1 register settings" id="config.mcu.s124.OFS1">
+			<option display="Select fields below" id="config.mcu.s124.OFS1_Register.default" value="(0)"/>
+        </property>
+		
+		<property default="config.mcu.s124.OFS1.voltage_detection0.start.disabled" display="     Voltage Detection 0 Circuit Start" id="config.mcu.s124.OFS1.voltage_detection0.start">
+			 <option display="Voltage monitor 0 reset is enabled after reset" id="config.mcu.s124.OFS1.voltage_detection0.start.enabled" value="0 &lt;&lt; 2"/>
+			 <option display="Voltage monitor 0 reset is disabled after reset" id="config.mcu.s124.OFS1.voltage_detection0.start.disabled" value="1 &lt;&lt; 2"/>
+		</property>
+		
+		<property default="config.mcu.s124.OFS1.voltage_detection0_level.190" display="     Voltage Detection 0 Level" id="config.mcu.s124.OFS1.voltage_detection0_level">
+			 <option display="3.84 V" id="config.mcu.s124.OFS1.voltage_detection0_level.384" value="0 &lt;&lt; 3"/>
+			 <option display="2.82 V" id="config.mcu.s124.OFS1.voltage_detection0_level.282" value="1 &lt;&lt; 3"/>
+			 <option display="2.51 V" id="config.mcu.s124.OFS1.voltage_detection0_level.251" value="2 &lt;&lt; 3"/>
+			 <option display="1.90 V" id="config.mcu.s124.OFS1.voltage_detection0_level.190" value="3 &lt;&lt; 3"/>
+			 <option display="1.70 V" id="config.mcu.s124.OFS1.voltage_detection0_level.170" value="4 &lt;&lt; 3"/>
+		</property>	
+		
+		<property default="config.mcu.s124.OFS1.hoco_osc.disabled" display="     HOCO OScillation Enable" id="config.mcu.s124.OFS1.hoco_osc">
+			 <option display="HOCO oscillation is enabled after reset" id="config.mcu.s124.OFS1.hoco_osc.enabled" value="0 &lt;&lt; 8"/>
+			 <option display="HOCO oscillation is disabled after reset" id="config.mcu.s124.OFS1.hoco_osc.disabled" value="1 &lt;&lt; 8"/>
+		</property>		
+		
+		
+								
+        <property id="config.board.s124_dk.id1" display="ID code 1" default="0xFFFFFFFF" macro="BSP_CFG_ID_CODE_LONG_1">
+            <constraint display="Value must be an integer between 0 and 0xFFFFFFFF">testInteger("${config.board.s124_dk.id1}") &amp;&amp; ("${config.board.s124_dk.id1}" &gt;= 0) &amp;&amp;("${config.board.s124_dk.id1}" &lt;= 0xFFFFFFFF)</constraint>				
+        </property>
+         <property id="config.board.s124_dk.id2" display="ID code 2" default="0xFFFFFFFF" macro="BSP_CFG_ID_CODE_LONG_2">
+            <constraint display="Value must be an integer between 0 and 0xFFFFFFFF">testInteger("${config.board.s124_dk.id2}") &amp;&amp; ("${config.board.s124_dk.id2}" &gt;= 0) &amp;&amp;("${config.board.s124_dk.id2}" &lt;= 0xFFFFFFFF)</constraint>				
+        </property>
+         <property id="config.board.s124_dk.id3" display="ID code 3" default="0xFFFFFFFF" macro="BSP_CFG_ID_CODE_LONG_3">
+            <constraint display="Value must be an integer between 0 and 0xFFFFFFFF">testInteger("${config.board.s124_dk.id3}") &amp;&amp; ("${config.board.s124_dk.id3}" &gt;= 0) &amp;&amp;("${config.board.s124_dk.id3}" &lt;= 0xFFFFFFFF)</constraint>				
+        </property>
+         <property id="config.board.s124_dk.id4" display="ID code 4" default="0xFFFFFFFF" macro="BSP_CFG_ID_CODE_LONG_4">
+            <constraint display="Value must be an integer between 0 and 0xFFFFFFFF">testInteger("${config.board.s124_dk.id4}") &amp;&amp; ("${config.board.s124_dk.id4}" &gt;= 0) &amp;&amp;("${config.board.s124_dk.id4}" &lt;= 0xFFFFFFFF)</constraint>				
+        </property>		
+			
+        <property id="config.board.common.vcc" display="MCU Vcc (mV)" default="3300" macro="BSP_CFG_MCU_VCC_MV">
+            <constraint display="Value must between 0 and 4600 (4.6V)">testInteger("${config.board.common.vcc}") &amp;&amp; ("${config.board.common.vcc}" &gt;= 0) &amp;&amp; ("${config.board.common.vcc}" &lt;= 4600)</constraint>
+        </property>
+        <property id="config.board.common.checking" display="Parameter checking" default="config.board.common.checking.enabled">
+            <option id="config.board.common.checking.enabled" display="Enabled" value="1" />
+            <option id="config.board.common.checking.disabled" display="Disabled" value="0" />
+        </property>
+        <property id="config.board.common.rtos" display="RTOS being used" default="config.board.common.rtos.none">
+            <option id="config.board.common.rtos.none" display="No RTOS" value="0" />
+            <option id="config.board.common.rtos.tx" display="ThreadX" value="1" />
+            <option id="config.board.common.rtos.other" display="Other" value="2" />
+        </property>
+        <property id="config.board.common.assert" display="Assert Failures" default="config.board.common.assert.none">
+            <option id="config.board.common.assert.none" display="Return SSP_ERR_ASSERTION" value="0" />
+            <option id="config.board.common.assert.ssp_error_log" display="Call ssp_error_log then Return SSP_ERR_ASSERTION" value="1" />
+            <option id="config.board.common.assert.assert" display="Use assert() to Halt Execution" value="2" />
+        </property>
+        <property id="config.board.common.error_log" display="Error Log" default="config.board.common.error_log.none">
+            <option id="config.board.common.error_log.none" display="No Error Log" value="0" />
+            <option id="config.board.common.error_log.ssp_error_log" display="Errors Logged in ssp_error_log" value="1" />
+        </property>
+        <content>
+            #define BSP_BOARD_S124_DK
+            #define BSP_CFG_MCU_PART_PACKAGE (${config.mcu.s124_dk.package})
+            #define BSP_CFG_MCU_PART_MEMORY_SIZE (${config.mcu.s124_dk.memory})
+            #define BSP_CFG_MCU_PART_CORE (${config.mcu.s124_dk.core})
+            #define BSP_CFG_MCU_PART_SERIES (${config.mcu.s124_dk.series})
+            #define BSP_CFG_STACK_MAIN_BYTES (${config.board_common.main})
+            #define BSP_CFG_STACK_PROCESS_BYTES (${config.board_common.process})
+            #define BSP_CFG_HEAP_BYTES (${config.board_common.heap})
+            #define OFS_SEQ1 0xA001A001 | (${config.mcu.s124.OFS0.iwdt_start_mode}) | (${config.mcu.s124.OFS0.iwdt_timeout})
+            #define OFS_SEQ2 (${config.mcu.s124.OFS0.iwdt_divisor}) | (${config.mcu.s124.OFS0.iwdt_window_end}) | (${config.mcu.s124.OFS0.iwdt_window_start})
+            #define OFS_SEQ3 (${config.mcu.s124.OFS0.iwdt_reset_interrupt}) | (${config.mcu.s124.OFS0.iwdt_stop_control}) | (${config.mcu.s124.OFS0.wdt_start_mode})
+            #define OFS_SEQ4 (${config.mcu.s124.OFS0.wdt_timeout}) |(${config.mcu.s124.OFS0.wdt_divisor}) | (${config.mcu.s124.OFS0.wdt_window_end}) | (${config.mcu.s124.OFS0.wdt_window_start})
+            #define OFS_SEQ5 (${config.mcu.s124.OFS0.wdt_reset_interrupt}) | (${config.mcu.s124.OFS0.wdt_stop_control})           
+            #define BSP_CFG_ROM_REG_OFS0 (OFS_SEQ1 | OFS_SEQ2 | OFS_SEQ3 | OFS_SEQ4 | OFS_SEQ5)           
+            #define BSP_CFG_ROM_REG_OFS1 (0xFFFFFEC3 | (${config.mcu.s124.OFS1.voltage_detection0.start}) | (${config.mcu.s124.OFS1.voltage_detection0_level}) | (${config.mcu.s124.OFS1.hoco_osc}))
+            #define BSP_CFG_ID_CODE_LONG_1 (${config.board.s124_dk.id1})
+            #define BSP_CFG_ID_CODE_LONG_2 (${config.board.s124_dk.id2})
+            #define BSP_CFG_ID_CODE_LONG_3 (${config.board.s124_dk.id3})
+            #define BSP_CFG_ID_CODE_LONG_4 (${config.board.s124_dk.id4})
+            #define BSP_CFG_MCU_VCC_MV (${config.board.common.vcc})
+            #define BSP_CFG_PARAM_CHECKING_ENABLE (${config.board.common.checking})
+            #define BSP_CFG_RTOS (${config.board.common.rtos})
+            #define BSP_CFG_ASSERT (${config.board.common.assert})
+            #define BSP_CFG_ERROR_LOG (${config.board.common.error_log})
+        </content>
+    </config>   
+    <board id="board.s124_dk" config="config.board.s124_dk" display="S124 DK" device="R7FS124773A01CFM" version="0">
+        <icu>
+            <option display="Priority 0 (highest)" id="board.icu.common.irq.priority0" macroValue="(0)"/>
+            <option display="Priority 1" id="board.icu.common.irq.priority1" macroValue="(1)"/>
+            <option display="Priority 2" id="board.icu.common.irq.priority2" macroValue="(2)"/>
+            <option display="Priority 3 (lowest, not valid if using ThreadX)" id="board.icu.common.irq.priority3" macroValue="(3)"/>
+            <option display="Disabled" id="board.icu.common.irq.disabled" macroValue="(BSP_IRQ_DISABLED)"/>
+            <group display="ADC" id="board.icu.adc">
+                <group display="ADC0" id="board.icu.adc.adc0">
+                    <node default="board.icu.common.irq.disabled" display="ADC0 SCAN END" id="board.icu.adc.adc0.scan_end" macroName="BSP_IRQ_CFG_ADC0_SCAN_END"/>
+                    <node default="board.icu.common.irq.disabled" display="ADC0 SCAN END B" id="board.icu.adc.adc0.scan_end_b" macroName="BSP_IRQ_CFG_ADC0_SCAN_END_B"/>
+                    <node default="board.icu.common.irq.disabled" display="ADC0 WINDOW A" id="board.icu.adc.adc0.window_a" macroName="BSP_IRQ_CFG_ADC0_WINDOW_A"/>
+                    <node default="board.icu.common.irq.disabled" display="ADC0 WINDOW B" id="board.icu.adc.adc0.window_b" macroName="BSP_IRQ_CFG_ADC0_WINDOW_B"/>
+                    <node default="board.icu.common.irq.disabled" display="ADC0 COMPARE MATCH" id="board.icu.adc.adc0.compare_match" macroName="BSP_IRQ_CFG_ADC0_COMPARE_MATCH"/>
+                    <node default="board.icu.common.irq.disabled" display="ADC0 COMPARE MISMATCH" id="board.icu.adc.adc0.compare_mismatch" macroName="BSP_IRQ_CFG_ADC0_COMPARE_MISMATCH"/>
+                </group>
+            </group>
+            <group display="AES" id="board.icu.aes">
+                <node default="board.icu.common.irq.disabled" display="AES WRREQ" id="board.icu.aes.wrreq" macroName="BSP_IRQ_CFG_AES_WRREQ"/>
+                <node default="board.icu.common.irq.disabled" display="AES RDREQ" id="board.icu.aes.rdreq" macroName="BSP_IRQ_CFG_AES_RDREQ"/>
+            </group>
+            <group display="AGT" id="board.icu.agt">
+                <group display="AGT0" id="board.icu.agt.agt0">
+                    <node default="board.icu.common.irq.disabled" display="AGT0 INT" id="board.icu.agt.agt0.int" macroName="BSP_IRQ_CFG_AGT0_INT"/>
+                    <node default="board.icu.common.irq.disabled" display="AGT0 COMPARE A" id="board.icu.agt.agt0.compare_a" macroName="BSP_IRQ_CFG_AGT0_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="AGT0 COMPARE B" id="board.icu.agt.agt0.compare_b" macroName="BSP_IRQ_CFG_AGT0_COMPARE_B"/>
+                </group>
+                <group display="AGT1" id="board.icu.agt.agt1">
+                    <node default="board.icu.common.irq.disabled" display="AGT1 INT" id="board.icu.agt.agt1.int" macroName="BSP_IRQ_CFG_AGT1_INT"/>
+                    <node default="board.icu.common.irq.disabled" display="AGT1 COMPARE A" id="board.icu.agt.agt1.compare_a" macroName="BSP_IRQ_CFG_AGT1_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="AGT1 COMPARE B" id="board.icu.agt.agt1.compare_b" macroName="BSP_IRQ_CFG_AGT1_COMPARE_B"/>
+                </group>
+            </group>
+            <group display="CAC" id="board.icu.cac">
+                <node default="board.icu.common.irq.disabled" display="CAC FREQUENCY ERROR" id="board.icu.cac.frequency_error" macroName="BSP_IRQ_CFG_CAC_FREQUENCY_ERROR"/>
+                <node default="board.icu.common.irq.disabled" display="CAC MEASUREMENT END" id="board.icu.cac.measurement_end" macroName="BSP_IRQ_CFG_CAC_MEASUREMENT_END"/>
+                <node default="board.icu.common.irq.disabled" display="CAC OVERFLOW" id="board.icu.cac.overflow" macroName="BSP_IRQ_CFG_CAC_OVERFLOW"/>
+            </group>
+            <group display="CAN" id="board.icu.can">
+                <group display="CAN0" id="board.icu.can.can0">
+                    <node default="board.icu.common.irq.disabled" display="CAN0 ERROR" id="board.icu.can.can0.error" macroName="BSP_IRQ_CFG_CAN0_ERROR"/>
+                    <node default="board.icu.common.irq.disabled" display="CAN0 FIFO RX" id="board.icu.can.can0.fifo_rx" macroName="BSP_IRQ_CFG_CAN0_FIFO_RX"/>
+                    <node default="board.icu.common.irq.disabled" display="CAN0 FIFO TX" id="board.icu.can.can0.fifo_tx" macroName="BSP_IRQ_CFG_CAN0_FIFO_TX"/>
+                    <node default="board.icu.common.irq.disabled" display="CAN0 MAILBOX RX" id="board.icu.can.can0.mailbox_rx" macroName="BSP_IRQ_CFG_CAN0_MAILBOX_RX"/>
+                    <node default="board.icu.common.irq.disabled" display="CAN0 MAILBOX TX" id="board.icu.can.can0.mailbox_tx" macroName="BSP_IRQ_CFG_CAN0_MAILBOX_TX"/>
+                </group>
+            </group>
+            <group display="CGC" id="board.icu.cgc">
+                <node default="board.icu.common.irq.disabled" display="CGC MOSC STOP" id="board.icu.cgc.mosc_stop" macroName="BSP_IRQ_CFG_CGC_MOSC_STOP"/>
+            </group>
+            <group display="COMP" id="board.icu.comp">
+                <node default="board.icu.common.irq.disabled" display="COMP LP 0" id="board.icu.comp.lp_0" macroName="BSP_IRQ_CFG_COMP_LP_0"/>
+                <node default="board.icu.common.irq.disabled" display="COMP LP 1" id="board.icu.comp.lp_1" macroName="BSP_IRQ_CFG_COMP_LP_1"/>
+            </group>
+            <group display="CTSU" id="board.icu.ctsu">
+                <node default="board.icu.common.irq.disabled" display="CTSU WRITE" id="board.icu.ctsu.write" macroName="BSP_IRQ_CFG_CTSU_WRITE"/>
+                <node default="board.icu.common.irq.disabled" display="CTSU READ" id="board.icu.ctsu.read" macroName="BSP_IRQ_CFG_CTSU_READ"/>
+                <node default="board.icu.common.irq.disabled" display="CTSU END" id="board.icu.ctsu.end" macroName="BSP_IRQ_CFG_CTSU_END"/>
+            </group>
+            <group display="DOC" id="board.icu.doc">
+                <node default="board.icu.common.irq.disabled" display="DOC INT" id="board.icu.doc.int" macroName="BSP_IRQ_CFG_DOC_INT"/>
+            </group>
+            <group display="DTC" id="board.icu.dtc">
+                <node default="board.icu.common.irq.disabled" display="DTC COMPLETE" id="board.icu.dtc.complete" macroName="BSP_IRQ_CFG_DTC_COMPLETE"/>
+                <node default="board.icu.common.irq.disabled" display="DTC END" id="board.icu.dtc.end" macroName="BSP_IRQ_CFG_DTC_END"/>
+            </group>
+            <group display="ELC" id="board.icu.elc">
+                <node default="board.icu.common.irq.disabled" display="ELC SOFTWARE EVENT 0" id="board.icu.elc.software_event_0" macroName="BSP_IRQ_CFG_ELC_SOFTWARE_EVENT_0"/>
+                <node default="board.icu.common.irq.disabled" display="ELC SOFTWARE EVENT 1" id="board.icu.elc.software_event_1" macroName="BSP_IRQ_CFG_ELC_SOFTWARE_EVENT_1"/>
+            </group>
+            <group display="FCU" id="board.icu.fcu">
+                <node default="board.icu.common.irq.disabled" display="FCU FRDYI" id="board.icu.fcu.frdyi" macroName="BSP_IRQ_CFG_FCU_FRDYI"/>
+            </group>
+            <group display="GPT" id="board.icu.gpt">
+                <group display="GPT0" id="board.icu.gpt.gpt0">
+                    <node default="board.icu.common.irq.disabled" display="GPT0 CAPTURE COMPARE A" id="board.icu.gpt.gpt0.capture_compare_a" macroName="BSP_IRQ_CFG_GPT0_CAPTURE_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT0 CAPTURE COMPARE B" id="board.icu.gpt.gpt0.capture_compare_b" macroName="BSP_IRQ_CFG_GPT0_CAPTURE_COMPARE_B"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT0 COMPARE C" id="board.icu.gpt.gpt0.compare_c" macroName="BSP_IRQ_CFG_GPT0_COMPARE_C"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT0 COMPARE D" id="board.icu.gpt.gpt0.compare_d" macroName="BSP_IRQ_CFG_GPT0_COMPARE_D"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT0 COUNTER OVERFLOW" id="board.icu.gpt.gpt0.counter_overflow" macroName="BSP_IRQ_CFG_GPT0_COUNTER_OVERFLOW"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT0 COUNTER UNDERFLOW" id="board.icu.gpt.gpt0.counter_underflow" macroName="BSP_IRQ_CFG_GPT0_COUNTER_UNDERFLOW"/>
+                </group>
+                <group display="GPT1" id="board.icu.gpt.gpt1">
+                    <node default="board.icu.common.irq.disabled" display="GPT1 CAPTURE COMPARE A" id="board.icu.gpt.gpt1.capture_compare_a" macroName="BSP_IRQ_CFG_GPT1_CAPTURE_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT1 CAPTURE COMPARE B" id="board.icu.gpt.gpt1.capture_compare_b" macroName="BSP_IRQ_CFG_GPT1_CAPTURE_COMPARE_B"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT1 COMPARE C" id="board.icu.gpt.gpt1.compare_c" macroName="BSP_IRQ_CFG_GPT1_COMPARE_C"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT1 COMPARE D" id="board.icu.gpt.gpt1.compare_d" macroName="BSP_IRQ_CFG_GPT1_COMPARE_D"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT1 COUNTER OVERFLOW" id="board.icu.gpt.gpt1.counter_overflow" macroName="BSP_IRQ_CFG_GPT1_COUNTER_OVERFLOW"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT1 COUNTER UNDERFLOW" id="board.icu.gpt.gpt1.counter_underflow" macroName="BSP_IRQ_CFG_GPT1_COUNTER_UNDERFLOW"/>
+                </group>
+                <group display="GPT2" id="board.icu.gpt.gpt2">
+                    <node default="board.icu.common.irq.disabled" display="GPT2 CAPTURE COMPARE A" id="board.icu.gpt.gpt2.capture_compare_a" macroName="BSP_IRQ_CFG_GPT2_CAPTURE_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT2 CAPTURE COMPARE B" id="board.icu.gpt.gpt2.capture_compare_b" macroName="BSP_IRQ_CFG_GPT2_CAPTURE_COMPARE_B"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT2 COMPARE C" id="board.icu.gpt.gpt2.compare_c" macroName="BSP_IRQ_CFG_GPT2_COMPARE_C"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT2 COMPARE D" id="board.icu.gpt.gpt2.compare_d" macroName="BSP_IRQ_CFG_GPT2_COMPARE_D"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT2 COUNTER OVERFLOW" id="board.icu.gpt.gpt2.counter_overflow" macroName="BSP_IRQ_CFG_GPT2_COUNTER_OVERFLOW"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT2 COUNTER UNDERFLOW" id="board.icu.gpt.gpt2.counter_underflow" macroName="BSP_IRQ_CFG_GPT2_COUNTER_UNDERFLOW"/>
+                </group>
+                <group display="GPT3" id="board.icu.gpt.gpt3">
+                    <node default="board.icu.common.irq.disabled" display="GPT3 CAPTURE COMPARE A" id="board.icu.gpt.gpt3.capture_compare_a" macroName="BSP_IRQ_CFG_GPT3_CAPTURE_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT3 CAPTURE COMPARE B" id="board.icu.gpt.gpt3.capture_compare_b" macroName="BSP_IRQ_CFG_GPT3_CAPTURE_COMPARE_B"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT3 COMPARE C" id="board.icu.gpt.gpt3.compare_c" macroName="BSP_IRQ_CFG_GPT3_COMPARE_C"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT3 COMPARE D" id="board.icu.gpt.gpt3.compare_d" macroName="BSP_IRQ_CFG_GPT3_COMPARE_D"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT3 COUNTER OVERFLOW" id="board.icu.gpt.gpt3.counter_overflow" macroName="BSP_IRQ_CFG_GPT3_COUNTER_OVERFLOW"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT3 COUNTER UNDERFLOW" id="board.icu.gpt.gpt3.counter_underflow" macroName="BSP_IRQ_CFG_GPT3_COUNTER_UNDERFLOW"/>
+                </group>
+                <group display="GPT4" id="board.icu.gpt.gpt4">
+                    <node default="board.icu.common.irq.disabled" display="GPT4 CAPTURE COMPARE A" id="board.icu.gpt.gpt4.capture_compare_a" macroName="BSP_IRQ_CFG_GPT4_CAPTURE_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT4 CAPTURE COMPARE B" id="board.icu.gpt.gpt4.capture_compare_b" macroName="BSP_IRQ_CFG_GPT4_CAPTURE_COMPARE_B"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT4 COMPARE C" id="board.icu.gpt.gpt4.compare_c" macroName="BSP_IRQ_CFG_GPT4_COMPARE_C"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT4 COMPARE D" id="board.icu.gpt.gpt4.compare_d" macroName="BSP_IRQ_CFG_GPT4_COMPARE_D"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT4 COUNTER OVERFLOW" id="board.icu.gpt.gpt4.counter_overflow" macroName="BSP_IRQ_CFG_GPT4_COUNTER_OVERFLOW"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT4 COUNTER UNDERFLOW" id="board.icu.gpt.gpt4.counter_underflow" macroName="BSP_IRQ_CFG_GPT4_COUNTER_UNDERFLOW"/>
+                </group>
+                <group display="GPT5" id="board.icu.gpt.gpt5">
+                    <node default="board.icu.common.irq.disabled" display="GPT5 CAPTURE COMPARE A" id="board.icu.gpt.gpt5.capture_compare_a" macroName="BSP_IRQ_CFG_GPT5_CAPTURE_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT5 CAPTURE COMPARE B" id="board.icu.gpt.gpt5.capture_compare_b" macroName="BSP_IRQ_CFG_GPT5_CAPTURE_COMPARE_B"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT5 COMPARE C" id="board.icu.gpt.gpt5.compare_c" macroName="BSP_IRQ_CFG_GPT5_COMPARE_C"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT5 COMPARE D" id="board.icu.gpt.gpt5.compare_d" macroName="BSP_IRQ_CFG_GPT5_COMPARE_D"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT5 COUNTER OVERFLOW" id="board.icu.gpt.gpt5.counter_overflow" macroName="BSP_IRQ_CFG_GPT5_COUNTER_OVERFLOW"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT5 COUNTER UNDERFLOW" id="board.icu.gpt.gpt5.counter_underflow" macroName="BSP_IRQ_CFG_GPT5_COUNTER_UNDERFLOW"/>
+                </group>
+                <group display="GPT6" id="board.icu.gpt.gpt6">
+                    <node default="board.icu.common.irq.disabled" display="GPT6 CAPTURE COMPARE A" id="board.icu.gpt.gpt6.capture_compare_a" macroName="BSP_IRQ_CFG_GPT6_CAPTURE_COMPARE_A"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT6 CAPTURE COMPARE B" id="board.icu.gpt.gpt6.capture_compare_b" macroName="BSP_IRQ_CFG_GPT6_CAPTURE_COMPARE_B"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT6 COMPARE C" id="board.icu.gpt.gpt6.compare_c" macroName="BSP_IRQ_CFG_GPT6_COMPARE_C"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT6 COMPARE D" id="board.icu.gpt.gpt6.compare_d" macroName="BSP_IRQ_CFG_GPT6_COMPARE_D"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT6 COUNTER OVERFLOW" id="board.icu.gpt.gpt6.counter_overflow" macroName="BSP_IRQ_CFG_GPT6_COUNTER_OVERFLOW"/>
+                    <node default="board.icu.common.irq.disabled" display="GPT6 COUNTER UNDERFLOW" id="board.icu.gpt.gpt6.counter_underflow" macroName="BSP_IRQ_CFG_GPT6_COUNTER_UNDERFLOW"/>
+                </group>
+            </group>
+            <group display="ICU" id="board.icu.icu">
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ0" id="board.icu.icu.irq0" macroName="BSP_IRQ_CFG_ICU_IRQ0"/>
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ1" id="board.icu.icu.irq1" macroName="BSP_IRQ_CFG_ICU_IRQ1"/>
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ2" id="board.icu.icu.irq2" macroName="BSP_IRQ_CFG_ICU_IRQ2"/>
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ3" id="board.icu.icu.irq3" macroName="BSP_IRQ_CFG_ICU_IRQ3"/>
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ4" id="board.icu.icu.irq4" macroName="BSP_IRQ_CFG_ICU_IRQ4"/>
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ5" id="board.icu.icu.irq5" macroName="BSP_IRQ_CFG_ICU_IRQ5"/>
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ6" id="board.icu.icu.irq6" macroName="BSP_IRQ_CFG_ICU_IRQ6"/>
+                <node default="board.icu.common.irq.disabled" display="ICU IRQ7" id="board.icu.icu.irq7" macroName="BSP_IRQ_CFG_ICU_IRQ7"/>
+                <node default="board.icu.common.irq.disabled" display="ICU SNOOZE CANCEL" id="board.icu.icu.snooze_cancel" macroName="BSP_IRQ_CFG_ICU_SNOOZE_CANCEL"/>
+            </group>
+            <group display="IIC" id="board.icu.iic">
+                <group display="IIC0" id="board.icu.iic.iic0">
+                    <node default="board.icu.common.irq.disabled" display="IIC0 RXI" id="board.icu.iic.iic0.rxi" macroName="BSP_IRQ_CFG_IIC0_RXI"/>
+                    <node default="board.icu.common.irq.disabled" display="IIC0 TXI" id="board.icu.iic.iic0.txi" macroName="BSP_IRQ_CFG_IIC0_TXI"/>
+                    <node default="board.icu.common.irq.disabled" display="IIC0 TEI" id="board.icu.iic.iic0.tei" macroName="BSP_IRQ_CFG_IIC0_TEI"/>
+                    <node default="board.icu.common.irq.disabled" display="IIC0 ERI" id="board.icu.iic.iic0.eri" macroName="BSP_IRQ_CFG_IIC0_ERI"/>
+                    <node default="board.icu.common.irq.disabled" display="IIC0 WUI" id="board.icu.iic.iic0.wui" macroName="BSP_IRQ_CFG_IIC0_WUI"/>
+                </group>
+                <group display="IIC1" id="board.icu.iic.iic1">
+                    <node default="board.icu.common.irq.disabled" display="IIC1 RXI" id="board.icu.iic.iic1.rxi" macroName="BSP_IRQ_CFG_IIC1_RXI"/>
+                    <node default="board.icu.common.irq.disabled" display="IIC1 TXI" id="board.icu.iic.iic1.txi" macroName="BSP_IRQ_CFG_IIC1_TXI"/>
+                    <node default="board.icu.common.irq.disabled" display="IIC1 TEI" id="board.icu.iic.iic1.tei" macroName="BSP_IRQ_CFG_IIC1_TEI"/>
+                    <node default="board.icu.common.irq.disabled" display="IIC1 ERI" id="board.icu.iic.iic1.eri" macroName="BSP_IRQ_CFG_IIC1_ERI"/>
+                </group>
+            </group>
+            <group display="IOPORT" id="board.icu.ioport">
+                <node default="board.icu.common.irq.disabled" display="IOPORT EVENT 1" id="board.icu.ioport.event_1" macroName="BSP_IRQ_CFG_IOPORT_EVENT_1"/>
+                <node default="board.icu.common.irq.disabled" display="IOPORT EVENT 2" id="board.icu.ioport.event_2" macroName="BSP_IRQ_CFG_IOPORT_EVENT_2"/>
+            </group>
+            <group display="IWDT" id="board.icu.iwdt">
+                <node default="board.icu.common.irq.disabled" display="IWDT UNDERFLOW" id="board.icu.iwdt.underflow" macroName="BSP_IRQ_CFG_IWDT_UNDERFLOW"/>
+            </group>
+            <group display="KEY" id="board.icu.key">
+                <node default="board.icu.common.irq.disabled" display="KEY INT" id="board.icu.key.int" macroName="BSP_IRQ_CFG_KEY_INT"/>
+            </group>
+            <group display="LPM" id="board.icu.lpm">
+                <node default="board.icu.common.irq.disabled" display="LPM SNOOZE REQUEST" id="board.icu.lpm.snooze_request" macroName="BSP_IRQ_CFG_LPM_SNOOZE_REQUEST"/>
+            </group>
+            <group display="LVD" id="board.icu.lvd">
+                <node default="board.icu.common.irq.disabled" display="LVD LVD1" id="board.icu.lvd.lvd1" macroName="BSP_IRQ_CFG_LVD_LVD1"/>
+                <node default="board.icu.common.irq.disabled" display="LVD LVD2" id="board.icu.lvd.lvd2" macroName="BSP_IRQ_CFG_LVD_LVD2"/>
+            </group>
+            <group display="OPS" id="board.icu.ops">
+                <node default="board.icu.common.irq.disabled" display="OPS UVW EDGE" id="board.icu.ops.uvw_edge" macroName="BSP_IRQ_CFG_OPS_UVW_EDGE"/>
+            </group>
+            <group display="POEG" id="board.icu.poeg">
+                <group display="POEG0" id="board.icu.poeg.poeg0">
+                    <node default="board.icu.common.irq.disabled" display="POEG0 EVENT" id="board.icu.poeg.poeg0.event" macroName="BSP_IRQ_CFG_POEG0_EVENT"/>
+                </group>
+                <group display="POEG1" id="board.icu.poeg.poeg1">
+                    <node default="board.icu.common.irq.disabled" display="POEG1 EVENT" id="board.icu.poeg.poeg1.event" macroName="BSP_IRQ_CFG_POEG1_EVENT"/>
+                </group>
+            </group>
+            <group display="RTC" id="board.icu.rtc">
+                <node default="board.icu.common.irq.disabled" display="RTC ALARM" id="board.icu.rtc.alarm" macroName="BSP_IRQ_CFG_RTC_ALARM"/>
+                <node default="board.icu.common.irq.disabled" display="RTC PERIOD" id="board.icu.rtc.period" macroName="BSP_IRQ_CFG_RTC_PERIOD"/>
+                <node default="board.icu.common.irq.disabled" display="RTC CARRY" id="board.icu.rtc.carry" macroName="BSP_IRQ_CFG_RTC_CARRY"/>
+            </group>
+            <group display="SCI" id="board.icu.sci">
+                <group display="SCI0" id="board.icu.sci.sci0">
+                    <node default="board.icu.common.irq.disabled" display="SCI0 RXI" id="board.icu.sci.sci0.rxi" macroName="BSP_IRQ_CFG_SCI0_RXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI0 TXI" id="board.icu.sci.sci0.txi" macroName="BSP_IRQ_CFG_SCI0_TXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI0 TEI" id="board.icu.sci.sci0.tei" macroName="BSP_IRQ_CFG_SCI0_TEI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI0 ERI" id="board.icu.sci.sci0.eri" macroName="BSP_IRQ_CFG_SCI0_ERI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI0 AM" id="board.icu.sci.sci0.am" macroName="BSP_IRQ_CFG_SCI0_AM"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI0 RXI OR ERI" id="board.icu.sci.sci0.rxi_or_eri" macroName="BSP_IRQ_CFG_SCI0_RXI_OR_ERI"/>
+                </group>
+                <group display="SCI1" id="board.icu.sci.sci1">
+                    <node default="board.icu.common.irq.disabled" display="SCI1 RXI" id="board.icu.sci.sci1.rxi" macroName="BSP_IRQ_CFG_SCI1_RXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI1 TXI" id="board.icu.sci.sci1.txi" macroName="BSP_IRQ_CFG_SCI1_TXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI1 TEI" id="board.icu.sci.sci1.tei" macroName="BSP_IRQ_CFG_SCI1_TEI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI1 ERI" id="board.icu.sci.sci1.eri" macroName="BSP_IRQ_CFG_SCI1_ERI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI1 AM" id="board.icu.sci.sci1.am" macroName="BSP_IRQ_CFG_SCI1_AM"/>
+                </group>
+                <group display="SCI9" id="board.icu.sci.sci9">
+                    <node default="board.icu.common.irq.disabled" display="SCI9 RXI" id="board.icu.sci.sci9.rxi" macroName="BSP_IRQ_CFG_SCI9_RXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI9 TXI" id="board.icu.sci.sci9.txi" macroName="BSP_IRQ_CFG_SCI9_TXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI9 TEI" id="board.icu.sci.sci9.tei" macroName="BSP_IRQ_CFG_SCI9_TEI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI9 ERI" id="board.icu.sci.sci9.eri" macroName="BSP_IRQ_CFG_SCI9_ERI"/>
+                    <node default="board.icu.common.irq.disabled" display="SCI9 AM" id="board.icu.sci.sci9.am" macroName="BSP_IRQ_CFG_SCI9_AM"/>
+                </group>
+            </group>
+            <group display="SPI" id="board.icu.spi">
+                <group display="SPI0" id="board.icu.spi.spi0">
+                    <node default="board.icu.common.irq.disabled" display="SPI0 RXI" id="board.icu.spi.spi0.rxi" macroName="BSP_IRQ_CFG_SPI0_RXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI0 TXI" id="board.icu.spi.spi0.txi" macroName="BSP_IRQ_CFG_SPI0_TXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI0 IDLE" id="board.icu.spi.spi0.idle" macroName="BSP_IRQ_CFG_SPI0_IDLE"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI0 ERI" id="board.icu.spi.spi0.eri" macroName="BSP_IRQ_CFG_SPI0_ERI"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI0 TEI" id="board.icu.spi.spi0.tei" macroName="BSP_IRQ_CFG_SPI0_TEI"/>
+                </group>
+                <group display="SPI1" id="board.icu.spi.spi1">
+                    <node default="board.icu.common.irq.disabled" display="SPI1 RXI" id="board.icu.spi.spi1.rxi" macroName="BSP_IRQ_CFG_SPI1_RXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI1 TXI" id="board.icu.spi.spi1.txi" macroName="BSP_IRQ_CFG_SPI1_TXI"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI1 IDLE" id="board.icu.spi.spi1.idle" macroName="BSP_IRQ_CFG_SPI1_IDLE"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI1 ERI" id="board.icu.spi.spi1.eri" macroName="BSP_IRQ_CFG_SPI1_ERI"/>
+                    <node default="board.icu.common.irq.disabled" display="SPI1 TEI" id="board.icu.spi.spi1.tei" macroName="BSP_IRQ_CFG_SPI1_TEI"/>
+                </group>
+            </group>
+            <group display="TRNG" id="board.icu.trng">
+                <node default="board.icu.common.irq.disabled" display="TRNG RDREQ" id="board.icu.trng.rdreq" macroName="BSP_IRQ_CFG_TRNG_RDREQ"/>
+            </group>
+            <group display="USBFS" id="board.icu.usbfs">
+                <node default="board.icu.common.irq.disabled" display="USBFS INT" id="board.icu.usbfs.int" macroName="BSP_IRQ_CFG_USBFS_INT"/>
+                <node default="board.icu.common.irq.disabled" display="USBFS RESUME" id="board.icu.usbfs.resume" macroName="BSP_IRQ_CFG_USBFS_RESUME"/>
+            </group>
+            <group display="WDT" id="board.icu.wdt">
+                <node default="board.icu.common.irq.disabled" display="WDT UNDERFLOW" id="board.icu.wdt.underflow" macroName="BSP_IRQ_CFG_WDT_UNDERFLOW"/>
+            </group>
+        </icu>
+        <clock>	
+            <node id="board.clock.xtal.freq" xhint="0" yhint="0" default="16000000" tooltip="Click to edit the XTAL frequency.">
+                <option id="_edit" display="XTAL ${value}Hz" macroName="BSP_CFG_XTAL_HZ" macroValue="(${value})" />
+            </node>
+            <node id="board.clock.hoco.freq" xhint="0" yhint="4" default="board.clock.hoco.freq.48m">
+                <option id="board.clock.hoco.freq.24m" display="HOCO 24MHz" mul="24000000" macroName="BSP_CFG_HOCO_FREQUENCY" macroValue="(0)" />
+                <option id="board.clock.hoco.freq.32m" display="HOCO 32MHz" mul="32000000" macroName="BSP_CFG_HOCO_FREQUENCY" macroValue="(2)" />
+                <option id="board.clock.hoco.freq.48m" display="HOCO 48MHz" mul="48000000" macroName="BSP_CFG_HOCO_FREQUENCY" macroValue="(4)" />
+                <option id="board.clock.hoco.freq.64m" display="HOCO 64MHz" mul="64000000" macroName="BSP_CFG_HOCO_FREQUENCY" macroValue="(5)" />
+            </node>
+            <node id="board.clock.loco.freq" xhint="0" yhint="1" default="board.clock.loco.freq.32768">
+                <option id="board.clock.loco.freq.32768" display="LOCO 32768Hz" mul="32768" />
+            </node>
+            <node id="board.clock.moco.freq" xhint="0" yhint="2" default="board.clock.moco.freq.8m">
+                <option id="board.clock.moco.freq.8m" display="MOCO 8MHz" mul="8000000" />
+            </node>
+            <node id="board.clock.subclk.freq" xhint="0" yhint="3" default="board.clock.subclk.freq.32768">
+                <option id="board.clock.subclk.freq.32768" display="SUBCLK 32768Hz" mul="32768" />
+            </node>
+            <node id="board.clock.clock.source" xhint="2" yhint="2" default="board.clock.clock.source.hoco">
+                <option id="board.clock.clock.source.hoco" display="Clock Src: HOCO" input="board.clock.hoco.freq" macroName="BSP_CFG_CLOCK_SOURCE" macroValue="(CGC_CLOCK_HOCO)" />
+                <option id="board.clock.clock.source.moco" display="Clock Src: MOCO" input="board.clock.moco.freq" macroName="BSP_CFG_CLOCK_SOURCE" macroValue="(CGC_CLOCK_MOCO)" />
+                <option id="board.clock.clock.source.loco" display="Clock Src: LOCO" input="board.clock.loco.freq" macroName="BSP_CFG_CLOCK_SOURCE" macroValue="(CGC_CLOCK_LOCO)" />
+                <option id="board.clock.clock.source.xtal" display="Clock Src: XTAL" input="board.clock.xtal.freq" macroName="BSP_CFG_CLOCK_SOURCE" macroValue="(CGC_CLOCK_MAIN_OSC)" />
+                <option id="board.clock.clock.source.subclk" display="Clock Src: SUBCLK" input="board.clock.subclk.freq" macroName="BSP_CFG_CLOCK_SOURCE" macroValue="(CGC_CLOCK_SUBCLOCK)" />
+            </node>
+            <node id="board.clock.iclk.div" xhint="3" yhint="0" default="board.clock.iclk.div.2">
+                <option id="board.clock.iclk.div.1" display="ICLK Div /1" div="1" input="board.clock.clock.source" macroName="BSP_CFG_ICK_DIV" macroValue="(CGC_SYS_CLOCK_DIV_1)" />
+                <option id="board.clock.iclk.div.2" display="ICLK Div /2" div="2" input="board.clock.clock.source" macroName="BSP_CFG_ICK_DIV" macroValue="(CGC_SYS_CLOCK_DIV_2)" />
+                <option id="board.clock.iclk.div.4" display="ICLK Div /4" div="4" input="board.clock.clock.source" macroName="BSP_CFG_ICK_DIV" macroValue="(CGC_SYS_CLOCK_DIV_4)" />
+                <option id="board.clock.iclk.div.8" display="ICLK Div /8" div="8" input="board.clock.clock.source" macroName="BSP_CFG_ICK_DIV" macroValue="(CGC_SYS_CLOCK_DIV_8)" />
+                <option id="board.clock.iclk.div.16" display="ICLK Div /16" div="16" input="board.clock.clock.source" macroName="BSP_CFG_ICK_DIV" macroValue="(CGC_SYS_CLOCK_DIV_16)" />
+                <option id="board.clock.iclk.div.32" display="ICLK Div /32" div="32" input="board.clock.clock.source" macroName="BSP_CFG_ICK_DIV" macroValue="(CGC_SYS_CLOCK_DIV_32)" />
+                <option id="board.clock.iclk.div.64" display="ICLK Div /64" div="64" input="board.clock.clock.source" macroName="BSP_CFG_ICK_DIV" macroValue="(CGC_SYS_CLOCK_DIV_64)" />
+            </node>
+            <node id="board.clock.iclk.display" xhint="4" yhint="0" tooltip="The system clock (ICLK) is used as the operating clock of the CPU, DMAC, DTC, ROM and RAM.">
+                <option id="board.clock.iclk.display.value" input="board.clock.iclk.div" display="ICLK ${value}Hz" maxValue="240000000" />
+            </node>
+            <node id="board.clock.pclkb.div" xhint="3" yhint="1" default="board.clock.pclkb.div.2">
+                <option id="board.clock.pclkb.div.1" display="PCLKB Div /1" div="1" input="board.clock.clock.source" macroName="BSP_CFG_PCKB_DIV" macroValue="(CGC_SYS_CLOCK_DIV_1)" />
+                <option id="board.clock.pclkb.div.2" display="PCLKB Div /2" div="2" input="board.clock.clock.source" macroName="BSP_CFG_PCKB_DIV" macroValue="(CGC_SYS_CLOCK_DIV_2)" />
+                <option id="board.clock.pclkb.div.4" display="PCLKB Div /4" div="4" input="board.clock.clock.source" macroName="BSP_CFG_PCKB_DIV" macroValue="(CGC_SYS_CLOCK_DIV_4)" />
+                <option id="board.clock.pclkb.div.8" display="PCLKB Div /8" div="8" input="board.clock.clock.source" macroName="BSP_CFG_PCKB_DIV" macroValue="(CGC_SYS_CLOCK_DIV_8)" />
+                <option id="board.clock.pclkb.div.16" display="PCLKB Div /16" div="16" input="board.clock.clock.source" macroName="BSP_CFG_PCKB_DIV" macroValue="(CGC_SYS_CLOCK_DIV_16)" />
+                <option id="board.clock.pclkb.div.32" display="PCLKB Div /32" div="32" input="board.clock.clock.source" macroName="BSP_CFG_PCKB_DIV" macroValue="(CGC_SYS_CLOCK_DIV_32)" />
+                <option id="board.clock.pclkb.div.64" display="PCLKB Div /64" div="64" input="board.clock.clock.source" macroName="BSP_CFG_PCKB_DIV" macroValue="(CGC_SYS_CLOCK_DIV_64)" />
+            </node>
+            <node id="board.clock.pclkb.display" xhint="4" yhint="1" tooltip="The Peripheral clock B (PCLKB) is used as the operating clock for all other modules not supported by PCLKA, PCLKC and PCLKD.">
+                <option id="board.clock.pclkb.display.value" input="board.clock.pclkb.div" display="PCLKB ${value}Hz" maxValue="60000000" />
+            </node>
+            <node id="board.clock.pclkd.div" xhint="3" yhint="2" default="board.clock.pclkd.div.1">
+                <option id="board.clock.pclkd.div.1" display="PCLKD Div /1" div="1" input="board.clock.clock.source" macroName="BSP_CFG_PCKD_DIV" macroValue="(CGC_SYS_CLOCK_DIV_1)" />
+                <option id="board.clock.pclkd.div.2" display="PCLKD Div /2" div="2" input="board.clock.clock.source" macroName="BSP_CFG_PCKD_DIV" macroValue="(CGC_SYS_CLOCK_DIV_2)" />
+                <option id="board.clock.pclkd.div.4" display="PCLKD Div /4" div="4" input="board.clock.clock.source" macroName="BSP_CFG_PCKD_DIV" macroValue="(CGC_SYS_CLOCK_DIV_4)" />
+                <option id="board.clock.pclkd.div.8" display="PCLKD Div /8" div="8" input="board.clock.clock.source" macroName="BSP_CFG_PCKD_DIV" macroValue="(CGC_SYS_CLOCK_DIV_8)" />
+                <option id="board.clock.pclkd.div.16" display="PCLKD Div /16" div="16" input="board.clock.clock.source" macroName="BSP_CFG_PCKD_DIV" macroValue="(CGC_SYS_CLOCK_DIV_16)" />
+                <option id="board.clock.pclkd.div.32" display="PCLKD Div /32" div="32" input="board.clock.clock.source" macroName="BSP_CFG_PCKD_DIV" macroValue="(CGC_SYS_CLOCK_DIV_32)" />
+                <option id="board.clock.pclkd.div.64" display="PCLKD Div /64" div="64" input="board.clock.clock.source" macroName="BSP_CFG_PCKD_DIV" macroValue="(CGC_SYS_CLOCK_DIV_64)" />
+            </node>
+            <node id="board.clock.pclkd.display" xhint="4" yhint="2" tooltip="The Peripheral clock D (PCLKD) is used as the operating clock for the GPT module.">
+                <option id="board.clock.pclkd.display.value" input="board.clock.pclkd.div" display="PCLKD ${value}Hz" maxValue="120000000" />
+            </node>            
+            <node id="board.clock.uclk.display" xhint="4" yhint="4" tooltip="The USB clock (UCLK) is an operating clock for the USBFS module.\nA 48-MHz clock must be supplied to the USB module.\nWhen the USB module is used, setting must be made so that UCLK is 48 MHz.">
+                <option id="board.clock.uclk.display.value" input="board.clock.hoco.freq" display="UCLK ${value}Hz" minValue="48000000" maxValue="48000000" />
+            </node>            
+        </clock>
+    </board>
+</synergyModuleDescription>

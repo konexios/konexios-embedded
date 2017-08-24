@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<synergyModuleDescription>
+    <config id="config.framework.sf_el_ux" path="ssp_cfg/framework/sf_el_ux_cfg.h" version="0">
+        <property default="config.framework.sf_el_ux.VBUSENpin_logic.active_high" display="VBUSEN pin Signal Logic" id="config.framework.sf_el_ux.VBUSENpin_logic">
+            <option display="Active Low"  id="config.framework.sf_el_ux.VBUSENpin_logic.active_low"  value="(1)"/>
+            <option display="Active High" id="config.framework.sf_el_ux.VBUSENpin_logic.active_high" value="(0)"/>
+        </property>
+        <content>
+            #if ${config.framework.sf_el_ux.VBUSENpin_logic}
+            #define UX_HOST_VBUS_ENABLE_LOW
+            #endif
+            #if defined(BSP_BOARD_S7G2_SK)
+            #ifndef UX_HOST_VBUS_ENABLE_LOW
+            #define UX_HOST_VBUS_ENABLE_LOW
+            #endif
+            #endif
+        </content>
+    </config>
+    <module config="config.framework.sf_el_ux" display="Framework|USB|${module.framework.sf_el_ux.name} USBX Port HS and FS on sf_el_ux" id="module.framework.sf_el_ux" version="1">
+        <constraint display="Module instances must have unique names">
+            "${interface.framework.sf_el_ux.${module.framework.sf_el_ux.name}}" === "1"
+        </constraint>
+        <constraint display="Requires USBX Interrupt (USBFS USBI or USBHS USBIR) enabled">
+            ("${board.icu.usbfs.int}" != "board.icu.common.irq.disabled") || ("${board.icu.usbhs.usb_int_resume}" != "board.icu.common.irq.disabled")
+        </constraint>
+        <requires interface="_rtos" />
+        <provides interface="interface.framework.sf_el_ux" />
+        <provides interface="interface.framework.sf_el_ux_on_sf_el_ux" />
+        <provides interface="interface.framework.sf_el_ux.${module.framework.sf_el_ux.name}" />
+        <property default="g_sf_el_ux" display="Name" id="module.framework.sf_el_ux.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_el_ux.name}")</constraint>
+        </property>
+        <interrupt node="board.icu.usbfs.int" />
+        <interrupt node="board.icu.usbhs.usb_int_resume" />
+        <peripheral component="usb_full_speed.usb_full_speed" />
+        <peripheral component="usb_high_speed.usb_high_speed" />
+    </module>
+</synergyModuleDescription>

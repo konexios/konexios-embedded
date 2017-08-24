@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+	<config id="config.driver.sci_spi" path="ssp_cfg/driver/r_sci_spi_cfg.h" version="0">
+		<property default="config.driver.sci_spi.param_checking_enable.bsp" display="Parameter Checking" id="config.driver.sci_spi.param_checking_enable">
+		    <option display="Default (BSP)" id="config.driver.sci_spi.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+			<option display="Enabled" id="config.driver.sci_spi.param_checking_enable.enabled" value="(1)"/>
+			<option display="Disabled" id="config.driver.sci_spi.param_checking_enable.disabled" value="(0)"/>
+		</property>
+		<content>#define SCI_SPI_CFG_PARAM_CHECKING_ENABLE ${config.driver.sci_spi.param_checking_enable}
+</content>
+	</config>
+	<module config="config.driver.sci_spi" display="Driver|Connectivity|${module.driver.spi.name} SPI Driver on r_sci_spi" id="module.driver.spi_on_sci_spi" version="1">
+        <constraint display="Requires one SCI Common Driver instance">
+            "${interface.driver.sci_common}" === "1"
+        </constraint>
+        <constraint display="Requires SPI mode to be enabled in SCI Common">
+            "${config.driver.sci_common.spi}" != "config.driver.sci_common.spi.disabled"
+        </constraint>
+        <constraint display="Requires SCI${module.driver.spi.channel} Receive Interrupt (RXI) enabled">
+            "${board.icu.sci.sci${module.driver.spi.channel}.rxi}" != "board.icu.common.irq.disabled"
+        </constraint>
+        <constraint display="Requires SCI${module.driver.spi.channel} Transmit Interrupt (TXI) enabled">
+            "${board.icu.sci.sci${module.driver.spi.channel}.txi}" != "board.icu.common.irq.disabled"
+        </constraint>
+        <constraint display="Requires SCI${module.driver.spi.channel} Error Interrupt (ERI) enabled">
+            "${board.icu.sci.sci${module.driver.spi.channel}.eri}" != "board.icu.common.irq.disabled"
+        </constraint>  
+        <constraint display="Unique name required for each instance">
+            "${interface.driver.spi.${module.driver.spi.name}}" === "1"
+        </constraint>        
+        <constraint display="Requires same priority for RXI and TXI interrupts">
+            "${board.icu.sci.sci${module.driver.spi.channel}.rxi}" == "${board.icu.sci.sci${module.driver.spi.channel}.txi}"
+        </constraint>
+        <requires id="module.driver.spi_on_sci_spi.requires.sci_common" interface="interface.driver.sci_common" display="Add SCI Common" />
+        <requires id="module.driver.spi_on_sci_spi.requires.transfer_tx" interface="interface.driver.transfer_on_dtc" display="Add DTC Driver for Transmission [Recommended but optional]">
+			<override property="module.driver.transfer.size" value="module.driver.transfer.size.size_1_byte"/>
+			<override property="module.driver.transfer.mode" value="module.driver.transfer.mode.mode_normal"/>
+			<override property="module.driver.transfer.dest_addr_mode" value="module.driver.transfer.dest_addr_mode.addr_mode_fixed"/>
+			<override property="module.driver.transfer.src_addr_mode" value="module.driver.transfer.src_addr_mode.addr_mode_incremented"/>
+			<override property="module.driver.transfer.repeat_area" value="module.driver.transfer.repeat_area.repeat_area_source"/>
+			<override property="module.driver.transfer.p_dest" value="NULL"/>
+			<override property="module.driver.transfer.p_src" value="NULL"/>
+			<override property="module.driver.transfer.length" value="0"/>
+			<override property="module.driver.transfer.interrupt" value="module.driver.transfer.interrupt.interrupt_end"/>
+			<override property="module.driver.transfer.num_blocks" value="0"/>
+			<override property="module.driver.transfer.auto_enable" value="module.driver.transfer.auto_enable.false"/>
+			<override property="module.driver.transfer.p_callback" value="NULL"/>
+			<override property="module.driver.transfer.activation_source" value="module.driver.transfer.event.event_sci${module.driver.spi.channel}_txi"/>
+		</requires>
+        <requires id="module.driver.spi_on_sci_spi.requires.transfer_rx" interface="interface.driver.transfer_on_dtc" display="Add DTC Driver for Reception [Recommended but optional]">
+			<override property="module.driver.transfer.size" value="module.driver.transfer.size.size_1_byte"/>
+			<override property="module.driver.transfer.mode" value="module.driver.transfer.mode.mode_normal"/>
+			<override property="module.driver.transfer.dest_addr_mode" value="module.driver.transfer.dest_addr_mode.addr_mode_incremented"/>
+			<override property="module.driver.transfer.src_addr_mode" value="module.driver.transfer.src_addr_mode.addr_mode_fixed"/>
+			<override property="module.driver.transfer.repeat_area" value="module.driver.transfer.repeat_area.repeat_area_destination"/>
+			<override property="module.driver.transfer.p_dest" value="NULL"/>
+			<override property="module.driver.transfer.p_src" value="NULL"/>
+			<override property="module.driver.transfer.length" value="0"/>
+			<override property="module.driver.transfer.interrupt" value="module.driver.transfer.interrupt.interrupt_end"/>
+			<override property="module.driver.transfer.num_blocks" value="0"/>
+			<override property="module.driver.transfer.auto_enable" value="module.driver.transfer.auto_enable.false"/>
+			<override property="module.driver.transfer.p_callback" value="NULL"/>
+			<override property="module.driver.transfer.activation_source" value="module.driver.transfer.event.event_sci${module.driver.spi.channel}_rxi"/>
+		</requires>
+        <provides interface="interface.driver.spi" />
+        <provides interface="interface.driver.spi_on_sci_spi" />
+		<provides interface="interface.driver.spi.${module.driver.spi.name}" />
+        <property default="g_spi${_instance}" display="Name" id="module.driver.spi.name">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.spi.name}")</constraint>
+        </property>
+	    <property default="0" display="Channel" id="module.driver.spi.channel">
+			<constraint display="Value must be an integer between 0 and 9">testInteger("${module.driver.spi.channel}")  &amp;&amp; ("${module.driver.spi.channel}" &gt;= 0) &amp;&amp; ("${module.driver.spi.channel}" &lt;= 9)</constraint>
+           </property>
+		<property default="module.driver.spi.operating_mode.mode_master" display="Operating Mode" id="module.driver.spi.operating_mode">
+			<option display="Master" id="module.driver.spi.operating_mode.mode_master" value="SPI_MODE_MASTER"/>
+			<!--option display="Mode Slave" id="module.driver.spi.operating_mode.mode_slave" value="SPI_MODE_SLAVE"/>-->
+		</property>
+		<property default="module.driver.spi.clk_phase.clk_phase_edge_odd" display="Clock Phase" id="module.driver.spi.clk_phase">
+			<option display="Data sampling on odd edge, data variation on even edge" id="module.driver.spi.clk_phase.clk_phase_edge_odd" value="SPI_CLK_PHASE_EDGE_ODD"/>
+			<option display="Data sampling on even edge, data variation on odd edge" id="module.driver.spi.clk_phase.clk_phase_edge_even" value="SPI_CLK_PHASE_EDGE_EVEN"/>
+		</property>
+		<property default="module.driver.spi.clk_polarity.clk_polarity_low" display="Clock Polarity" id="module.driver.spi.clk_polarity">
+			<option display="Low when idle" id="module.driver.spi.clk_polarity.clk_polarity_low" value="SPI_CLK_POLARITY_LOW"/>
+			<option display="High when idle" id="module.driver.spi.clk_polarity.clk_polarity_high" value="SPI_CLK_POLARITY_HIGH"/>
+		</property>
+		<property default="module.driver.spi.mode_fault.mode_fault_error_disable" display="Mode Fault Error" id="module.driver.spi.mode_fault">
+			<option display="Enable" id="module.driver.spi.mode_fault.mode_fault_error_enable" value="SPI_MODE_FAULT_ERROR_ENABLE"/>
+			<option display="Disable" id="module.driver.spi.mode_fault.mode_fault_error_disable" value="SPI_MODE_FAULT_ERROR_DISABLE"/>
+		</property>
+		<property default="module.driver.spi.bit_order.bit_order_msb_first" display="Bit Order" id="module.driver.spi.bit_order">
+			<option display="MSB First" id="module.driver.spi.bit_order.bit_order_msb_first" value="SPI_BIT_ORDER_MSB_FIRST"/>
+			<option display="LSB First" id="module.driver.spi.bit_order.bit_order_lsb_first" value="SPI_BIT_ORDER_LSB_FIRST"/>
+		</property>
+		<property default="100000" display="Bitrate" id="module.driver.spi.bitrate">
+			<constraint display="Value must be an integer greater than 0">testInteger("${module.driver.spi.bitrate}")  &amp;&amp; ("${module.driver.spi.bitrate}" &gt; 0)</constraint>
+        </property>
+        <property default="NULL" display="Callback" id="module.driver.spi.p_callback">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.spi.p_callback}")</constraint>
+        </property>
+        <interrupt node="board.icu.sci.sci${module.driver.spi.channel}.rxi" />
+        <interrupt node="board.icu.sci.sci${module.driver.spi.channel}.txi" />
+        <interrupt node="board.icu.sci.sci${module.driver.spi.channel}.tei" />
+        <interrupt node="board.icu.sci.sci${module.driver.spi.channel}.eri" />
+        <header>
+		extern const spi_cfg_t ${module.driver.spi.name}_cfg;
+             /** SPI on SCI Instance. */
+            extern const spi_instance_t ${module.driver.spi.name};
+#ifdef ${module.driver.spi.p_callback}
+#define SPI_ON_SCI_SPI_CALLBACK_USED_${module.driver.spi.name} (0)
+#else
+#define SPI_ON_SCI_SPI_CALLBACK_USED_${module.driver.spi.name} (1)
+#endif
+#if SPI_ON_SCI_SPI_CALLBACK_USED_${module.driver.spi.name}
+void ${module.driver.spi.p_callback}(spi_callback_args_t * p_args);
+#endif
+        </header>
+		<includes>
+#include &quot;r_sci_spi.h&quot;
+#include &quot;r_spi_api.h&quot;</includes>
+		<declarations>
+#if SPI_ON_SCI_SPI_CALLBACK_USED_${module.driver.spi.name}
+#if defined(__ICCARM__)
+#define ${module.driver.spi.p_callback}_WEAK_ATTRIBUTE
+#pragma weak ${module.driver.spi.p_callback}                            = ${module.driver.spi.p_callback}_internal
+#elif defined(__GNUC__)
+#define ${module.driver.spi.p_callback}_WEAK_ATTRIBUTE       __attribute__ ((weak, alias("${module.driver.spi.p_callback}_internal")))
+#endif
+void ${module.driver.spi.p_callback}(spi_callback_args_t * p_args) ${module.driver.spi.p_callback}_WEAK_ATTRIBUTE;
+#endif
+spi_ctrl_t ${module.driver.spi.name}_ctrl;
+const spi_cfg_t ${module.driver.spi.name}_cfg =
+{
+    .channel             = ${module.driver.spi.channel},
+    .operating_mode      = ${module.driver.spi.operating_mode},
+    .clk_phase           = ${module.driver.spi.clk_phase},
+    .clk_polarity        = ${module.driver.spi.clk_polarity},
+    .mode_fault          = ${module.driver.spi.mode_fault},
+    .bit_order           = ${module.driver.spi.bit_order},
+    .bitrate             = ${module.driver.spi.bitrate},
+#define SYNERGY_NOT_DEFINED (1)             
+#if (SYNERGY_NOT_DEFINED == ${module.driver.spi_on_sci_spi.requires.transfer_tx::module.driver.transfer.name})
+                .p_transfer_tx       = NULL,
+#else
+                .p_transfer_tx       = &amp;${module.driver.spi_on_sci_spi.requires.transfer_tx::module.driver.transfer.name},
+#endif
+#if (SYNERGY_NOT_DEFINED == ${module.driver.spi_on_sci_spi.requires.transfer_rx::module.driver.transfer.name})
+                .p_transfer_rx       = NULL,
+#else
+                .p_transfer_rx       = &amp;${module.driver.spi_on_sci_spi.requires.transfer_rx::module.driver.transfer.name},
+#endif
+#undef SYNERGY_NOT_DEFINED	
+	.p_callback          = ${module.driver.spi.p_callback},
+	.p_context           = (void *)&amp;${module.driver.spi.name},
+};
+/* Instance structure to use this module. */
+const spi_instance_t ${module.driver.spi.name} = 
+{
+    .p_ctrl        = &amp;${module.driver.spi.name}_ctrl,
+    .p_cfg         = &amp;${module.driver.spi.name}_cfg,
+    .p_api         = &amp;g_spi_on_sci
+};
+
+#if SPI_ON_SCI_SPI_CALLBACK_USED_${module.driver.spi.name}
+/*******************************************************************************************************************//**
+ * @brief      This is a weak example callback function.  It should be overridden by defining a user callback function 
+ *             with the prototype below.
+ *               - void ${module.driver.spi.p_callback}(spi_callback_args_t * p_args)
+ *
+ * @param[in]  p_args  Callback arguments used to identify what caused the callback.
+ **********************************************************************************************************************/
+void ${module.driver.spi.p_callback}_internal(spi_callback_args_t * p_args);
+void ${module.driver.spi.p_callback}_internal(spi_callback_args_t * p_args)
+{
+	/** Do nothing. */
+	SSP_PARAMETER_NOT_USED(p_args);
+}
+#endif
+</declarations>
+	</module>
+</synergyModuleDescription>

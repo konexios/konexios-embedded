@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<synergyModuleDescription>
+    <config id="config.el.ux_src" path="ssp_cfg/framework/el/ux_src_user.h" version="0">
+        <property default="" display="Maximum Classes" id="config.el.ux_src.max_classes" description="When set, this value is the maximum number of classes that can be loaded by USBX. This value represents the class container and not the number of instances of a class. For instance, if a particular implementation of USBX needs the hub class, the printer class, and the storage class, then the UX_MAX_CLASSES value can be set to 3 regardless of the number of devices that belong to these classes.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.max_classes}".length === 0) || ("${config.el.ux_src.max_classes}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="Maximum Slave Classes" id="config.el.ux_src.max_slave_classes" description="When set, this value is the maximum number of classes in the device stack that can be loaded by USBX.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.max_slave_classes}".length === 0) || ("${config.el.ux_src.max_slave_classes}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="Maximum Slave Interfaces" id="config.el.ux_src.max_slave_interfaces" description="When set, this value is the maximum number of interfaces in the device framework.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.max_slave_interfaces}".length === 0) || ("${config.el.ux_src.max_slave_interfaces}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="Maximum Host Controllers" id="config.el.ux_src.max_hcd" description="When set, this value represents the number of different host controllers available in the system. For USB 1.1 support, this value will usually be 1. For USB 2.0 support, this value can be more than 1. This value represents the number of concurrent host controllers running at the same time. If for instance there are two instances of OHCI running, or one EHCI and one OHCI controller running, the UX_MAX_HCD should be set to 2.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.max_hcd}".length === 0) || ("${config.el.ux_src.max_hcd}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="Maximum Devices" id="config.el.ux_src.max_devices" description="When set, this value represents the maximum number of devices that can be attached to the USB. Normally, the theoretical maximum number on a single USB is 127 devices. This value can be scaled down to conserve memory. Note that this value represents the total number of devices regardless of the number of USB buses in the system.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.max_devices}".length === 0) || ("${config.el.ux_src.max_devices}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="Maximum Slave Logical Units" id="config.el.ux_src.max_slave_lun" description="When set, this value represents the current number of SCSI logical units represented in the device storage class driver.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.max_slave_lun}".length === 0) || ("${config.el.ux_src.max_slave_lun}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="Maximum Host Logical Units" id="config.el.ux_src.max_host_lun" description="When set, this value represents the maximum number of SCSI logical units represented in the host storage class driver.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.max_host_lun}".length === 0) || ("${config.el.ux_src.max_host_lun}" &gt; 0)</constraint>
+        </property>
+        <property default="" display="Slave Request Control Maximum Length" id="config.el.ux_src.slave_request_control_max_length" description="When set, this value represents the maximum number of bytes received on a control endpoint in the device stack. The default is 256 bytes but can be reduced in memory constraint environments.">
+            <constraint display="Value must be greater than 0 or empty">("${config.el.ux_src.slave_request_control_max_length}".length === 0) || ("${config.el.ux_src.slave_request_control_max_length}" &gt; 0)</constraint>
+        </property>
+        <property id="config.el.ux_src.enforce_safe_alignment" display="Enforce Safe Alignment" default="config.el.ux_src.enforce_safe_alignment.disabled" description="When enabled, this value forces the memory allocation scheme to enforce alignement of memory with the UX_SAFE_ALIGN field">
+            <option id="config.el.ux_src.enforce_safe_alignment.enabled" display="Enabled" value="1" />
+            <option id="config.el.ux_src.enforce_safe_alignment.disabled" display="Disabled (default)" value="0" />                
+        </property>
+        <content>
+#if (${config.el.ux_src.max_classes}+0)
+#define UX_MAX_CLASSES (${config.el.ux_src.max_classes})
+#endif
+#if (${config.el.ux_src.max_slave_classes}+0)
+#define UX_MAX_SLAVE_CLASSES (${config.el.ux_src.max_slave_classes})
+#endif
+#if (${config.el.ux_src.max_slave_interfaces}+0)
+#define UX_MAX_SLAVE_INTERFACES (${config.el.ux_src.max_slave_interfaces})
+#endif
+#if (${config.el.ux_src.max_hcd}+0)
+#define UX_MAX_HCD (${config.el.ux_src.max_hcd})
+#endif
+#if (${config.el.ux_src.max_devices}+0)
+#define UX_MAX_DEVICES (${config.el.ux_src.max_devices})
+#endif
+#if (${config.el.ux_src.max_slave_lun}+0)
+#define UX_MAX_SLAVE_LUN (${config.el.ux_src.max_slave_lun})
+#endif
+#if (${config.el.ux_src.max_host_lun}+0)
+#define UX_MAX_HOST_LUN (${config.el.ux_src.max_host_lun})
+#endif
+#if (${config.el.ux_src.slave_request_control_max_length}+0)
+#define UX_SLAVE_REQUEST_CONTROL_MAX_LENGTH (${config.el.ux_src.slave_request_control_max_length})
+#endif
+#if (${config.el.ux_src.enforce_safe_alignment})
+#define UX_ENFORCE_SAFE_ALIGNMENT
+#endif
+        </content>
+    </config>
+    <module config="config.el.ux_src" id="module.framework.ux_src" display="Framework|USB|USBX Source" common="1" version="0">
+        <requires interface="_rtos" />
+        <requires id="module.el.ux_src.requires.ux" interface="interface.el.ux" display="Add USBX Library" />        
+        <provides interface="interface.framework.ux_src" />
+    </module>
+</synergyModuleDescription>

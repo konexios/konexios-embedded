@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" ?>
+<synergyModuleDescription>
+	<config id="config.driver.kint" path="ssp_cfg/driver/r_kint_cfg.h" version="0">
+		<property default="config.driver.kint.param_checking_enable.bsp" display="Parameter Checking Enable" id="config.driver.kint.param_checking_enable">
+			<option display="Default (BSP)" id="config.driver.kint.param_checking_enable.bsp" value="(BSP_CFG_PARAM_CHECKING_ENABLE)"/>
+			<option display="Enabled" id="config.driver.kint.param_checking_enable.enabled" value="(1)"/>
+			<option display="Disabled" id="config.driver.kint.param_checking_enable.disabled" value="(0)"/>
+		</property>
+		<content>#define KINT_CFG_PARAM_CHECKING_ENABLE ${config.driver.kint.param_checking_enable}
+		</content>
+	</config>
+	<module config="config.driver.kint" display="Driver|Input|${module.driver.keymatrix.name} Key Matrix Driver on r_kint" id="module.driver.keymatrix_on_kint" version="1">
+		<constraint display="Unique name required for each instance">
+    		"${interface.driver.kint.${module.driver.keymatrix.name}}" === "1"
+		</constraint>
+		<constraint display="Requires KEY Interrupt (INT) enabled">
+            "${board.icu.key.int}" != "board.icu.common.irq.disabled"
+        </constraint>
+        <provides interface="interface.driver.kint" />
+        <provides interface="interface.driver.kint_on_key_matrix" />
+		<provides interface="interface.driver.kint.${module.driver.keymatrix.name}" />
+        <property default="g_kint${_instance}" display="Name" id="module.driver.keymatrix.name">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.keymatrix.name}")</constraint>
+        </property>
+		<property default="module.driver.keymatrix.channel_mask.default" display="Keymatrix Channel Mask" id="module.driver.keymatrix.channel_mask">
+			<option display="Select Channels Below" id="module.driver.keymatrix.channel_mask.default" value="(0)"/>
+        </property>
+		<property default="module.driver.keymatrix.channel_mask.channel_0.unused" display="    Channel 0" id="module.driver.keymatrix.channel_0">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_0.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_0.used" value="(uint32_t)0x01"/>
+		</property>
+		<property default="module.driver.keymatrix.channel_mask.channel_1.unused" display="    Channel 1" id="module.driver.keymatrix.channel_1">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_1.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_1.used" value="(uint32_t)0x02"/>
+		</property>
+		<property default="module.driver.keymatrix.channel_mask.channel_2.unused" display="    Channel 2" id="module.driver.keymatrix.channel_2">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_2.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_2.used" value="(uint32_t)0x04"/>
+		</property>
+		<property default="module.driver.keymatrix.channel_mask.channel_3.unused" display="    Channel 3" id="module.driver.keymatrix.channel_3">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_3.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_3.used" value="(uint32_t)0x08"/>
+		</property>
+		<property default="module.driver.keymatrix.channel_mask.channel_4.unused" display="    Channel 4" id="module.driver.keymatrix.channel_4">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_4.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_4.used" value="(uint32_t)0x10"/>
+		</property>
+		<property default="module.driver.keymatrix.channel_mask.channel_5.unused" display="    Channel 5" id="module.driver.keymatrix.channel_5">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_5.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_5.used" value="(uint32_t)0x20"/>
+		</property>
+		<property default="module.driver.keymatrix.channel_mask.channel_6.unused" display="    Channel 6" id="module.driver.keymatrix.channel_6">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_6.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_6.used" value="(uint32_t)0x40"/>
+		</property>
+		<property default="module.driver.keymatrix.channel_mask.channel_7.unused" display="    Channel 7" id="module.driver.keymatrix.channel_7">
+			 <option display="Unused" id="module.driver.keymatrix.channel_mask.channel_7.unused" value="(uint32_t)0"/>
+			 <option display="Used" id="module.driver.keymatrix.channel_7.used" value="(uint32_t)0x80"/>
+		</property>
+		<property default="module.driver.keymatrix.hw_trigger.trig_rising" display="Trigger Type" id="module.driver.keymatrix.hw_trigger">
+			<option display="Falling Edge" id="module.driver.keymatrix.hw_trigger.trig_falling" value="KEYMATRIX_TRIG_FALLING"/>
+			<option display="Rising Edge" id="module.driver.keymatrix.hw_trigger.trig_rising" value="KEYMATRIX_TRIG_RISING"/>
+		</property>
+		<property default="module.driver.keymatrix.irq_enable.false" display="Interrupt enabled after initialization" id="module.driver.keymatrix.irq_enable">
+			<option display="True" id="module.driver.keymatrix.irq_enable.true" value="true"/>
+			<option display="False" id="module.driver.keymatrix.irq_enable.false" value="false"/>
+		</property>
+		<property default="NULL" display="Callback" id="module.driver.keymatrix.p_callback">
+			<constraint display="Name must be a valid C symbol">testSymbol("${module.driver.keymatrix.p_callback}")</constraint>
+        </property>
+        <interrupt node="board.icu.key.int" />
+		<header>
+            /** Key Matrix on KINT Instance. */
+            extern const keymatrix_instance_t ${module.driver.keymatrix.name};
+			#ifdef ${module.driver.keymatrix.p_callback}
+			#define KEYMATRIX_ON_KINT_CALLBACK_USED_${module.driver.keymatrix.name} (0)
+			#else
+			#define KEYMATRIX_ON_KINT_CALLBACK_USED_${module.driver.keymatrix.name} (1)
+			#endif
+			#if KEYMATRIX_ON_KINT_CALLBACK_USED_${module.driver.keymatrix.name}
+			void ${module.driver.keymatrix.p_callback}(keymatrix_callback_args_t * p_args);
+			#endif
+        </header>
+		<includes>#include &quot;r_kint.h&quot;
+#include &quot;r_keymatrix_api.h&quot;</includes>
+		<declarations>
+#if KEYMATRIX_ON_KINT_CALLBACK_USED_${module.driver.keymatrix.name}
+#if defined(__ICCARM__)
+#define ${module.driver.keymatrix.p_callback}_WEAK_ATTRIBUTE
+#pragma weak ${module.driver.keymatrix.p_callback} = ${module.driver.keymatrix.p_callback}_internal
+#elif defined(__GNUC__)
+#define ${module.driver.keymatrix.p_callback}_WEAK_ATTRIBUTE __attribute__ ((weak, alias("${module.driver.keymatrix.p_callback}_internal")))
+#endif
+void ${module.driver.keymatrix.p_callback}(keymatrix_callback_args_t * p_args) ${module.driver.keymatrix.p_callback}_WEAK_ATTRIBUTE;
+#endif
+
+keymatrix_ctrl_t ${module.driver.keymatrix.name}_ctrl;
+const keymatrix_cfg_t ${module.driver.keymatrix.name}_cfg =
+{
+    .channels            = (uint32_t)((${module.driver.keymatrix.channel_0}) | (${module.driver.keymatrix.channel_1}) | (${module.driver.keymatrix.channel_2}) | (${module.driver.keymatrix.channel_3}) | (${module.driver.keymatrix.channel_4}) | (${module.driver.keymatrix.channel_5}) | (${module.driver.keymatrix.channel_6}) | (${module.driver.keymatrix.channel_7})),
+    .trigger          = ${module.driver.keymatrix.hw_trigger},
+    .autostart           = ${module.driver.keymatrix.irq_enable},
+	.p_callback          = ${module.driver.keymatrix.p_callback},
+	.p_context           = &amp;${module.driver.keymatrix.name},
+};
+/* Instance structure to use this module. */
+const keymatrix_instance_t ${module.driver.keymatrix.name} = 
+{
+    .p_ctrl        = &amp;${module.driver.keymatrix.name}_ctrl,
+    .p_cfg         = &amp;${module.driver.keymatrix.name}_cfg,
+    .p_api         = &amp;g_keymatrix_on_kint
+};
+
+#if KEYMATRIX_ON_KINT_CALLBACK_USED_${module.driver.keymatrix.name}
+/*******************************************************************************************************************//**
+ * @brief      This is a weak example callback function.  It should be overridden by defining a user callback function 
+ *             with the prototype below.
+ *               - void ${module.driver.keymatrix.p_callback}(keymatrix_callback_args_t * p_args)
+ *
+ * @param[in]  p_args  Callback arguments used to identify what caused the callback.
+ **********************************************************************************************************************/
+void ${module.driver.keymatrix.p_callback}_internal(keymatrix_callback_args_t * p_args);
+void ${module.driver.keymatrix.p_callback}_internal(keymatrix_callback_args_t * p_args)
+{
+	/** Do nothing. */
+    SSP_PARAMETER_NOT_USED(p_args);
+}
+#endif
+</declarations>
+	</module>
+</synergyModuleDescription>

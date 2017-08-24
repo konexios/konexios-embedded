@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<synergyModuleDescription>
+	<module config="config.el.ux_device_class_cdc_acm" display="Framework|USB|${module.el.ux_device_class_cdc_acm.name} USBX Device Class CDC ACM on ux_device_class_cdc_acm" id="module.el.ux_device_class_cdc_acm" version="1">
+        <constraint display="Module instances must have unique names">
+            "${interface.el.ux_device_class_cdc_acm.${module.el.ux_device_class_cdc_acm.name}}" === "1"
+        </constraint>
+        <requires interface="_rtos" />
+        <requires id="module.el.ux_device_class_cdc_acm.requires.ux" interface="interface.el.ux" display="Add USBX" />        
+        <provides interface="interface.el.ux_device_class_cdc_acm" />
+        <provides interface="interface.el.ux_device_class_cdc_acm.${module.el.ux_device_class_cdc_acm.name}" />
+        <property default="g_ux_device_class_cdc_acm${_instance}" display="Name" id="module.el.ux_device_class_cdc_acm.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.el.ux_device_class_cdc_acm.name}")</constraint>
+        </property>
+	</module>
+</synergyModuleDescription>
