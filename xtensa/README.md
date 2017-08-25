@@ -1,29 +1,37 @@
-## Getting started
+# Getting started
 
-It's needed a keys (api and secret) for any application in the acn-embedded repo.
-You may define it into an acn-sdk-c/private.h file:
+## Setting up the environment
 
-```
-#ifndef ACN_SDK_C_PRIVATE_H_
-#define ACN_SDK_C_PRIVATE_H_
+###### Connecting the SX-ULPGN-EVK board
 
-#define DEFAULT_API_KEY "xxxxxx"
-#define DEFAULT_SECRET_KEY "yyyyy"
-#define DEV_ENV
+**_Following points based on the SX-ULPGN-EVK Tutorial (https://drive.google.com/open?id=0BzSl3gduBcnuTHRmMFFpcEl3Qnc)._**
 
-#endif
-```
+There are two connection to your PC: FTDI and UART.
+- JTAG connection
+The C232HM-DDHSL-0 cable was used. The individual pins must be connected to corresponding pins in 
+JP12 as Figure 1-3 (see the tutorial). Note that connection to pin11 (VCC) is optional. Though you can 
+power the EVK through JTAG VCC, you don't have 5V power out J4-1. Also you cannot measure power consumption using J5.
 
-or when execute make
-*make API_KEY="xxxx" SEC_KEY="yyyyyy" DEV_ENV=1*
+Pins:
+| C232HM cable	|	ULPGN JP12|
+|---------------|-----------------|
+|TDI (yellow)	|	1	|
+|TDO (green)	|	3	|
+|TCK (orange)	|	5	|
+|GND (black)	|	6	|
+|RST (purple)	|	9	|
+|TMS (brown)	|	10	|
+|VCC (red)	|	11	|
 
-where DEV_ENV - define the development environment not a production environment:
-API address: pgsdev01.arrowconnect.io
-MQTT address: pgsdev01.arrowconnect.io
 
-###### Setting up the environment
+1-2-2 UART connection
+Figure 1-4 shows how to connect USB-UART cable with EVK. J1 DEBUG UART is
+mandatory, JP4/JP6 is optional (only when you want to test HSUART1 or HSUART2).
+Silex Confidential and Proprietary Shared
+- UART connection 
+It's possible to use USB-UART adaptor with 3.3V logic voltage (not RS-232C voltage) interface.
 
-SX-ULPGN-EVK Tutorial (https://drive.google.com/open?id=0BzSl3gduBcnuTHRmMFFpcEl3Qnc)
+Silex Confidential and Proprietary Shared Under NDA with
 
 Follow the Internet of Everything Wireless System Release (I-WSR) 4.1 CS Hostless SDK Release Notes for install environment
 (80-YA116-4 Rev. B April 1, 2016) 4.2-4.2.1
@@ -60,6 +68,28 @@ source sdkenv.sh
 Now environment ready to building the firmware
 
 ## How to build 
+
+###### Setting up the SDK
+
+It's needed a keys (api and secret) for any application in the acn-embedded repo.
+You may define it into an acn-sdk-c/private.h file:
+
+```
+#ifndef ACN_SDK_C_PRIVATE_H_
+#define ACN_SDK_C_PRIVATE_H_
+
+#define DEFAULT_API_KEY "xxxxxx"
+#define DEFAULT_SECRET_KEY "yyyyy"
+#define DEV_ENV
+
+#endif
+```
+
+where DEV_ENV - define the development environment not a production environment:
+API address: pgsdev01.arrowconnect.io
+MQTT address: pgsdev01.arrowconnect.io
+
+###### Building
 
 cd ~/4010.tx.1.1_sdk/target/
 git clone git@bitbucket.org:arrows3/eos.git
