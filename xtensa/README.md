@@ -13,15 +13,17 @@ JP12 as Figure 1-3 (see the tutorial). Note that connection to pin11 (VCC) is op
 power the EVK through JTAG VCC, you don't have 5V power out J4-1. Also you cannot measure power consumption using J5.
 
 Pins:
-| C232HM cable	|	ULPGN JP12|
-|---------------|-----------------|
-|TDI (yellow)	|	1	|
-|TDO (green)	|	3	|
-|TCK (orange)	|	5	|
-|GND (black)	|	6	|
-|RST (purple)	|	9	|
-|TMS (brown)	|	10	|
-|VCC (red)	|	11	|
+
+
+| C232HM cable  |  ULPGN JP12  |
+|---------------|--------------|
+| TDI (yellow)  |       1      |
+| TDO (green)   |       3      |
+| TCK (orange)  |       5      |
+| GND (black)   |       6      |
+| RST (purple)  |       9      |
+| TMS (brown)   |       10     |
+| VCC (red)     |       11     |
 
 
 1-2-2 UART connection
