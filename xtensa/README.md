@@ -152,6 +152,40 @@ make
 After this in a ~/target/bin/ folder should be the raw_flashimage_AR401X_REV6_IOT_MP1_hostless_unidev_singleband_iot_arrow.bin file.
 
 ## How to flash
+
+###### Install the Macraigor drivers
+
+Choose the suited *mcgr-hwsupport* packet to install from the http://macraigor.com/gnu/. 
+
+The 
+mcgr-hwsupport-13.1-0.i386.rpm
+ or 
+mcgr-hwsupport-13.1-0.x86_64.rpm for example.
+
+
+Install Macraigor support package. (ex.: rpm -Uvh mcgr-hwsupport-13.1-0.x86_64.rpm).
+
+###### Install the XT-OCD
+
+
+- It's necessary to install a linux kernel source for next step. In OpenSUSE it is a *sudo zypper in kernel-source* command
+Make the following symlinks so the xt-ocd installer can find the Linux kernel sources it needs.
+
+- Replace <linux-kernel-version> with the value for your machine, you can use the *uname –a* command to get the kernel version
+```
+sudo ln -s /usr/src/linux-headers-<linux-kernel-version>-generic/include/generated/utsrelease.h /usr/src/linux-headers- <linux-kernel-version>-generic/include/linux/utsrelease.h
+sudo ln -s /usr/src/linux-headers-<linux-kernel-version>-generic/include/generated/uapi/linux/version.h /usr/src/linux-headers-<linux-kernel-version>-generic/include/linux/version.h
+```
+
+- Run the Xtensa OCD Daemon Setup Wizard
+
+```
+cd $XTENSA_INST/XtDevTools/downloads/RE-2013.3/tools/
+sudo ./xt-ocd-10.0.3-linux-installer --mode xwindow
+```
+
+###### Flashing
+
 Do not forget to replace TEST jumper to 2-3 place on the JP11 connector!
 Run the OCD
 ./xt-ocd
