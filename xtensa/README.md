@@ -201,3 +201,18 @@ Connect to the target
 
 And then flash the bin file in a ~/target/bin/ folder
 (xt-gdb) sdk_flash ../bin/raw_flashimage_AR401X_REV6_IOT_MP1_hostless_unidev_singleband_iot_arrow.bin
+
+
+
+## Wifi settings
+
+It's possible to set Wi-Fi parameters in a compile time by the private.h file. In this case there is no chance to change it.
+But if you build firmware without defined wifi parameters it's possible to start AP mode on the QCA board and configurate Wi-Fi access.
+The firmware automatically starts in AP mode if you have not set Wi-Fi access yet.  To force the board into AP mode when you need to configure 
+a different Wi-Fi access, connect GPIO 25 and 26 (JP7 on the board) before booting it up.
+When in AP mode, use your phone to connect to SSID: “QCAtest” with passphrase "guest@Mera".
+Open a browser on your phone and browse to http://192.168.1.1 where you can enter your Wi-Fi credentials.
+When done, you can restart the board (and remove JP7 if needed).
+When connected to the internet, the software should register itself with the platform and you can see it showing up in the portal
+
+
