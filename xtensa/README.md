@@ -153,30 +153,37 @@ After this in a ~/target/bin/ folder should be the raw_flashimage_AR401X_REV6_IO
 
 ## How to flash
 
-###### Install the Macraigor drivers
-
-Choose the suited *mcgr-hwsupport* packet to install from the http://macraigor.com/gnu/. 
-
-The 
-mcgr-hwsupport-13.1-0.i386.rpm
- or 
-mcgr-hwsupport-13.1-0.x86_64.rpm for example.
-
-
-Install Macraigor support package. (ex.: rpm -Uvh mcgr-hwsupport-13.1-0.x86_64.rpm).
-
-###### Install the XT-OCD
+###### Install the FT2232 drivers
 
 Following points based on the Setting up the FTDI JTAG debugger for SX-ULPGN-EVK on Linux (https://drive.google.com/open?id=0BzSl3gduBcnuUnJ5WDE2U2dzSTQ)
 
-- It's necessary to install a linux kernel source for next step. In OpenSUSE it is a *sudo zypper in kernel-source* command
-Make the following symlinks so the xt-ocd installer can find the Linux kernel sources it needs.
+Download the x86 (32-bit or 64-bit as appropriate for your machine) D2XX driver for Linux from
+FTDI Chip. http://www.ftdichip.com/Drivers/D2XX.htm
+Or version 1.4.6 from (https://drive.google.com/open?id=0BzSl3gduBcnueHBjWDhTVTcyU1E)
 
-- Replace <linux-kernel-version> with the value for your machine, you can use the *uname –a* command to get the kernel version
+1. This unpacks the archive
 ```
-sudo ln -s /usr/src/linux-headers-<linux-kernel-version>-generic/include/generated/utsrelease.h /usr/src/linux-headers- <linux-kernel-version>-generic/include/linux/utsrelease.h
-sudo ln -s /usr/src/linux-headers-<linux-kernel-version>-generic/include/generated/uapi/linux/version.h /usr/src/linux-headers-<linux-kernel-version>-generic/include/linux/version.h
+tar xfvz libftd2xx-i386-1.4.6.tgz
+cd release/build
 ```
+
+2.  Copies the libraries to a central location.
+```
+sudo cp libftd2xx.* /usr/local/lib
+```
+
+3.  Allows non-root access to the shared object.
+```
+chmod 0755 /usr/local/lib/libftd2xx.so.1.3.6
+```
+
+4.  Creates a symbolic link to the 1.3.6 version of the shared object
+```
+ln -sf /usr/local/lib/libftd2xx.so.1.3.6 /usr/local/lib/libftd2xx.so
+```
+
+
+###### Install the XT-OCD
 
 - Run the Xtensa OCD Daemon Setup Wizard
 
@@ -185,24 +192,51 @@ cd $XTENSA_INST/XtDevTools/downloads/RE-2013.3/tools/
 sudo ./xt-ocd-10.0.3-linux-installer --mode xwindow
 ```
 
+- Fix the FT2232 files
+
+Move into a xt-ocd directory and replace the original FTDI files.
+
+```
+cd xocd-10.0.3
+mv FTDI original-FTDI
+mkdir FTDI
+cp /usr/local/lib/libftd2xx.so.1.4.6 FTDI/libftd2xx.so.0
+```
+
 ###### Flashing
 
-Do not forget to replace TEST jumper to 2-3 place on the JP11 connector!
+**Do not forget to replace TEST jumper to 2-3 place on the JP11 connector!**
+
 Run the OCD
+```
 ./xt-ocd
+```
 
 Go to ~/target/image directory
+```
 cd ~/target/image
+```
 
 And run xt-gdb
+```
 xt-gdb -x gdb.sdk_flash
+```
 
 Connect to the target
+```
 (xt-gdb) target remote 127.0.0.1:20000
+```
 
 And then flash the bin file in a ~/target/bin/ folder
+```
 (xt-gdb) sdk_flash ../bin/raw_flashimage_AR401X_REV6_IOT_MP1_hostless_unidev_singleband_iot_arrow.bin
+```
 
+After this restart the board and run the application
+```
+(xt-gdb) reset
+(xt-gdb) c
+```
 
 
 ## Wifi settings
