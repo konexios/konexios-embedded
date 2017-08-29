@@ -167,6 +167,7 @@ Install Macraigor support package. (ex.: rpm -Uvh mcgr-hwsupport-13.1-0.x86_64.r
 
 ###### Install the XT-OCD
 
+Following points based on the Setting up the FTDI JTAG debugger for SX-ULPGN-EVK on Linux (https://drive.google.com/open?id=0BzSl3gduBcnuUnJ5WDE2U2dzSTQ)
 
 - It's necessary to install a linux kernel source for next step. In OpenSUSE it is a *sudo zypper in kernel-source* command
 Make the following symlinks so the xt-ocd installer can find the Linux kernel sources it needs.
@@ -209,10 +210,15 @@ And then flash the bin file in a ~/target/bin/ folder
 It's possible to set Wi-Fi parameters in a compile time by the private.h file. In this case there is no chance to change it.
 But if you build firmware without defined wifi parameters it's possible to start AP mode on the QCA board and configurate Wi-Fi access.
 The firmware automatically starts in AP mode if you have not set Wi-Fi access yet.  To force the board into AP mode when you need to configure 
-a different Wi-Fi access, connect GPIO 25 and 26 (JP7 on the board) before booting it up.
-When in AP mode, use your phone to connect to SSID: “QCAtest” with passphrase "guest@Mera".
+a different Wi-Fi access, connect J4.10 and J4.12 before booting it up.
+When in AP mode, use your phone to connect to SSID: “QCA4010_WIFI” without any passphrase.
 Open a browser on your phone and browse to http://192.168.1.1 where you can enter your Wi-Fi credentials.
-When done, you can restart the board (and remove JP7 if needed).
-When connected to the internet, the software should register itself with the platform and you can see it showing up in the portal
+
+*SSID, Passphrase, Authentication (Open, WPA, WPA2), Encription (None, TKIP, CCMP)*
+
+After this push the "Submit".
+
+When done, you can restart the board (and remove JP4 if needed) by pushing "Reset".
+When connected to the internet, the software should register itself with the platform and you can see it showing up in the portal.
 
 
