@@ -12,7 +12,7 @@
 #include <arrow/utf8.h>
 #include <time/watchdog.h>
 #include "flash.h"
-#include "stm32l475e_iot01_qspi.h"
+#include "stm32l475e_iot01.h"
 
 //int arrow_software_update(const char *url,
 //                          const char *checksum,
@@ -41,25 +41,37 @@
 // flash - FLASH_PAGE_SIZE;
 // qspi - MX25R6435F_PAGE_SIZE
 
-char qspi_buffer[MX25R6435F_PAGE_SIZE];
-int qspi_idx = 0;
+uint8_t up[0x40000] __attribute__((section("UNINIT_FIXED_LOC_UP")));
+uint8_t qspi_buffer[FLASH_PAGE_SIZE];
+#define QSPI_BUFFER_SIZE sizeof(qspi_buffer)
+uint32_t qspi_idx = 0;
 int shift = 0;
-char test_buffer[10];
 
 // this function will be executed when http client get a chunk of payload
 int arrow_release_download_payload(property_t *buf, const char *payload, int size) {
+  int r = 0;
+  BSP_LED_Toggle(LED_GREEN);
   wdt_feed();
 //  DBG("process payload %d:%d -- %d", shift, qspi_idx, size)
   if ( !shift && !qspi_idx ) {
-    BSP_QSPI_Erase_Block(0);
-//    hex_dump(payload, 32);
+    DBG("Start to process FW");
+    r = FLASH_unlock_erase((uint32_t)up, sizeof(up));
+    if ( r < 0 ) {
+      DBG("Flash unlock erase %d", r);
+      return -1;
+    }
+    qspi_idx += 4;
   }
-  if ( qspi_idx + size >= MX25R6435F_PAGE_SIZE ) {
-    // write block 0x100 into the qspi falsh
-    int free_space = MX25R6435F_PAGE_SIZE - qspi_idx;
+  if ( (uint32_t)(qspi_idx + size) >= QSPI_BUFFER_SIZE ) {
+    // write block 0x100 into a flash
+    int free_space = QSPI_BUFFER_SIZE - qspi_idx;
     memcpy(qspi_buffer + qspi_idx, payload, free_space);
     // buffer is full
-    BSP_QSPI_Write(qspi_buffer, shift, MX25R6435F_PAGE_SIZE);
+    r = FLASH_write_at((uint32_t)(up + shift), (uint64_t*)qspi_buffer, (uint32_t)QSPI_BUFFER_SIZE);
+    if ( r < 0 ) {
+      DBG("QSPI Write failed [%d] %d", shift, r);
+    }
+    shift += QSPI_BUFFER_SIZE;
     // write a rest of a data into buffer (at the begin)
     if ( size > free_space ) {
       memcpy(qspi_buffer, payload + free_space, size - free_space);
@@ -67,54 +79,28 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
     } else {
       qspi_idx = 0;
     }
-//    DBG("write %d", shift);
-    shift += MX25R6435F_PAGE_SIZE;
   } else {
     // just add to a buffer
     memcpy(qspi_buffer + qspi_idx, payload, size);
     qspi_idx += size;
-//    DBG("add %d", qspi_idx);
   }
+  DBG("w %d - %d", shift, qspi_idx);
   return 0;
-}
-
-static uint32_t start_addr() {
-  if ( FLASH_get_boot_bank() == FLASH_BANK_1 ) return 0x8080000;
-  return 0x8000000;
 }
 
 // this function will be executed when firmware file download complete
 int arrow_release_download_complete(property_t *buf) {
   SSP_PARAMETER_NOT_USED(buf);
-  char buffer[MX25R6435F_PAGE_SIZE];
-  uint32_t flash_addr = start_addr();
-  uint32_t addr = 0;
   wdt_feed();
-  int tot_size = shift + qspi_idx;
-//  int f_r = 0;
-  DBG("RELEASE DOWNLOAD complete :: %d", shift + qspi_idx);
-  // read binary data from QSPI memory and write it into the intire flash memory
-  while ( shift ) {
-    wdt_feed();
-    BSP_QSPI_Read(buffer, addr, MX25R6435F_PAGE_SIZE);
-    FLASH_update(flash_addr + addr, buffer, MX25R6435F_PAGE_SIZE);
-    addr += MX25R6435F_PAGE_SIZE;
-    shift -= MX25R6435F_PAGE_SIZE;
-    DBG("progress %d", shift);
-  }
-  //last section - qspi_buffer
-  if (qspi_idx) FLASH_update(flash_addr + addr, qspi_buffer, qspi_idx);
-
-  char *hello = (char *)(flash_addr);
-  DBG("memory dump ------");
-  for (int i=0; i<10; i++) DBG("%02x", hello[i]);
-
-  if ( FLASH_get_boot_bank() == FLASH_BANK_1 ) {
-    FLASH_set_boot_bank(FLASH_BANK_2);
-  } else {
-    FLASH_set_boot_bank(FLASH_BANK_1);
-  }
+  uint32_t tot_size = shift + qspi_idx;
   DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
+  if (qspi_idx) FLASH_write_at((uint32_t)(up + shift), (uint64_t*)qspi_buffer, qspi_idx);
+  // read binary data from QSPI memory and write it into the intire flash memory
 
+  *(uint32_t *)qspi_buffer = tot_size;
+  FLASH_update((uint32_t)up, qspi_buffer, 4);
+
+//  FLASH_set_boot_bank(FLASH_BANK_2);
+  DBG(" Set Boot bank 2 :: %d", tot_size);
   return 0;
 }

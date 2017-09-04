@@ -68,7 +68,6 @@
   * @retval  0:  Success.
             -1:  Failure.
   */
-#include <debug.h>
 int FLASH_unlock_erase(uint32_t address, uint32_t len_bytes)
 {
   int rc = -1;
@@ -85,7 +84,8 @@ int FLASH_unlock_erase(uint32_t address, uint32_t len_bytes)
   EraseInit.Banks = FLASH_get_bank(address); 
   if (EraseInit.Banks != FLASH_get_bank(address + len_bytes))
   {
-    DBG("Error: Cannot erase across FLASH banks.\n");
+    rc = -2;
+//    DBG("Error: Cannot erase across FLASH banks.\n");
   }
   else
   {
@@ -100,7 +100,8 @@ int FLASH_unlock_erase(uint32_t address, uint32_t len_bytes)
     }
     else
     {
-      DBG("Error erasing at 0x%08lx\n", address);
+//      DBG("Error erasing at 0x%08lx\n", address);
+      rc = -3;
     }
   }
   return rc;
@@ -266,10 +267,6 @@ uint32_t FLASH_get_boot_bank() {
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
   HAL_FLASH_OB_Unlock();
   HAL_FLASHEx_OBGetConfig(&OBInit);
-//  DBG("OptionType %08x", OBInit.OptionType);
-//  DBG("U Tupe %08x - %08x", OBInit.USERType, OB_USER_BFB2);
-//  DBG("U config %08x - %08x", OBInit.USERConfig, OB_BFB2_ENABLE);
-
   if ( OBInit.OptionType & OPTIONBYTE_USER ) {
     if ( OBInit.USERType & OB_USER_BFB2 ) {
       if ( OBInit.USERConfig & OB_BFB2_ENABLE ) {
@@ -292,20 +289,15 @@ uint32_t FLASH_get_boot_bank() {
  */
 int FLASH_set_boot_bank(uint32_t bank)
 {
-  DBG("CR\t:\t%08x", FLASH->CR);
   int rc = 0;
   FLASH_OBProgramInitTypeDef    OBInit;
   /* Set BFB2 bit to enable boot from Flash Bank2 */
   /* Allow Access to the Flash control registers and user Flash. */
-  DBG("flash unlock");
   HAL_FLASH_Unlock();  
   /* Clear OPTVERR bit set on virgin samples. */                       
-  DBG("flash clear flags");
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR); 
   /* Allow Access to the option bytes sector. */
-  DBG("OB unlock");
-  HAL_FLASH_OB_Unlock();  
-  DBG("CR\t:\t%08x", FLASH->CR);
+  HAL_FLASH_OB_Unlock();
   /* Get the Dual boot configuration status. */                    
   HAL_FLASHEx_OBGetConfig(&OBInit);           
   
@@ -327,12 +319,11 @@ int FLASH_set_boot_bank(uint32_t bank)
       rc = -1;
   }
   
-  DBG("prog start");
   if(HAL_FLASHEx_OBProgram (&OBInit) != HAL_OK)
   { /* Failed setting the option bytes configuration.
      * Call 'HAL_FLASH_GetError()' for details. */
     rc = -1;
-    DBG("Error: Could not init the option bytes programming.\n");
+//    DBG("Error: Could not init the option bytes programming.\n");
   }
   else
   { /* Start the Option Bytes programming process */  
@@ -340,11 +331,9 @@ int FLASH_set_boot_bank(uint32_t bank)
     { /* Failed reloading the option bytes configuration.
        * Call 'HAL_FLASH_GetError()' for details. */
       rc = -1;
-      DBG("Error: Could not program the 2nd bank boot option byte.\n");
+//      DBG("Error: Could not program the 2nd bank boot option byte.\n");
     }
   }
-  
-  DBG("ret %d", rc);
   return rc;
 }
 
