@@ -117,7 +117,6 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
     switch (ret) {
       case WIFI_STATUS_ERROR:
       case WIFI_STATUS_TIMEOUT:
-        DBG("Timeout %d", received);
         if ( !received ) return -1;
         else return received;
       break;
@@ -126,6 +125,8 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
           received += recv_len;
           if ( recv_len != len ) DBG("RECV %d != %d", received, len);
           return received;
+        } else {
+          DBG("receive failed");
         }
       break;
     }

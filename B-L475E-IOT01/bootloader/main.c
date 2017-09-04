@@ -6,6 +6,7 @@
 #include "flash.h"
 
 #include <debug.h>
+#include <arrow/sys.h>
 
 /* Private variables ---------------------------------------------------------*/
 #define START_ADDR  0x08080000
@@ -38,7 +39,7 @@ int main(void)
   DBG("--- Demo B-L475E-IOT01 bootloader ---");
   if ( READ_BIT(FLASH->CR, FLASH_CR_PG) ) {
     DBG("Wrong CR register %08x", FLASH->CR);
-//    NVIC_SystemReset();
+    reboot();
   }
 
   uint8_t *buffer = up;
