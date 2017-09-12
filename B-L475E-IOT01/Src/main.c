@@ -65,7 +65,7 @@ RNG_HandleTypeDef hrng;
 RTC_HandleTypeDef hrtc;
 
 osThreadId defaultTaskHandle;
-osMutexId myMutexHandle;
+osMutexId updateMutexHandle;
 
 static sensors_data_t data;
 
@@ -114,8 +114,8 @@ int main(void)
 
   /* Create the mutex(es) */
   /* definition and creation of myMutex */
-  osMutexDef(myMutex);
-  myMutexHandle = osMutexCreate(osMutex(myMutex));
+  osMutexDef(updateMutex);
+  updateMutexHandle = osMutexCreate(osMutex(updateMutex));
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */

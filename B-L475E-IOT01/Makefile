@@ -192,7 +192,7 @@ CC_FLAGS += -DUSE_LPS22HB_TEMP
 
 .PHONY: all lst size
 
-all: $(PROJECT).bin $(PROJECT).hex bootloader.bin size
+all: $(PROJECT).bin bootloader.bin size
 
 .asm.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)

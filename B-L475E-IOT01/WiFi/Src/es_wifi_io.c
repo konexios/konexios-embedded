@@ -49,6 +49,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "es_wifi_io.h"
+#include "es_wifi_conf.h"
 #include <string.h>
 
 /* Private define ------------------------------------------------------------*/
@@ -230,10 +231,11 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
   }
   
   WIFI_ENABLE_NSS(); 
+  if ( !len ) len = ES_WIFI_DATA_SIZE - 100;
   
   while (WIFI_IS_CMDDATA_READY())
   {
-    if((length < len) || (!len))
+    if(length < len)
     {
       HAL_SPI_Receive(&hspi, tmp, 1, timeout) ;
       
@@ -253,9 +255,9 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
       length += 2;
       pData  += 2;
       
-      if((HAL_GetTick() - tickstart ) > timeout)
+      if((HAL_GetTick() - tickstart ) > timeout )
       {
-        WIFI_DISABLE_NSS(); 
+        WIFI_DISABLE_NSS();
         return -1;
       }
     }
@@ -265,7 +267,7 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
     }
   }
   
-  WIFI_DISABLE_NSS(); 
+  WIFI_DISABLE_NSS();
   return length;
 }
 /**
@@ -278,7 +280,6 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
 int16_t SPI_WIFI_SendData( uint8_t *pdata,  uint16_t len, uint32_t timeout)
 {
   uint32_t tickstart = HAL_GetTick();
-  uint8_t Padding[2];
   
   while (!WIFI_IS_CMDDATA_READY())
   {
@@ -299,8 +300,7 @@ int16_t SPI_WIFI_SendData( uint8_t *pdata,  uint16_t len, uint32_t timeout)
   
   if ( len & 1)
   {
-    Padding[0] = pdata[len-1];
-    Padding[1] = '\n';
+    uint8_t Padding[2] = { pdata[len-1], '\n' };
     
     if( HAL_SPI_Transmit(&hspi, Padding, 1, timeout) != HAL_OK)
     {
