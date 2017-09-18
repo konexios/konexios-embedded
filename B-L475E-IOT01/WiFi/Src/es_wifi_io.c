@@ -205,6 +205,13 @@ int8_t SPI_WIFI_DeInit(void)
   return 0;
 }
 
+#define GET_STER \
+do { \
+uint32_t e = HAL_SPI_GetError(&hspi); \
+HAL_SPI_StateTypeDef s = HAL_SPI_GetState(&hspi); \
+DBG("Error %d | State %d", e, s); \
+} while(0);
+
 /**
   * @brief  Receive wifi Data from SPI
   * @param  pdata : pointer to data
@@ -212,6 +219,7 @@ int8_t SPI_WIFI_DeInit(void)
   * @param  timeout : send timeout in mS
   * @retval Length of received data (payload)
   */
+#include <debug.h>
 int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
 {
   uint32_t tickstart = HAL_GetTick();
@@ -226,6 +234,8 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
   {
     if((HAL_GetTick() - tickstart ) > timeout)
     {
+      DBG("no cmd data ready (%d) %d", len, timeout);
+      GET_STER
       return -1;
     }
   }
@@ -258,6 +268,8 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
       if((HAL_GetTick() - tickstart ) > timeout )
       {
         WIFI_DISABLE_NSS();
+        DBG("+++ NO DATA");
+        GET_STER
         return -1;
       }
     }
@@ -285,7 +297,9 @@ int16_t SPI_WIFI_SendData( uint8_t *pdata,  uint16_t len, uint32_t timeout)
   {
     if((HAL_GetTick() - tickstart ) > timeout)
     {
-      WIFI_DISABLE_NSS();       
+      DBG("no cmd data ready: send data (%d) %d", len, timeout);
+      WIFI_DISABLE_NSS();
+      GET_STER
       return -1;
     }
   }
@@ -295,6 +309,8 @@ int16_t SPI_WIFI_SendData( uint8_t *pdata,  uint16_t len, uint32_t timeout)
   if( HAL_SPI_Transmit(&hspi, (uint8_t *)pdata , len/2, timeout) != HAL_OK)
   {
     WIFI_DISABLE_NSS(); 
+    DBG("send data fail");
+    GET_STER
     return -1;
   }
   
@@ -304,6 +320,8 @@ int16_t SPI_WIFI_SendData( uint8_t *pdata,  uint16_t len, uint32_t timeout)
     
     if( HAL_SPI_Transmit(&hspi, Padding, 1, timeout) != HAL_OK)
     {
+      DBG("Paddig fail");
+      GET_STER
       WIFI_DISABLE_NSS();       
       return -1;
     }

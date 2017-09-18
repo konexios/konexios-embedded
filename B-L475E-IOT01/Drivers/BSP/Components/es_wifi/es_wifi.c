@@ -271,6 +271,7 @@ static void AT_ParseInfo(ES_WIFIObject_t *Obj,uint8_t *pdata)
 {
   char *ptr;
   uint8_t num = 0;
+  DBG(pdata);
   
   ptr = strtok((char *)pdata + 2, ",");  
   
@@ -1160,12 +1161,28 @@ ES_WIFI_Status_t ES_WIFI_SetProductName(ES_WIFIObject_t *Obj, uint8_t *ProductNa
   * @param  Upgrade link path
   * @retval Operation Status.
   */
-ES_WIFI_Status_t ES_WIFI_OTA_Upgrade(ES_WIFIObject_t *Obj, uint8_t *link)
+ES_WIFI_Status_t ES_WIFI_OTA_Upgrade(ES_WIFIObject_t *Obj, const char *link)
 {
   ES_WIFI_Status_t ret ;
-  
+
+  sprintf((char*)Obj->CmdData,"ZV=0\r");
+  ret = AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
+  DBG("ZV %s", (char *)Obj->CmdData);
+
+  sprintf((char*)Obj->CmdData,"Z?\r");
+  ret = AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
+  DBG("Z %s", (char *)Obj->CmdData);
+
+  sprintf((char*)Obj->CmdData,"C?\r");
+  ret = AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
+  DBG("C %s", (char *)Obj->CmdData);
+
   sprintf((char*)Obj->CmdData,"Z0=%d\r%s",strlen((char *)link), (char *)link);
+  DBG("exec OTA update ZO=%d\\r%s", strlen((char *)link), (char *)link);
+  wdt_feed();
+  Obj->Timeout = -1;// 20000;
   ret = AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData); 
+
   return ret;
 }
 #endif
@@ -1766,9 +1783,9 @@ ES_WIFI_Status_t ES_WIFI_ReceiveData(ES_WIFIObject_t *Obj, uint8_t Socket, uint8
       ret = AT_RequestReceiveData(Obj, Obj->CmdData, (char *)pdata, Reqlen, Receivedlen);
       if ( ret != ES_WIFI_STATUS_OK ) {
         // try to fix last cmd fail
-        DBG("Receive data Error!");
-        sprintf((char*)Obj->CmdData,"P0=%d\r", Socket);
-        AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
+        sprintf((char*)Obj->CmdData,"AT\r");
+        ret = AT_ExecuteCommand(Obj, Obj->CmdData, Obj->CmdData);
+        DBG("Try to repair %d", ret);
         // should be failed
       }
     }

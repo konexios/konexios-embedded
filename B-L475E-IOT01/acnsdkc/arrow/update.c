@@ -41,6 +41,23 @@
 
 // flash - FLASH_PAGE_SIZE;
 // qspi - MX25R6435F_PAGE_SIZE
+#include <json/json.h>
+#include <wifi.h>
+int wifi_module_update(const char *str) {
+	DBG("cmd: [%s]", str);
+	int ret = -1;
+	JsonNode *_main = json_decode(str);
+	if ( !_main )
+		goto wifi_exit;
+	JsonNode *_link = json_find_member(_main, "link");
+	if ( !_link || !_link->string_ )
+		goto wifi_exit;
+	if ( WIFI_ModuleFirmwareUpdate(_link->string_) == WIFI_STATUS_OK )
+		ret = 0;
+wifi_exit:
+	json_delete(_main);
+	return ret;
+}
 
 uint8_t up[0x40000] __attribute__((section("UNINIT_FIXED_LOC_UP")));
 #define FLASH_BUFFER_SIZE 2*FLASH_PAGE_SIZE
@@ -177,7 +194,7 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
     return -1;
   }
 //  DBG("add to %d", buf_fill_size());
-  DBG("s %d", shift);
+//  DBG("s %d", shift);
   int r = buf_add((uint8_t*)payload, size);
   osMutexRelease(updateMutexHandle);
   if ( r < 0 ) {

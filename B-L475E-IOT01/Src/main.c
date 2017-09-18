@@ -299,6 +299,7 @@ static char moduleinfo[WIFI_PRODUCT_INFO_SIZE];
 
 extern int arrow_release_download_payload(property_t *buf, const char *payload, int size);
 extern int arrow_release_download_complete(property_t *buf);
+extern int wifi_module_update(const char *str);
 
 /* StartDefaultTask function */
 void StartDefaultTask(void const * argument)
@@ -366,6 +367,8 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
+  add_cmd_handler("wifiup", wifi_module_update);
+
   // sycn time by the NTP
   ntp_set_time_cycle();
 
@@ -383,7 +386,11 @@ void StartDefaultTask(void const * argument)
   PrepareMqttPayload(&data);
 
   // send the telemetry
-  arrow_send_telemetry_routine(&data);
+  int telemetry_count = 0;
+  while(1) {
+    arrow_send_telemetry_routine(&data);
+    DBG("t: %d", telemetry_count++);
+  }
 
   // establish the MQTT connection
   arrow_mqtt_connect_routine();
