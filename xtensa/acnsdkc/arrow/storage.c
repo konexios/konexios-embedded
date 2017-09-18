@@ -177,3 +177,55 @@ int restore_wifi_setting(char *ssid, char *pass, int *sec) {
 #endif
   return 0;
 }
+
+void save_key_setting(const char *api_key, const char *sec_key) {
+  int32_t status = A_ERROR;
+  uint32_t handle = 0;
+  if ( !flash_read ) read_flash();
+  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_MEDIA_NVRAM, NULL, NULL);
+  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_MEDIA_NVRAM, NULL, NULL);
+  if (status != A_OK) {
+    DBG("WriteToFlash: Failed to create RW dset");
+    return;
+  }
+  strcpy(flash_data.padding, api_key);
+  DBG("flash write: %s", api_key);
+  strcpy(flash_data.padding + 66, sec_key);
+  DBG("flash write: %s", sec_key);
+  status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
+             0, DSET_MEDIA_NVRAM, NULL, NULL);
+  if (status == A_OK) {
+      qcom_dset_commit(handle, NULL, NULL);
+  }
+  qcom_dset_close(handle, NULL, NULL);
+}
+
+int restore_key_setting(char *api, char *sec) {
+  if ( !flash_read ) read_flash();
+
+#if defined(DEFAULT_API_KEY)  \
+  && defined(DEFAULT_SECRET_KEY)
+  if (api) strcpy(api, DEFAULT_API_KEY);
+  if (sec) strcpy(sec, DEFAULT_SECRET_KEY);
+#else
+  char *tmp = flash_data.padding;
+  if ( api ) {
+    if ( !utf8check(tmp) || strlen(tmp)==0 ) {
+      DBG("there is no API key");
+      return -1;
+    }
+    DBG("api %s", tmp);
+    strcpy(api, tmp);
+  }
+  if ( sec ) {
+    tmp = flash_data.padding + 66;
+    if ( !utf8check(tmp) || strlen(tmp)==0 ) {
+      DBG("there is no SECRET");
+      return -1;
+    }
+    DBG("sec %s", tmp);
+    strcpy(sec, tmp);
+  }
+#endif
+  return 0;
+}

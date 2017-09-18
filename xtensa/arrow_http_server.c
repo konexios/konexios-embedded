@@ -175,6 +175,7 @@ int find_tlv(HTTP_EVENT_T* ev, const char *key, char *value) {
 }
 
 /*Callback function called by PHOST when a client sends a command to HTTP server*/
+static void save_api_secret_keys(void* cxt, void* buf);
 static void swat_process_tlv(void* cxt, void* buf)
 {
   SSP_PARAMETER_NOT_USED(cxt);
@@ -186,8 +187,6 @@ static void swat_process_tlv(void* cxt, void* buf)
     char pass[32];
     char auth_tmp[10];
     char sec_tmp[10];
-//    char sec_tmp[32];
-//    char sec_tmp[32];
     char tmp[32];
     int sec = 0;
 
@@ -201,9 +200,6 @@ static void swat_process_tlv(void* cxt, void* buf)
     find_tlv(ev, "pass", pass);
     find_tlv(ev, "auth", auth_tmp);
     find_tlv(ev, "sec", sec_tmp);
-
-//    find_tlv(ev, "api_key", api_tmp);
-//    find_tlv(ev, "sec_key", sec_tmp);
 
     if ( strcmp(auth_tmp, "open") == 0 ) {
       sec |= WLAN_AUTH_NONE;
@@ -226,6 +222,25 @@ static void swat_process_tlv(void* cxt, void* buf)
     DBG("sec : {%08x}", sec);
     //save
     save_wifi_setting(ssid, pass, sec);
+    save_api_secret_keys(cxt, buf);
+}
+
+static void save_api_secret_keys(void* cxt, void* buf) {
+  SSP_PARAMETER_NOT_USED(cxt);
+  HTTP_EVENT_T* ev = (HTTP_EVENT_T*)buf;
+  if(!buf) return;
+
+  char api_tmp[64] = {0};
+  char sec_tmp[44] = {0};
+
+  find_tlv(ev, "api_key", api_tmp);
+  find_tlv(ev, "sec_key", sec_tmp);
+
+  DBG("api: {%s}", api_tmp);
+  DBG("sec: {%s}", sec_tmp);
+
+  save_key_setting(api_tmp, sec_tmp);
+
 }
 
 /*HTTP Server extensions -- application callbacks to all HTTP methods*/
