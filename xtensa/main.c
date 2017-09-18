@@ -163,27 +163,26 @@ force_ap:
     rssi_data_t sig;
 
     A_PRINTF("try to connect %d\n", currentDeviceId);
-    A_UINT32 auth;
-    A_UINT32 sec;
+    struct sec_t {
+      A_UINT16 encr;
+      A_UINT16 auth;
+    } sec;
     char ssid[32];
     char pass[32];
     if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
       DBG("No wifi settings!");
-#if defined(DEFAULT_WIFI_SSID) && defined(DEFAULT_WIFI_PASS) && defined(DEFAULT_WIFI_SEC)
-      strcpy(ssid, DEFAULT_WIFI_SSID);
-      strcpy(pass, DEFAULT_WIFI_PASS);
-      sec = DEFAULT_WIFI_SEC;
-#else
       goto force_ap;
-#endif
     }
-    auth = (sec >> 16);
-    sec &= 0x00ffff;
+//    sec.auth = 4;
+//    sec.encr = 3;
     qcom_sec_set_passphrase(currentDeviceId, pass);
-    qcom_sec_set_auth_mode(currentDeviceId, auth);
-    qcom_sec_set_encrypt_mode(currentDeviceId, sec);
-    DBG("auth %d", auth);
-    DBG("secr %d", sec);
+    qcom_sec_set_auth_mode(currentDeviceId, (A_UINT32)sec.auth);
+    qcom_sec_set_encrypt_mode(currentDeviceId, (A_UINT32)sec.encr);
+    A_UINT32 test;
+    qcom_sec_get_auth_mode(currentDeviceId, &test);
+    DBG("auth %d", test);
+    qcom_sec_get_encrypt_mode(currentDeviceId, &test);
+    DBG("secr %d", test);
     arrow_connect_ssid(currentDeviceId, ssid);
 
     do {

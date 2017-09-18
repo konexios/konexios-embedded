@@ -41,9 +41,12 @@ void get_sock_timer(int sock, struct timeval* tv) {
   while ( last ) {
     if ( last->sock == sock ) {
       *tv = last->timeout;
+      return;
     }
     last = last->next;
   }
+  tv->tv_sec = 30;
+  tv->tv_usec = 0;
 }
 
 void rm_sock_timer(int sock) {

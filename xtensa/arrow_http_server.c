@@ -184,8 +184,10 @@ static void swat_process_tlv(void* cxt, void* buf)
 
     char ssid[32];
     char pass[32];
-    char auth_tmp[32];
-    char sec_tmp[32];
+    char auth_tmp[10];
+    char sec_tmp[10];
+//    char sec_tmp[32];
+//    char sec_tmp[32];
     char tmp[32];
     int sec = 0;
 
@@ -199,6 +201,9 @@ static void swat_process_tlv(void* cxt, void* buf)
     find_tlv(ev, "pass", pass);
     find_tlv(ev, "auth", auth_tmp);
     find_tlv(ev, "sec", sec_tmp);
+
+//    find_tlv(ev, "api_key", api_tmp);
+//    find_tlv(ev, "sec_key", sec_tmp);
 
     if ( strcmp(auth_tmp, "open") == 0 ) {
       sec |= WLAN_AUTH_NONE;

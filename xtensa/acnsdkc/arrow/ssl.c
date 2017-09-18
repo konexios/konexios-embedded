@@ -15,6 +15,7 @@
 # include <qcom_security.h>
 # include <qcom_common.h>
 #include <qcom/socket_api.h>
+#include <qcom/select_api.h>
 
 #define SSL_INBUF_SIZE               6000
 #define SSL_OTA_INBUF_SIZE           20000
@@ -45,8 +46,19 @@ int ssl_connect(int sock) {
   return SSL_SUCCESS;
 }
 
+extern void get_sock_timer(int sock, struct timeval* tv);
 int ssl_recv(int sock, char *data, int len) {
-  SSP_PARAMETER_NOT_USED(sock);
+  struct timeval tv;
+  q_fd_set rset;
+  A_INT32 ret;
+
+  FD_ZERO(&rset);
+  get_sock_timer(sock, &tv);
+  FD_SET(sock, &rset);
+  if ((ret = qcom_select(sock + 1, &rset, 0, 0, &tv)) <= 0) {
+    if (ret == 0) return (-1);
+    else return (ret);
+  }
   return qcom_SSL_read(ssl, data, len);
 }
 
