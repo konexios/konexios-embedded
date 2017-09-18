@@ -173,6 +173,15 @@ force_ap:
       DBG("No wifi settings!");
       goto force_ap;
     }
+    {
+      // keys test
+      char api_test[66];
+      char sec_test[44];
+      if ( restore_key_setting(api_test, sec_test) < 0 ) {
+        DBG("No wifi settings!");
+        goto force_ap;
+      }
+    }
 //    sec.auth = 4;
 //    sec.encr = 3;
     qcom_sec_set_passphrase(currentDeviceId, pass);

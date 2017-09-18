@@ -146,7 +146,7 @@ int find_tlv(HTTP_EVENT_T* ev, const char *key, char *value) {
       break;
       case HTTP_TYPE_NAME:
         A_PRINTF("NAME: %s\n",val);
-        if ( strncmp((char*)val, key, length) == 0 ) {
+        if ( strncmp((char*)val, key, length) == 0 && length == (short)strlen(key) ) {
           data = GET_NEXT_TLV(data, length);
           numTLV--;
           if (numTLV > 0) {
