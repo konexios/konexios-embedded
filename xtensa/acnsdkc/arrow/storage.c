@@ -188,9 +188,11 @@ void save_key_setting(const char *api_key, const char *sec_key) {
     DBG("WriteToFlash: Failed to create RW dset");
     return;
   }
-  strcpy(flash_data.padding, api_key);
+  strncpy(flash_data.padding, api_key, 64);
+  flash_data.padding[64] = 0;
   DBG("flash write: %s", api_key);
-  strcpy(flash_data.padding + 66, sec_key);
+  strncpy(flash_data.padding + 66, sec_key, 44);
+  flash_data.padding[66+44] = 0;
   DBG("flash write: %s", sec_key);
   status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
              0, DSET_MEDIA_NVRAM, NULL, NULL);
@@ -214,8 +216,8 @@ int restore_key_setting(char *api, char *sec) {
       DBG("there is no API key");
       return -1;
     }
-    DBG("api %s", tmp);
-    strcpy(api, tmp);
+//    DBG("api %s", tmp);
+    strncpy(api, tmp, 64);
   }
   if ( sec ) {
     tmp = flash_data.padding + 66;
@@ -223,8 +225,8 @@ int restore_key_setting(char *api, char *sec) {
       DBG("there is no SECRET");
       return -1;
     }
-    DBG("sec %s", tmp);
-    strcpy(sec, tmp);
+//    DBG("sec %s", tmp);
+    strncpy(sec, tmp, 44);
   }
 #endif
   return 0;

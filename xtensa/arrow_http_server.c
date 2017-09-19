@@ -230,8 +230,8 @@ static void save_api_secret_keys(void* cxt, void* buf) {
   HTTP_EVENT_T* ev = (HTTP_EVENT_T*)buf;
   if(!buf) return;
 
-  char api_tmp[64] = {0};
-  char sec_tmp[44] = {0};
+  char api_tmp[65] = {0};
+  char sec_tmp[45] = {0};
 
   find_tlv(ev, "api_key", api_tmp);
   find_tlv(ev, "sec_key", sec_tmp);
