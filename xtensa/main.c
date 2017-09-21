@@ -151,7 +151,7 @@ void main_entry(ULONG which_thread) {
   wdt_start();
   arrow_gateway_software_update_set_cb(qca_gateway_software_update);
   arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
-
+#if !defined(DEFAULT_WIFI_SSID)
   if ( arrow_gpio_check() ) {
 force_ap:
     start_ap2(currentDeviceId);
@@ -162,7 +162,9 @@ force_ap:
       wdt_feed();
       if ( 0 ) goto force_ap;
     }
-  } else {
+  } else
+#endif
+  {
     A_UINT32 ip = 0;
     rssi_data_t sig;
 
@@ -175,7 +177,11 @@ force_ap:
     char pass[32];
     if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
       DBG("No wifi settings!");
+#if defined(DEFAULT_WIFI_SSID)
+      return;
+#else
       goto force_ap;
+#endif
     }
     {
       // keys test
@@ -183,7 +189,11 @@ force_ap:
       char sec_test[46];
       if ( restore_key_setting(api_test, sec_test) < 0 ) {
         DBG("No wifi settings!");
+#if defined(DEFAULT_WIFI_SSID)
+      return;
+#else
         goto force_ap;
+#endif
       }
     }
     qcom_sec_set_passphrase(currentDeviceId, pass);

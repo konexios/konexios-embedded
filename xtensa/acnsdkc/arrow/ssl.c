@@ -17,9 +17,9 @@
 #include <qcom/socket_api.h>
 #include <qcom/select_api.h>
 
-#define SSL_INBUF_SIZE               6000
-#define SSL_OTA_INBUF_SIZE           20000
-#define SSL_OUTBUF_SIZE              3500
+#define SSL_INBUF_SIZE               1500
+#define SSL_OTA_INBUF_SIZE           2000
+#define SSL_OUTBUF_SIZE              3000
 
 #define SSL_SUCCESS 0
 
