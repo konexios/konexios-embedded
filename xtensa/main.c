@@ -127,8 +127,8 @@ int get_data(void *data) {
   sig->temperature = (float)temp / 256.0;
   A_PRINTF("data [%d] {%d, %d}\n", data_counter, sig->rssi, (int)sig->temperature);
   data_counter ++;
-//  if ( data_counter++ % 3 == 0 )
-//    arrow_gateway_heartbeat(current_gateway());
+  if ( data_counter++ % 3 == 0 )
+    arrow_gateway_heartbeat(current_gateway());
 }
 
 static int test_cmd_proc(const char *str) {
