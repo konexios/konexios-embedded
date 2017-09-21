@@ -148,7 +148,7 @@ void main_entry(ULONG which_thread) {
   A_PRINTF("sotfware veriosn %s %s\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   arrow_gpio_init();
   temperature_init();
-  wdt_start();
+//  wdt_start();
   arrow_gateway_software_update_set_cb(qca_gateway_software_update);
   arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
 
