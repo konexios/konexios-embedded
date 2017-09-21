@@ -36,6 +36,7 @@ static void read_flash() {
 int restore_gateway_info(arrow_gateway_t *gateway) {
   char *gatehid = NULL;
   if ( !flash_read ) read_flash();
+  if ( flash_data.magic != (int)FLASH_MAGIC_NUMBER ) return -1;
   gatehid = flash_data.gateway_hid;
   if ( !utf8check(gatehid) || strlen(gatehid)==0 ) {
     DBG("there is no gateway HID");
@@ -76,6 +77,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
 int restore_device_info(arrow_device_t *device) {
   char *devhid = NULL;
   if ( !flash_read ) read_flash();
+  if ( flash_data.magic != (int)FLASH_MAGIC_NUMBER ) return -1;
   devhid = flash_data.device_hid;
   if ( !utf8check(devhid) || strlen(devhid)==0 ) {
     return -1;
@@ -103,6 +105,7 @@ void save_device_info(arrow_device_t *device) {
     DBG("WriteToFlash: Failed to create RW dset");
     return;
   }
+  flash_data.magic = FLASH_MAGIC_NUMBER;
   strcpy(flash_data.device_hid, P_VALUE(device->hid));
   DBG("flash write: %s", P_VALUE(device->hid));
 #if defined(__IBM__)

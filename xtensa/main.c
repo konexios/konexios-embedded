@@ -31,6 +31,7 @@
 #include <arrow/storage.h>
 #include <json/data.h>
 #include <time/watchdog.h>
+#include <arrow/gateway_api.h>
 #include <arrow/device_command.h>
 #include <arrow/software_update.h>
 #include <arrow/software_release.h>
@@ -118,14 +119,16 @@ A_BOOL arrow_gpio_check() {
 }
 
 int get_data(void *data) {
-  A_PRINTF("get data\n");
+  static int data_counter = 0;
   rssi_data_t *sig = (rssi_data_t *)data;
-//  A_STATUS status =
   qcom_sta_get_rssi(currentDeviceId, &sig->rssi);
   unsigned short temp;
   tmp106_reg_read(&temp);
   sig->temperature = (float)temp / 256.0;
-  A_PRINTF("data {%d, %d}\n", sig->rssi, (int)sig->temperature);
+  A_PRINTF("data [%d] {%d, %d}\n", data_counter, sig->rssi, (int)sig->temperature);
+  data_counter ++;
+//  if ( data_counter++ % 3 == 0 )
+//    arrow_gateway_heartbeat(current_gateway());
 }
 
 static int test_cmd_proc(const char *str) {
