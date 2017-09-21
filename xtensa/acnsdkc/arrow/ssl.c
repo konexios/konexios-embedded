@@ -53,6 +53,7 @@ int ssl_connect(int sock) {
   sock_num[socket_fd] = sock;
 
   DBG("Connect %d, %d", sock, socket_fd);
+  DBG("head free %d", qcom_mem_heap_get_free_size());
 
   ctx[socket_fd] = qcom_SSL_ctx_new(SSL_CLIENT, SSL_INBUF_SIZE, SSL_OUTBUF_SIZE, 0);
   if ( ctx[socket_fd] == NULL) {
