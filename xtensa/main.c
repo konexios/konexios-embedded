@@ -127,7 +127,7 @@ int get_data(void *data) {
   sig->temperature = (float)temp / 256.0;
   A_PRINTF("data [%d] {%d, %d}\n", data_counter, sig->rssi, (int)sig->temperature);
   data_counter ++;
-  if ( data_counter % 2 == 0 )
+//  if ( data_counter % 2 == 0 )
     arrow_gateway_heartbeat(current_gateway());
 }
 
@@ -219,6 +219,8 @@ force_ap:
     arrow_send_telemetry_routine(&sig);
 
     arrow_mqtt_connect_routine();
+    arrow_gateway_heartbeat(current_gateway());
+
     arrow_mqtt_send_telemetry_routine(get_data, &sig);
 
     arrow_close();

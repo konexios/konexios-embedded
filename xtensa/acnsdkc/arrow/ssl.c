@@ -23,22 +23,48 @@
 
 #define SSL_SUCCESS 0
 
-static SSL_CTX *ctx = NULL;
-static SSL *ssl = NULL;
+static SSL_CTX *ctx[2] = {0};
+static SSL *ssl[2] = {0};
+
+int sock_num[2] = {-1, -1};
+
+int find_free_sock() {
+  int i;
+  for (i=0; i< 2; i++)
+    if ( sock_num[i] < 0) return i;
+  return -1;
+}
+
+int find_sock(int sock) {
+  int i;
+  for (i=0; i< 2; i++)
+    if ( sock_num[i] == sock) return i;
+  return -1;
+}
+
+void free_sock(int sock) {
+  int s = find_sock(sock);
+  if ( s >= 0 ) sock_num[s] = -1;
+}
 
 int ssl_connect(int sock) {
-  ctx = qcom_SSL_ctx_new(SSL_CLIENT, SSL_INBUF_SIZE, SSL_OUTBUF_SIZE, 0);
-  if ( ctx == NULL) {
+
+  int socket_fd = find_free_sock();
+  if ( socket_fd< 0 ) return -1;
+  sock_num[socket_fd] = sock;
+
+  ctx[socket_fd] = qcom_SSL_ctx_new(SSL_CLIENT, SSL_INBUF_SIZE, SSL_OUTBUF_SIZE, 0);
+  if ( ctx[socket_fd] == NULL) {
     DBG("unable to get ctx");
     return -1;
   }
-  ssl = qcom_SSL_new(ctx);
-  qcom_SSL_set_fd(ssl, sock);
-  if (ssl == NULL) {
+  ssl[socket_fd] = qcom_SSL_new(ctx[socket_fd]);
+  qcom_SSL_set_fd(ssl[socket_fd], sock);
+  if (ssl[socket_fd] == NULL) {
     DBG("oops, bad SSL ptr");
     return -1;
   }
-  int err = qcom_SSL_connect(ssl);
+  int err = qcom_SSL_connect(ssl[socket_fd]);
   if (err < 0) {
     DBG("SSL connect fail");
     return err;
@@ -51,6 +77,8 @@ int ssl_recv(int sock, char *data, int len) {
   struct timeval tv;
   q_fd_set rset;
   A_INT32 ret;
+  int socket_fd = find_sock(sock);
+  if ( socket_fd < 0 ) return -1;
 
   FD_ZERO(&rset);
   get_sock_timer(sock, &tv);
@@ -59,19 +87,22 @@ int ssl_recv(int sock, char *data, int len) {
     if (ret == 0) return (-1);
     else return (ret);
   }
-  return qcom_SSL_read(ssl, data, len);
+  return qcom_SSL_read(ssl[socket_fd], data, len);
 }
 
 int ssl_send(int sock, char* data, int length) {
-  SSP_PARAMETER_NOT_USED(sock);
-  return qcom_SSL_write(ssl, data, length);
+  int socket_fd = find_sock(sock);
+  if ( socket_fd < 0 ) return -1;
+  return qcom_SSL_write(ssl[socket_fd], data, length);
 }
 
 int ssl_close(int sock) {
-  SSP_PARAMETER_NOT_USED(sock);
+  int socket_fd = find_sock(sock);
+  if ( socket_fd < 0 ) return -1;
   DBG("xcc close ssl");
-  if ( ssl ) qcom_SSL_shutdown(ssl);
-  if ( ctx ) qcom_SSL_ctx_free(ctx);
+  if ( ssl[socket_fd] ) qcom_SSL_shutdown(ssl[socket_fd]);
+  if ( ctx[socket_fd] ) qcom_SSL_ctx_free(ctx[socket_fd]);
+  free_sock(sock);
   DBG("xcc close done");
   return 0;
 }
