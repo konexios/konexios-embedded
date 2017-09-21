@@ -38,6 +38,7 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
   int rtn = -1;
   wdt_feed();
   if ( !chunk ) {
+    img_offset = 0;
     DBG("Enter Arrow firmware upgrade");
 //    DBG("ota_ftp_update: ip:%xH, port:%d\n", ip_addr, port);
 //    DBG("                User:%s, Password:%s\n", user_name, password);
@@ -74,6 +75,7 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
     DBG("OTA Data write failed");
     return -1;
   }
+  DBG("chunk %d", chunk);
   img_offset += ret_size;
   chunk++;
   return 0;
