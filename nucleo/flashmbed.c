@@ -19,10 +19,10 @@ extern "C" {
 
 #include <arrow/storage.h>
 
-static uint8_t __eeprom[0x4000] __attribute__((section(".eeprom"), used));
+//static uint8_t __eeprom[0x4000] __attribute__((section(".eeprom"), used));
 
 char *flash_start() {
-  return (char*)__eeprom;
+  return (char*)(0x08004000);//__eeprom;
 }
 
 int write_flash(char *flash, size_t size) {
@@ -45,7 +45,7 @@ int write_flash(char *flash, size_t size) {
   char *raw = flash;
   while( i < (int)size ) {
     data = *(raw + i);
-    HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(__eeprom+i), data);
+    HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(0x08004000+i), data);
     i++;
   }
   HAL_FLASH_Lock();

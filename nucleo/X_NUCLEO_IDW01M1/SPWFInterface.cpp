@@ -115,7 +115,7 @@ int SpwfSAInterface::connect(
         else return NSAPI_ERROR_DEVICE_ERROR;
     }
     
-    _spwf.setTimeout(SPWF_CONNECT_TIMEOUT);   
+    _spwf.setTimeout(10*SPWF_CONNECT_TIMEOUT);
     
     switch(security)
     {

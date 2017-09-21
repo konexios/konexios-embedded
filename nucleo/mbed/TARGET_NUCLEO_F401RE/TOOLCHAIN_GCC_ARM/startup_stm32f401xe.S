@@ -77,6 +77,11 @@ Reset_Handler:
 
 /* Copy the data segment initializers from flash to SRAM */  
   movs  r1, #0
+  movs  r0, #0
+  movs  r2, #0
+  movs  r3, #0
+  movs  r4, #0
+  movs  lr, #-1
   b  LoopCopyDataInit
 
 CopyDataInit:

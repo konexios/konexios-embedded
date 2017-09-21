@@ -68,22 +68,22 @@ extern int arrow_release_download_complete(property_t *buf);
 }
 
 int main() {
-  __enable_irq();
-  wdt_start();
+//  wdt_start();
   led = 1;
-  printf("\r\n--- Demo Nucleo C ---\r\n");
+  printf("\r\n--- Demo Nucleo ---\r\n");
+  printf("sw %s %s\r\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   rand();
 
-    int err;
-    char ssid[64];
-    char pass[64];
-    nsapi_security_t security;
-    err = restore_wifi_setting(ssid, pass, (int*)&security);
-    wdt_feed();
+  int err;
+  char ssid[64];
+  char pass[64];
+  nsapi_security_t security;
+  err = restore_wifi_setting(ssid, pass, (int*)&security);
+  wdt_feed();
 
-    printf("@button %d\r\n", button.read());
     if (button == 0 || err < 0) {
 force_ap:
+      printf("start AP %d\r\n", button.read());
       spwf.create_ap(MAIN_WLAN_SSID, MAIN_WLAN_CHANNEL);
       const char *arrow_config_page =
           "<html><head><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'/>"
@@ -123,7 +123,7 @@ force_ap:
     printf("connecting to AP\r\n");
 
     int try_connect = 5;
-    spwf.setTimeout(20000); // 20 sec waiting
+    spwf.setTimeout(200000); // 20 sec waiting
 
     do {
       wdt_feed();

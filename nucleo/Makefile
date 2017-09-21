@@ -166,14 +166,12 @@ $(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a bootloader
 	
 clean: sdk_clean
 	cd bootloader && make clean
+	$(RM) bootloader.bin
 	$(RMDIR) $(LIBDIR)
 	$(RM) $(CPPOBJS)
 	
 $(APP_OUT).bin: $(APP_OUT)
-	$(OBJCOPY) -R .eeprom -O binary $< $@
-
-$(APP_OUT).hex: $(APP_OUT)
-	@$(OBJCOPY) -R .eeprom -O ihex $< $@
+	$(OBJCOPY) -O binary $< $@
 
 $(APP_OUT).lst: $(APP_OUT)
 	@$(OBJDUMP) -Sdh $< > $@
@@ -184,6 +182,8 @@ size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 
 bootloader: bootloader.bin
+
+bootloader.bin:
 	cd bootloader && make clean && make && cp bootloader.bin ..
 	
 flash: $(APP_OUT)

@@ -353,7 +353,9 @@ WiFi_Status_t wifi_init(wifi_config* config)
   }
 
   /* Soft reset the module, Do the second reset after setting all parameters and saving in flash */
+  printf("soft reset?\r\n");
   wifi_reset();
+  printf("++++++++++++\r\n");
 
   wifi_wakeup(WIFI_FALSE);//De-assert wakeup signal (PC8) to allow sleep if enabled
 #endif  //WIFI_USE_VCOM

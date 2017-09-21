@@ -60,49 +60,53 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-    
-    int *size_addr = (int *)(START_ADDR);
-    
-    if ( *size_addr > 0 && *size_addr < 0x40000 ) {
-      HAL_FLASH_Unlock();
-      __HAL_FLASH_CLEAR_FLAG( FLASH_FLAG_EOP | FLASH_FLAG_OPERR |FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR );
-      FLASH_EraseInitTypeDef eraser;
-      eraser.TypeErase = TYPEERASE_SECTORS;
-      eraser.Banks = FLASH_BANK_1;
-      eraser.Sector = 2;
-      eraser.NbSectors = 4;
-      eraser.VoltageRange = VOLTAGE_RANGE_3;
-      uint32_t sectorerr = 0;
-      if( HAL_OK != HAL_FLASHEx_Erase( &eraser, &sectorerr ) || sectorerr != 0xFFFFFFFF ) {
-        HAL_FLASH_Lock();
-        return -1;
-      }
-      int i = 4;
-      char data;
-      while( i < *size_addr ) {
-	data = *(char*)(START_ADDR + i);
-	HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(0x8008000 + i - 4), data);
-	i++;
-      }
-      eraser.Sector = 6;
-      eraser.NbSectors = 1;
-      sectorerr = 0;
-      if( HAL_OK != HAL_FLASHEx_Erase( &eraser, &sectorerr ) || sectorerr != 0xFFFFFFFF ) {
-        HAL_FLASH_Lock();
-        return -1;
-      }
+
+  int *size_addr = (int *)(START_ADDR);
+
+  if ( *size_addr > 0 && *size_addr < 0x40000 ) {
+    HAL_FLASH_Unlock();
+    __HAL_FLASH_CLEAR_FLAG( FLASH_FLAG_EOP | FLASH_FLAG_OPERR |FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR );
+    FLASH_EraseInitTypeDef eraser;
+    eraser.TypeErase = TYPEERASE_SECTORS;
+    eraser.Banks = FLASH_BANK_1;
+    eraser.Sector = 2;
+    eraser.NbSectors = 4;
+    eraser.VoltageRange = VOLTAGE_RANGE_3;
+    uint32_t sectorerr = 0;
+    if( HAL_OK != HAL_FLASHEx_Erase( &eraser, &sectorerr ) || sectorerr != 0xFFFFFFFF ) {
       HAL_FLASH_Lock();
+      return -1;
     }
-    
-    __asm volatile ("cpsid i" : : : "memory");
-    int *jump_addr = (int *)(0x8008000 + sizeof(reset_handler));
+    int i = 4;
+    char data;
+    while( i < *size_addr ) {
+      data = *(char*)(START_ADDR + i);
+      HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(0x8008000 + i - 4), data);
+      i++;
+    }
+    eraser.Sector = 6;
+    eraser.NbSectors = 1;
+    sectorerr = 0;
+    if( HAL_OK != HAL_FLASHEx_Erase( &eraser, &sectorerr ) || sectorerr != 0xFFFFFFFF ) {
+      HAL_FLASH_Lock();
+      return -1;
+    }
+    HAL_FLASH_Lock();
+  }
+
+  __asm volatile ("cpsid i" : : : "memory");
+  int *jump_addr = (int *)(0x8008000 + sizeof(reset_handler));
+  int msp_reg = *(int *)(0x8008000 + 0);
   
   reset_handler *reset = (reset_handler *) ( jump_addr );
 
+
   SCB->VTOR = 0x8008000;
+  __ASM volatile ("cpsie i" : : : "memory");
   
+  __set_MSP(msp_reg);
   (*reset)();
-    
+
 
   /* Infinite loop */
   while (1) {

@@ -23,7 +23,8 @@ int check_mgc() {
 }
 
 int restore_gateway_info(arrow_gateway_t *gateway) {
-  printf("restore gateway info\r\n");
+  printf("restore gateway info %08x\r\n", (int)flash_start());
+  return -1;
   if (check_mgc()) {
     flash_mem_t *mem = (flash_mem_t *)flash_start();
     if ( utf8check(mem->gateway_hid) && strlen(mem->gateway_hid) > 0 ) {
@@ -43,6 +44,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
 }
 
 int restore_device_info(arrow_device_t *device) {
+  return -1;
   if (check_mgc()) {
     flash_mem_t *mem = (flash_mem_t *)flash_start();
     if ( !utf8check(mem->device_hid) || strlen(mem->device_hid) == 0 ) {

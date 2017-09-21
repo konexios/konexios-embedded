@@ -392,6 +392,8 @@ void Wifi_TIM_Handler(void)
 
         if(event_pop_s!=NULL && event_pop_s->event_pop == WIFI_TRUE)
           {
+          printf("-%d %d\r\n",
+                 event_pop_s->event, (int)event_pop_s->wind);
             switch(event_pop_s->event)
               {
                 case WIFI_WIND_EVENT:
@@ -1871,9 +1873,9 @@ void Process_Wind_Indication(const uint8_t *process_buff_ptr)
   char * pStr = (char*)process_buff_ptr;
   char Indication_No[2]; 
   char databytes_No[4]; 
-  #ifdef DEBUG_PRINT
+//  #ifdef DEBUG_PRINT
   printf((const char*)process_buff_ptr);
-  #endif
+//  #endif
   //callSpwfSADevice_debug(spwf_dev_,(const char*)process_buff_ptr);
   
   char * ptr_offset;
@@ -2305,6 +2307,7 @@ void Process_WiFi_Indication_Cmd(event_s_TypeDef * event_pop_s1)
         WiFi_WIND_State.WiFiException = WIFI_TRUE;
       break;
     case WiFi_Hardware_Started :
+      printf("wifi_ready %d\r\n", (int)wifi_ready);
         wifi_ready++;
         status_flag.WiFi_Enabled = WIFI_TRUE;
         WiFi_WIND_State.WiFiHWStarted = WIFI_TRUE;

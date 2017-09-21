@@ -107,6 +107,7 @@ void callSpwfSADevice_wakeup(void* object, int wake)
 */
 void callSpwfSADevice_reset(void* object, int reset)
 {
+  printf("--- reset %d", reset);
   device->spwf_reset(reset);
 }
 
