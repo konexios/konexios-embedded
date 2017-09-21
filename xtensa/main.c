@@ -145,6 +145,7 @@ void main_entry(ULONG which_thread) {
 
   user_pre_init();
   A_PRINTF("--- Demo Xtensa ---\n");
+  A_PRINTF("sotfware veriosn %s %s\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   arrow_gpio_init();
   temperature_init();
   wdt_start();
