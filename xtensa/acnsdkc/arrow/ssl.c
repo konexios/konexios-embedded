@@ -91,21 +91,21 @@ int ssl_recv(int sock, char *data, int len) {
     if (ret == 0) return (-1);
     else return (ret);
   }
-  DBG("ssl recv %d", len);
+  DBG("ssl recv %d %d", socket_fd, len);
   return qcom_SSL_read(ssl[socket_fd], data, len);
 }
 
 int ssl_send(int sock, char* data, int length) {
   int socket_fd = find_sock(sock);
   if ( socket_fd < 0 ) return -1;
-  DBG("ssl send %d", length);
+  DBG("ssl send %d %d", socket_fd, length);
   return qcom_SSL_write(ssl[socket_fd], data, length);
 }
 
 int ssl_close(int sock) {
   int socket_fd = find_sock(sock);
   if ( socket_fd < 0 ) return -1;
-  DBG("xcc close ssl");
+  DBG("xcc close ssl %d", socket_fd);
   if ( ssl[socket_fd] ) qcom_SSL_shutdown(ssl[socket_fd]);
   if ( ctx[socket_fd] ) qcom_SSL_ctx_free(ctx[socket_fd]);
   free_sock(sock);
