@@ -128,7 +128,7 @@ int get_data(void *data) {
   A_PRINTF("data [%d] {%d, %d}\n", data_counter, sig->rssi, (int)sig->temperature);
   data_counter ++;
 //  if ( data_counter % 2 == 0 )
-    arrow_gateway_heartbeat(current_gateway());
+//    arrow_gateway_heartbeat(current_gateway());
 }
 
 static int test_cmd_proc(const char *str) {
@@ -229,7 +229,7 @@ force_ap:
     arrow_send_telemetry_routine(&sig);
 
     arrow_mqtt_connect_routine();
-    arrow_gateway_heartbeat(current_gateway());
+//    arrow_gateway_heartbeat(current_gateway());
 
     arrow_mqtt_send_telemetry_routine(get_data, &sig);
 
