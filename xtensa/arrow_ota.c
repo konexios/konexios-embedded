@@ -64,18 +64,15 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
         payload += offset;
     }
   }
-  DBG("erase %d", img_offset + size);
-//  if ((rtn = qcom_ota_partition_erase_sectors(img_offset + size)) != QCOM_OTA_OK ) {
-//    DBG("OTA Erase failed");
-//    return -1;
-//  }
+  if ((rtn = qcom_ota_partition_erase_sectors(img_offset + size)) != QCOM_OTA_OK ) {
+    DBG("OTA Erase failed");
+    return -1;
+  }
   A_UINT32 ret_size = 0;
-  DBG("write %d %d", img_offset, size);
-//  if((rtn = qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size)) != QCOM_OTA_OK ) {
-//    DBG("OTA Data write failed");
-//    return -1;
-//  }
-  DBG("chunk %d", chunk);
+  if((rtn = qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size)) != QCOM_OTA_OK ) {
+    DBG("OTA Data write failed");
+    return -1;
+  }
   img_offset += ret_size;
   chunk++;
   return 0;

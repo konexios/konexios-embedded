@@ -46,7 +46,7 @@ TX_THREAD main_thread;
 
 #else
 
-#define PSEUDO_HOST_STACK_SIZE ( 8  * 1024 )   /* small stack for pseudo-Host thread */
+#define PSEUDO_HOST_STACK_SIZE ( 6 * 1024 )   /* small stack for pseudo-Host thread */
 #define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
 
 #endif

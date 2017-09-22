@@ -23,21 +23,28 @@
 
 #define SSL_SUCCESS 0
 
-static SSL_CTX *ctx[4] = {0};
-static SSL *ssl[4] = {0};
+#define SSL_SOCKET_MAX 4
 
-int sock_num[4] = {-1, -1, -1, -1};
+static SSL_CTX *ctx[SSL_SOCKET_MAX] = {0};
+static SSL *ssl[SSL_SOCKET_MAX] = {0};
 
-int find_free_sock() {
+int sock_num[SSL_SOCKET_MAX] = {-1, -1, -1, -1};
+
+int find_free_sock(int sock) {
   int i;
-  for (i=0; i< 4; i++)
-    if ( sock_num[i] < 0) return i;
+  for (i=0; i < SSL_SOCKET_MAX; i++) {
+    if ( sock_num[i] == sock ) return -1;
+    if ( sock_num[i] < 0) {
+      sock_num[i] = sock;
+      return i;
+    }
+  }
   return -1;
 }
 
 int find_sock(int sock) {
   int i;
-  for (i=0; i< 2; i++)
+  for (i=0; i < SSL_SOCKET_MAX; i++)
     if ( sock_num[i] == sock) return i;
   return -1;
 }
@@ -48,9 +55,8 @@ void free_sock(int sock) {
 }
 
 int ssl_connect(int sock) {
-  int socket_fd = find_free_sock();
+  int socket_fd = find_free_sock(sock);
   if ( socket_fd < 0 ) return -1;
-  sock_num[socket_fd] = sock;
 
   DBG("Connect %d, %d", sock, socket_fd);
   DBG("head free %d", qcom_mem_heap_get_free_size());
