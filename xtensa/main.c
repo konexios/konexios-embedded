@@ -65,6 +65,7 @@ A_UINT32    pin_number;
 
 void shell_add_gpio_configurations(void)
 {
+#if 0
     A_UINT32    i = 0;
 
     /* Currently only one dynamic configuration is good enough as GPIO pin 2 
@@ -85,7 +86,7 @@ void shell_add_gpio_configurations(void)
             A_PRINTF("qcom_add_config failed for pin %d\n", pin_configs[i].pin_num);
         }
     }
-
+#endif
     return;
 }
 
@@ -139,6 +140,8 @@ static int test_cmd_proc(const char *str) {
 #include "arrow_ota.h"
 extern void reboot(void);
 
+extern int at_go(void);
+
 void main_entry(ULONG which_thread) {
 
   SSP_PARAMETER_NOT_USED(which_thread);
@@ -148,9 +151,15 @@ void main_entry(ULONG which_thread) {
   A_PRINTF("sotfware veriosn %s %s\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   arrow_gpio_init();
   temperature_init();
+#if !defined(AT_COMMAND)
   wdt_start();
+#endif
+  A_PRINTF("Add update func\r\n");
   arrow_gateway_software_update_set_cb(qca_gateway_software_update);
   arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
+#if defined(AT_COMMAND)
+  at_go();
+#else
 #if !defined(DEFAULT_WIFI_SSID)
   if ( arrow_gpio_check() ) {
 force_ap:
@@ -166,7 +175,6 @@ force_ap:
 #endif
   {
     A_UINT32 ip = 0;
-    rssi_data_t sig;
 
     A_PRINTF("try to connect %d\n", currentDeviceId);
     struct sec_t {
@@ -214,6 +222,11 @@ force_ap:
     } while(!ip);
     //  qcom_sntp_show_config();
     //  qcom_enable_sntp_client(1);
+#endif
+#if defined(AT_COMMAND)
+    {
+#endif
+        rssi_data_t sig;
     wdt_feed();
 
     add_cmd_handler("test", &test_cmd_proc);

@@ -22,18 +22,33 @@ typedef struct _sock_info_ {
 
 static sock_info_t *__info = NULL;
 
+static sock_info_t *find_sock_info(int sock) {
+    sock_info_t *last = __info;
+    while( last ) {
+        if ( last->sock == sock ) return last;
+        last = last->next;
+    }
+    return NULL;
+}
+
 void add_socktimer(int sock, struct timeval tv) {
-  sock_info_t *t = (sock_info_t *)malloc(sizeof(sock_info_t));
-  t->next = NULL;
-  t->sock = sock;
-  t->timeout = tv;
-  sock_info_t *last = __info;
-  if ( !last ) {
-    __info = t;
-  } else {
-    while ( last->next ) last = last->next;
-    last->next = t;
-  }
+//    DBG("set timeout %d %d", tv.tv_sec, tv.tv_usec);
+    sock_info_t *t = find_sock_info(sock);
+    if ( !t ) {
+        sock_info_t *t = (sock_info_t *)malloc(sizeof(sock_info_t));
+        t->next = NULL;
+        t->sock = sock;
+        t->timeout = tv;
+        sock_info_t *last = __info;
+        if ( !last ) {
+            __info = t;
+        } else {
+            while ( last->next ) last = last->next;
+            last->next = t;
+        }
+    } else {
+        t->timeout = tv;
+    }
 }
 
 void get_sock_timer(int sock, struct timeval* tv) {
@@ -45,7 +60,7 @@ void get_sock_timer(int sock, struct timeval* tv) {
     }
     last = last->next;
   }
-  tv->tv_sec = 30;
+  tv->tv_sec = DEFAULT_API_TIMEOUT;
   tv->tv_usec = 0;
 }
 
@@ -125,7 +140,9 @@ struct hostent *gethostbyname(const char *name) {
 }
 
 int socket(int protocol_family, int socket_type, int protocol) {
-  return qcom_socket(protocol_family, socket_type, protocol);
+  int r = qcom_socket(protocol_family, socket_type, protocol);
+  if ( r > 0 ) return r;
+  return -1;
 }
 
 void soc_close(int socket) {
@@ -178,7 +195,6 @@ int setsockopt(int sockfd, int level, int optname,
           if ( optval ) {
             struct timeval *tv = ((struct timeval*)(optval));
             add_socktimer(sockfd, *tv);
-//            DBG("set timeout %d", _sockets[sockfd].timeout);
           }
           return 0;
         }
