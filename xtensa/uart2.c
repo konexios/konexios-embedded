@@ -12,9 +12,12 @@
 
 #define UART2 "UART2"
 static A_INT32 uart2_fd = -1;
+static A_INT32 uart0_fd = -1;
+
+static A_INT32 uart_act = -1;
 
 int uart2_init() {
-    A_INT32 uart0_fd, uart1_fd;
+    A_INT32 uart1_fd;
 
     qcom_single_uart_init((A_CHAR *)"UART0");
     qcom_single_uart_init((A_CHAR *)"UART1");
@@ -53,7 +56,7 @@ char get_char(int *status, int timeout_s) {
     char uart_buf[1];
 
     FD_ZERO(&fd);
-//    FD_SET(uart0_fd, &fd);
+    FD_SET(uart0_fd, &fd);
 //    FD_SET(uart1_fd, &fd);
     FD_SET(uart2_fd, &fd);
     tmo.tv_sec = timeout_s;
@@ -69,6 +72,15 @@ char get_char(int *status, int timeout_s) {
         if (FD_ISSET(uart2_fd, &fd)) {
             uart_length = 1;
             qcom_uart_read(uart2_fd, uart_buf, &uart_length);
+            uart_act = uart2_fd;
+            //tx_thread_sleep(100);
+            if (uart_length) {
+              return uart_buf[0];
+            }
+        } else if (FD_ISSET(uart0_fd, &fd)) {
+            uart_length = 1;
+            qcom_uart_read(uart0_fd, uart_buf, &uart_length);
+            uart_act = uart0_fd;
             //tx_thread_sleep(100);
             if (uart_length) {
               return uart_buf[0];
@@ -80,7 +92,8 @@ char get_char(int *status, int timeout_s) {
 
 int uart2_write(const char *msg, int size) {
     A_UINT32 uart_length = size;
-    A_INT32 rw = qcom_uart_write(uart2_fd, (A_CHAR *)msg, &uart_length);
+    A_INT32 rw = 0;
+    rw = qcom_uart_write(uart_act, (A_CHAR *)msg, &uart_length);
     if ( rw > 0) return size;
     return -1;
 }

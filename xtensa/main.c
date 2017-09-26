@@ -160,20 +160,21 @@ void main_entry(ULONG which_thread) {
 #if defined(AT_COMMAND)
   at_go();
 #else
-#if !defined(DEFAULT_WIFI_SSID)
   if ( arrow_gpio_check() ) {
 force_ap:
+#if !defined(AP_AT)
     start_ap2(currentDeviceId);
     start_http_server(currentDeviceId);
+#else
+      at_go();
+#endif
 
     while(1) {
       qcom_thread_msleep(5000);
       wdt_feed();
       if ( 0 ) goto force_ap;
     }
-  } else
-#endif
-  {
+  } else {
     A_UINT32 ip = 0;
 
     A_PRINTF("try to connect %d\n", currentDeviceId);

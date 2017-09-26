@@ -17,6 +17,7 @@
 #include <ssl/ssl.h>
 #include <qcom/qcom_gpio.h>
 #include <debug.h>
+#include <arrow/storage.h>
 
 #define POWERON "\r\n+WIND:1:Poweron\r\n\r\n"
 #define WIFION "+WIND:2:WiFi\r\n"
@@ -326,6 +327,53 @@ int ssl_close_sock(const char *cmd, char *ans) {
     return 0;
 }
 
+static void reset_callback( void* arg ) {
+    SSP_PARAMETER_NOT_USED(arg);
+    DBG("RESET QUADRO");
+    qcom_sys_reset();
+}
+
+int reboot(const char *cmd, char *ans) {
+    SSP_PARAMETER_NOT_USED(cmd);
+    SSP_PARAMETER_NOT_USED(ans);
+    reset_callback(NULL);
+    return 0;
+}
+
+int set_wifi(const char *cmd, char *ans) {
+    char ssid[32];
+    char passphrase[32];
+    A_INT32 security;
+    char *ssid_end = strstr(cmd, ",");
+    strncpy(ssid, cmd, (size_t)(ssid_end - cmd));
+    ssid[(ssid_end - cmd)] = 0x0;
+    char *pass_start = ssid_end + 1;
+    char *pass_end = strstr(pass_start, ",");
+    strncpy(passphrase, pass_start, (pass_end - pass_start));
+    passphrase[(pass_end - pass_start)] = 0x0;
+    char *sec_start = pass_end + 1;
+    sscanf(sec_start, "%d", (int*)&security);
+    save_wifi_setting(ssid, passphrase, security);
+    strcpy(ans, "SAVE");
+    return 0;
+}
+
+int set_keys(const char *cmd, char *ans) {
+    char api_key[66];
+    char sec_key[44];
+    char *api_key_end = strstr(cmd, ",");
+    strncpy(api_key, cmd, (size_t)(api_key_end - cmd));
+    api_key[(api_key_end - cmd)] = 0x0;
+    char *sec_key_start = api_key_end + 1;
+    char *sec_key_end = strstr(sec_key_start , "\n");
+    if ( *(sec_key_end - 1)=='\r' ) sec_key_end--;
+    strncpy(sec_key, sec_key_start, (size_t)(sec_key_end - sec_key_start));
+    sec_key[(sec_key_end - sec_key_start)] = 0x0;
+    save_key_setting(api_key, sec_key);
+    strcpy(ans, "SAVE");
+    return 0;
+}
+
 typedef int(*at_cmd_eq)(const char *, char *);
 
 typedef struct _at_cmd_ {
@@ -348,7 +396,10 @@ at_cmd_t cmds[] = {
         { "S.SSLCON",   ssl_connect_sock },
         { "S.SSLSND",   ssl_send_sock },
         { "S.SSLRCV",   ssl_recv_sock },
-        { "S.SSLCLS",   ssl_close_sock }
+        { "S.SSLCLS",   ssl_close_sock },
+        { "SWIFI",      set_wifi },
+        { "SKEYS",      set_keys },
+        { "RESET",      reboot }
 };
 
 at_cmd_t *find_cmd(const char *name, int size) {
@@ -404,12 +455,6 @@ int purse_cmd(const char *buf, int size) {
     if ( !ptr_at ) return -1;
     char *ptr_cmd = ptr_at + 3;
     return exec_cmd(ptr_cmd, size);
-}
-
-static void reset_callback( void* arg ) {
-    SSP_PARAMETER_NOT_USED(arg);
-    DBG("RESET QUADRO");
-    qcom_sys_reset();
 }
 
 int at_go(void) {
