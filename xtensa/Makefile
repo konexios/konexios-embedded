@@ -6,6 +6,7 @@ APP_NAME = iot_arrow
 CC_NAME = xcc
 GCC_BIN =
 GCC_PREFIX = xt
+WOLFSSL = yes
 PLATFORM = xtensa
 SDK_PATH = $(abspath ../acn-sdk-c/)
 
@@ -82,9 +83,10 @@ DEMO_LIB = $(LIBDIR)/lib${APP_NAME}.a
 CFLAGS = $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES)
 # -Wl,--wrap,console_setup -Wl,--wrap,_time
 
-CSRCS := app_start.c main.c swat_wmiconfig_ota.c
+CSRCS := app_start.c main.c swat_wmiconfig_ota.c uart2.c at.c
 CSRCS += $(wildcard arrow_*.c)
 CSRCS += $(shell find $(PWD)/acnsdkc -name "*.c")
+CSRCS := $(filter-out $(PWD)/acnsdkc/arrow/ssl.c, $(CSRCS))
 
 OBJS := $(CSRCS:%.c=%.o)
 DEPS := $(CSRCS:%.c=%.d)
