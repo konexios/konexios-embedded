@@ -23,6 +23,7 @@ const char *basic_pattern[] = { "OK", "ERROR" };
 Quadro::Quadro(): uart(p0, p1), buffer(static_buffer), _reset(p15) {
 	uart.baud(115200);
 	uart.format(8, SerialBase::None, 1);
+	_reset.write(0);
 
 	if ( !main_eth ) main_eth = this;
 	else DBG("Quadro denied", false);
@@ -35,7 +36,11 @@ Quadro::~Quadro() {
 int Quadro::reset() {
 	int wait_reboot = 1;
 	_reset.write(1);
-	msleep(100);
+	msleep(300);
+	_reset.write(0);
+	msleep(300);
+	_reset.write(1);
+	msleep(300);
 	_reset.write(0);
 	while( wait_reboot ) {
 		if ( read_line(this->buffer, 256, 30000) > 0 ) {
@@ -43,7 +48,11 @@ int Quadro::reset() {
 		} else {
 			DBG("reset quadro");
 			_reset.write(1);
-			msleep(100);
+			msleep(300);
+			_reset.write(0);
+			msleep(300);
+			_reset.write(1);
+			msleep(300);
 			_reset.write(0);
 		}
 	}
