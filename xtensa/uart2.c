@@ -8,7 +8,7 @@
  */
 
 #include "uart2.h"
-
+#include <debug.h>
 
 #define UART2 "UART2"
 static A_INT32 uart2_fd = -1;
@@ -53,7 +53,7 @@ char get_char(int *status, int timeout_s) {
     A_UINT32 uart_length;
     struct timeval tmo = {timeout_s, 0};
     int ret = -1;
-    char uart_buf[1];
+    char uart_buf[2] = {0};
 
     FD_ZERO(&fd);
     FD_SET(uart0_fd, &fd);
@@ -83,6 +83,7 @@ char get_char(int *status, int timeout_s) {
             uart_act = uart0_fd;
             //tx_thread_sleep(100);
             if (uart_length) {
+              A_PRINTF(uart_buf);
               return uart_buf[0];
             }
         }
