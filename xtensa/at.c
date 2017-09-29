@@ -375,8 +375,7 @@ int set_keys(const char *cmd, char *ans) {
     strncpy(api_key, cmd, (size_t)(api_key_end - cmd));
     api_key[(api_key_end - cmd)] = 0x0;
     char *sec_key_start = api_key_end + 1;
-    char *sec_key_end = strstr(sec_key_start , "\n");
-    if ( *(sec_key_end - 1)=='\r' ) sec_key_end--;
+    char *sec_key_end = strstr(sec_key_start , CRLF);
     strncpy(sec_key, sec_key_start, (size_t)(sec_key_end - sec_key_start));
     sec_key[(sec_key_end - sec_key_start)] = 0x0;
     save_key_setting(api_key, sec_key);
