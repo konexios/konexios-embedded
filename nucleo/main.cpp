@@ -8,7 +8,8 @@
 
 #include "mbed.h"
 #include "config.h"
-#include "SPWFInterface.h"
+#include "SpwfInterface.h"
+#include "WiFi.h"
 #include "flashmbed.h"
 extern "C" {
 #include <arrow/routine.h>
@@ -17,23 +18,25 @@ extern "C" {
 #include <arrow/storage.h>
 #include <time/watchdog.h>
 #include <arrow/software_release.h>
+#include <time/time.h>
 }
 #include <stdio.h>
-#include "wifi_module.h"
 
 #ifndef SENSOR_TILE
 #include "x_nucleo_iks01a1.h"
+#include "x_nucleo_iks01a1_data.h"
 /* Instantiate the expansion board */
-static X_NUCLEO_IKS01A1 *mems_expansion_board = X_NUCLEO_IKS01A1::Instance(D14, D15);
+X_NUCLEO_IKS01A1 *mems_expansion_board = X_NUCLEO_IKS01A1::Instance(D14, D15);
 #else
 #include "steval_stlcx01v1.h"
 static SensorTile *mems_expansion_board = new SensorTile;
 #endif
 
 Serial pc(SERIAL_TX, SERIAL_RX);
-static SpwfSAInterface spwf(PA_9, PA_10, PC_12, PC_8, PA_12, true);
+static SpwfSAInterface spwf(PA_9, PA_10, false);// PA_12, true);
 DigitalIn button(USER_BUTTON);
 DigitalOut led(LED1);
+
 
 void add_file(const char *name, char *payload) {
   char *http_resp = new char[1024];
@@ -46,16 +49,35 @@ void add_file(const char *name, char *payload) {
   strcat(http_resp, num);
   strcat(http_resp, "\r\n");
   strcat(http_resp, payload);
-  wifi_file_create((char *)name, strlen(http_resp), http_resp);
+//  wifi_file_create((char *)name, strlen(http_resp), http_resp);
   delete []http_resp;
 }
 
 static int get_telemetry_data(void *data) {
-  static int i = 0;
+    static int i = 0;
+    X_NUCLEO_IKS01A1_data *xdata = (X_NUCLEO_IKS01A1_data *)data;
 #ifdef SENSOR_TILE
       tmp = mems_expansion_board->getTemperature();
 #else
-      mems_expansion_board->getData((X_NUCLEO_IKS01A1_data*)data);
+#if 1
+    mems_expansion_board->ht_sensor->get_temperature(&xdata->ht_temperature);
+    mems_expansion_board->pt_sensor->get_temperature(&xdata->pt_temperature);
+    mems_expansion_board->ht_sensor->get_humidity(&xdata->humidity);
+    mems_expansion_board->pt_sensor->get_pressure(&xdata->pressure);
+    int32_t axes[] = {0,0,0};
+    mems_expansion_board->GetAccelerometer()->get_x_axes(axes);
+    xdata->accelerometer.x = axes[0];
+    xdata->accelerometer.y = axes[1];
+    xdata->accelerometer.z = axes[2];
+    mems_expansion_board->GetGyroscope()->get_g_axes(axes);
+    xdata->gyrometer.x = axes[0];
+    xdata->gyrometer.y = axes[1];
+    xdata->gyrometer.z = axes[2];
+    mems_expansion_board->magnetometer->get_m_axes(axes);
+    xdata->magnetometer.x = axes[0];
+    xdata->magnetometer.y = axes[1];
+    xdata->magnetometer.z = axes[2];
+#endif
 #endif
       led = !led;
       printf("data [%d]: T(%4.2f)...\r\n", i++, ((X_NUCLEO_IKS01A1_data*)data)->ht_temperature);
@@ -68,19 +90,20 @@ extern int arrow_release_download_complete(property_t *buf);
 }
 
 int main() {
-//  wdt_start();
+  wdt_start();
   led = 1;
   printf("\r\n--- Demo Nucleo ---\r\n");
-  printf("sw %s %s\r\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
+  printf("FW %s %s\r\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   rand();
 
-  int err;
-  char ssid[64];
-  char pass[64];
-  nsapi_security_t security;
-  err = restore_wifi_setting(ssid, pass, (int*)&security);
+  char ssid[64] = {0};
+  char pass[64] = {0};
+  nsapi_security_t security = NSAPI_SECURITY_WPA2;
+  int err = restore_wifi_setting(ssid, pass, (int*)&security);
+  (void)(err);
   wdt_feed();
 
+#if 0
     if (button == 0 || err < 0) {
 force_ap:
       printf("start AP %d\r\n", button.read());
@@ -117,24 +140,28 @@ force_ap:
 
     arrow_software_release_dowload_set_cb(arrow_release_download_payload,
                                           arrow_release_download_complete);
+#endif
 
     led = !led;
     printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
     printf("connecting to AP\r\n");
 
     int try_connect = 5;
-    spwf.setTimeout(200000); // 20 sec waiting
+//    spwf.setTimeout(200000); // 20 sec waiting
 
     do {
       wdt_feed();
-      if( (err = spwf.connect(ssid,
+      if( ! spwf.connect(ssid,
                               pass,
-                              security)) !=0 ) {
-          printf("error connecting to AP: %d\r\n", err);
+                              security) ) {
+          printf("error connecting to AP\r\n");
           try_connect--;
+      } else {
+          WiFi::set_interface(spwf);
+          break;
       }
-      if ( ! try_connect ) goto force_ap;
-    } while ( err != 0 ); // till connect
+      //if ( ! try_connect ) goto force_ap;
+    } while ( 1 ); // till connect
 
     const char *ip = spwf.get_ip_address();
     const char *mac = spwf.get_mac_address();
@@ -155,7 +182,7 @@ force_ap:
     arrow_initialize_routine();
 
     X_NUCLEO_IKS01A1_data data;
-    mems_expansion_board->getData(&data);
+    get_telemetry_data(&data);
 
     arrow_send_telemetry_routine(&data);
 

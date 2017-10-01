@@ -44,7 +44,7 @@
  */
 enum nsapi_version_t {
     NSAPI_IPv4, /*!< Address is IPv4 */
-    NSAPI_IPv6  /*!< Address is IPv6 */
+    NSAPI_IPv6 /*!< Address is IPv6 */
 };
 
 /** Size of IPv4 representation

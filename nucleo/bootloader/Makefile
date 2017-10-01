@@ -118,7 +118,7 @@ lst: $(PROJECT).lst
 
 size: $(PROJECT).elf
 	$(SIZE) $(PROJECT).elf
-	cp $(PROJECT).bin ~/Arrow/acn-embedded/nucleo/
+	cp $(PROJECT).bin ..
 	
 flash: $(PROJECT).bin
 	st-flash write $(PROJECT).bin 0x08000000

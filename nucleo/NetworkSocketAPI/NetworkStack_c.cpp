@@ -43,9 +43,10 @@ int find_free_sock() {
 static SocketStarter _sock_start;
 
 int wifi_gethostbyname(const char *addr, uint32_t *ip) {
-  NetworkStack *iface = WiFi::get_interface();
+  SpwfSAInterface *iface = WiFi::get_interface();
   if (iface) {
     SocketAddress ipaddr;
+
     if ( iface->gethostbyname(&ipaddr, addr) ) return -1;
     memcpy(ip, ipaddr.get_ip_bytes(), NSAPI_IPv4_BYTES);
     return 0;
@@ -64,13 +65,13 @@ int wifi_socket(int protocol_family, int socket_type, int protocol) {
     case SOCK_DGRAM: {
       sock = find_free_sock();
       if ( sock < 0 ) return sock;
-      sockets_stack[sock].s = new UDPSocket();
+      sockets_stack[sock].s = new UDPSocket(WiFi::get_interface());
       sockets_stack[sock].type = socket_type;
     } break;
     case SOCK_STREAM:
       sock = find_free_sock();
       if ( sock < 0 ) return sock;
-      sockets_stack[sock].s = new TCPSocket();
+      sockets_stack[sock].s = new TCPSocket(WiFi::get_interface());
       sockets_stack[sock].type = socket_type;
     break;
     default:
@@ -153,8 +154,11 @@ int wifi_socket_setopt(int socket, int level, int optname,
           if ( optval ) {
             struct timeval *tv = ((struct timeval *)(optval));
             int timeout = tv->tv_sec*1000 + (tv->tv_usec/1000);
-            if ( timeout > 0 )
-              sockets_stack[socket].s->set_timeout(timeout);
+
+            if ( timeout > 0 ) {
+//                DBG("set timeout %d", timeout);
+                sockets_stack[socket].s->set_timeout(timeout);
+            }
           }
           return 0;
         }

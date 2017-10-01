@@ -5,9 +5,6 @@ MEMORY
   EEPROM (rwx)		:	ORIGIN = 0x08004000, LENGTH = 16K
   FLASH (rx)		:	ORIGIN = 0x08008000, LENGTH = 256K - 32k
   UPDATE (rx)		:	ORIGIN = 0x08040000, LENGTH = 256K
-/*  FLASH (rx)		:	ORIGIN = 0x08000000, LENGTH = 512K - 32k
-  EEPROM (rwx)		:	ORIGIN = 0x08078000, LENGTH = 32K 
-*/
   RAM (rwx)		:	ORIGIN = 0x20000194, LENGTH = 96k - 0x194
 }
 
@@ -41,7 +38,7 @@ MEMORY
 ENTRY(Reset_Handler)
 
 SECTIONS
-{   
+{
     .text :
     {
         KEEP(*(.isr_vector))

@@ -18,11 +18,12 @@
 #define WIFI_H
 
 #include "NetworkStack.h"
+#include "SpwfInterface.h"
 #include "SingletonPtr.h"
 
 namespace WiFi {
-    void set_interface(NetworkStack &net);
-    NetworkStack *get_interface();
+    void set_interface(SpwfSAInterface &wifi);
+    SpwfSAInterface *get_interface();
 }
 
 

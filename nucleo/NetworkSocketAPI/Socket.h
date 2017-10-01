@@ -105,6 +105,7 @@ public:
      *  @param timeout  Timeout in milliseconds
      */
     void set_timeout(int timeout);
+    int get_timeout()  { return _timeout; }
 
     /*  Set stack-specific socket options
      *

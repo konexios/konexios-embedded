@@ -1,5 +1,0 @@
-repo: d35446f6023326d1ec73c3afd044f7252c705a16
-node: ea3a618e0818c7ba8f6a46c38299d27cff936347
-branch: default
-latesttag: address_mutators
-latesttagdistance: 28

@@ -7,8 +7,11 @@
  */
 
 #include "time/time.h"
-#include "us_ticker_api.h"
-#include <mbed/wait_api.h>
+#include "mbed/hal/us_ticker_api.h"
+#include "mbed/hal/lp_ticker_api.h"
+#include <mbed/platform/mbed_wait_api.h>
+
+static time_t unixTimeOffset __attribute__ ((section (".noinit")));//  = 1420070400; // default boot time is January 1st 2015 0:0:0 UTC
 
 void get_time(char *ts) {
   struct tm *tmp;
@@ -26,3 +29,12 @@ int msleep(int m_sec) {
   wait_ms(m_sec);
   return 0;
 }
+
+int gettimeofday(struct timeval* tvp, void* tzp __attribute__((unused))) {
+    if ( tvp ) {
+        tvp->tv_sec = time(NULL);
+        tvp->tv_usec = us_ticker_read() % 1000000;
+    }
+    return 0;
+}
+
