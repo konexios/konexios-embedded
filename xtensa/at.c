@@ -19,8 +19,18 @@
 #include <debug.h>
 #include <arrow/storage.h>
 
-#define POWERON "\r\n+WIND:1:Poweron\r\n\r\n"
-#define WIFION "+WIND:2:WiFi\r\n"
+#if defined(AT_COMMAND)
+# define CRLF "\r\n"
+#elif defined(AP_AT)
+# define CRLF "\r"
+#else
+# define CRLF "\r\n\r\n"
+#endif
+#define CRLF_LEN (sizeof(CRLF)-1)
+#define NLINE "\r\n"
+
+#define POWERON NLINE "+WIND:1:Poweron" NLINE NLINE
+#define WIFION "+WIND:2:WiFi" NLINE
 
 #define BUFFER_LENGTH     (1524)
 
@@ -158,7 +168,7 @@ int recvfrom_socket(const char *cmd, char *ans) {
 
 
 int get_host_by_name(const char *cmd, char *ans) {
-    char *name_end = strstr(cmd, "\r\n");
+    char *name_end = strstr(cmd, CRLF);
     char buffer[100];
     strncpy(buffer, cmd, name_end - cmd);
     buffer[name_end - cmd] = 0x0;
@@ -365,8 +375,7 @@ int set_keys(const char *cmd, char *ans) {
     strncpy(api_key, cmd, (size_t)(api_key_end - cmd));
     api_key[(api_key_end - cmd)] = 0x0;
     char *sec_key_start = api_key_end + 1;
-    char *sec_key_end = strstr(sec_key_start , "\n");
-    if ( *(sec_key_end - 1)=='\r' ) sec_key_end--;
+    char *sec_key_end = strstr(sec_key_start , CRLF);
     strncpy(sec_key, sec_key_start, (size_t)(sec_key_end - sec_key_start));
     sec_key[(sec_key_end - sec_key_start)] = 0x0;
     save_key_setting(api_key, sec_key);
@@ -432,9 +441,9 @@ int exec_cmd(const char *cmd, int size) {
         if (at->func) ret = at->func( eq + 1, uart_tx_buffer + strlen(uart_tx_buffer));
     }
     if (ret < 0)
-        strcat(uart_tx_buffer, "\r\nERROR\r\n");
+        strcat(uart_tx_buffer, NLINE "ERROR" NLINE);
     else
-        strcat(uart_tx_buffer, "\r\nOK\r\n");
+        strcat(uart_tx_buffer, NLINE "OK" NLINE);
 //    DBG("-->[%s]", uart_tx_buffer);
     int tot_size = strlen(uart_tx_buffer);
     int tr_size = 0;
@@ -482,8 +491,9 @@ int at_go(void) {
             uart_rx_buffer[offset] = c;
             offset ++;
             uart_rx_buffer[offset] = 0x0;
-            if ( offset > 2 && strncmp((char*)uart_rx_buffer+offset-2, "\r\n", 2) == 0 ) {
+            if ( offset > (int)CRLF_LEN && strncmp((char*)uart_rx_buffer+offset-CRLF_LEN, CRLF, CRLF_LEN) == 0 ) {
 //                DBG("receive %d [%s]", offset, uart_rx_buffer);
+                DBG("");
                 purse_cmd((char *)uart_rx_buffer, offset + 1);
                 offset = 0;
             }

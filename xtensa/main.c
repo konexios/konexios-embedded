@@ -46,7 +46,7 @@ TX_THREAD main_thread;
 
 #else
 
-#define PSEUDO_HOST_STACK_SIZE ( 6 * 1024 )   /* small stack for pseudo-Host thread */
+#define PSEUDO_HOST_STACK_SIZE ( 24 * 1024 )   /* small stack for pseudo-Host thread */
 #define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
 
 #endif
@@ -128,8 +128,6 @@ int get_data(void *data) {
   sig->temperature = (float)temp / 256.0;
   A_PRINTF("data [%d] {%d, %d}\n", data_counter, sig->rssi, (int)sig->temperature);
   data_counter ++;
-//  if ( data_counter % 2 == 0 )
-//    arrow_gateway_heartbeat(current_gateway());
 }
 
 static int test_cmd_proc(const char *str) {
@@ -243,7 +241,6 @@ force_ap:
     arrow_send_telemetry_routine(&sig);
 
     arrow_mqtt_connect_routine();
-//    arrow_gateway_heartbeat(current_gateway());
 
     arrow_mqtt_send_telemetry_routine(get_data, &sig);
 
