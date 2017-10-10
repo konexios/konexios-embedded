@@ -137,18 +137,16 @@ force_ap:
         wait_ms(1000);
       }
     }
+#endif
 
     arrow_software_release_dowload_set_cb(arrow_release_download_payload,
                                           arrow_release_download_complete);
-#endif
 
     led = !led;
     printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
     printf("connecting to AP\r\n");
 
     int try_connect = 5;
-//    spwf.setTimeout(200000); // 20 sec waiting
-
     do {
       wdt_feed();
       if( ! spwf.connect(ssid,
@@ -182,9 +180,9 @@ force_ap:
     arrow_initialize_routine();
 
     X_NUCLEO_IKS01A1_data data;
-    get_telemetry_data(&data);
+//    get_telemetry_data(&data);
 
-    arrow_send_telemetry_routine(&data);
+//    arrow_send_telemetry_routine(&data);
 
     arrow_mqtt_connect_routine();
 

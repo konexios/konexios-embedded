@@ -55,6 +55,7 @@ SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
 SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c
 SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c
 SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c
+SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
 
 ASRCS = $(PRJ_PATH)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.s
 

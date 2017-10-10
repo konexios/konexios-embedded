@@ -202,7 +202,7 @@ bootloader.bin:
 	
 flash: $(APP_OUT)
 	st-flash write bootloader.bin 0x8000000
-	st-flash write $(APP_OUT).bin 0x8008000
+	st-flash write $(APP_OUT).bin 0x8004000
 
 all: libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
 

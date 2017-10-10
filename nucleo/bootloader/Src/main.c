@@ -33,35 +33,69 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_uart.h"
 #include "stm32f4xx_hal_flash.h"
+#include <stdlib.h>
+#include <string.h>
 
 #define START_ADDR 0x8040000
+#define APP_START 0x8004000
 typedef void(*reset_handler)(void);
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
+
+UART_HandleTypeDef huart2;
+#define UART_buffer_size 120
+
+char UART_buffer[UART_buffer_size] = {0};
+
+void DBG_add_int(int i) {
+    char p[20];
+    itoa(i, p, 10);
+    strcat(UART_buffer, p);
+}
+
+void DBG_add_hex(int i) {
+    char p[20];
+    itoa(i, p, 16);
+    strcat(UART_buffer, p);
+}
+
+void DBG_add_text(const char *text) {
+  strcat(UART_buffer, text);
+}
+
+void DBG_print() {
+  strcat(UART_buffer, "\r\n");
+  HAL_UART_Transmit(&huart2, (u_int8_t*)UART_buffer, strlen(UART_buffer), 0xFFFF);
+  *UART_buffer = 0x0;
+}
+
 
 int main(void)
 {
-
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration----------------------------------------------------------*/
-
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+  //HAL_Init();
 
   /* Configure the system clock */
-  SystemClock_Config();
+//  SystemClock_Config();
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART2_UART_Init();
+
+  DBG_add_text("--- Nucleo Bootloader start ---");
+  DBG_print();
 
   int *size_addr = (int *)(START_ADDR);
+
+  DBG_add_text("test size ");
+  DBG_add_int(*size_addr);
+  DBG_print();
 
   if ( *size_addr > 0 && *size_addr < 0x40000 ) {
     HAL_FLASH_Unlock();
@@ -69,42 +103,61 @@ int main(void)
     FLASH_EraseInitTypeDef eraser;
     eraser.TypeErase = TYPEERASE_SECTORS;
     eraser.Banks = FLASH_BANK_1;
-    eraser.Sector = 2;
-    eraser.NbSectors = 4;
+    eraser.Sector = 1;
+    eraser.NbSectors = 5;
     eraser.VoltageRange = VOLTAGE_RANGE_3;
     uint32_t sectorerr = 0;
     if( HAL_OK != HAL_FLASHEx_Erase( &eraser, &sectorerr ) || sectorerr != 0xFFFFFFFF ) {
       HAL_FLASH_Lock();
+      DBG_add_text("First erase failed...");
+      DBG_print();
       return -1;
     }
-    int i = 4;
+    DBG_add_text("Flashing...");
+    DBG_print();
+    int i = 0;
     char data;
     while( i < *size_addr ) {
-      data = *(char*)(START_ADDR + i);
-      HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(0x8008000 + i - 4), data);
+      data = *(char*)(START_ADDR + 4 + i);
+      HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(APP_START + i), data);
       i++;
     }
+    DBG_add_text("Erase OTA partition");
+    DBG_print();
     eraser.Sector = 6;
     eraser.NbSectors = 1;
     sectorerr = 0;
     if( HAL_OK != HAL_FLASHEx_Erase( &eraser, &sectorerr ) || sectorerr != 0xFFFFFFFF ) {
       HAL_FLASH_Lock();
+      DBG_add_text("OTA partition erase failed...");
+      DBG_print();
       return -1;
     }
     HAL_FLASH_Lock();
   }
 
   __asm volatile ("cpsid i" : : : "memory");
-  int *jump_addr = (int *)(0x8008000 + sizeof(reset_handler));
-  int msp_reg = *(int *)(0x8008000 + 0);
-  
+  int *jump_addr = (int *)(APP_START + sizeof(reset_handler));
+  int msp_reg = *(int *)(APP_START + 0);
+
+  DBG_add_text("jump to ");
+  DBG_add_hex(*jump_addr);
+  DBG_print();
+
+  DBG_add_text("msp ");
+  DBG_add_hex(msp_reg);
+  DBG_print();
+
+//  HAL_UART_DeInit(&huart2);
+//  HAL_DeInit();
+
   reset_handler *reset = (reset_handler *) ( jump_addr );
 
-
-  SCB->VTOR = 0x8008000;
+  SCB->VTOR = APP_START;
+  RCC->CIR = 0x00000000;
   __ASM volatile ("cpsie i" : : : "memory");
-  
   __set_MSP(msp_reg);
+
   (*reset)();
 
 
@@ -215,9 +268,17 @@ static void MX_GPIO_Init(void)
 
 }
 
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
+void MX_USART2_UART_Init(void)
+{
+        huart2.Instance = USART2;
+        huart2.Init.BaudRate = 115200;
+        huart2.Init.WordLength = UART_WORDLENGTH_8B;
+        huart2.Init.StopBits = UART_STOPBITS_1;
+        huart2.Init.Parity = UART_PARITY_NONE;
+        huart2.Init.Mode = UART_MODE_TX_RX;
+        huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+        HAL_UART_Init(&huart2);
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
