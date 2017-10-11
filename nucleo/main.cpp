@@ -23,12 +23,12 @@ extern "C" {
 #include <stdio.h>
 
 #ifndef SENSOR_TILE
-#include "x_nucleo_iks01a1.h"
-#include "x_nucleo_iks01a1_data.h"
+# include "x_nucleo_iks01a1.h"
+# include "x_nucleo_iks01a1_data.h"
 /* Instantiate the expansion board */
-X_NUCLEO_IKS01A1 *mems_expansion_board = X_NUCLEO_IKS01A1::Instance(D14, D15);
+static X_NUCLEO_IKS01A1 *mems_expansion_board = X_NUCLEO_IKS01A1::Instance(D14, D15);
 #else
-#include "steval_stlcx01v1.h"
+# include "steval_stlcx01v1.h"
 static SensorTile *mems_expansion_board = new SensorTile;
 #endif
 
@@ -55,29 +55,39 @@ void add_file(const char *name, char *payload) {
 
 static int get_telemetry_data(void *data) {
     static int i = 0;
-    X_NUCLEO_IKS01A1_data *xdata = (X_NUCLEO_IKS01A1_data *)data;
 #ifdef SENSOR_TILE
       tmp = mems_expansion_board->getTemperature();
 #else
-#if 1
-    mems_expansion_board->ht_sensor->get_temperature(&xdata->ht_temperature);
-    mems_expansion_board->pt_sensor->get_temperature(&xdata->pt_temperature);
-    mems_expansion_board->ht_sensor->get_humidity(&xdata->humidity);
-    mems_expansion_board->pt_sensor->get_pressure(&xdata->pressure);
+    X_NUCLEO_IKS01A1_data *xdata = (X_NUCLEO_IKS01A1_data *)data;
     int32_t axes[] = {0,0,0};
-    mems_expansion_board->GetAccelerometer()->get_x_axes(axes);
-    xdata->accelerometer.x = axes[0];
-    xdata->accelerometer.y = axes[1];
-    xdata->accelerometer.z = axes[2];
-    mems_expansion_board->GetGyroscope()->get_g_axes(axes);
-    xdata->gyrometer.x = axes[0];
-    xdata->gyrometer.y = axes[1];
-    xdata->gyrometer.z = axes[2];
-    mems_expansion_board->magnetometer->get_m_axes(axes);
-    xdata->magnetometer.x = axes[0];
-    xdata->magnetometer.y = axes[1];
-    xdata->magnetometer.z = axes[2];
-#endif
+    if ( mems_expansion_board ) {
+        if ( mems_expansion_board->ht_sensor ) {
+            mems_expansion_board->ht_sensor->get_temperature(&xdata->ht_temperature);
+            mems_expansion_board->ht_sensor->get_humidity(&xdata->humidity);
+        } else printf("No HT sensor\r\n");
+        if ( mems_expansion_board->pt_sensor ) {
+            mems_expansion_board->pt_sensor->get_temperature(&xdata->pt_temperature);
+            mems_expansion_board->pt_sensor->get_pressure(&xdata->pressure);
+        } else printf("No PT sensor\r\n");
+        if ( mems_expansion_board->GetAccelerometer() ) {
+            mems_expansion_board->GetAccelerometer()->get_x_axes(axes);
+            xdata->accelerometer.x = axes[0];
+            xdata->accelerometer.y = axes[1];
+            xdata->accelerometer.z = axes[2];
+        } else printf("No Accelerometer\r\n");
+        if ( mems_expansion_board->GetGyroscope() ) {
+            mems_expansion_board->GetGyroscope()->get_g_axes(axes);
+            xdata->gyrometer.x = axes[0];
+            xdata->gyrometer.y = axes[1];
+            xdata->gyrometer.z = axes[2];
+        } else printf("No Gyroscope\r\n");
+        if ( mems_expansion_board->magnetometer ) {
+            mems_expansion_board->magnetometer->get_m_axes(axes);
+            xdata->magnetometer.x = axes[0];
+            xdata->magnetometer.y = axes[1];
+            xdata->magnetometer.z = axes[2];
+        } else printf("No Magnetometer\r\n");
+    }
 #endif
       led = !led;
       printf("data [%d]: T(%4.2f)...\r\n", i++, ((X_NUCLEO_IKS01A1_data*)data)->ht_temperature);
@@ -85,8 +95,8 @@ static int get_telemetry_data(void *data) {
 }
 
 extern "C" {
-extern int arrow_release_download_payload(property_t *buf, const char *payload, int size);
-extern int arrow_release_download_complete(property_t *buf);
+extern int arrow_release_download_payload(const char *payload, int size);
+extern int arrow_release_download_complete();
 }
 
 int main() {
@@ -148,16 +158,16 @@ force_ap:
 
     int try_connect = 5;
     do {
-      wdt_feed();
-      if( ! spwf.connect(ssid,
-                              pass,
-                              security) ) {
-          printf("error connecting to AP\r\n");
-          try_connect--;
-      } else {
-          WiFi::set_interface(spwf);
-          break;
-      }
+        wdt_feed();
+        if( ! spwf.connect(ssid,
+                           pass,
+                           security) ) {
+            printf("error connecting to AP\r\n");
+            try_connect--;
+        } else {
+            WiFi::set_interface(spwf);
+            break;
+        }
       //if ( ! try_connect ) goto force_ap;
     } while ( 1 ); // till connect
 
@@ -180,9 +190,8 @@ force_ap:
     arrow_initialize_routine();
 
     X_NUCLEO_IKS01A1_data data;
-//    get_telemetry_data(&data);
-
-//    arrow_send_telemetry_routine(&data);
+    get_telemetry_data(&data);
+    arrow_send_telemetry_routine(&data);
 
     arrow_mqtt_connect_routine();
 

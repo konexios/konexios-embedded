@@ -78,8 +78,7 @@ int arrow_software_update(const char *url,
 static FILE *test = NULL;
 static int file_size = 0;
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(property_t *buf, const char *payload, int size) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_payload(const char *payload, int size) {
   if ( !test ) {
     test = fopen(pagefilename,"wb");
     if (!test) {
@@ -95,8 +94,7 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete(property_t *buf) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_complete() {
   DBG("file size = %d", file_size);
   file_size = 0;
   fclose(test);

@@ -29,8 +29,7 @@ int shift = 0;
 #define START_ADDR 0x8040000
 
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(property_t *buf, const char *payload, int size) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_payload(const char *payload, int size) {
   wdt_feed();
   int data, i = 0;
   if ( !shift ) {
@@ -62,8 +61,7 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete(property_t *buf) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_complete() {
   union {
   char data[4];
   int num;

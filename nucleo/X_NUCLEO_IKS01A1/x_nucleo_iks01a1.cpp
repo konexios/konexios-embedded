@@ -52,7 +52,8 @@ X_NUCLEO_IKS01A1::X_NUCLEO_IKS01A1(DevI2C *ext_i2c, PinName ff_irq_pin) : dev_i2
 	magnetometer(new LIS3MDL(*dev_i2c)),
 	pt_sensor(new LPS25H(*dev_i2c)),
 	gyro_lsm6ds0(new LSM6DS0(*dev_i2c))
-{ 
+{
+    printf("ht_sensor %p\r\n", ht_sensor);
 	if(ff_irq_pin == NC) {
 		gyro_lsm6ds3 = NULL;
 	} else {
@@ -147,6 +148,7 @@ bool X_NUCLEO_IKS01A1::Init_HTS221(void) {
 	if((ht_sensor->read_id(&ht_id) != HUM_TEMP_OK) ||
 	   (ht_id != I_AM_HTS221))
 		{
+        printf("ht sensor delete %d\r\n", ht_id);
 			delete ht_sensor;
 			ht_sensor = NULL;
 			return true;

@@ -37,9 +37,9 @@ bool SPWFSA01::startup(int mode)
 {
     _parser.setTimeout(SPWFSA01_MISC_TIMEOUT);    
     /*Test module before reset*/
-    waitSPWFReady();
+    this->waitSPWFReady();
     /*Reset module*/
-    reset();
+    this->reset();
      
     /*set local echo to 0*/
     if(!(_parser.send("AT+S.SCFG=localecho1,%d\r", 0) && _parser.recv("OK"))) 
@@ -82,7 +82,7 @@ bool SPWFSA01::startup(int mode)
         }
         
     /*reset again and send AT command and check for result (AT->OK)*/
-    reset();
+    this->reset();
         
     return true;    
 }
@@ -191,7 +191,7 @@ bool SPWFSA01::disconnect(void)
             return false;
         }
     //reset module
-    reset();
+    this->reset();
     return true;
 }
 

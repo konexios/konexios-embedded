@@ -19,8 +19,8 @@ else
 	FLOAT_ABI = softfp
 endif
 CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI)
-COMMON_FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer
-# -Werror -Wpedantic -Wno-variadic-macros
+COMMON_FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer \
+#-Werror #-Wpedantic -Wno-variadic-macros
 CC_FLAGS = -std=gnu99 $(COMMON_FLAGS) $(CPU) -Os -include mbed_config.h -MP
 CPPC_FLAGS = -std=gnu++98 -fno-rtti -Wvla $(COMMON_FLAGS) $(CPU) -Os -include mbed_config.h -MP
 ASM_FLAGS = -x assembler-with-cpp -Os $(COMMON_FLAGS) $(CPU) -Os

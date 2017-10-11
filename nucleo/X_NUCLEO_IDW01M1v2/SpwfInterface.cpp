@@ -122,7 +122,7 @@ int SpwfSAInterface::connect(const char *ap,
     //initialize the device before connecting
     if(!isInitialized)
     {
-        if(!init())
+        if(!this->init())
             return NSAPI_ERROR_DEVICE_ERROR;
     }
    
@@ -438,7 +438,7 @@ int SpwfSAInterface::socket_sendto(void *handle, const SocketAddress &addr, cons
         }
     }
     
-    return socket_send(socket, data, size);
+    return this->socket_send(socket, data, size);
 }
 
 /**
@@ -452,7 +452,7 @@ int SpwfSAInterface::socket_sendto(void *handle, const SocketAddress &addr, cons
 int SpwfSAInterface::socket_recvfrom(void *handle, SocketAddress *addr, void *data, unsigned size)
 {
     struct spwf_socket *socket = (struct spwf_socket *)handle;    
-    return socket_recv(socket, data, size);
+    return this->socket_recv(socket, data, size);
 }
 
 /**

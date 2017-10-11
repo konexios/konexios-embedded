@@ -82,7 +82,7 @@ public:
         tmp[0] = RegisterAddr;
         memcpy(tmp+1, pBuffer, NumByteToWrite);
 
-        ret = write(DeviceAddr, (const char*)tmp, NumByteToWrite+1, false);
+        ret = this->write(DeviceAddr, (const char*)tmp, NumByteToWrite+1, false);
 
         if(ret) return -1;
         return 0;
@@ -105,10 +105,10 @@ public:
         int ret;
 
         /* Send device address, with no STOP condition */
-        ret = write(DeviceAddr, (const char*)&RegisterAddr, 1, true);
+        ret = this->write(DeviceAddr, (const char*)&RegisterAddr, 1, true);
         if(!ret) {
             /* Read data, with STOP condition  */
-            ret = read(DeviceAddr, (char*)pBuffer, NumByteToRead, false);
+            ret = this->read(DeviceAddr, (char*)pBuffer, NumByteToRead, false);
         }
 
         if(ret) return -1;

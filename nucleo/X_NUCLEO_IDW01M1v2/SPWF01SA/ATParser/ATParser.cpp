@@ -66,7 +66,7 @@ int ATParser::write(const char *data, int size)
 {
     int i = 0;
     for ( ; i < size; i++) {
-        if (putc(data[i]) < 0) {
+        if (this->putc(data[i]) < 0) {
             return -1;
         }
     }
@@ -77,7 +77,7 @@ int ATParser::read(char *data, int size)
 {
     int i = 0;
     for ( ; i < size; i++) {
-        int c = getc();
+        int c = this->getc();
         if (c < 0) {
             return -1;
         }
@@ -95,7 +95,7 @@ int ATParser::vprintf(const char *format, va_list args)
     }
     int i = 0;
     for ( ; _buffer[i]; i++) {
-        if (putc(_buffer[i]) < 0) {
+        if (this->putc(_buffer[i]) < 0) {
             return -1;
         }
     }
@@ -143,7 +143,7 @@ int ATParser::vscanf(const char *format, va_list args)
             return false;
         }
         // Recieve next character
-        int c = getc();
+        int c = this->getc();
         if (c < 0) {
             return -1;
         }
@@ -172,14 +172,14 @@ bool ATParser::vsend(const char *command, va_list args)
         return false;
     }
     for (int i = 0; _buffer[i]; i++) {
-        if (putc(_buffer[i]) < 0) {
+        if (this->putc(_buffer[i]) < 0) {
             return false;
         }
     }
 
     // Finish with CR "\r"
     //for (int i = 0; _delimiter[i]; i++) {
-        if (putc(_delimiter[0]) < 0) {
+        if (this->putc(_delimiter[0]) < 0) {
             return false;
         }
     //}
@@ -231,7 +231,7 @@ bool ATParser::vrecv(const char *response, va_list args)
         
         while (true) {
             // Receive next character
-            int c = getc();
+            int c = this->getc();
             if (c < 0) {
                 return false;
             }
@@ -251,12 +251,12 @@ bool ATParser::vrecv(const char *response, va_list args)
                     //if the last char is a number, keep getting the next character till CR
                     while(true)
                     {
-                        int c = getc();
+                        int c = this->getc();
                         if (c < 0) {
                             return false;
                         }
                         if(c==0xD) {//there is no next number so exit from condition   
-                            c = getc();//get rid of the following '\n' delimiter
+                            c = this->getc();//get rid of the following '\n' delimiter
                             delim_recv = true;
                             break;
                         }
@@ -280,7 +280,7 @@ bool ATParser::vrecv(const char *response, va_list args)
                 
                 // receive trailing delimiters
                  for(int i=0; !delim_recv && i<_delim_size; i++) {
-                    c = getc();
+                    c = this->getc();
                     if(c < 0)
                         break;
                 }
@@ -307,7 +307,7 @@ int ATParser::printf(const char *format, ...)
 {
     va_list args;
     va_start(args, format);
-    int res = vprintf(format, args);
+    int res = this->vprintf(format, args);
     va_end(args);
     return res;
 }
@@ -316,7 +316,7 @@ int ATParser::scanf(const char *format, ...)
 {
     va_list args;
     va_start(args, format);
-    int res = vscanf(format, args);
+    int res = this->vscanf(format, args);
     va_end(args);
     return res;
 }
@@ -325,7 +325,7 @@ bool ATParser::send(const char *command, ...)
 {
     va_list args;
     va_start(args, command);
-    bool res = vsend(command, args);
+    bool res = this->vsend(command, args);
     va_end(args);
     return res;
 }
@@ -334,7 +334,7 @@ bool ATParser::recv(const char *response, ...)
 {
     va_list args;
     va_start(args, response);
-    bool res = vrecv(response, args);
+    bool res = this->vrecv(response, args);
     va_end(args);
     return res;
 }

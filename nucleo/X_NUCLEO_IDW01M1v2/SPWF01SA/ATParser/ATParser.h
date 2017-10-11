@@ -67,16 +67,16 @@ public:
         _serial(&serial),
         _buffer_size(buffer_size) {
         _buffer = new char[buffer_size];
-        setTimeout(timeout);
-        setDelimiter(delimiter);
-        debugOn(debug);
+        this->setTimeout(timeout);
+        this->setDelimiter(delimiter);
+        this->debugOn(debug);
     }
 
     /**
     * Destructor
     */
     ~ATParser() {
-        delete [] _buffer;
+        if (_buffer) delete []_buffer;
     }
 
     /**
