@@ -33,7 +33,7 @@ static SensorTile *mems_expansion_board = new SensorTile;
 #endif
 
 Serial pc(SERIAL_TX, SERIAL_RX);
-static SpwfSAInterface spwf(PA_9, PA_10, false);// PA_12, true);
+static SpwfSAInterface spwf(PA_9, PA_10, false);
 DigitalIn button(USER_BUTTON);
 DigitalOut led(LED1);
 
@@ -95,8 +95,8 @@ static int get_telemetry_data(void *data) {
 }
 
 extern "C" {
-extern int arrow_release_download_payload(const char *payload, int size);
-extern int arrow_release_download_complete();
+extern int arrow_release_download_payload(const char *payload, int size,int);
+extern int arrow_release_download_complete(int);
 }
 
 int main() {

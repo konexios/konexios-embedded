@@ -12,6 +12,7 @@
 #include <debug.h>
 #include <arrow/mem.h>
 #include <arrow/utf8.h>
+#include <arrow/software_release.h>
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -78,8 +79,8 @@ int arrow_software_update(const char *url,
 static FILE *test = NULL;
 static int file_size = 0;
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(const char *payload, int size) {
-  if ( !test ) {
+int arrow_release_download_payload(const char *payload, int size, int flags) {
+  if ( flags == FW_FIRST ) {
     test = fopen(pagefilename,"wb");
     if (!test) {
       DBG("Unable to open file!");
@@ -87,16 +88,21 @@ int arrow_release_download_payload(const char *payload, int size) {
     }
   }
   file_size += size;
-  DBG("filesze = %d", file_size);
   fwrite(payload, 1, size, test);
   fflush(test);
   return 0;
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete() {
-  DBG("file size = %d", file_size);
-  file_size = 0;
-  fclose(test);
-  return 0;
+int arrow_release_download_complete(int ota_result) {
+    if ( ota_result == FW_SUCCESS ) {
+        DBG("file size = %d", file_size);
+        fclose(test);
+    } else if (ota_result == FW_MD5SUM) {
+        DBG("fw checksum failed");
+        fclose(test);
+        remove(pagefilename);
+    }
+    file_size = 0;
+    return 0;
 }

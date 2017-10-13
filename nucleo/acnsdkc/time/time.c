@@ -11,7 +11,7 @@
 #include "mbed/hal/lp_ticker_api.h"
 #include <mbed/platform/mbed_wait_api.h>
 
-static time_t unixTimeOffset __attribute__ ((section (".noinit")));//  = 1420070400; // default boot time is January 1st 2015 0:0:0 UTC
+//static time_t unixTimeOffset __attribute__ ((section (".noinit")));//  = 1420070400; // default boot time is January 1st 2015 0:0:0 UTC
 
 void get_time(char *ts) {
   struct tm *tmp;

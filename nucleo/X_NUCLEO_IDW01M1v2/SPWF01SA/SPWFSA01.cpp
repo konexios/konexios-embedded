@@ -24,9 +24,9 @@
 #define SPWFSA01_SOCKQ_TIMEOUT      3000
 
    SPWFSA01::SPWFSA01(PinName tx, PinName rx, PinName reset, PinName wakeup, bool debug)
-    : _serial(tx, rx, 1024), _parser(_serial), 
-      _reset(reset, PIN_OUTPUT, PullNone, 1),
+    : _serial(tx, rx, 1024), _parser(_serial),
       _wakeup(wakeup, PIN_OUTPUT, PullNone, 0),
+      _reset(reset, PIN_OUTPUT, PullNone, 1),
       dbg_on(debug)
 {
     _serial.baud(115200);  // LICIO  FIXME increase the speed
@@ -210,7 +210,7 @@ bool SPWFSA01::dhcp(int mode)
 
 const char *SPWFSA01::getIPAddress(void)
 {
-    uint32_t n1, n2, n3, n4;
+    unsigned int n1, n2, n3, n4;
     
     if (!(_parser.send("AT+S.STS=ip_ipaddr")
         && _parser.recv("#  ip_ipaddr = %u.%u.%u.%u", &n1, &n2, &n3, &n4)
@@ -226,7 +226,7 @@ const char *SPWFSA01::getIPAddress(void)
 
 const char *SPWFSA01::getMACAddress(void)
 {
-    uint32_t n1, n2, n3, n4, n5, n6;
+    unsigned int n1, n2, n3, n4, n5, n6;
     
     if (!(_parser.send("AT+S.GCFG=nv_wifi_macaddr")
         && _parser.recv("#  nv_wifi_macaddr = %x:%x:%x:%x:%x:%x", &n1, &n2, &n3, &n4, &n5, &n6)
@@ -235,7 +235,13 @@ const char *SPWFSA01::getMACAddress(void)
         return 0;
     }
 
-    sprintf((char*)_mac_buffer,"%02X:%02X:%02X:%02X:%02X:%02X", n1, n2, n3, n4, n5, n6);
+    sprintf((char*)_mac_buffer,"%02X:%02X:%02X:%02X:%02X:%02X",
+            n1,
+            n2,
+            n3,
+            n4,
+            n5,
+            n6);
 
     return _mac_buffer;
 }
@@ -280,7 +286,7 @@ bool SPWFSA01::send(int id, const void *data, uint32_t amount)
     char _buf[18];
     _parser.setTimeout(SPWFSA01_SEND_TIMEOUT);
     
-    sprintf((char*)_buf,"AT+S.SOCKW=%d,%d\r", id, amount);   
+    sprintf((char*)_buf,"AT+S.SOCKW=%d,%d\r", id, (int)amount);
     
     //May take a second try if device is busy
     for (unsigned i = 0; i < 2; i++) {
@@ -319,7 +325,7 @@ int32_t SPWFSA01::recv(int id, void *data, uint32_t amount)
             socket_closed = 1;
             _parser.flush();            
         }
-    }       
+    }
     _parser.setTimeout(par_timeout);
     
     _parser.flush();

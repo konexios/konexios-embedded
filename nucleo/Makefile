@@ -166,6 +166,8 @@ endif
 endif
 endif
 
+GET_VERSION=gcc ../__g.c -o __get_version -I../acn-sdk-c/include -I../acn-sdk-c -U__linux__ -D__${PLATFORM}__
+
 .c.o:
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 .cpp.o:
@@ -186,6 +188,9 @@ clean: sdk_clean
 	
 $(APP_OUT).bin: $(APP_OUT)
 	$(OBJCOPY) -O binary $< $@
+	cp bootloader/raw.bin ${LIBDIR}/raw_${VERSION}.bin
+	cat $(APP_OUT).bin >> ${LIBDIR}/raw_${VERSION}.bin
+	cp $(APP_OUT).bin ${LIBDIR}/ota_${VERSION}.bin
 
 $(APP_OUT).lst: $(APP_OUT)
 	@$(OBJDUMP) -Sdh $< > $@
@@ -195,14 +200,17 @@ lst: $(APP_OUT).lst
 size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 
+version:
+	$(eval VERSION = $(shell ${GET_VERSION} && ./__get_version && rm __get_version))
+	
+	
 bootloader: bootloader.bin
 
 bootloader.bin:
 	cd bootloader && make clean && make && cp bootloader.bin ..
 	
-flash: $(APP_OUT)
-	st-flash write bootloader.bin 0x8000000
-	st-flash write $(APP_OUT).bin 0x8004000
+flash: version $(APP_OUT)
+	st-flash write ${LIBDIR}/raw_${VERSION}.bin 0x8000000
 
-all: libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
+all: version libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
 

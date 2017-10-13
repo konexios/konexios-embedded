@@ -119,7 +119,13 @@ lst: $(PROJECT).lst
 
 size: $(PROJECT).elf
 	$(SIZE) $(PROJECT).elf
-	cp $(PROJECT).bin ..
+	@cp $(PROJECT).bin raw.bin
+	$(eval size = $(shell ls -la $(PROJECT).bin | awk '{print $$5}'))
+	@echo $(PROJECT).bin size: ${size}
+	$(eval pad = $(shell echo $$(( 0x4000 - $(size) )) ))
+	@echo Padding: ${pad}
+	@dd if=/dev/zero ibs=1 count=${pad} 2>/dev/null | tr "\000" "\377" >> raw.bin
+	@echo write to raw.bin
 	
 flash: $(PROJECT).bin
 	st-flash write $(PROJECT).bin 0x08000000

@@ -90,7 +90,7 @@ int ATParser::read(char *data, int size)
 // printf/scanf handling
 int ATParser::vprintf(const char *format, va_list args)
 {
-    if (vsprintf(_buffer, format, args) < 0) {
+    if (vsnprintf(_buffer, _buffer_size, format, args) < 0) {
         return false;
     }
     int i = 0;
@@ -168,7 +168,7 @@ int ATParser::vscanf(const char *format, va_list args)
 bool ATParser::vsend(const char *command, va_list args)
 {
     // Create and send command
-    if (vsprintf(_buffer, command, args) < 0) {
+    if (vsnprintf(_buffer, _buffer_size, command, args) < 0) {
         return false;
     }
     for (int i = 0; _buffer[i]; i++) {
@@ -297,7 +297,6 @@ bool ATParser::vrecv(const char *response, va_list args)
             }
         }
     }
-
     return true;
 }
 

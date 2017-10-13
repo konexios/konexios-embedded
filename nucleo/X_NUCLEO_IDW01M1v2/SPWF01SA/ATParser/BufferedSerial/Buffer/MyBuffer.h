@@ -148,7 +148,7 @@ inline T MyBuffer<T>::get(void)
 template <class T>
 inline T *MyBuffer<T>::head(void)
 {
-    T *data_pos = &_buf[0];
+    T *data_pos = _buf;
     
     return data_pos;
 }

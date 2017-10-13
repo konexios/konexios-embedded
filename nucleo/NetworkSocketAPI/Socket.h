@@ -175,7 +175,7 @@ protected:
     NetworkStack *_iface;
     void *_socket;
     int _timeout;
-    FunctionPointer _callback;
+    Callback<void()> _callback;
 };
 
 #endif

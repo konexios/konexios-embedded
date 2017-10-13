@@ -11,6 +11,7 @@
 #include <arrow/mem.h>
 #include <arrow/utf8.h>
 #include <time/watchdog.h>
+#include <arrow/software_release.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,13 +29,18 @@ extern "C" {
 int shift = 0;
 #define START_ADDR 0x8040000
 
+char test_str[] =  {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
+char test_test[sizeof(test_str)];
+int test_indx = 0;
+
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(const char *payload, int size) {
+int arrow_release_download_payload(const char *payload, int size, int flags) {
   wdt_feed();
   int data, i = 0;
-  if ( !shift ) {
+  if ( flags == FW_FIRST ) {
     // init flash
     DBG("OTA FW downloading");
+#if 0
     HAL_FLASH_Unlock();
     __HAL_FLASH_CLEAR_FLAG( FLASH_FLAG_EOP | FLASH_FLAG_OPERR |FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR );
     FLASH_EraseInitTypeDef eraser;
@@ -49,33 +55,78 @@ int arrow_release_download_payload(const char *payload, int size) {
       printf("FLASH is broken\r\n");
       return -1;
     }
+#endif
   }
 
+  int offset = 0;
+  while ( offset < size ) {
+    int chunk = (size - offset < (sizeof(test_str) - test_indx))?
+                (size - offset) : (sizeof(test_str) - test_indx);
+    memcpy(test_test+test_indx, payload + offset, chunk);
+    test_indx += chunk;
+    offset += chunk;
+    if ( test_indx == sizeof(test_str) ) {
+        if ( strncmp(test_str, test_test, sizeof(test_str)) != 0 ) {
+            DBG("fail : %d %d", shift, offset);
+            DBG("%02x %02x %02x %02x %02x %02x %02x %02x",
+                (int)test_test[0],
+                (int)test_test[1],
+                (int)test_test[2],
+                (int)test_test[3],
+                    (int)test_test[4],
+                    (int)test_test[5],
+                    (int)test_test[6],
+                    (int)test_test[7]);
+            DBG("%02x %02x %02x %02x %02x %02x %02x %02x",
+                (int)test_test[8],
+                (int)test_test[9],
+                (int)test_test[10],
+                (int)test_test[11],
+                    (int)test_test[12],
+                    (int)test_test[13],
+                    (int)test_test[14],
+                    (int)test_test[15]);
+        }
+        test_indx = 0;
+    }
+  }
+
+
+#if 0
   while( i < (int)size ) {
     data = *(payload + i);
     HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR + 4 + shift + i), data);
     i++;
   }
+#endif
   shift += size;
   return 0;
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete() {
+int arrow_release_download_complete(int flags) {
   union {
-  char data[4];
-  int num;
+      char data[4];
+      int num;
   } s;
   wdt_feed();
   int tot_size = shift;
-  s.num = shift;
-  int i = 0;
-  while( i < 4 ) {
-    HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR+i), (int)s.data[i]);
-    i++;
+  if (flags == FW_SUCCESS) {
+      s.num = shift;
+#if 0
+      int i = 0;
+      while( i < 4 ) {
+          HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR+i), (int)s.data[i]);
+          i++;
+      }
+      HAL_FLASH_Lock();
+#endif
+      DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
+  } else {
+      DBG("RELEASE DOWNLOAD fail :: %d", tot_size);
+      shift = 0;
+      return -1;
   }
-  HAL_FLASH_Lock();
-  DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
   shift = 0;
   return 0;
 }

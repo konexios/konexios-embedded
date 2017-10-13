@@ -28,17 +28,13 @@ MyBuffer<T>::MyBuffer(uint32_t size)
 {
     _buf = new T [size];
     _size = size;
-    clear();
-    
-    return;
+    this->clear();
 }
 
 template <class T>
 MyBuffer<T>::~MyBuffer()
 {
-    delete [] _buf;
-    
-    return;
+    if (_buf) delete [] _buf;
 }
 
 template <class T>
@@ -53,13 +49,12 @@ void MyBuffer<T>::clear(void)
     _wloc = 0;
     _rloc = 0;
     memset(_buf, 0, _size);
-    
-    return;
 }
 
 template <class T>
 uint32_t MyBuffer<T>::peek(char c)
 {
+    (void)(c);
     return 1;
 }
 
