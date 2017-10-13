@@ -89,7 +89,7 @@ enum nsapi_option_t {
 class NetworkStack
 {
 public:
-    virtual ~NetworkStack() {}
+    virtual ~NetworkStack() {};
 
     /** Get the local IP address
      *
@@ -97,7 +97,6 @@ public:
      *                  or null if not yet connected
      */
     virtual const char *get_ip_address() = 0;
-  virtual const char *get_mac_address() = 0;
 
     /** Translates a hostname to an IP address
      *

@@ -55,6 +55,7 @@ SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
 SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c
 SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c
 SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c
+SRCS += $(PWD)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
 
 ASRCS = $(PRJ_PATH)/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.s
 
@@ -118,7 +119,13 @@ lst: $(PROJECT).lst
 
 size: $(PROJECT).elf
 	$(SIZE) $(PROJECT).elf
-	cp $(PROJECT).bin ~/Arrow/acn-embedded/nucleo/
+	@cp $(PROJECT).bin raw.bin
+	$(eval size = $(shell ls -la $(PROJECT).bin | awk '{print $$5}'))
+	@echo $(PROJECT).bin size: ${size}
+	$(eval pad = $(shell echo $$(( 0x4000 - $(size) )) ))
+	@echo Padding: ${pad}
+	@dd if=/dev/zero ibs=1 count=${pad} 2>/dev/null | tr "\000" "\377" >> raw.bin
+	@echo write to raw.bin
 	
 flash: $(PROJECT).bin
 	st-flash write $(PROJECT).bin 0x08000000

@@ -16,11 +16,9 @@
 
 #include "UDPSocket.h"
 #include "Timer.h"
-#include "WiFi.h"
 
-UDPSocket::UDPSocket() {
-  NetworkStack *iface = WiFi::get_interface();
-  if (iface) open(iface);
+UDPSocket::UDPSocket()
+{
 }
 
 UDPSocket::UDPSocket(NetworkStack *iface)
@@ -56,7 +54,7 @@ int UDPSocket::sendto(const SocketAddress &address, const void *data, unsigned s
         if (!_socket) {
             return NSAPI_ERROR_NO_SOCKET;
         }
-
+    
         int sent = _iface->socket_sendto(_socket, address, data, size);
         if (sent != NSAPI_ERROR_WOULD_BLOCK
             || (_timeout >= 0 && timer.read_ms() >= _timeout)) {

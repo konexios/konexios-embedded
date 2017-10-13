@@ -52,11 +52,37 @@ char *strncat(char *dest, const char *src, size_t n) {
     return ret;
 }
 
+static void swap(void *x, void *y, size_t l) {
+   char *a = x, *b = y, c;
+   while(l--) {
+      c = *a;
+      *a++ = *b;
+      *b++ = c;
+   }
+}
+
 typedef int (*__compar_fn_t) (const void *, const void *);
+static void sort(char *array, size_t size, __compar_fn_t cmp, int begin, int end) {
+  if (end > begin) {
+    void *pivot = array + begin;
+    int l = begin + size;
+    int r = end;
+    while(l < r) {
+      if (cmp(array+l,pivot) <= 0) {
+        l += size;
+      } else if ( cmp(array+r, pivot) > 0 )  {
+        r -= size;
+      } else if ( l < r ) {
+        swap(array+l, array+r, size);
+      }
+    }
+    l -= size;
+    swap(array+begin, array+l, size);
+    sort(array, size, cmp, begin, l);
+    sort(array, size, cmp, r, end);
+  }
+}
+
 void qsort(void *__base, size_t __nmemb, size_t __size, __compar_fn_t __compar) {
-  SSP_PARAMETER_NOT_USED(__base);
-  SSP_PARAMETER_NOT_USED(__nmemb);
-  SSP_PARAMETER_NOT_USED(__size);
-  SSP_PARAMETER_NOT_USED(__compar);
-  // FIXME need qsort func!
+  sort((char*)__base, __size, __compar, 0, (__nmemb-1) * __size);
 }

@@ -16,14 +16,14 @@
 
 #include "WiFi.h"
 
-static NetworkStack *gl_net_iface = NULL;
+static SpwfSAInterface *gl_net_iface = NULL;
 
 namespace WiFi {
-  void set_interface(NetworkStack &net) {
-    gl_net_iface = &net;
+  void set_interface(SpwfSAInterface &wifi) {
+    gl_net_iface = &wifi;
   }
 
-  NetworkStack *get_interface() {
+  SpwfSAInterface *get_interface() {
     return gl_net_iface;
   }
 }

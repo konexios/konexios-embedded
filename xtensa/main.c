@@ -31,6 +31,7 @@
 #include <arrow/storage.h>
 #include <json/data.h>
 #include <time/watchdog.h>
+#include <arrow/gateway_api.h>
 #include <arrow/device_command.h>
 #include <arrow/software_update.h>
 #include <arrow/software_release.h>
@@ -45,7 +46,7 @@ TX_THREAD main_thread;
 
 #else
 
-#define PSEUDO_HOST_STACK_SIZE ( 4  * 1024 )   /* small stack for pseudo-Host thread */
+#define PSEUDO_HOST_STACK_SIZE ( 24 * 1024 )   /* small stack for pseudo-Host thread */
 #define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
 
 #endif
@@ -64,6 +65,7 @@ A_UINT32    pin_number;
 
 void shell_add_gpio_configurations(void)
 {
+#if 0
     A_UINT32    i = 0;
 
     /* Currently only one dynamic configuration is good enough as GPIO pin 2 
@@ -84,7 +86,7 @@ void shell_add_gpio_configurations(void)
             A_PRINTF("qcom_add_config failed for pin %d\n", pin_configs[i].pin_num);
         }
     }
-
+#endif
     return;
 }
 
@@ -118,14 +120,14 @@ A_BOOL arrow_gpio_check() {
 }
 
 int get_data(void *data) {
-  A_PRINTF("get data\n");
+  static int data_counter = 0;
   rssi_data_t *sig = (rssi_data_t *)data;
-//  A_STATUS status =
   qcom_sta_get_rssi(currentDeviceId, &sig->rssi);
   unsigned short temp;
   tmp106_reg_read(&temp);
   sig->temperature = (float)temp / 256.0;
-  A_PRINTF("data {%d, %d}\n", sig->rssi, (int)sig->temperature);
+  A_PRINTF("data [%d] {%d, %d}\n", data_counter, sig->rssi, (int)sig->temperature);
+  data_counter ++;
 }
 
 static int test_cmd_proc(const char *str) {
@@ -136,22 +138,34 @@ static int test_cmd_proc(const char *str) {
 #include "arrow_ota.h"
 extern void reboot(void);
 
+extern int at_go(void);
+
 void main_entry(ULONG which_thread) {
 
   SSP_PARAMETER_NOT_USED(which_thread);
 
   user_pre_init();
   A_PRINTF("--- Demo Xtensa ---\n");
+  A_PRINTF("sotfware veriosn %s %s\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   arrow_gpio_init();
   temperature_init();
+#if !defined(AT_COMMAND)
   wdt_start();
+#endif
+  A_PRINTF("Add update func\r\n");
   arrow_gateway_software_update_set_cb(qca_gateway_software_update);
   arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
-
+#if defined(AT_COMMAND)
+  at_go();
+#else
   if ( arrow_gpio_check() ) {
 force_ap:
+#if !defined(AP_AT)
     start_ap2(currentDeviceId);
     start_http_server(currentDeviceId);
+#else
+      at_go();
+#endif
 
     while(1) {
       qcom_thread_msleep(5000);
@@ -160,7 +174,6 @@ force_ap:
     }
   } else {
     A_UINT32 ip = 0;
-    rssi_data_t sig;
 
     A_PRINTF("try to connect %d\n", currentDeviceId);
     struct sec_t {
@@ -171,19 +184,25 @@ force_ap:
     char pass[32];
     if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
       DBG("No wifi settings!");
+#if defined(DEFAULT_WIFI_SSID)
+      return;
+#else
       goto force_ap;
+#endif
     }
     {
       // keys test
       char api_test[66];
-      char sec_test[44];
+      char sec_test[46];
       if ( restore_key_setting(api_test, sec_test) < 0 ) {
         DBG("No wifi settings!");
+#if defined(DEFAULT_WIFI_SSID)
+      return;
+#else
         goto force_ap;
+#endif
       }
     }
-//    sec.auth = 4;
-//    sec.encr = 3;
     qcom_sec_set_passphrase(currentDeviceId, pass);
     qcom_sec_set_auth_mode(currentDeviceId, (A_UINT32)sec.auth);
     qcom_sec_set_encrypt_mode(currentDeviceId, (A_UINT32)sec.encr);
@@ -202,6 +221,11 @@ force_ap:
     } while(!ip);
     //  qcom_sntp_show_config();
     //  qcom_enable_sntp_client(1);
+#endif
+#if defined(AT_COMMAND)
+    {
+#endif
+        rssi_data_t sig;
     wdt_feed();
 
     add_cmd_handler("test", &test_cmd_proc);
@@ -217,6 +241,7 @@ force_ap:
     arrow_send_telemetry_routine(&sig);
 
     arrow_mqtt_connect_routine();
+
     arrow_mqtt_send_telemetry_routine(get_data, &sig);
 
     arrow_close();

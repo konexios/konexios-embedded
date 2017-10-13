@@ -60,7 +60,7 @@ static void ipv4_from_address(uint8_t *bytes, const char *addr)
     int i = 0;
 
     for (; count < NSAPI_IPv4_BYTES; count++) {
-        int scanned = sscanf(&addr[i], "%u", (unsigned int*)&bytes[count]);
+        int scanned = sscanf(&addr[i], "%hhu", &bytes[count]);
         if (scanned < 1) {
             return;
         }

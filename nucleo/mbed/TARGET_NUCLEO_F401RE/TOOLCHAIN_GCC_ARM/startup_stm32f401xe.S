@@ -76,7 +76,20 @@ Reset_Handler:
   ldr   sp, =_estack    		 /* set stack pointer */
 
 /* Copy the data segment initializers from flash to SRAM */  
+  movs  r0, #0
   movs  r1, #0
+  movs  r2, #0
+  movs  r3, #0
+  movs  r4, #0
+  movs  r5, #0
+  movs  r6, #0
+  movs  r7, #0
+  movs  r8, #0
+  movs  r9, #0
+  movs  r10, #0
+  movs  r11, #0
+  movs  r12, #0
+  movs  lr, #-1
   b  LoopCopyDataInit
 
 CopyDataInit:

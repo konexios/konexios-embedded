@@ -7,3 +7,6 @@
 *.qbs
 *.elf
 *.elf.*
+*.bin
+*.hex
+*.json

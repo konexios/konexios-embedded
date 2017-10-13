@@ -19,56 +19,60 @@ else
 	FLOAT_ABI = softfp
 endif
 CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI)
-COMMON_FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -Werror -Wpedantic -Wno-variadic-macros
-CC_FLAGS = $(COMMON_FLAGS) $(CPU) -Os -std=gnu11 -include mbed_config.h -MP
-CPPC_FLAGS = $(COMMON_FLAGS) $(CPU) -Os -std=gnu++98 -fno-rtti -Wvla -include mbed_config.h -MP
-ASM_FLAGS = -x assembler-with-cpp -c $(COMMON_FLAGS) $(CPU) -Os
+COMMON_FLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer \
+#-Werror #-Wpedantic -Wno-variadic-macros
+CC_FLAGS = -std=gnu99 $(COMMON_FLAGS) $(CPU) -Os -include mbed_config.h -MP
+CPPC_FLAGS = -std=gnu++98 -fno-rtti -Wvla $(COMMON_FLAGS) $(CPU) -Os -include mbed_config.h -MP
+ASM_FLAGS = -x assembler-with-cpp -Os $(COMMON_FLAGS) $(CPU) -Os
 
-CC_SYMBOLS = -D__MBED__=1 \
-			 -DOPENSSL_EXTRA \
-			 -DDEVICE_I2CSLAVE=1 \
-			 -DTARGET_LIKE_MBED \
-			 -DTARGET_NUCLEO_F401RE \
-			 -DTARGET_RTOS_M4_M7 \
-			 -DDEVICE_RTC=1 \
-			 -DTOOLCHAIN_object \
-			 -DTARGET_STM32F4 \
-			 -D__CMSIS_RTOS \
-			 -DTOOLCHAIN_GCC \
-			 -DTARGET_CORTEX_M \
-			 -DTARGET_LIKE_CORTEX_M4 \
-			 -DTARGET_M4 \
-			 -DTARGET_UVISOR_UNSUPPORTED \
-			 -DDEVICE_PWMOUT=1 \
-			 -DDEVICE_INTERRUPTIN=1 \
-			 -DDEVICE_I2C=1 \
-			 -DDEVICE_PORTOUT=1 \
-			 -D__CORTEX_M4 \
-			 -DDEVICE_STDIO_MESSAGES=1 \
-			 -DTARGET_STM32F401RE \
-			 -DTARGET_FF_MORPHO \
-			 -D__FPU_PRESENT=1 \
-			 -DTARGET_FF_ARDUINO \
-			 -DDEVICE_PORTIN=1 \
-			 -DTARGET_RELEASE \
-			 -DTARGET_STM \
-			 -DDEVICE_SERIAL_FC=1 \
-			 -DDEVICE_PORTINOUT=1 \
-			 -DMBED_BUILD_TIMESTAMP=1471326725.12 \
-			 -D__MBED_CMSIS_RTOS_CM \
-			 -DDEVICE_SLEEP=1 \
-			 -DTOOLCHAIN_GCC_ARM \
-			 -DDEVICE_SPI=1 \
-			 -DDEVICE_ERROR_RED=1 \
-			 -DDEVICE_SPISLAVE=1 \
-			 -DDEVICE_ANALOGIN=1 \
-			 -DDEVICE_SERIAL=1 \
-			 -DARM_MATH_CM4 \
-			 -DDEBUG
-
-ifdef DEV_ENV
-CC_SYMBOLS += -DDEV_ENV
-endif
+CC_SYMBOLS += -D__MBED__=1
+CC_SYMBOLS += -DDEVICE_I2CSLAVE=1
+CC_SYMBOLS += -DTARGET_LIKE_MBED
+CC_SYMBOLS += -DDEVICE_PORTOUT=1
+CC_SYMBOLS += -DUSBHOST_OTHER
+CC_SYMBOLS += -DTARGET_NUCLEO_F401RE
+CC_SYMBOLS += -DTARGET_RTOS_M4_M7
+CC_SYMBOLS += -DDEVICE_RTC=1
+CC_SYMBOLS += -DTOOLCHAIN_object
+CC_SYMBOLS += -DDEVICE_SERIAL_ASYNCH=1
+CC_SYMBOLS += -DTARGET_STM32F4
+CC_SYMBOLS += -D__CMSIS_RTOS
+CC_SYMBOLS += -D__FPU_PRESENT=1
+CC_SYMBOLS += -DTOOLCHAIN_GCC
+CC_SYMBOLS += -DDEVICE_I2C_ASYNCH=1
+CC_SYMBOLS += -DTARGET_CORTEX_M
+CC_SYMBOLS += -DTARGET_LIKE_CORTEX_M4
+CC_SYMBOLS += -DMBED_BUILD_TIMESTAMP=1506679781.51
+CC_SYMBOLS += -DTARGET_M4
+CC_SYMBOLS += -DTARGET_UVISOR_UNSUPPORTED
+CC_SYMBOLS += -DDEVICE_SPI_ASYNCH=1
+CC_SYMBOLS += -DDEVICE_SERIAL=1
+CC_SYMBOLS += -DDEVICE_INTERRUPTIN=1
+CC_SYMBOLS += -DDEVICE_I2C=1
+CC_SYMBOLS += -DTRANSACTION_QUEUE_SIZE_SPI=2
+CC_SYMBOLS += -D__CORTEX_M4
+CC_SYMBOLS += -DDEVICE_STDIO_MESSAGES=1
+CC_SYMBOLS += -DTARGET_STM32F401RE
+CC_SYMBOLS += -DTARGET_FF_MORPHO
+CC_SYMBOLS += -DTARGET_FAMILY_STM32
+CC_SYMBOLS += -DTARGET_FF_ARDUINO
+CC_SYMBOLS += -DDEVICE_PORTIN=1
+CC_SYMBOLS += -DTARGET_RELEASE
+CC_SYMBOLS += -DTARGET_STM
+CC_SYMBOLS += -DDEVICE_SERIAL_FC=1
+CC_SYMBOLS += -DDEVICE_PORTINOUT=1
+CC_SYMBOLS += -D__MBED_CMSIS_RTOS_CM
+CC_SYMBOLS += -DDEVICE_SLEEP=1
+CC_SYMBOLS += -DTOOLCHAIN_GCC_ARM
+CC_SYMBOLS += -DDEVICE_SPI=1
+CC_SYMBOLS += -DUSB_STM_HAL
+CC_SYMBOLS += -DDEVICE_ERROR_RED=1
+CC_SYMBOLS += -DDEVICE_SPISLAVE=1
+CC_SYMBOLS += -DDEVICE_ANALOGIN=1
+CC_SYMBOLS += -DDEVICE_PWMOUT=1
+CC_SYMBOLS += -DARM_MATH_CM4
+CC_SYMBOLS += -DTARGET_STM32F401xE
+CC_SYMBOLS += -DDEBUG
 
 LD_FLAGS =-Wl,--gc-sections -Wl,--wrap,main $(CPU)
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
@@ -78,11 +82,11 @@ SDK_INCLUDES += -I$(PWD)/
 -include $(SDK_PATH)/Makefile.sdk
 
 CPPSRCS  = $(wildcard $(PWD)/*.cpp)
-CPPSRCS += $(wildcard $(PWD)/DnsQuery/*.cpp)
-CPPSRCS += $(shell find $(PWD)/X_NUCLEO_IDW01M1 -name "*.cpp")
-CPPSRCS += $(shell find $(PWD)/Components -name "*.cpp")
+CPPSRCS += $(wildcard $(PWD)/X_NUCLEO_IKS01A1/*.cpp)
+CPPSRCS += $(shell find $(PWD)/X_NUCLEO_IKS01A1/Components -name "*.cpp")
+CPPSRCS += $(shell find $(PWD)/X_NUCLEO_IDW01M1v2/ -name "*.cpp")
+#CPPSRCS += $(wildcard $(PWD)/X_NUCLEO_IDW01M1v2/SPWF01SA/ATParser/*.cpp)
 CPPSRCS += $(shell find $(PWD)/NetworkSocketAPI -name "*.cpp")
-CSRCS += $(shell find $(PWD)/X_NUCLEO_IDW01M1 -name "*.c")
 # CSRCS += $(wildcard $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/ -name "*.c")
 CSRCS += $(wildcard $(PWD)/*.c)
 CSRCS += $(wildcard $(PWD)/acnsdkc/arrow/*.c)
@@ -109,34 +113,44 @@ INCLUDES += $(SDK_INCLUDES) \
             -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM \
             -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4 \
             -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_NUCLEO_F401RE \
-            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_STM32F401xE \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_STM32F401xE/device \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/device \
+            -I$(PWD)/mbed/TARGET_NUCLEO_F401RE/TARGET_STM/TARGET_STM32F4/TARGET_STM32F401xE/TARGET_NUCLEO_F401RE \
+            -I$(PWD)/mbed/platform \
+            -I$(PWD)/mbed/hal \
+            -I$(PWD)/mbed/drivers
 
 LIBRARY_PATHS = -L$(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM -L$(PWD)/.build
 LIBRARIES = -lmbed -lacnsdkc
 LINKER_SCRIPT = $(PWD)/mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/STM32F401XE.ld
 
 # WIFI
-INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1
-INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1/Spwf/utils
-INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1/Spwf_API \
-            -I$(PWD)/X_NUCLEO_IDW01M1/Spwf/inc
-INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1/Spwf_API/utils
+INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1v2/
+INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1v2/SPWF01SA
+INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1v2/SPWF01SA/ATParser
+INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1v2/SPWF01SA/ATParser/BufferedSerial
+INCLUDES += -I$(PWD)/X_NUCLEO_IDW01M1v2/SPWF01SA/ATParser/BufferedSerial/Buffer
 
 # NetworkSocketAPI
 INCLUDES += -I$(PWD)/NetworkSocketAPI
  
-# # IKS
-INCLUDES += -I$(PWD)/Components \
-            -I$(PWD)/Components/Common \
-            -I$(PWD)/Components/Interfaces \
-            -I$(PWD)/Components/hts221 \
-            -I$(PWD)/X_NUCLEO_COMMON/DevI2C/ \
-            -I$(PWD)/X_NUCLEO_COMMON/DevSPI \
-            -I$(PWD)/X_NUCLEO_COMMON/DbgMCU \
+# IKS
+INCLUDES += -I$(PWD)/X_NUCLEO_IKS01A1/Components \
+            -I$(PWD)/X_NUCLEO_IKS01A1/Components/Common \
+            -I$(PWD)/X_NUCLEO_IKS01A1/Components/Interfaces \
+            -I$(PWD)/X_NUCLEO_IKS01A1/Components/hts221 \
+            -I$(PWD)/X_NUCLEO_IKS01A1/X_NUCLEO_COMMON/DevI2C/ \
+            -I$(PWD)/X_NUCLEO_IKS01A1/X_NUCLEO_COMMON/DevSPI \
+            -I$(PWD)/X_NUCLEO_IKS01A1/X_NUCLEO_COMMON/DbgMCU \
+            -I$(PWD)/X_NUCLEO_IKS01A1 \
+            -I$(PWD)/X_NUCLEO_IKS01A1/ST_INTERFACES/Sensors \
+            -I$(PWD)/X_NUCLEO_IKS01A1/ST_INTERFACES/Common \
             -I$(PWD)/TARGET_NUCLEO_F401RE
 
 # DNS
-INCLUDES += -I$(PWD)/DnsQuery
+INCLUDES += -I$(PWD)/NetworkSocketAPI/DnsQuery
 
 ifeq ($(DEBUG), 1)
   CC_FLAGS += -DDEBUG -O0
@@ -152,6 +166,8 @@ endif
 endif
 endif
 
+GET_VERSION=gcc ../__g.c -o __get_version -I../acn-sdk-c/include -I../acn-sdk-c -U__linux__ -D__${PLATFORM}__
+
 .c.o:
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 .cpp.o:
@@ -166,14 +182,15 @@ $(APP_OUT): $(CPPOBJS) $(SYS_OBJECTS) $(LINKER_SCRIPT) libacnsdkc.a bootloader
 	
 clean: sdk_clean
 	cd bootloader && make clean
+	$(RM) bootloader.bin
 	$(RMDIR) $(LIBDIR)
 	$(RM) $(CPPOBJS)
 	
 $(APP_OUT).bin: $(APP_OUT)
-	$(OBJCOPY) -R .eeprom -O binary $< $@
-
-$(APP_OUT).hex: $(APP_OUT)
-	@$(OBJCOPY) -R .eeprom -O ihex $< $@
+	$(OBJCOPY) -O binary $< $@
+	cp bootloader/raw.bin ${LIBDIR}/raw_${VERSION}.bin
+	cat $(APP_OUT).bin >> ${LIBDIR}/raw_${VERSION}.bin
+	cp $(APP_OUT).bin ${LIBDIR}/ota_${VERSION}.bin
 
 $(APP_OUT).lst: $(APP_OUT)
 	@$(OBJDUMP) -Sdh $< > $@
@@ -183,12 +200,17 @@ lst: $(APP_OUT).lst
 size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 
+version:
+	$(eval VERSION = $(shell ${GET_VERSION} && ./__get_version && rm __get_version))
+	
+	
 bootloader: bootloader.bin
+
+bootloader.bin:
 	cd bootloader && make clean && make && cp bootloader.bin ..
 	
-flash: $(APP_OUT)
-	st-flash write bootloader.bin 0x8000000
-	st-flash write $(APP_OUT).bin 0x8008000
+flash: version $(APP_OUT)
+	st-flash write ${LIBDIR}/raw_${VERSION}.bin 0x8000000
 
-all: libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
+all: version libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
 

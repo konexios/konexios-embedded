@@ -19,10 +19,11 @@ extern "C" {
 
 #include <arrow/storage.h>
 
-static uint8_t __eeprom[0x4000] __attribute__((section(".eeprom"), used));
+//static uint8_t __eeprom[0x4000] __attribute__((section(".eeprom"), used));
+#define EEPROM_START 0x0807c000
 
 char *flash_start() {
-  return (char*)__eeprom;
+  return (char*)(EEPROM_START);//__eeprom;
 }
 
 int write_flash(char *flash, size_t size) {
@@ -32,7 +33,7 @@ int write_flash(char *flash, size_t size) {
   FLASH_EraseInitTypeDef eraser;
   eraser.TypeErase = TYPEERASE_SECTORS;
   eraser.Banks = FLASH_BANK_1;
-  eraser.Sector = 1;
+  eraser.Sector = 7;
   eraser.NbSectors = 1;
   eraser.VoltageRange = VOLTAGE_RANGE_3;
   uint32_t sectorerr = 0;
@@ -45,7 +46,7 @@ int write_flash(char *flash, size_t size) {
   char *raw = flash;
   while( i < (int)size ) {
     data = *(raw + i);
-    HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(__eeprom+i), data);
+    HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(EEPROM_START+i), data);
     i++;
   }
   HAL_FLASH_Lock();

@@ -46,7 +46,8 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
 }
 
 ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
-  return wifi_socket_recv(sockfd, buf, len);
+    SSP_PARAMETER_NOT_USED(flags);
+    return wifi_socket_recv(sockfd, buf, len);
 }
 
 ssize_t recvfrom(int sock, void *buf, size_t size, int flags,
