@@ -144,6 +144,7 @@ force_ap:
     DBG("date : %s", ctime(&now));
 
     TRACE("--------- START -------------\r\n");
+    DBG("Software %s Version %s", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
 
     // setting up the release download callbacks
      arrow_software_release_dowload_set_cb(arrow_release_download_payload,
