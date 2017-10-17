@@ -5,4 +5,4 @@
 *.hex
 *.elf
 .build
-*.qbs
+*.qbs*
