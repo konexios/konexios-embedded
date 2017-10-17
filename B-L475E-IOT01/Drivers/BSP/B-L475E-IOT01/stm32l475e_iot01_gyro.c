@@ -80,7 +80,6 @@ static GYRO_DrvTypeDef *GyroscopeDrv;
 uint8_t BSP_GYRO_Init(void)
 {  
   uint8_t ret = GYRO_ERROR;
-  uint16_t ctrl = 0x0000;
   GYRO_InitTypeDef LSM6DSL_InitStructure;
 
   if(Lsm6dslGyroDrv.ReadID() != LSM6DSL_ACC_GYRO_WHO_AM_I)
@@ -90,6 +89,7 @@ uint8_t BSP_GYRO_Init(void)
   else
   {
     /* Initialize the gyroscope driver structure */
+    uint16_t ctrl = 0x0000;
     GyroscopeDrv = &Lsm6dslGyroDrv;
 
     /* Configure Mems : data rate, power mode, full scale and axes */

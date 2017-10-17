@@ -68,7 +68,7 @@
                                                     
 #define ES_WIFI_USE_PING                            1
 #define ES_WIFI_USE_AWS                             0
-#define ES_WIFI_USE_FIRMWAREUPDATE                  0
+#define ES_WIFI_USE_FIRMWAREUPDATE                  1
 #define ES_WIFI_USE_WPS                             0
                                                     
 #define ES_WIFI_USE_SPI                             0    

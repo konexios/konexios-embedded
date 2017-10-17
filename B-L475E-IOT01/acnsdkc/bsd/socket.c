@@ -75,12 +75,13 @@ int socket(int protocol_family, int socket_type, int protocol) {
     default:
     return -1;
   }
+  if ( socket < 0 ) return socket;
+
   _sockets[socket].socket = socket;
   _sockets[socket].type = prot;
   _sockets[socket].timeout = 3000;
 
   return socket;
-
 }
 
 void soc_close(int socket) {
@@ -91,8 +92,10 @@ void soc_close(int socket) {
 ssize_t send(int sockfd, const void *buf, size_t len, int flags) {
   SSP_PARAMETER_NOT_USED(flags);
   uint16_t send_len;
-  WIFI_SendData(sockfd, (uint8_t*)buf, len, &send_len, _sockets[sockfd].timeout);
-  return send_len;
+  WIFI_Status_t r = WIFI_SendData(sockfd, (uint8_t*)buf, len, &send_len, _sockets[sockfd].timeout);
+  if ( r == WIFI_STATUS_OK )
+    return send_len;
+  return -1;
 }
 
 ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
@@ -100,7 +103,8 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
   SSP_PARAMETER_NOT_USED(flags);
   uint16_t send_len;
   struct sockaddr_in *rem_addr = (struct sockaddr_in*) dest_addr;
-  if ( dest_addr && addrlen != sizeof (struct sockaddr_in) ) return -1;
+  if ( ! rem_addr ||
+       addrlen != sizeof(struct sockaddr_in) ) return -1;
 
   WIFI_SendDataTo(sockfd, (uint8_t*)buf, len, &send_len, (uint8_t*)&rem_addr->sin_addr.s_addr,
                   htons(rem_addr->sin_port), _sockets[sockfd].timeout);
@@ -121,7 +125,10 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
         else return received;
       break;
       default:
-        received += recv_len;
+        if ( recv_len > 0 ) {
+          received += recv_len;
+          return received;
+        }
       break;
     }
   }
