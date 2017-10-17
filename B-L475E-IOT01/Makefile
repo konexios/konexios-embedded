@@ -9,7 +9,7 @@ WOLFSSL = yes
 CJSON		= yes
 GCC_BIN =
 GCC_PREFIX = arm-none-eabi
-PLATFORM = l475
+PLATFORM = stm32l475iot
 SDK_PATH = $(abspath ../acn-sdk-c/)
 
 FLOAT_ABI = hard
@@ -41,7 +41,6 @@ CC_SYMBOLS = -DTOOLCHAIN_GCC \
        -DUSE_HAL_DRIVER \
        -DUSE_STM32L475E_IOT01 \
        -DUSE_IOEXPANDER \
-       -D__stm32l475iot__ \
        -DDEBUG
 # -Werror
 
@@ -235,6 +234,15 @@ size: $(PROJECT).elf bootloader.elf
 	$(SIZE) bootloader.elf
 	$(SIZE) $(PROJECT).elf
 	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
+	$(eval size = $(shell ls -la bootloader.bin | awk '{print $$5}'))
+	@echo bootloader.bin size: ${size}
+	$(eval pad = $(shell echo $$(( 0x80000 - $(size) )) ))
+	@echo Padding: ${pad}
+	@cp bootloader.bin $(LIBDIR)/raw.bin
+	@dd if=/dev/zero ibs=1 count=${pad} 2>/dev/null | tr "\000" "\377" >> $(LIBDIR)/raw.bin
+	@cat $(PROJECT).bin >> $(LIBDIR)/raw.bin
+	@mv $(LIBDIR)/raw.bin $(LIBDIR)/raw_${VERSION}.bin
+	@echo write to raw_${VERSION}.bin
 	
 bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 	$(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
@@ -246,6 +254,8 @@ flash: $(PROJECT).bin
 	st-flash write $(PROJECT).bin 0x08080000
 	st-flash write bootloader.bin 0x08000000
 
+version:
+	$(eval VERSION = $(shell ${GET_VERSION} && ./__get_version && rm __get_version))
 
 DEPS = $(APP_OBJECTS:.o=.d)
 
