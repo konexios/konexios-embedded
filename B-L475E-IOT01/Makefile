@@ -14,6 +14,8 @@ SDK_PATH = $(abspath ../acn-sdk-c/)
 
 FLOAT_ABI = hard
 
+GET_VERSION=gcc ../__g.c -o __get_version -I../acn-sdk-c/include -I../acn-sdk-c -U__linux__ -D__${PLATFORM}__
+
 CPU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=$(FLOAT_ABI)
 COMMON_FLAGS = -c -Wall -Wextra \
                -Wno-unused-parameter \
@@ -155,7 +157,7 @@ CC_FLAGS += -DUSE_LPS22HB_TEMP
 
 .PHONY: all lst size
 
-all: $(PROJECT).bin $(PROJECT).hex size
+all: version $(PROJECT).bin $(PROJECT).hex size
 
 .asm.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
@@ -193,9 +195,13 @@ lst: $(PROJECT).lst
 
 size: $(PROJECT).elf
 	$(SIZE) $(PROJECT).elf
+	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
 	
 flash: $(PROJECT).bin
 	st-flash write $(PROJECT).bin 0x08000000
+	
+version:
+	$(eval VERSION = $(shell ${GET_VERSION} && ./__get_version && rm __get_version))
 
 
 DEPS = $(OBJECTS:.o=.d) $(SYS_OBJECTS:.o=.d)
