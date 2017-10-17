@@ -112,8 +112,8 @@ extern "C" int arrow_software_update(const char *url,
                                  const char *to);
 
 // extern the firmware callback
-extern "C" int arrow_release_download_payload(property_t *buf, const char *payload, int size);
-extern "C" int arrow_release_download_complete(property_t *);
+extern "C" int arrow_release_download_payload(const char *payload, int size, int);
+extern "C" int arrow_release_download_complete(int);
 
 int main() {
     std::cout<<std::endl<<"--- Demo Linux ---"<<std::endl;
