@@ -89,7 +89,7 @@ time_t time(time_t *timer) {
 
   HAL_RTC_GetDate(&hrtc, &sdate, RTC_FORMAT_BIN);
   _tm.tm_year = sdate.Year;
-  _tm.tm_mon = mon2dec(sdate.Month);
+  _tm.tm_mon = sdate.Month;
   _tm.tm_mday = sdate.Date;
   _tm.tm_wday = sdate.WeekDay;
 
@@ -112,9 +112,8 @@ int stime(const time_t *timer) {
     return -1;
   }
 
-  sdate.WeekDay = _tm->tm_wday + 1;
-  if ( _tm->tm_mon )
-  sdate.Month = dec2mon(_tm->tm_mon);
+  sdate.WeekDay = _tm->tm_wday;
+  sdate.Month = _tm->tm_mon;
   sdate.Date = _tm->tm_mday;
   sdate.Year = _tm->tm_year;
 

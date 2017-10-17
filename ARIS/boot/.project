@@ -29,4 +29,15 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>com.renesas.cdt.synergy.contentgen.synergyNature</nature>
 	</natures>
+	<filteredResources>
+		<filter>
+			<id>1508223050799</id>
+			<name>bootloader</name>
+			<type>5</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-startup.c</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>

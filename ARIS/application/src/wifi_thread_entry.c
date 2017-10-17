@@ -63,8 +63,8 @@ int get_telemetry_data(void *d) {
 void wifi_thread_entry(void);
 #include "../synergy/ssp/src/driver/r_flash_hp/hw/target/hw_flash_hp_private.h"
 
-extern int arrow_release_download_payload(property_t *buf, const char *payload, int size);
-extern int arrow_release_download_complete(property_t *buf);
+extern int arrow_release_download_payload(const char *payload, int size, int f);
+extern int arrow_release_download_complete(int f);
 
 /* WIFI Thread entry function */
 void wifi_thread_entry(void) {
@@ -144,6 +144,7 @@ force_ap:
     DBG("date : %s", ctime(&now));
 
     TRACE("--------- START -------------\r\n");
+    DBG("Software %s Version %s", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
 
     // setting up the release download callbacks
      arrow_software_release_dowload_set_cb(arrow_release_download_payload,

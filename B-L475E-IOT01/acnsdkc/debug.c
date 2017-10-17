@@ -9,6 +9,8 @@
 static char dbg_buf[DBG_LINE_SIZE];
 static SemaphoreHandle_t xMutex = NULL;
 
+extern UART_HandleTypeDef console_uart;
+
 /*void DBG_Init() {
   if ( !xMutex ) {
     if( (xMutex = xSemaphoreCreateMutex()) == NULL ) {
@@ -31,10 +33,18 @@ void dbg_line(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     dbg_buf[0] = '\0';
-    vsnprintf(dbg_buf, DBG_LINE_SIZE-2, fmt, args);
-    strcat(dbg_buf, "\r\n");
-    int dbg_len = strlen(dbg_buf);
+    int dbg_len = vsnprintf(dbg_buf, DBG_LINE_SIZE-2, fmt, args);
+    strcpy(dbg_buf+dbg_len, "\r\n");
+    dbg_len += 2;
+#if defined(USB_OTG_DEBUG)
     CDC_Transmit_FS((uint8_t*)dbg_buf, dbg_len);
+#else
+    while (HAL_OK != HAL_UART_Transmit(&console_uart,
+                                       dbg_buf,
+                                       dbg_len,
+                                       30000))
+      ;
+#endif
     va_end(args);
 //    xSemaphoreGive( xMutex );
 //  }

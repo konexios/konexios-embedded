@@ -480,7 +480,16 @@ WIFI_Status_t WIFI_SetModuleDefault(void)
   */
 WIFI_Status_t WIFI_ModuleFirmwareUpdate(const char *location)
 {
+#if ES_WIFI_USE_FIRMWAREUPDATE == 1
+  ES_WIFI_Status_t r = ES_WIFI_OTA_Upgrade(&EsWifiObj, location);
+  if ( r == ES_WIFI_STATUS_OK)
+    return WIFI_STATUS_OK;
+  else
+    return ES_WIFI_STATUS_ERROR;
+#else
+
   return WIFI_STATUS_NOT_SUPPORTED;
+#endif
 }
 
 /**
