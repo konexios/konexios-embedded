@@ -15,6 +15,7 @@ void dbg_line(const char *fmt, ...) {
     int dbg_len = vsnprintf(dbg_buf, DBG_LINE_SIZE-2, fmt, args);
     strcpy(dbg_buf + dbg_len, "\r\n");
     dbg_len += 2;
+    if ( dbg_len > DBG_LINE_SIZE ) dbg_len = DBG_LINE_SIZE;
     dbg_buf[dbg_len] = 0x0;
     while (HAL_OK != HAL_UART_Transmit(&console_uart,
                                        dbg_buf,

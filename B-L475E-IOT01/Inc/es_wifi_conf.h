@@ -61,7 +61,7 @@
 #define ES_WIFI_STACK_REV_SIZE                      16
 #define ES_WIFI_RTOS_REV_SIZE                       16
 
-#define ES_WIFI_DATA_SIZE                           1400
+#define ES_WIFI_DATA_SIZE                           1460
 #define ES_WIFI_MAX_DETECTED_AP                     10
    
 #define ES_WIFI_TIMEOUT                             0xFFFF
