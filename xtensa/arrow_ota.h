@@ -19,8 +19,8 @@
 A_INT32 arrow_ota_upgrade(A_UINT8 device_id, A_UINT32 ip_addr, A_UINT16 port, char *user_name, char *password, char *filename, A_UINT32 flags, A_UINT32 partition_index, A_UINT32 *size);
 
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(property_t *buf, const char *payload, int size);
-int arrow_release_download_complete(property_t *buf);
+int arrow_release_download_payload(const char *payload, int size, int flag);
+int arrow_release_download_complete(int flag);
 
 #endif // _SWAT_WMICONFIG_OTA_H_
 

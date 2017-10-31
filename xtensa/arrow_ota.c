@@ -9,6 +9,8 @@
 
 #include <arrow_ota.h>
 #include <time/time.h>
+#include <arrow/software_release.h>
+
 /*
  * OTA FTP Status codes
  */
@@ -33,11 +35,10 @@ static int chunk = 0;
 int part_size = 0;
 int img_offset = 0;
 
-int arrow_release_download_payload(property_t *buf, const char *payload, int size) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_payload(const char *payload, int size, int flag) {
   int rtn = -1;
   wdt_feed();
-  if ( !chunk ) {
+  if ( flag == FW_FIRST ) {
     img_offset = 0;
     DBG("Enter Arrow firmware upgrade");
 //    DBG("ota_ftp_update: ip:%xH, port:%d\n", ip_addr, port);
@@ -79,16 +80,19 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
   return 0;
 }
 
-int arrow_release_download_complete(property_t *buf) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_complete(int flag) {
   int good_image = 0;
   wdt_feed();
-  //we are done
-  if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
-      good_image = 1;
-      DBG("OTA Partition Verify Checksum is correct\n");
+  if ( flag == FW_SUCCESS ) {
+      //we are done
+      if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
+          good_image = 1;
+          DBG("OTA Partition Verify Checksum is correct");
+      } else {
+          DBG("OTA Partition Verify Checksum is NOT correct");
+      }
   } else {
-      DBG("OTA Partition Verify Checksum is NOT correct\n");
+      DBG("OTA MD5SUM Checksum is NOT correct");
   }
   chunk = 0;
   img_offset = 0;
