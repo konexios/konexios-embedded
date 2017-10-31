@@ -297,8 +297,8 @@ static char ssid[64];
 static char psk[64];
 static char moduleinfo[WIFI_PRODUCT_INFO_SIZE];
 
-extern int arrow_release_download_payload(property_t *buf, const char *payload, int size);
-extern int arrow_release_download_complete(property_t *buf);
+extern int arrow_release_download_payload(const char *payload, int size, int flag);
+extern int arrow_release_download_complete(int flag);
 extern int wifi_module_update(const char *str);
 
 /* StartDefaultTask function */
