@@ -1,6 +1,6 @@
 .build/
 *.cfg
-*.qbs
+*.qbs*
 *.elf
 *.bin
 *.o

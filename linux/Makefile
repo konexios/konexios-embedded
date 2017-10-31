@@ -1,7 +1,7 @@
 default: all
 
-APP_NAME = linux_arrow
-APP_OUT = ${APP_NAME}.elf
+APP_NAME = arrow
+APP_OUT = ${APP_NAME}.bin
 
 PROJECT = arrow 
 LIBDIR = .build
@@ -81,9 +81,10 @@ INCLUDES += $(SDK_INCLUDES)
 .cpp.o:
 	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 
-$(APP_OUT): $(SDK_TARGET) $(CPPOBJS) $(SYS_OBJECTS)
+$(APP_OUT): check_settings app_version $(SDK_TARGET) $(CPPOBJS) $(SYS_OBJECTS)
 	  @echo "build $(APP_OUT)"
 	  $(LD) $(LD_FLAGS) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
+	  cp $(APP_OUT) $(LIBDIR)/ota_${VERSION}.bin
 	
 clean: sdk_clean
 	$(RMDIR) $(LIBDIR)
@@ -91,12 +92,13 @@ clean: sdk_clean
 	$(RM) $(CPPDEPS)
 	$(RM) $(APP_OUT)
 	
-size: $(APP_OUT)
+size: $(APP_OUT) app_settings
 	$(SIZE) $(APP_OUT)
+	@echo -e "$(DEV_CONF)"
 
 run: $(APP_OUT)
 	@if [ -e update.file ]; then mv update.file $(APP_OUT); chmod a+x $(APP_OUT); fi
 	@./$(APP_OUT)
 	
 
-all: $(APP_OUT) $(CPPOBJS)
+all: $(APP_OUT) $(CPPOBJS) size

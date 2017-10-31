@@ -14,7 +14,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="${cross_rm} -rf" description="" errorParsers="org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser" id="com.renesas.cdt.managedbuild.gnuarm.config.elf.debug.889730995" name="Debug" parent="com.renesas.cdt.managedbuild.gnuarm.config.elf.debug">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="${cross_rm} -rf" description="" errorParsers="org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser" id="com.renesas.cdt.managedbuild.gnuarm.config.elf.debug.889730995" name="Debug" parent="com.renesas.cdt.managedbuild.gnuarm.config.elf.debug" postbuildStep="sh -c &quot;${cross_prefix}${cross_c}${cross_suffix}  ${cross_toolchain_flags} ${FLAGS} -I. -I../synergy/ssp/inc/bsp/ -I../synergy_cfg/ssp_cfg/bsp/ -I../synergy/ssp/inc/bsp/cmsis/Include/ -I../synergy/ssp/inc/driver/api/ -std=c99 -Os -MMD -MP -c -o startup.o ../bootloader/startup.c &amp;&amp; ${cross_prefix}${cross_c}${cross_suffix}  ${cross_toolchain_flags} ${FLAGS} ${OUTPUT_FLAG}  -T../script/startup.ld -Xlinker --gc-sections -o &quot;startup.elf&quot; -Wl,--start-group startup.o -Wl,--end-group &amp;&amp; ${cross_prefix}${cross_objcopy}${cross_suffix} -O srec startup.elf startup.srec &amp;&amp; ${cross_prefix}${cross_objcopy}${cross_suffix} -O srec startup.elf ../../application/Debug/startup.srec &amp;&amp;  ${cross_prefix}${cross_objcopy}${cross_suffix} -O srec boot.elf ../../application/Debug/boot.srec&quot;">
 					<folderInfo id="com.renesas.cdt.managedbuild.gnuarm.config.elf.debug.889730995." name="/" resourcePath="">
 						<toolChain id="com.renesas.cdt.managedbuild.gnuarm.toolchain.elf.debug.1965201453" name="GCC ARM Embedded" superClass="com.renesas.cdt.managedbuild.gnuarm.toolchain.elf.debug">
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1257078441" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.more" valueType="enumerated"/>
@@ -173,10 +173,22 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="com.renesas.cdt.managedbuild.gnuarm.config.elf.debug.889730995.1454657601" name="startup.c" rcbsApplicability="override" resourcePath="bootloader/startup.c" toolsToInvoke="org.eclipse.cdt.managedbuilder.ui.rcbs.1657050297">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.143715351.1799151854" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.143715351">
+							<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.174912529" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
+						</tool>
+						<tool command="sh -c &quot;${cross_prefix}${cross_c}${cross_suffix}  ${cross_toolchain_flags} ${FLAGS} -I. -I../synergy/ssp/inc/bsp/ -I../synergy_cfg/ssp_cfg/bsp/ -I../synergy/ssp/inc/bsp/cmsis/Include/ -I../synergy/ssp/inc/driver/api/ -std=c99 -Os -MMD -MP -c -o startup.o ../bootloader/startup.c &amp;&amp; ${cross_prefix}${cross_c}${cross_suffix}  ${cross_toolchain_flags} ${FLAGS} ${OUTPUT_FLAG}  -T../script/startup.ld -Xlinker --gc-sections -o &quot;startup.elf&quot; -Wl,--start-group startup.o -Wl,--end-group &amp;&amp; ${cross_prefix}${cross_objcopy}${cross_suffix} -O binary startup.elf startup.bin&quot;" customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.1657050297" name="Resource Custom Build Step">
+							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.611251124" name="Resource Custom Build Step Input Type">
+								<additionalInput kind="additionalinputdependency" paths="startup.o"/>
+							</inputType>
+							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.2107456148" name="Resource Custom Build Step Output Type" outputNames="startup.elf"/>
+						</tool>
+					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/aris/netx/arrow"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/aris/netx/json"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/common"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="bootloader"/>
 						<entry excluding="DRIVERS/WINC1500_19.4.4|DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="synergy"/>
 					</sourceEntries>
@@ -352,6 +364,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/aris/netx/arrow"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/aris/netx/json"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/common"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="bootloader"/>
 						<entry excluding="DRIVERS/WINC1500_19.4.4|DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="synergy"/>
 					</sourceEntries>
@@ -381,5 +394,16 @@
 			<resource resourceType="PROJECT" workspacePath="/aris"/>
 		</configuration>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets>
+			<target name="startup" path="bootloader" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>${cross_make}</buildCommand>
+				<buildArguments>-j4</buildArguments>
+				<buildTarget>startup</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+		</buildTargets>
+	</storageModule>
 </cproject>

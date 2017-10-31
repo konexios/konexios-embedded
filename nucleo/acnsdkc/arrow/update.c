@@ -11,6 +11,7 @@
 #include <arrow/mem.h>
 #include <arrow/utf8.h>
 #include <time/watchdog.h>
+#include <arrow/software_release.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,16 +29,17 @@ extern "C" {
 int shift = 0;
 #define START_ADDR 0x8040000
 
-extern int main(void);
+char test_str[] =  {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
+char test_test[sizeof(test_str)];
+int test_indx = 0;
 
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(property_t *buf, const char *payload, int size) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_payload(const char *payload, int size, int flags) {
   wdt_feed();
   int data, i = 0;
-  if ( !shift ) {
+  if ( flags == FW_FIRST ) {
     // init flash
-    DBG("first chunk %p", main);
+    DBG("OTA FW downloading");
     HAL_FLASH_Unlock();
     __HAL_FLASH_CLEAR_FLAG( FLASH_FLAG_EOP | FLASH_FLAG_OPERR |FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR );
     FLASH_EraseInitTypeDef eraser;
@@ -59,30 +61,33 @@ int arrow_release_download_payload(property_t *buf, const char *payload, int siz
     HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR + 4 + shift + i), data);
     i++;
   }
+
   shift += size;
   return 0;
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete(property_t *buf) {
-  SSP_PARAMETER_NOT_USED(buf);
+int arrow_release_download_complete(int flags) {
   union {
-  char data[4];
-  int num;
+      char data[4];
+      int num;
   } s;
   wdt_feed();
   int tot_size = shift;
-  DBG("RELEASE DOWNLOAD complete :: %d", tot_size );
-  int i = 0;
-  s.num = shift;
-  DBG("line %d", __LINE__);
-  while( i < 4 ) {
-    HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR+i), (int)s.data[i]);
-    DBG("line %d", __LINE__);
-    i++;
+  if (flags == FW_SUCCESS) {
+      s.num = shift;
+      int i = 0;
+      while( i < 4 ) {
+          HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR+i), (int)s.data[i]);
+          i++;
+      }
+      HAL_FLASH_Lock();
+      DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
+  } else {
+      DBG("RELEASE DOWNLOAD fail :: %d", tot_size);
+      shift = 0;
+      return -1;
   }
-  DBG("line %d", __LINE__);
-  HAL_FLASH_Lock();
-  DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
+  shift = 0;
   return 0;
 }

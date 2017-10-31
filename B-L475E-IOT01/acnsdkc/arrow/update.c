@@ -6,13 +6,16 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
+#include "cmsis_os.h"
+#include "stm32l475e_iot01.h"
+#include "flash.h"
+
 #include <ssl/md5sum.h>
-#include <debug.h>
 #include <arrow/mem.h>
 #include <arrow/utf8.h>
 #include <time/watchdog.h>
-#include "flash.h"
-#include "stm32l475e_iot01_qspi.h"
+#include <arrow/software_release.h>
+#include <debug.h>
 
 //int arrow_software_update(const char *url,
 //                          const char *checksum,
@@ -40,81 +43,61 @@
 
 // flash - FLASH_PAGE_SIZE;
 // qspi - MX25R6435F_PAGE_SIZE
+#include <json/json.h>
+#include <wifi.h>
 
-char qspi_buffer[MX25R6435F_PAGE_SIZE];
-int qspi_idx = 0;
-int shift = 0;
-char test_buffer[10];
-
-// this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(property_t *buf, const char *payload, int size) {
-  wdt_feed();
-//  DBG("process payload %d:%d -- %d", shift, qspi_idx, size)
-  if ( !shift && !qspi_idx ) {
-    BSP_QSPI_Erase_Block(0);
-//    hex_dump(payload, 32);
-  }
-  if ( qspi_idx + size >= MX25R6435F_PAGE_SIZE ) {
-    // write block 0x100 into the qspi falsh
-    int free_space = MX25R6435F_PAGE_SIZE - qspi_idx;
-    memcpy(qspi_buffer + qspi_idx, payload, free_space);
-    // buffer is full
-    BSP_QSPI_Write(qspi_buffer, shift, MX25R6435F_PAGE_SIZE);
-    // write a rest of a data into buffer (at the begin)
-    if ( size > free_space ) {
-      memcpy(qspi_buffer, payload + free_space, size - free_space);
-      qspi_idx = size - free_space;
-    } else {
-      qspi_idx = 0;
-    }
-//    DBG("write %d", shift);
-    shift += MX25R6435F_PAGE_SIZE;
-  } else {
-    // just add to a buffer
-    memcpy(qspi_buffer + qspi_idx, payload, size);
-    qspi_idx += size;
-//    DBG("add %d", qspi_idx);
-  }
-  return 0;
+int wifi_module_update(const char *str) {
+	DBG("cmd: [%s]", str);
+	int ret = -1;
+	JsonNode *_main = json_decode(str);
+	if ( !_main )
+		goto wifi_exit;
+	JsonNode *_link = json_find_member(_main, "link");
+	if ( !_link || !_link->string_ )
+		goto wifi_exit;
+	if ( WIFI_ModuleFirmwareUpdate(_link->string_) == WIFI_STATUS_OK )
+		ret = 0;
+wifi_exit:
+	json_delete(_main);
+	return ret;
 }
 
-static uint32_t start_addr() {
-  if ( FLASH_get_boot_bank() == FLASH_BANK_1 ) return 0x8080000;
-  return 0x8000000;
+uint8_t up[0x40000] __attribute__((section("UNINIT_FIXED_LOC_UP")));
+
+int shift = 0;
+
+// this function will be executed when http client get a chunk of payload
+int arrow_release_download_payload(const char *payload, int size, int flag) {
+  BSP_LED_Toggle(LED_GREEN);
+  wdt_feed();
+  if ( flag == FW_FIRST ) {
+    DBG("Start to process FW");
+    shift = 4;
+  }
+  DBG("up %d", shift);
+  int r = FLASH_update((uint32_t)(up + shift),
+                   (uint64_t*)payload,
+                   (uint32_t)size);
+  shift += size;
+  return 0;
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete(property_t *buf) {
-  SSP_PARAMETER_NOT_USED(buf);
-  char buffer[MX25R6435F_PAGE_SIZE];
-  uint32_t flash_addr = start_addr();
-  uint32_t addr = 0;
+int arrow_release_download_complete(int flag) {
   wdt_feed();
-  int tot_size = shift + qspi_idx;
-//  int f_r = 0;
-  DBG("RELEASE DOWNLOAD complete :: %d", shift + qspi_idx);
-  // read binary data from QSPI memory and write it into the intire flash memory
-  while ( shift ) {
-    wdt_feed();
-    BSP_QSPI_Read(buffer, addr, MX25R6435F_PAGE_SIZE);
-    FLASH_update(flash_addr + addr, buffer, MX25R6435F_PAGE_SIZE);
-    addr += MX25R6435F_PAGE_SIZE;
-    shift -= MX25R6435F_PAGE_SIZE;
-    DBG("progress %d", shift);
-  }
-  //last section - qspi_buffer
-  if (qspi_idx) FLASH_update(flash_addr + addr, qspi_buffer, qspi_idx);
-
-  char *hello = (char *)(flash_addr);
-  DBG("memory dump ------");
-  for (int i=0; i<10; i++) DBG("%02x", hello[i]);
-
-  if ( FLASH_get_boot_bank() == FLASH_BANK_1 ) {
-    FLASH_set_boot_bank(FLASH_BANK_2);
+  int ret = 0;
+  if ( flag == FW_SUCCESS ) {
+      uint32_t tot_size = shift;
+      DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
+      uint8_t flash_buffer[4];
+      *(uint32_t*)flash_buffer = tot_size;
+      FLASH_update((uint32_t)up, flash_buffer, 4);
+      DBG(" Set Boot bank 2 :: %d", tot_size);
+      ret = 0;
   } else {
-    FLASH_set_boot_bank(FLASH_BANK_1);
+      DBG(" OTA FW update failed... ");
+      ret = -1;
   }
-  DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
-
-  return 0;
+  shift = 0;
+  return ret;
 }

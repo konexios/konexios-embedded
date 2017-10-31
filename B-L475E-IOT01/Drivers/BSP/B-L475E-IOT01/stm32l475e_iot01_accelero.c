@@ -77,7 +77,6 @@ static ACCELERO_DrvTypeDef *AccelerometerDrv;
 ACCELERO_StatusTypeDef BSP_ACCELERO_Init(void)
 {  
   ACCELERO_StatusTypeDef ret = ACCELERO_OK;
-  uint16_t ctrl = 0x0000;
   ACCELERO_InitTypeDef LSM6DSL_InitStructure;
 
   if(Lsm6dslAccDrv.ReadID() != LSM6DSL_ACC_GYRO_WHO_AM_I)
@@ -86,6 +85,7 @@ ACCELERO_StatusTypeDef BSP_ACCELERO_Init(void)
   }
   else
   {
+    uint16_t ctrl = 0x0000;
     /* Initialize the ACCELERO accelerometer driver structure */
     AccelerometerDrv = &Lsm6dslAccDrv;
   

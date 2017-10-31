@@ -12,6 +12,8 @@
 #include <TCPSocket.h>
 #include <UDPSocket.h>
 
+#include <debug.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,12 +42,19 @@ int find_free_sock() {
   return -1;
 }
 
+sock_info_t *get_socket_info_guarded(int socket) {
+  if ( socket < 0 || socket > MAX_SOCKETS ) return NULL;
+  if ( !sockets_stack[socket].s ) return NULL;
+  return (sockets_stack + socket);
+}
+
 static SocketStarter _sock_start;
 
 int wifi_gethostbyname(const char *addr, uint32_t *ip) {
-  NetworkStack *iface = WiFi::get_interface();
+  SpwfSAInterface *iface = WiFi::get_interface();
   if (iface) {
     SocketAddress ipaddr;
+
     if ( iface->gethostbyname(&ipaddr, addr) ) return -1;
     memcpy(ip, ipaddr.get_ip_bytes(), NSAPI_IPv4_BYTES);
     return 0;
@@ -59,68 +68,69 @@ int wifi_socket(int protocol_family, int socket_type, int protocol) {
   if ( protocol == IPPROTO_IP
        || protocol == IPPROTO_TCP
        || protocol == IPPROTO_UDP ); else return -1;
-  int sock = -1;
+  int sock = find_free_sock();
+  if ( sock < 0 ) return sock;
   switch(socket_type) {
     case SOCK_DGRAM: {
-      sock = find_free_sock();
-      if ( sock < 0 ) return sock;
-      sockets_stack[sock].s = new UDPSocket();
-      sockets_stack[sock].type = socket_type;
+      sockets_stack[sock].s = new UDPSocket(WiFi::get_interface());
     } break;
     case SOCK_STREAM:
-      sock = find_free_sock();
-      if ( sock < 0 ) return sock;
-      sockets_stack[sock].s = new TCPSocket();
-      sockets_stack[sock].type = socket_type;
+      sockets_stack[sock].s = new TCPSocket(WiFi::get_interface());
     break;
     default:
       return -1;
   }
+  sockets_stack[sock].type = socket_type;
+  DBG("socket create %p", sockets_stack[sock].s);
   return sock;
 }
 
 int wifi_socket_close(int socket) {
-  if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
-  if ( !sockets_stack[socket].s ) return -1;
-  delete sockets_stack[socket].s;
-  memset(&sockets_stack[socket], 0x00, sizeof(sock_info_t));
-  return 0;
+    sock_info_t *si = get_socket_info_guarded(socket);
+    if ( !si ) return -1;
+    delete si->s;
+    si->s = NULL;
+    si->type = -1;
+    DBG("close socket %d", socket);
+    return 0;
 }
 
 int wifi_socket_send(int socket, const void *buf, size_t len) {
-  if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
-  if ( !sockets_stack[socket].s ) return -1;
-  TCPSocket *tcps = static_cast<TCPSocket*>(sockets_stack[socket].s);
+    sock_info_t *si = get_socket_info_guarded(socket);
+    if ( !si ) return -1;
+    if ( si->type != SOCK_STREAM ) return -1;
+  TCPSocket *tcps = static_cast<TCPSocket*>(si->s);
   return tcps->send(buf, len);
 }
 
 int wifi_socket_recv(int socket, void *buf, size_t len) {
-  if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
-  if ( !sockets_stack[socket].s ) return -1;
-  TCPSocket *tcps = static_cast<TCPSocket*>(sockets_stack[socket].s);
+    sock_info_t *si = get_socket_info_guarded(socket);
+    if ( !si ) return -1;
+    if ( si->type != SOCK_STREAM ) return -1;
+  TCPSocket *tcps = static_cast<TCPSocket*>(si->s);
   return tcps->recv(buf, len);
 }
 
 
 int wifi_socket_sendto(int socket, const void *buf, size_t len,
                        const struct sockaddr *dest_addr, socklen_t addrlen) {
-  if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
-  if ( !sockets_stack[socket].s ) return -1;
+    sock_info_t *si = get_socket_info_guarded(socket);
+    if ( !si ) return -1;
   struct sockaddr_in *dest_addr_in = (struct sockaddr_in*)dest_addr;
   uint32_t haddr = dest_addr_in->sin_addr.s_addr;
   SocketAddress addr(&haddr,
                      NSAPI_IPv4,
                      htons(dest_addr_in->sin_port));
-  UDPSocket *udps = static_cast<UDPSocket*>(sockets_stack[socket].s);
+  UDPSocket *udps = static_cast<UDPSocket*>(si->s);
   return udps->sendto(addr, buf, len);
 }
 
 int wifi_socket_recvfrom(int socket, void *buf, size_t len,
                          sockaddr *src_addr, socklen_t *addrlen) {
-  if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
-  if ( !sockets_stack[socket].s ) return -1;
+    sock_info_t *si = get_socket_info_guarded(socket);
+    if ( !si ) return -1;
   SocketAddress addr;
-  UDPSocket *udps = static_cast<UDPSocket*>(sockets_stack[socket].s);
+  UDPSocket *udps = static_cast<UDPSocket*>(si->s);
   int ret = udps->recvfrom(&addr, buf, len);
   if ( ret < 0 ) return -1;
   struct sockaddr_in *saddr_in = (struct sockaddr_in*)src_addr;
@@ -130,21 +140,22 @@ int wifi_socket_recvfrom(int socket, void *buf, size_t len,
 }
 
 int wifi_socket_connect(int socket, const sockaddr *saddr, socklen_t addrlen) {
-  if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
-  if ( !sockets_stack[socket].s ) return -1;
+    sock_info_t *si = get_socket_info_guarded(socket);
+    if ( !si ) return -1;
+    if ( si->type != SOCK_STREAM ) return -1;
   struct sockaddr_in *dest_addr_in = (struct sockaddr_in*)saddr;
   uint32_t haddr = dest_addr_in->sin_addr.s_addr;
   SocketAddress addr(&haddr,
                      NSAPI_IPv4,
                      htons(dest_addr_in->sin_port));
-  TCPSocket *tcps = static_cast<TCPSocket*>(sockets_stack[socket].s);
+  TCPSocket *tcps = static_cast<TCPSocket*>(si->s);
   return tcps->connect(addr);
 }
 
 int wifi_socket_setopt(int socket, int level, int optname,
                        const void *optval, socklen_t optlen) {
-  if ( socket < 0 || socket > MAX_SOCKETS ) return -1;
-  if ( !sockets_stack[socket].s ) return -1;
+    sock_info_t *si = get_socket_info_guarded(socket);
+    if ( !si ) return -1;
   if ( level == SOL_SOCKET ) {
     switch(optname) {
       case SO_SNDTIMEO: // FIXME separate timeout for the send
@@ -153,8 +164,10 @@ int wifi_socket_setopt(int socket, int level, int optname,
           if ( optval ) {
             struct timeval *tv = ((struct timeval *)(optval));
             int timeout = tv->tv_sec*1000 + (tv->tv_usec/1000);
-            if ( timeout > 0 )
-              sockets_stack[socket].s->set_timeout(timeout);
+            if ( timeout > 0 ) {
+//                DBG("set timeout [%d] %d", socket, timeout);
+                si->s->set_timeout(timeout);
+            }
           }
           return 0;
         }

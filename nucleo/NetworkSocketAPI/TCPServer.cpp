@@ -16,11 +16,9 @@
 
 #include "TCPServer.h"
 #include "Timer.h"
-#include "WiFi.h"
 
-TCPServer::TCPServer() {
-  NetworkStack *iface = WiFi::get_interface();
-  if (iface) open(iface);
+TCPServer::TCPServer()
+{
 }
 
 TCPServer::TCPServer(NetworkStack *iface)

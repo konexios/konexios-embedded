@@ -16,11 +16,9 @@
 
 #include "TCPSocket.h"
 #include "Timer.h"
-#include "WiFi.h"
 
-TCPSocket::TCPSocket() {
-  NetworkStack *iface = WiFi::get_interface();
-  if (iface) open(iface);
+TCPSocket::TCPSocket()
+{
 }
 
 TCPSocket::TCPSocket(NetworkStack *iface)
@@ -76,27 +74,26 @@ int TCPSocket::send(const void *data, unsigned size)
     }
 }
 
-int TCPSocket::recv(void *data, unsigned size) {
-  mbed::Timer timer;
-  timer.start();
-  mbed::Timeout timeout;
-  if (_timeout >= 0) {
-    timeout.attach_us(&Socket::wakeup, _timeout * 1000);
-  }
-
-  while (true) {
-    if (!_socket) {
-      return NSAPI_ERROR_NO_SOCKET;
+int TCPSocket::recv(void *data, unsigned size)
+{
+    mbed::Timer timer;
+    timer.start();
+    mbed::Timeout timeout;
+    if (_timeout >= 0) {
+        timeout.attach_us(&Socket::wakeup, _timeout * 1000);
     }
+
+    while (true) {
+        if (!_socket) {
+            return NSAPI_ERROR_NO_SOCKET;
+        }
     
-    int recv = _iface->socket_recv(_socket, data, size);
-    if (recv != NSAPI_ERROR_WOULD_BLOCK
-        || (_timeout >= 0 && timer.read_ms() >= _timeout)) {
-      timeout.detach();
-      timer.stop();
-      return recv;
-    }
+        int recv = _iface->socket_recv(_socket, data, size);
+        if (recv != NSAPI_ERROR_WOULD_BLOCK
+            || (_timeout >= 0 && timer.read_ms() >= _timeout)) {
+            return recv;
+        }
 
-    __WFI();
-  }
+        __WFI();
+    }
 }

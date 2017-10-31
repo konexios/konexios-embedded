@@ -13,7 +13,7 @@
 #include <debug.h>
 #include <stdio.h>
 
-static char tmpdata[50];
+static char tmpdata[250];
 
 char *telemetry_serialize(arrow_device_t *device, void *d) {
   sensors_data_t *data = (sensors_data_t *)d;

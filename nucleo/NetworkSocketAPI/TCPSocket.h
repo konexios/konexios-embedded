@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef TCPSOCKET_H_
-#define TCPSOCKET_H_
+#ifndef TCPSOCKET_H
+#define TCPSOCKET_H
 
 #include "Socket.h"
 #include "NetworkStack.h"

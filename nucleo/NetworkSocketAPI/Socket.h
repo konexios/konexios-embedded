@@ -105,6 +105,7 @@ public:
      *  @param timeout  Timeout in milliseconds
      */
     void set_timeout(int timeout);
+    int get_timeout()  { return _timeout; }
 
     /*  Set stack-specific socket options
      *
@@ -174,7 +175,7 @@ protected:
     NetworkStack *_iface;
     void *_socket;
     int _timeout;
-    FunctionPointer _callback;
+    Callback<void()> _callback;
 };
 
 #endif
