@@ -119,7 +119,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1200);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 2400);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* Start scheduler */
@@ -386,11 +386,13 @@ void StartDefaultTask(void const * argument)
   PrepareMqttPayload(&data);
 
   // send the telemetry
-  int telemetry_count = 0;
-  while(1) {
+//  int telemetry_count = 0;
+//  while(1) {
     arrow_send_telemetry_routine(&data);
-    DBG("t: %d", telemetry_count++);
-  }
+//    DBG("t: %d", telemetry_count++);
+//  }
+//    arrow_send_telemetry_routine(&data);
+//    arrow_send_telemetry_routine(&data);
 
   // establish the MQTT connection
   arrow_mqtt_connect_routine();

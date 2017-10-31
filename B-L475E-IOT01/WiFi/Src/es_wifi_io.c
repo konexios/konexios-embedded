@@ -174,7 +174,7 @@ int8_t SPI_WIFI_Init(void)
   
   while (WIFI_IS_CMDDATA_READY())
   {
-    Status = HAL_SPI_Receive(&hspi , &Prompt[count], 1, 0xFFFF);  
+    Status = HAL_SPI_Receive(&hspi , &Prompt[count], 1, 0xFFFF);
     count += 2;
     if(((HAL_GetTick() - tickstart ) > 0xFFFF) || (Status != HAL_OK))
     {
@@ -220,11 +220,23 @@ DBG("Error %d | State %d", e, s); \
   * @retval Length of received data (payload)
   */
 #include <debug.h>
+#include "es_wifi.h"
+
+int save_data_ = 0;
+char saved[1] = {0};
+
 int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
 {
   uint32_t tickstart = HAL_GetTick();
   int16_t length = 0;
   uint8_t tmp[2];
+
+  if ( !len ) return -1;
+  if ( save_data_ ) {
+      pData[0] = saved[0];
+      length = 1;
+      save_data_ = 0;
+  }
   
   HAL_SPIEx_FlushRxFifo(&hspi);
   
@@ -234,14 +246,13 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
   {
     if((HAL_GetTick() - tickstart ) > timeout)
     {
-      DBG("no cmd data ready (%d) %d", len, timeout);
-      GET_STER
+//      DBG("no cmd data ready (%d) %d", len, timeout);
+//      GET_STER
       return -1;
     }
   }
   
   WIFI_ENABLE_NSS(); 
-  if ( !len ) len = ES_WIFI_DATA_SIZE - 100;
   
   while (WIFI_IS_CMDDATA_READY())
   {
@@ -254,16 +265,18 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
       {
         if(tmp[1] == 0x15)
         {
-          pData[0] = tmp[0];
-          length++;
+          pData[length++] = tmp[0];
           break;
         }     
       }
       
-      pData[0] = tmp[0];
-      pData[1] = tmp[1];
-      length += 2;
-      pData  += 2;
+      pData[length++] = tmp[0];
+      if ( length == len ) {
+          save_data_ = 1;
+          saved[0] = tmp[1];
+          break;
+      }
+      pData[length++] = tmp[1];
       
       if((HAL_GetTick() - tickstart ) > timeout )
       {
@@ -272,12 +285,14 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
         GET_STER
         return -1;
       }
-    }
-    else
-    {
+    } else {
       break;
     }
   }
+
+//      DBG("-------- rec %d -----", length);
+//      hex_dump(start, length);
+//      DBG("-------- end ---------");
   
   WIFI_DISABLE_NSS();
   return length;
@@ -292,7 +307,10 @@ int16_t SPI_WIFI_ReceiveData(uint8_t *pData, uint16_t len, uint32_t timeout)
 int16_t SPI_WIFI_SendData( uint8_t *pdata,  uint16_t len, uint32_t timeout)
 {
   uint32_t tickstart = HAL_GetTick();
-  
+//  DBG("------ send %d -----", len);
+//  hex_dump(pdata, len);
+//  DBG("------ end -----");
+
   while (!WIFI_IS_CMDDATA_READY())
   {
     if((HAL_GetTick() - tickstart ) > timeout)
@@ -314,8 +332,7 @@ int16_t SPI_WIFI_SendData( uint8_t *pdata,  uint16_t len, uint32_t timeout)
     return -1;
   }
   
-  if ( len & 1)
-  {
+  if ( len & 0x01) {
     uint8_t Padding[2] = { pdata[len-1], '\n' };
     
     if( HAL_SPI_Transmit(&hspi, Padding, 1, timeout) != HAL_OK)

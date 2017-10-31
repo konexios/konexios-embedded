@@ -9,7 +9,6 @@
 #include "bsd/socket.h"
 #include "wifi.h"
 #include <time/time.h>
-#include <debug.h>
 
 #define SOCKET_MAX_COUNT 4
 
@@ -68,7 +67,7 @@ int socket(int protocol_family, int socket_type, int protocol) {
       if( WIFI_OpenClientConnection(socket, prot, "",
                                     NULL, 0,
                                     0 ) != WIFI_STATUS_OK ) {
-        DBG("Client Connection failed");
+//        DBG("Client Connection failed");
         socket = -1;
       }
     break;
@@ -79,14 +78,14 @@ int socket(int protocol_family, int socket_type, int protocol) {
 
   _sockets[socket].socket = socket;
   _sockets[socket].type = prot;
-  _sockets[socket].timeout = 3000;
+  _sockets[socket].timeout = DEFAULT_API_TIMEOUT;
 
   return socket;
 }
 
 void soc_close(int socket) {
-  WIFI_CloseClientConnection(socket);
-  _sockets[socket].socket = -1;
+    WIFI_CloseClientConnection(socket);
+    _sockets[socket].socket = -1;
 }
 
 ssize_t send(int sockfd, const void *buf, size_t len, int flags) {
@@ -115,23 +114,31 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
   SSP_PARAMETER_NOT_USED(flags);
   uint16_t recv_len = 0;
   int received = 0;
+  if ( len > ES_WIFI_DATA_SIZE ) len = ES_WIFI_DATA_SIZE;
   while ( received < (int)len ) {
-    int chunk = ( len - received > ES_WIFI_PAYLOAD_SIZE )? ES_WIFI_PAYLOAD_SIZE : len - received;
+    int chunk = ( len - received > ES_WIFI_PAYLOAD_SIZE-2 )? ES_WIFI_PAYLOAD_SIZE-2 : len - received;
     WIFI_Status_t ret = WIFI_ReceiveData(sockfd, (uint8_t*)buf + received, chunk, &recv_len, _sockets[sockfd].timeout);
     switch (ret) {
       case WIFI_STATUS_ERROR:
       case WIFI_STATUS_TIMEOUT:
         if ( !received ) return -1;
-        else return received;
+        else {
+            return received;
+        }
       break;
       default:
         if ( recv_len > 0 ) {
           received += recv_len;
-          return received;
         }
       break;
     }
   }
+  /*DBG("r [%02x] [%02x] [%02x] [%02x] [%02x]",
+      ((char*)buf)[0],
+          ((char*)buf)[1],
+          ((char*)buf)[2],
+          ((char*)buf)[3],
+          ((char*)buf)[4]);*/
   return received;
 }
 

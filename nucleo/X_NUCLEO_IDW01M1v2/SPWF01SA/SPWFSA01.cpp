@@ -257,7 +257,7 @@ bool SPWFSA01::open(const char *type, int* id, const char* addr, int port)
     timer.start();
     socket_closed = 0; 
 
-    if(!_parser.send("AT+S.SOCKON=%s,%d,%s,ind", addr, port, type))
+    if(!_parser.send("AT+S.SOCKON=%s,%d,%s", addr, port, type))
         {
             debug_if(dbg_on, "SPWF> error opening socket\r\n");
             return false;

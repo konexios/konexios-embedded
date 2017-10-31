@@ -28,9 +28,10 @@ COMMON_FLAGS = -c -Wall -Wextra \
                -fomit-frame-pointer \
                $(CPU)
 
-CC_FLAGS = $(COMMON_FLAGS) -Os -std=gnu99 -MP
-CPPC_FLAGS = $(COMMON_FLAGS) -Os -std=gnu++98 -fno-rtti -Wvla -MP
-ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS) -Os
+OPT = -Ofast
+CC_FLAGS = $(COMMON_FLAGS) $(OPT) -std=gnu99 -MP
+CPPC_FLAGS = $(COMMON_FLAGS) $(OPT) -std=gnu++98 -fno-rtti -Wvla -MP
+ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS) $(OPT)
 
 
 CC_SYMBOLS = -DTOOLCHAIN_GCC \
@@ -172,21 +173,16 @@ INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
                  -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
+
 		
 
 LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
 LINKER_SCRIPT_APP  = $(PRJ_PATH)/Src/STM32L475VG_FLASH.ld
 LINKER_SCRIPT_BOOT = $(PRJ_PATH)/bootloader/STM32L475VG_BOOT.ld
 LIBRARIES += -lacnsdkc 
-LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
+# LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
 # -Wl,--wrap,strdup
 # -Wl,--wrap,main -Wl,--wrap,_malloc_r -Wl,--wrap,_free_r -Wl,--wrap,_realloc_r
-
-ifeq ($(DEBUG), 1)
-  CC_FLAGS += -DDEBUG -O0
-else
-  CC_FLAGS += -DNDEBUG -Os
-endif
 
 CC_FLAGS += -DUSE_LPS22HB_TEMP
 
@@ -248,9 +244,8 @@ bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
-flash: $(PROJECT).bin
-	st-flash write $(PROJECT).bin 0x08080000
-	st-flash write bootloader.bin 0x08000000
+flash: version $(PROJECT).bin
+	st-flash write $(LIBDIR)/raw_${VERSION}.bin 0x08000000
 
 DEPS = $(APP_OBJECTS:.o=.d)
 

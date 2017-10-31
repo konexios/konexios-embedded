@@ -40,7 +40,6 @@ int arrow_release_download_payload(const char *payload, int size, int flags) {
   if ( flags == FW_FIRST ) {
     // init flash
     DBG("OTA FW downloading");
-#if 0
     HAL_FLASH_Unlock();
     __HAL_FLASH_CLEAR_FLAG( FLASH_FLAG_EOP | FLASH_FLAG_OPERR |FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR );
     FLASH_EraseInitTypeDef eraser;
@@ -55,50 +54,14 @@ int arrow_release_download_payload(const char *payload, int size, int flags) {
       printf("FLASH is broken\r\n");
       return -1;
     }
-#endif
   }
 
-  int offset = 0;
-  while ( offset < size ) {
-    int chunk = (size - offset < (sizeof(test_str) - test_indx))?
-                (size - offset) : (sizeof(test_str) - test_indx);
-    memcpy(test_test+test_indx, payload + offset, chunk);
-    test_indx += chunk;
-    offset += chunk;
-    if ( test_indx == sizeof(test_str) ) {
-        if ( strncmp(test_str, test_test, sizeof(test_str)) != 0 ) {
-            DBG("fail : %d %d", shift, offset);
-            DBG("%02x %02x %02x %02x %02x %02x %02x %02x",
-                (int)test_test[0],
-                (int)test_test[1],
-                (int)test_test[2],
-                (int)test_test[3],
-                    (int)test_test[4],
-                    (int)test_test[5],
-                    (int)test_test[6],
-                    (int)test_test[7]);
-            DBG("%02x %02x %02x %02x %02x %02x %02x %02x",
-                (int)test_test[8],
-                (int)test_test[9],
-                (int)test_test[10],
-                (int)test_test[11],
-                    (int)test_test[12],
-                    (int)test_test[13],
-                    (int)test_test[14],
-                    (int)test_test[15]);
-        }
-        test_indx = 0;
-    }
-  }
-
-
-#if 0
   while( i < (int)size ) {
     data = *(payload + i);
     HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR + 4 + shift + i), data);
     i++;
   }
-#endif
+
   shift += size;
   return 0;
 }
@@ -113,14 +76,12 @@ int arrow_release_download_complete(int flags) {
   int tot_size = shift;
   if (flags == FW_SUCCESS) {
       s.num = shift;
-#if 0
       int i = 0;
       while( i < 4 ) {
           HAL_FLASH_Program(TYPEPROGRAM_BYTE, (int)(START_ADDR+i), (int)s.data[i]);
           i++;
       }
       HAL_FLASH_Lock();
-#endif
       DBG("RELEASE DOWNLOAD complete :: %d", tot_size);
   } else {
       DBG("RELEASE DOWNLOAD fail :: %d", tot_size);
