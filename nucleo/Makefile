@@ -166,8 +166,6 @@ endif
 endif
 endif
 
-GET_VERSION=gcc ../__g.c -o __get_version -I../acn-sdk-c/include -I../acn-sdk-c -U__linux__ -D__${PLATFORM}__
-
 .c.o:
 	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 .cpp.o:
@@ -186,7 +184,7 @@ clean: sdk_clean
 	$(RMDIR) $(LIBDIR)
 	$(RM) $(CPPOBJS)
 	
-$(APP_OUT).bin: $(APP_OUT)
+$(APP_OUT).bin: $(APP_OUT) app_settings
 	$(OBJCOPY) -O binary $< $@
 	cp bootloader/raw.bin ${LIBDIR}/raw_${VERSION}.bin
 	cat $(APP_OUT).bin >> ${LIBDIR}/raw_${VERSION}.bin
@@ -200,9 +198,7 @@ lst: $(APP_OUT).lst
 size: $(APP_OUT)
 	$(SIZE) $(APP_OUT)
 
-version:
-	$(eval VERSION = $(shell ${GET_VERSION} && ./__get_version && rm __get_version))
-	
+version: app_version
 	
 bootloader: bootloader.bin
 
@@ -212,5 +208,5 @@ bootloader.bin:
 flash: version $(APP_OUT)
 	st-flash write ${LIBDIR}/raw_${VERSION}.bin 0x8000000
 
-all: version libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
+all: check_settings version libacnsdkc.a $(CPPOBJS) $(APP_OUT) $(APP_OUT).bin
 
