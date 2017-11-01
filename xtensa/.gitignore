@@ -2,3 +2,4 @@
 *.map
 *.qbs
 *.qbs.*
+*.bin

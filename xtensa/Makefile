@@ -38,11 +38,6 @@ CC_SYMBOLS := \
  -DDEBUG
 # -DHTTP_SOCK_KEEP_OPEN
 
-ifdef DEV_ENV
-CC_SYMBOLS += -DDEV_ENV
-endif
- # -DCONFIG_HOSTLESS
-
 ifeq ($(AR6002_REV7_VER), 5) # {
 CC_SYMBOLS += -DNUM_OF_VDEVS=2 \
   -DAR6002_REV75
@@ -155,8 +150,10 @@ $(DEMO_OUT): $(SDK_TARGET)
 firmware:
 	cp $(PWD)/config/index.html $(SRC_IOE)/demo/sdk_flash/
 	cd $(SRC_IOE)/tool && ./qonstruct.sh --qons ./tmp/
+	cp $(SRC_IOE)/bin/ota_image_AR401X_REV6_IOT_MP1_hostless_unidev_singleband_iot_arrow.bin ota_${VERSION}.bin
+	cp $(SRC_IOE)/bin/raw_flashimage_AR401X_REV6_IOT_MP1_hostless_unidev_singleband_iot_arrow.bin raw_${VERSION}.bin
 
-all: $(SDK_TARGET) $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware
+all: app_version check_settings $(SDK_TARGET) $(OBJS) $(DEMO_LIB) $(DEMO_OUT) firmware app_settings
 
 clean: sdk_clean
 	$(foreach d, $(SUBDIRS), make -C $(d) clean;)

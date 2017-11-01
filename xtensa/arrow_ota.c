@@ -75,8 +75,11 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
     return -1;
   }
   img_offset += ret_size;
-//  DBG("offset %d", img_offset);
-  chunk++;
+  // hardcoded fail
+  if ( chunk++ > 10 ) {
+      DBG("Firmware update failed due to corrupted image");
+      return -1;
+  }
   return 0;
 }
 

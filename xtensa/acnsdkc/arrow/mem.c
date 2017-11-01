@@ -86,3 +86,7 @@ static void sort(char *array, size_t size, __compar_fn_t cmp, int begin, int end
 void qsort(void *__base, size_t __nmemb, size_t __size, __compar_fn_t __compar) {
   sort((char*)__base, __size, __compar, 0, (__nmemb-1) * __size);
 }
+
+int vsnprintf(char *s, size_t n, const char *format, va_list ap) {
+    return qcom_vsnprintf(s,  n, format, ap);
+}
