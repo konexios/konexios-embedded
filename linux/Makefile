@@ -10,7 +10,9 @@ CJSON = yes
 GCC_BIN =
 GCC_PREFIX =
 PLATFORM = linux
+
 SDK_PATH = $(abspath ../acn-sdk-c/)
+SDK_IMPL = $(PWD)/acnsdkc
 
 COMMON_FLAGS = -Os \
                -Wall \
