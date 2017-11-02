@@ -9,6 +9,7 @@ GCC_PREFIX = xt
 WOLFSSL = yes
 PLATFORM = xtensa
 SDK_PATH = $(abspath ../acn-sdk-c/)
+SDK_IMPL = $(PWD)/acnsdkc
 
 COMMON_FLAGS := $(DBG) \
   -Os \
