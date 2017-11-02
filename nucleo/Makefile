@@ -12,6 +12,7 @@ GCC_BIN =
 GCC_PREFIX = arm-none-eabi
 PLATFORM = nucleo
 SDK_PATH = $(abspath ../acn-sdk-c/)
+SDK_IMPL = $(PWD)/acnsdkc
 
 ifeq ($(HARDFP),1)
 	FLOAT_ABI = hard
