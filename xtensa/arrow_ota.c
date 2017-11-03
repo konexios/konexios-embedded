@@ -10,7 +10,8 @@
 #include <arrow_ota.h>
 #include <time/time.h>
 #include <arrow/software_release.h>
-
+#include <arrow/sys.h>
+#include <qcom_network.h>
 /*
  * OTA FTP Status codes
  */
@@ -79,8 +80,14 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
   return 0;
 }
 
+static int ota_session_complete(void *arg) {
+    int *gi = (int *)arg;
+    DBG("Close OTA session; Flasing...");
+    return qcom_ota_session_end(*gi);
+}
+
 int arrow_release_download_complete(int flag) {
-  int good_image = 0;
+  static int good_image = 0;
   wdt_feed();
   if ( flag == FW_SUCCESS ) {
       //we are done
@@ -95,7 +102,8 @@ int arrow_release_download_complete(int flag) {
   }
   chunk = 0;
   img_offset = 0;
-  qcom_ota_session_end(good_image);
+  at_reboot(ota_session_complete, (void*)&good_image);
+  //qcom_ota_session_end(good_image);
   return (good_image?0:-1);
 }
 
