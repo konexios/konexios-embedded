@@ -148,36 +148,63 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
   qcom_dset_close(handle, NULL, NULL);
 }
 
+typedef struct _wifi_credentials {
+    char *ssid;
+    char *pass;
+    uint32_t sec;
+} wifi_credentials_t;
+
+static wifi_credentials_t wifi_crds[] = {
+#if defined(DEFAULT_WIFI_SSID) && defined(DEFAULT_WIFI_PASS) && defined(DEFAULT_WIFI_SEC)
+    { DEFAULT_WIFI_SSID,
+      DEFAULT_WIFI_PASS,
+      DEFAULT_WIFI_SEC },
+#endif
+#if defined(DEFAULT_WIFI_SSID_1) && defined(DEFAULT_WIFI_PASS_1) && defined(DEFAULT_WIFI_SEC_1)
+    { DEFAULT_WIFI_SSID_1,
+      DEFAULT_WIFI_PASS_1,
+      DEFAULT_WIFI_SEC_1 },
+#endif
+#if defined(DEFAULT_WIFI_SSID_2) && defined(DEFAULT_WIFI_PASS_2) && defined(DEFAULT_WIFI_SEC_2)
+    { DEFAULT_WIFI_SSID_2,
+      DEFAULT_WIFI_PASS_2,
+      DEFAULT_WIFI_SEC_2 },
+#endif
+};
+
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
   if ( !flash_read ) read_flash();
 
-#if defined(DEFAULT_WIFI_SSID)  \
-  && defined(DEFAULT_WIFI_PASS) \
-  && defined(DEFAULT_WIFI_SEC)
-  strcpy(ssid, DEFAULT_WIFI_SSID);
-  strcpy(pass, DEFAULT_WIFI_PASS);
-  *sec = DEFAULT_WIFI_SEC;
-#else
-  char *tmp = flash_data.ssid;
-  if ( !utf8check(tmp) || strlen(tmp)==0 ) {
-    DBG("there is no SSID");
-    return -1;
+  if ( sizeof(wifi_crds) > 0 ) {
+      static uint8_t attempts = 0;
+      DBG("attempt %d/%d", (int)attempts, sizeof(wifi_crds) / sizeof(wifi_credentials_t));
+      wifi_credentials_t *wc = wifi_crds + attempts;
+      attempts++;
+      if ( attempts >= sizeof(wifi_crds) / sizeof(wifi_credentials_t) ) attempts = 0;
+      strcpy(ssid, wc->ssid);
+      strcpy(pass, wc->pass);
+      *sec = wc->sec;
+  } else {
+      char *tmp = flash_data.ssid;
+      if ( !utf8check(tmp) || strlen(tmp)==0 ) {
+          DBG("there is no SSID");
+          return -1;
+      }
+      DBG("ssid %s", tmp);
+      strcpy(ssid, tmp);
+      tmp = flash_data.pass;
+      if ( !utf8check(tmp) || strlen(tmp)==0 ) {
+          DBG("there is no PASS");
+          return -1;
+      }
+      DBG("pass %s", tmp);
+      strcpy(pass, tmp);
+      *sec = flash_data.sec;
+      if ( *sec < 0 ) {
+          DBG("there is no SEC");
+          return -1;
+      }
   }
-  DBG("ssid %s", tmp);
-  strcpy(ssid, tmp);
-  tmp = flash_data.pass;
-  if ( !utf8check(tmp) || strlen(tmp)==0 ) {
-    DBG("there is no PASS");
-    return -1;
-  }
-  DBG("pass %s", tmp);
-  strcpy(pass, tmp);
-  *sec = flash_data.sec;
-  if ( *sec < 0 ) {
-    DBG("there is no SEC");
-    return -1;
-  }
-#endif
   return 0;
 }
 

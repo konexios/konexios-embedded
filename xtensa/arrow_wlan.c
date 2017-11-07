@@ -35,7 +35,7 @@ void __wifi_conn_callback(unsigned char device_id, int value, A_UINT8 *pEvtBuffe
 ////      qcom_dhcpc_enable(0, 0);
 //}
 
-void arrow_connect_ssid(A_UINT8 device_id, A_CHAR *ssid)
+int arrow_connect_ssid(A_UINT8 device_id, A_CHAR *ssid)
 {
   A_UINT32 devMode, param;
   A_UINT32 psta_state = 0;
@@ -53,12 +53,11 @@ void arrow_connect_ssid(A_UINT8 device_id, A_CHAR *ssid)
 
   psta_state = QCOM_RSNA_AUTH_SUCCESS;
 
-  qcom_sta_connect_event_wait(device_id, &psta_state);
+  A_STATUS status = qcom_sta_connect_event_wait(device_id, &psta_state);
 
-//  qcom_dhcpc_register_cb(device_id, arrow_dhcpc_success_cb);
+  if ( status != A_OK ) return -1;
 
   qcom_dhcpc_enable(device_id, 1);
-
   qcom_ipconfig(device_id, IP_CONFIG_DHCP, &param, &param, &param);
 
   A_PRINTF("Setting SSID to %s \n",(char *)ssid);

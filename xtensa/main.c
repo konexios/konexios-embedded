@@ -135,9 +135,25 @@ static int test_cmd_proc(const char *str) {
   return 0;
 }
 
+int wait_wifi_connection() {
+    A_UINT32 ip = 0;
+    uint32_t attempts = 0;
+    do {
+      A_UINT32 pr;
+      qcom_ip_address_get(currentDeviceId, &ip, &pr, &pr);
+      if (!ip) {
+          msleep(100);
+          if ( attempts++ > 50 ) {
+              A_PRINTF("wifi connection fail!\r\n");
+              return -1;
+          }
+      }
+    } while(!ip);
+    return 0;
+}
+
 #include "arrow_ota.h"
 extern void reboot(void);
-
 extern int at_go(void);
 
 void main_entry(ULONG which_thread) {
@@ -173,29 +189,12 @@ force_ap:
       if ( 0 ) goto force_ap;
     }
   } else {
-    A_UINT32 ip = 0;
-
-    A_PRINTF("try to connect %d\n", currentDeviceId);
-    struct sec_t {
-      A_UINT16 encr;
-      A_UINT16 auth;
-    } sec;
-    char ssid[32];
-    char pass[32];
-    if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
-      DBG("No wifi settings!");
-#if defined(DEFAULT_WIFI_SSID)
-      return;
-#else
-      goto force_ap;
-#endif
-    }
     {
       // keys test
       char api_test[66];
       char sec_test[46];
       if ( restore_key_setting(api_test, sec_test) < 0 ) {
-        DBG("No wifi settings!");
+        DBG("No keys settings!");
 #if defined(DEFAULT_WIFI_SSID)
       return;
 #else
@@ -203,24 +202,38 @@ force_ap:
 #endif
       }
     }
-    qcom_sec_set_passphrase(currentDeviceId, pass);
-    qcom_sec_set_auth_mode(currentDeviceId, (A_UINT32)sec.auth);
-    qcom_sec_set_encrypt_mode(currentDeviceId, (A_UINT32)sec.encr);
-    A_UINT32 test;
-    qcom_sec_get_auth_mode(currentDeviceId, &test);
-    DBG("auth %d", test);
-    qcom_sec_get_encrypt_mode(currentDeviceId, &test);
-    DBG("secr %d", test);
-    arrow_connect_ssid(currentDeviceId, ssid);
 
+    uint32_t attepts = 0;
     do {
-      A_UINT32 pr;
-      A_STATUS st = qcom_ip_address_get(currentDeviceId, &ip, &pr, &pr);
-      (void)(st);
-      if (!ip) qcom_thread_msleep(100);
-    } while(!ip);
-    //  qcom_sntp_show_config();
-    //  qcom_enable_sntp_client(1);
+        if ( attepts++ < 20 ) wdt_feed();
+        A_PRINTF("connecting... %d\n", attepts);
+        qcom_disconnect(currentDeviceId);
+        struct sec_t {
+            A_UINT16 encr;
+            A_UINT16 auth;
+        } sec;
+        char ssid[32];
+        char pass[32];
+        if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
+            DBG("No wifi settings!");
+#if defined(DEFAULT_WIFI_SSID)
+            return;
+#else
+            goto force_ap;
+#endif
+        }
+        qcom_sec_set_passphrase(currentDeviceId, pass);
+        qcom_sec_set_auth_mode(currentDeviceId, (A_UINT32)sec.auth);
+        qcom_sec_set_encrypt_mode(currentDeviceId, (A_UINT32)sec.encr);
+        A_UINT32 test;
+        qcom_sec_get_auth_mode(currentDeviceId, &test);
+        DBG("auth %d", test);
+        qcom_sec_get_encrypt_mode(currentDeviceId, &test);
+        DBG("secr %d", test);
+        if ( arrow_connect_ssid(currentDeviceId, ssid) < 0 )
+            continue;
+    } while( wait_wifi_connection() < 0 );
+
 #endif
 #if defined(AT_COMMAND)
     {
