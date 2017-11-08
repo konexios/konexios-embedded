@@ -93,6 +93,7 @@ int arrow_release_download_complete(int flag) {
       //we are done
       if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
           good_image = 1;
+          at_reboot(ota_session_complete, (void*)&good_image);
           DBG("OTA Partition Verify Checksum is correct");
       } else {
           DBG("OTA Partition Verify Checksum is NOT correct");
@@ -102,7 +103,6 @@ int arrow_release_download_complete(int flag) {
   }
   chunk = 0;
   img_offset = 0;
-  at_reboot(ota_session_complete, (void*)&good_image);
   //qcom_ota_session_end(good_image);
   return (good_image?0:-1);
 }
