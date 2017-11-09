@@ -105,7 +105,7 @@ int arrow_release_download_complete(int flag) {
   }
   chunk = 0;
   img_offset = 0;
-  //qcom_ota_session_end(good_image);
+//  qcom_ota_session_end(good_image);
   return (good_image?0:-1);
 }
 
