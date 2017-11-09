@@ -343,7 +343,7 @@ static void reset_callback( void* arg ) {
     qcom_sys_reset();
 }
 
-int reboot(const char *cmd, char *ans) {
+int reset(const char *cmd, char *ans) {
     SSP_PARAMETER_NOT_USED(cmd);
     SSP_PARAMETER_NOT_USED(ans);
     reset_callback(NULL);
@@ -408,7 +408,7 @@ at_cmd_t cmds[] = {
         { "S.SSLCLS",   ssl_close_sock },
         { "SWIFI",      set_wifi },
         { "SKEYS",      set_keys },
-        { "RESET",      reboot }
+        { "RESET",      reset }
 };
 
 at_cmd_t *find_cmd(const char *name, int size) {
