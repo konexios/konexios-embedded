@@ -80,11 +80,11 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
   return 0;
 }
 
-static int ota_session_complete(void *arg) {
-    int *gi = (int *)arg;
-    DBG("Close OTA session; Flasing... %d", *gi);
-    return qcom_ota_session_end(*gi);
-}
+//static int ota_session_complete(void *arg) {
+//    int *gi = (int *)arg;
+//    DBG("Close OTA session; Flasing... %d", *gi);
+//    return qcom_ota_session_end(*gi);
+//}
 
 int arrow_release_download_complete(int flag) {
   static int good_image = 0;
