@@ -56,25 +56,25 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
     {
       int offset = 0;
         //need parse image hdr
-        if( (rtn = qcom_ota_parse_image_hdr((A_UINT8 *)payload,(A_UINT32*)&offset)) != QCOM_OTA_OK )
+        /*if( (rtn = qcom_ota_parse_image_hdr((A_UINT8 *)payload,(A_UINT32*)&offset)) != QCOM_OTA_OK )
         {
             DBG("OTA Parse Image Hdr Error\n");
             return -1;
-        }
+        }*/
         DBG("OTA Parse Image Hdr: %d\n", offset);
         size -= offset;
         payload += offset;
     }
   }
-  if ((rtn = qcom_ota_partition_erase_sectors(img_offset + size)) != QCOM_OTA_OK ) {
+  /*if ((rtn = qcom_ota_partition_erase_sectors(img_offset + size)) != QCOM_OTA_OK ) {
     DBG("OTA Erase failed");
     return -1;
-  }
-  A_UINT32 ret_size = 0;
-  if((rtn = qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size)) != QCOM_OTA_OK ) {
+  }*/
+  A_UINT32 ret_size = size;
+  /*if((rtn = qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size)) != QCOM_OTA_OK ) {
     DBG("OTA Data write failed");
     return -1;
-  }
+  }*/
   img_offset += ret_size;
   chunk++;
   return 0;
@@ -105,7 +105,7 @@ int arrow_release_download_complete(int flag) {
   }
   chunk = 0;
   img_offset = 0;
-  qcom_ota_session_end(good_image);
+  //qcom_ota_session_end(good_image);
   return (good_image?0:-1);
 }
 
