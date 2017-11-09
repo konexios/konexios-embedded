@@ -10,16 +10,7 @@
 #include <qcom_system.h>
 #include <time/time.h>
 
-static _at_reboot __reboot_seq;
-static void *__reboot_arg = 0;
-
-void at_reboot(_at_reboot func, void *arg) {
-    __reboot_seq = func;
-    __reboot_arg = arg;
-}
-
 void reboot(void) {
-  __reboot_seq(__reboot_arg);
   qcom_sys_reset();
   msleep(1000*120);
 }

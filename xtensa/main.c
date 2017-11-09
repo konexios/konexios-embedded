@@ -258,6 +258,7 @@ force_ap:
     arrow_mqtt_send_telemetry_routine(get_data, &sig);
 
     arrow_close();
+    reboot();
   }
 }
 

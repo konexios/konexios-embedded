@@ -50,62 +50,54 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
       DBG("OTA Session Start Fail\n");
       return rtn;
     }
-    part_size = qcom_ota_partition_get_size();
-    DBG("OTA Partition Get Size: %d",part_size);
-    if( part_size == 0) return A_ERROR;
+//    part_size = qcom_ota_partition_get_size();
+//    DBG("OTA Partition Get Size: %d",part_size);
+//    if( part_size == 0) return A_ERROR;
     {
       int offset = 0;
         //need parse image hdr
-        /*if( (rtn = qcom_ota_parse_image_hdr((A_UINT8 *)payload,(A_UINT32*)&offset)) != QCOM_OTA_OK )
+        if( (rtn = qcom_ota_parse_image_hdr((A_UINT8 *)payload,(A_UINT32*)&offset)) != QCOM_OTA_OK )
         {
             DBG("OTA Parse Image Hdr Error\n");
             return -1;
-        }*/
+        }
         DBG("OTA Parse Image Hdr: %d\n", offset);
         size -= offset;
         payload += offset;
     }
   }
-  /*if ((rtn = qcom_ota_partition_erase_sectors(img_offset + size)) != QCOM_OTA_OK ) {
+  if ((rtn = qcom_ota_partition_erase_sectors(img_offset + size)) != QCOM_OTA_OK ) {
     DBG("OTA Erase failed");
     return -1;
-  }*/
+  }
   A_UINT32 ret_size = size;
-  /*if((rtn = qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size)) != QCOM_OTA_OK ) {
+  if((rtn = qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size)) != QCOM_OTA_OK ) {
     DBG("OTA Data write failed");
     return -1;
-  }*/
+  }
   img_offset += ret_size;
   chunk++;
   return 0;
 }
 
-//static int ota_session_complete(void *arg) {
-//    int *gi = (int *)arg;
-//    DBG("Close OTA session; Flasing... %d", *gi);
-//    return qcom_ota_session_end(*gi);
-//}
-
 int arrow_release_download_complete(int flag) {
   static int good_image = 0;
   wdt_feed();
   if ( flag == FW_SUCCESS ) {
-      //we are done
+      // done
       if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
           good_image = 1;
-          //at_reboot(ota_session_complete, (void*)&good_image);
           DBG("OTA Partition Verify Checksum is correct");
       } else {
           DBG("OTA Partition Verify Checksum is NOT correct");
-          // close it immediately
-          //ota_session_complete(&good_image);
+          // bad image
       }
   } else {
-      DBG("OTA MD5SUM Checksum is NOT correct");
+      DBG("OTA SDK MD5SUM Checksum is NOT correct");
   }
   chunk = 0;
   img_offset = 0;
-  //qcom_ota_session_end(good_image);
+  qcom_ota_session_end(good_image);
   return (good_image?0:-1);
 }
 
