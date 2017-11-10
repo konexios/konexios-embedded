@@ -52,6 +52,14 @@ char *strncat(char *dest, const char *src, size_t n) {
     return ret;
 }
 
+double strtod (const char* str, char** endptr) {
+    double value;
+    SSP_PARAMETER_NOT_USED(endptr);
+    int i = sscanf( str, "%lf", &value );
+    if ( i != 1 ) return 0;
+    return value;
+}
+
 static void swap(void *x, void *y, size_t l) {
    char *a = x, *b = y, c;
    while(l--) {

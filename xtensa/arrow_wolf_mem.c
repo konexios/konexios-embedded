@@ -10,6 +10,7 @@
 #include <arrow_wolf_mem.h>
 #include <arrow/mem.h>
 #include <debug.h>
+#include <time/time.h>
 
 void *XMALLOC(size_t n, void* heap, int type) {
     SSP_PARAMETER_NOT_USED(heap);
@@ -32,8 +33,7 @@ void XFREE(void *p, void* heap, int type) {
 }
 
 int rand() {
-    int _rand;
-    qcom_crypto_rng_get(&_rand, 2);
-
-    return _rand;
+    // FIXME rand
+    time_t t = time(NULL) % 256;
+    return (int)t;
 }

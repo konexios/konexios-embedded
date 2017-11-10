@@ -40,15 +40,12 @@
 //TX_THREAD sdk_thread;
 TX_THREAD main_thread;
 #ifdef REV74_TEST_ENV4
-#error REV74_TEST_ENV4
-#define BYTE_POOL_SIZE (2*1024 + 128 )
-#define PSEUDO_HOST_STACK_SIZE (2 * 1024 )   /* small stack for pseudo-Host thread */
-
+# error REV74_TEST_ENV4
+# define BYTE_POOL_SIZE (2*1024 + 128 )
+# define PSEUDO_HOST_STACK_SIZE (2 * 1024 )   /* small stack for pseudo-Host thread */
 #else
-
-#define PSEUDO_HOST_STACK_SIZE ( 24 * 1024 )   /* small stack for pseudo-Host thread */
-#define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
-
+# define PSEUDO_HOST_STACK_SIZE ( 24 * 1024 )   /* small stack for pseudo-Host thread */
+# define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
 #endif
 
 extern int qca_gateway_software_update(const char *);
@@ -169,7 +166,9 @@ void main_entry(ULONG which_thread) {
   wdt_start();
 #endif
   A_PRINTF("Add update func\r\n");
+#if !defined(NO_SOFTWARE_UPDATE)
   arrow_gateway_software_update_set_cb(qca_gateway_software_update);
+#endif
   arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
 #if defined(AT_COMMAND)
   at_go();
@@ -262,15 +261,12 @@ force_ap:
   }
 }
 
-void user_main(void)
-{
+void user_main(void) {
   malloc_module_init();
-  {
-    CHAR *pointer = (CHAR*)mem_alloc(BYTE_POOL_SIZE);
-    tx_thread_create(&main_thread, "cdrtest", main_entry,
-                     0, pointer, PSEUDO_HOST_STACK_SIZE,
-                     16, 16, 4, TX_AUTO_START);
-  }
+  CHAR *pointer = (CHAR*)mem_alloc(BYTE_POOL_SIZE);
+  tx_thread_create(&main_thread, "cdrtest", main_entry,
+                   0, pointer, PSEUDO_HOST_STACK_SIZE,
+                   16, 16, 4, TX_AUTO_START);
   cdr_threadx_thread_init();
 }
 

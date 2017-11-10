@@ -7,11 +7,11 @@ CC_NAME = xcc
 GCC_BIN =
 GCC_PREFIX = xt
 WOLFSSL = yes
+CJSON   = yes
 PLATFORM = xtensa
 SDK_PATH = $(abspath ../acn-sdk-c/)
 
 COMMON_FLAGS := $(DBG) \
-  -Os \
   -Wall \
   -Wextra \
   -Wpointer-arith \
@@ -22,6 +22,8 @@ COMMON_FLAGS := $(DBG) \
   -nostdlib \
   -mlongcalls \
   -ffunction-sections
+  
+# -0s
 
 CC_FLAGS = $(COMMON_FLAGS)
 CC_SYMBOLS := \
@@ -34,8 +36,8 @@ CC_SYMBOLS := \
  -Wno-return-type \
  -DATHOS \
  -DATH_TARGET \
- -DHTTP_ENABLED \
- -DDEBUG
+ -DNO_SOFTWARE_UPDATE \
+ -DHTTP_ENABLED
 # -DHTTP_SOCK_KEEP_OPEN
 
 ifeq ($(AR6002_REV7_VER), 5) # {
@@ -81,19 +83,16 @@ CFLAGS = $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES)
 CSRCS := app_start.c main.c swat_wmiconfig_ota.c uart2.c at.c
 CSRCS += $(wildcard arrow_*.c)
 CSRCS += $(shell find $(PWD)/acnsdkc -name "*.c")
-CSRCS := $(filter-out $(PWD)/acnsdkc/arrow/ssl.c, $(CSRCS))
 
 OBJS := $(CSRCS:%.c=%.o)
 DEPS := $(CSRCS:%.c=%.d)
 LIBS := \
+	-lm \
 	-lgcc \
 	-ladc \
 	-luartserp \
-	-lconsole \
 	-lramcust \
 	-lserport \
-	-lqcomcrypto \
-	-ljson \
 	-lpatches_iot \
 	-lpatches \
 	-lhost_dset_api \
@@ -114,10 +113,12 @@ LIBS := \
 	-lcrypto_hmacsha256 \
 	-lcrypto_hmacsha1 \
 	-lwhalpatches \
-	-l_ezxml \
 	-lssdp
+# -lconsole
+# -lqcomcrypto
+# -l_ezxml
 
-LDFLAGS = -nostdlib -Wl,-EL -Wl,--gc-sections \
+LDFLAGS = -nostdlib -lgcc -Wl,-EL -Wl,--gc-sections \
 	-L$(IMAGEDIR) -L$(LIBDIR) -L. \
 	-Tsdk_shell.ld \
 	-u app_start \
