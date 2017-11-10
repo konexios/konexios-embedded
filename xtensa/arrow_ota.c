@@ -37,12 +37,12 @@ int part_size = 0;
 int img_offset = 0;
 
 int arrow_release_download_payload(const char *payload, int size, int flag) {
-//  int rtn = -1;
   wdt_feed();
   if ( flag == FW_FIRST ) {
     img_offset = 0;
     DBG("Enter Arrow firmware upgrade");
 #ifndef OTA_FAKE
+    int rtn = -1;
     if( (rtn = qcom_ota_session_start(
              QCOM_OTA_TARGET_FIRMWARE_UPGRADE |
              QCOM_OTA_PRESERVE_LAST |
@@ -58,7 +58,7 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
       int offset = 24;
 #ifndef OTA_FAKE
       //need parse image hdr
-      if( (rtn = qcom_ota_parse_image_hdr((A_UINT8 *)payload,(A_UINT32*)&offset)) != QCOM_OTA_OK ) {
+      if( qcom_ota_parse_image_hdr((A_UINT8 *)payload,(A_UINT32*)&offset) != QCOM_OTA_OK ) {
           DBG("OTA Parse Image Hdr Error\n");
           return -1;
       }
@@ -69,14 +69,14 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
     }
   }
 #ifndef OTA_FAKE
-  if ((rtn = qcom_ota_partition_erase_sectors(img_offset + size)) != QCOM_OTA_OK ) {
+  if (qcom_ota_partition_erase_sectors(img_offset + size) != QCOM_OTA_OK ) {
       DBG("OTA Erase failed");
       return -1;
   }
 #endif
   A_UINT32 ret_size = size;
 #ifndef OTA_FAKE
-  if((rtn = qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size)) != QCOM_OTA_OK ) {
+  if( qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size) != QCOM_OTA_OK ) {
       DBG("OTA Data write failed");
       return -1;
   }
@@ -91,6 +91,7 @@ int arrow_release_download_complete(int flag) {
   wdt_feed();
   if ( flag == FW_SUCCESS ) {
       // done
+#ifndef OTA_FAKE
       good_image = 1;
       /*if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
           good_image = 1;
@@ -99,12 +100,17 @@ int arrow_release_download_complete(int flag) {
           DBG("OTA Partition Verify Checksum is NOT correct");
           // bad image
       }*/
+#else
+      good_image = 1;
+#endif
   } else {
       DBG("OTA SDK MD5SUM Checksum is NOT correct");
   }
   chunk = 0;
   img_offset = 0;
-//  qcom_ota_session_end(good_image);
+#ifndef OTA_FAKE
+  qcom_ota_session_end(good_image);
+#endif
   return (good_image?0:-1);
 }
 
