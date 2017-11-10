@@ -92,14 +92,13 @@ int arrow_release_download_complete(int flag) {
   if ( flag == FW_SUCCESS ) {
       // done
 #ifndef OTA_FAKE
-      good_image = 1;
-      /*if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
+      if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
           good_image = 1;
           DBG("OTA Partition Verify Checksum is correct");
       } else {
           DBG("OTA Partition Verify Checksum is NOT correct");
           // bad image
-      }*/
+      }
 #else
       good_image = 1;
 #endif
