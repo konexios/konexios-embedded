@@ -44,7 +44,7 @@ TX_THREAD main_thread;
 # define BYTE_POOL_SIZE (2*1024 + 128 )
 # define PSEUDO_HOST_STACK_SIZE (2 * 1024 )   /* small stack for pseudo-Host thread */
 #else
-# define PSEUDO_HOST_STACK_SIZE ( 24 * 1024 )   /* small stack for pseudo-Host thread */
+# define PSEUDO_HOST_STACK_SIZE ( 4 * 1024 )   /* small stack for pseudo-Host thread */
 # define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
 #endif
 
@@ -62,14 +62,13 @@ A_UINT32    pin_number;
 
 void shell_add_gpio_configurations(void)
 {
-#if 0
     A_UINT32    i = 0;
 
-    /* Currently only one dynamic configuration is good enough as GPIO pin 2 
-     * is used by both UART and I2S. UART configuration is already provided 
-     * as part of tunable input text and only I2S configuration needs to be 
-     * added here. None of GPIO configurations are added here as this demo 
-     * doesnt use GPIO configurations. If customer applications requires it, 
+    /* Currently only one dynamic configuration is good enough as GPIO pin 2
+     * is used by both UART and I2S. UART configuration is already provided
+     * as part of tunable input text and only I2S configuration needs to be
+     * added here. None of GPIO configurations are added here as this demo
+     * doesnt use GPIO configurations. If customer applications requires it,
      * it can be added here */
     shell_gpio_info_t    pin_configs[] = {
         { 2, 1, (gpio_pin_peripheral_config_t [1]) { { 5, 0x80001800 } } },
@@ -77,15 +76,16 @@ void shell_add_gpio_configurations(void)
 
     for (i = 0; i < sizeof(pin_configs)/sizeof(shell_gpio_info_t); i++)
     {
-        if (A_OK != qcom_gpio_add_alternate_configurations(pin_configs[i].pin_num, 
+        if (A_OK != qcom_gpio_add_alternate_configurations(pin_configs[i].pin_num,
                         pin_configs[i].num_configs, pin_configs[i].configs))
         {
             A_PRINTF("qcom_add_config failed for pin %d\n", pin_configs[i].pin_num);
         }
     }
-#endif
+
     return;
 }
+
 
 A_UINT8 currentDeviceId = 0;
 extern void user_pre_init(void);
@@ -261,10 +261,14 @@ force_ap:
   }
 }
 
+TX_BYTE_POOL pool;
 void user_main(void) {
   malloc_module_init();
-  CHAR *pointer = (CHAR*)mem_alloc(BYTE_POOL_SIZE);
-  tx_thread_create(&main_thread, "cdrtest", main_entry,
+  tx_byte_pool_create(&pool, "cdrpool", TX_POOL_CREATE_DYNAMIC, BYTE_POOL_SIZE);
+
+  CHAR *pointer;
+  tx_byte_allocate(&pool, (VOID **) & pointer, PSEUDO_HOST_STACK_SIZE, TX_NO_WAIT);
+  tx_thread_create(&main_thread, "cdrthread", main_entry,
                    0, pointer, PSEUDO_HOST_STACK_SIZE,
                    16, 16, 4, TX_AUTO_START);
   cdr_threadx_thread_init();

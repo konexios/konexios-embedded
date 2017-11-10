@@ -100,6 +100,7 @@ LIBS := \
 	-lsntppatches \
 	-ldnspatches \
 	-lotapatches \
+	-lcustpatches \
 	-lstrrclpatches \
 	-lipv6patches \
 	-lsslpatches \
@@ -113,9 +114,10 @@ LIBS := \
 	-lcrypto_hmacsha256 \
 	-lcrypto_hmacsha1 \
 	-lwhalpatches \
-	-lssdp
+	-lssdp \
+	-lstackghost \
+	-lqcomcrypto
 # -lconsole
-# -lqcomcrypto
 # -l_ezxml
 
 LDFLAGS = -nostdlib -lgcc -Wl,-EL -Wl,--gc-sections \
