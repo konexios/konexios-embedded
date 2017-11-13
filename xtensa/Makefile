@@ -122,7 +122,7 @@ LIBS := \
 
 LDFLAGS = -nostdlib -lgcc -Wl,-EL -Wl,--gc-sections \
 	-L$(IMAGEDIR) -L$(LIBDIR) -L. \
-	-Tsdk_shell.ld \
+	-Tarrow.ld \
 	-u app_start \
 	-Wl,-static \
 	-Wl,--start-group \

@@ -6,9 +6,9 @@
 */
 MEMORY
 {
-  lit_seg :             org = 0x009F9000, len = 0x0000B000
-  proxy_seg :      	org = 0x00A04000, len = 0x00000800
-  iram_seg :            org = 0x00A04800, len = 0x0008B800
+  lit_seg :             org = 0x009F9000, len = 0x0000C600
+  proxy_seg :      	org = 0x00A05600, len = 0x00000800
+  iram_seg :            org = 0x00A05E00, len = 0x0008A200
   proxy_d_seg :    	org = 0x00442F00, len = 0x00003100
   dram_seg :            org = 0x00446000, len = 0x000BA000
 }
