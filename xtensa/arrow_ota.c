@@ -44,8 +44,7 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
     int rtn = -1;
     if( (rtn = qcom_ota_session_start(
              QCOM_OTA_TARGET_FIRMWARE_UPGRADE |
-             QCOM_OTA_PRESERVE_LAST |
-             QCOM_OTA_ERASING_RW_DSET, 0)) != QCOM_OTA_OK ) {
+             QCOM_OTA_ERASING_RW_DSET, 2)) != QCOM_OTA_OK ) {
       DBG("OTA Session Start Fail\n");
       return rtn;
     }
