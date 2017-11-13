@@ -11,9 +11,9 @@
 #include <debug.h>
 #include <qcom_dset.h>
 #include <arrow/utf8.h>
-#define DSETID_ARROW_START 0x00000800
+#define DSETID_ARROW_START DSETID_VENDOR_START
 #define ARROW_RW_DATA_ID DSETID_ARROW_START+0
-#define ARROW_RO_DATA_ID DSETID_ARROW_START+2
+#define DSET_FLAGS DSET_MEDIA_NVRAM | DSET_FLAG_SECURE
 
 static flash_mem_t flash_data;
 #define flash_size sizeof(flash_mem_t)
@@ -23,7 +23,7 @@ static void read_flash() {
   int32_t status;
   uint32_t handle;
   uint32_t size;
-  status = qcom_dset_open(&handle, ARROW_RW_DATA_ID, DSET_MEDIA_NVRAM, NULL, NULL);
+  status = qcom_dset_open(&handle, ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
   if ( status == A_OK ) {
     size = qcom_dset_size(handle);
     if ( size > flash_size ) size = flash_size;
@@ -53,8 +53,8 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
 
   if ( !flash_read ) read_flash();
   // overwrite the dset if it already exists
-  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_MEDIA_NVRAM, NULL, NULL);
-  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_MEDIA_NVRAM, NULL, NULL);
+  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
+  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_FLAGS, NULL, NULL);
   if (status != A_OK) {
     DBG("WriteToFlash: Failed to create RW dset");
 //    return -1;
@@ -62,7 +62,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
   strcpy(flash_data.gateway_hid, P_VALUE(gateway->hid));
   DBG("flash write: %s", P_VALUE(gateway->hid));
   status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
-             0, DSET_MEDIA_NVRAM, NULL, NULL);
+             0, DSET_FLAGS, NULL, NULL);
 
   if (status == A_OK) {
     // now write the entire emulated NVRAM chunk to the dset
@@ -99,8 +99,8 @@ void save_device_info(arrow_device_t *device) {
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
   // overwrite the dset if it already exists
-  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_MEDIA_NVRAM, NULL, NULL);
-  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_MEDIA_NVRAM, NULL, NULL);
+  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
+  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_FLAGS, NULL, NULL);
   if (status != A_OK) {
     DBG("WriteToFlash: Failed to create RW dset");
     return;
@@ -113,7 +113,7 @@ void save_device_info(arrow_device_t *device) {
   DBG("flash write: %s", device->eid);
 #endif
   status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
-             0, DSET_MEDIA_NVRAM, NULL, NULL);
+             0, DSET_FLAGS, NULL, NULL);
 
   if (status == A_OK) {
 //    status = qcom_dset_write(
@@ -128,8 +128,8 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
   int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
-  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_MEDIA_NVRAM, NULL, NULL);
-  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_MEDIA_NVRAM, NULL, NULL);
+  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
+  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_FLAGS, NULL, NULL);
   if (status != A_OK) {
     DBG("WriteToFlash: Failed to create RW dset");
     return;
@@ -141,7 +141,7 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
   memcpy(&flash_data.sec, &sec, sizeof(int));
   DBG("flash write: %d", sec);
   status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
-             0, DSET_MEDIA_NVRAM, NULL, NULL);
+             0, DSET_FLAGS, NULL, NULL);
   if (status == A_OK) {
       qcom_dset_commit(handle, NULL, NULL);
   }
@@ -212,8 +212,8 @@ void save_key_setting(const char *api_key, const char *sec_key) {
   int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
-  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_MEDIA_NVRAM, NULL, NULL);
-  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_MEDIA_NVRAM, NULL, NULL);
+  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
+  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_FLAGS, NULL, NULL);
   if (status != A_OK) {
     DBG("WriteToFlash: Failed to create RW dset");
     return;
@@ -225,7 +225,7 @@ void save_key_setting(const char *api_key, const char *sec_key) {
   flash_data.padding[66+44] = 0;
   DBG("flash write: %s", sec_key);
   status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
-             0, DSET_MEDIA_NVRAM, NULL, NULL);
+             0, DSET_FLAGS, NULL, NULL);
   if (status == A_OK) {
       qcom_dset_commit(handle, NULL, NULL);
   }
@@ -267,8 +267,8 @@ int save_transaction_hid(const char *hid) {
   int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
-  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_MEDIA_NVRAM, NULL, NULL);
-  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_MEDIA_NVRAM, NULL, NULL);
+  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
+  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_FLAGS, NULL, NULL);
   if (status != A_OK) {
     DBG("WriteToFlash: Failed to create RW dset");
     return -1;
@@ -278,7 +278,7 @@ int save_transaction_hid(const char *hid) {
   strcpy(flash_data.unused, hid);
   DBG("flash write: %s", flash_data.unused);
   status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
-             0, DSET_MEDIA_NVRAM, NULL, NULL);
+             0, DSET_FLAGS, NULL, NULL);
   if (status == A_OK) {
       qcom_dset_commit(handle, NULL, NULL);
   }
