@@ -6,6 +6,10 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
+#if defined(WOLFSSL_USER_IO)
+typedef int __dummy;
+#else
+
 #include <qcom_common.h>
 #include <qcom_misc.h>
 
@@ -137,3 +141,4 @@ int ssl_close(int sock) {
   return 0;
 }
 
+#endif
