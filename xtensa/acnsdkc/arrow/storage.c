@@ -20,6 +20,7 @@ static flash_mem_t flash_data;
 static A_INT8 flash_read = 0;
 
 static void read_flash() {
+    return;
   int32_t status;
   uint32_t handle;
   uint32_t size;
@@ -34,6 +35,7 @@ static void read_flash() {
 }
 
 int restore_gateway_info(arrow_gateway_t *gateway) {
+    return -1;
   char *gatehid = NULL;
   if ( !flash_read ) read_flash();
   if ( flash_data.magic != (int)FLASH_MAGIC_NUMBER ) return -1;
@@ -48,7 +50,8 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
 }
 
 void save_gateway_info(const arrow_gateway_t *gateway) {
-  int32_t status = A_ERROR;
+  return;
+    int32_t status = A_ERROR;
   uint32_t handle = 0;
 
   if ( !flash_read ) read_flash();
@@ -75,7 +78,8 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
 }
 
 int restore_device_info(arrow_device_t *device) {
-  char *devhid = NULL;
+  return -1;
+    char *devhid = NULL;
   if ( !flash_read ) read_flash();
   if ( flash_data.magic != (int)FLASH_MAGIC_NUMBER ) return -1;
   devhid = flash_data.device_hid;
@@ -95,7 +99,8 @@ int restore_device_info(arrow_device_t *device) {
 }
 
 void save_device_info(arrow_device_t *device) {
-  int32_t status = A_ERROR;
+  return;
+    int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
   // overwrite the dset if it already exists
@@ -125,7 +130,8 @@ void save_device_info(arrow_device_t *device) {
 }
 
 void save_wifi_setting(const char *ssid, const char *pass, int sec) {
-  int32_t status = A_ERROR;
+  return;
+    int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
   qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
@@ -209,7 +215,8 @@ int restore_wifi_setting(char *ssid, char *pass, int *sec) {
 }
 
 void save_key_setting(const char *api_key, const char *sec_key) {
-  int32_t status = A_ERROR;
+  return;
+    int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
   qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
@@ -234,7 +241,6 @@ void save_key_setting(const char *api_key, const char *sec_key) {
 
 int restore_key_setting(char *api, char *sec) {
   if ( !flash_read ) read_flash();
-
 #if defined(DEFAULT_API_KEY)  \
   && defined(DEFAULT_SECRET_KEY)
   if (api) strcpy(api, DEFAULT_API_KEY);
@@ -259,43 +265,5 @@ int restore_key_setting(char *api, char *sec) {
     strncpy(sec, tmp, 44);
   }
 #endif
-  return 0;
-}
-
-
-int save_transaction_hid(const char *hid) {
-  int32_t status = A_ERROR;
-  uint32_t handle = 0;
-  if ( !flash_read ) read_flash();
-  qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
-  status = qcom_dset_create(&handle, ARROW_RW_DATA_ID, flash_size, DSET_FLAGS, NULL, NULL);
-  if (status != A_OK) {
-    DBG("WriteToFlash: Failed to create RW dset");
-    return -1;
-  }
-  size_t len = strlen(hid);
-  if ( len >= sizeof(flash_data.unused) ) return -1;
-  strcpy(flash_data.unused, hid);
-  DBG("flash write: %s", flash_data.unused);
-  status = qcom_dset_write(handle, (uint8_t*)&flash_data, flash_size,
-             0, DSET_FLAGS, NULL, NULL);
-  if (status == A_OK) {
-      qcom_dset_commit(handle, NULL, NULL);
-  }
-  qcom_dset_close(handle, NULL, NULL);
-  return 0;
-}
-
-int restore_transaction_hid(char *hid) {
-  if ( !flash_read ) read_flash();
-  char *tmp = flash_data.unused;
-  size_t len = strlen(tmp);
-  if ( hid ) {
-    if ( !utf8check(tmp) || len == 0 || len >= sizeof(flash_data.unused) ) {
-      DBG("there is no API key");
-      return -1;
-    }
-    strcpy(hid, tmp);
-  }
   return 0;
 }
