@@ -33,6 +33,7 @@
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
 SDK_PATH = $(current_dir)/../acn-sdk-c
+SDK_IMPL = $(current_dir)/acnsdkc
 include $(SDK_PATH)/Makefile.wolf
 NAME := App_Arrow_Quadro
 $(info $(patsubst $(SDK_PATH)%,../acn-sdk-c/%,$(WOLF_SRC)))
@@ -84,6 +85,7 @@ $(NAME)_INCLUDES += ../acn-sdk-c/include
 $(NAME)_INCLUDES += ../acn-sdk-c/platforms/quadro
 $(NAME)_INCLUDES += ../acn-sdk-c/src/wolfSSL
 $(NAME)_INCLUDES += ../acn-sdk-c/src/wolfSSL/wolfssl
+$(NAME)_INCLUDES += ./acnsdkc
 
 $(info $($(NAME)_INCLUDES))
 
