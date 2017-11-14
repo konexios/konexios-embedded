@@ -11,6 +11,7 @@
 #include <debug.h>
 #include <qcom_dset.h>
 #include <arrow/utf8.h>
+#include <arrow/credentials.h>
 #define DSETID_ARROW_START DSETID_VENDOR_START
 #define ARROW_RW_DATA_ID DSETID_ARROW_START+0
 #define DSET_FLAGS DSET_MEDIA_NVRAM | DSET_FLAG_SECURE
@@ -20,7 +21,6 @@ static flash_mem_t flash_data;
 static A_INT8 flash_read = 0;
 
 static void read_flash() {
-    return;
   int32_t status;
   uint32_t handle;
   uint32_t size;
@@ -35,7 +35,6 @@ static void read_flash() {
 }
 
 int restore_gateway_info(arrow_gateway_t *gateway) {
-    return -1;
   char *gatehid = NULL;
   if ( !flash_read ) read_flash();
   if ( flash_data.magic != (int)FLASH_MAGIC_NUMBER ) return -1;
@@ -50,8 +49,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
 }
 
 void save_gateway_info(const arrow_gateway_t *gateway) {
-  return;
-    int32_t status = A_ERROR;
+  int32_t status = A_ERROR;
   uint32_t handle = 0;
 
   if ( !flash_read ) read_flash();
@@ -68,18 +66,13 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
              0, DSET_FLAGS, NULL, NULL);
 
   if (status == A_OK) {
-    // now write the entire emulated NVRAM chunk to the dset
-//    status = qcom_dset_write(
-//               handle, AJ_NVRAM_RW_ADDRESS, AJ_NVRAM_RW_SIZE,
-//               SENTINEL_OFFSET, DSET_MEDIA_NVRAM, NULL, NULL);
       qcom_dset_commit(handle, NULL, NULL);
   }
   qcom_dset_close(handle, NULL, NULL);
 }
 
 int restore_device_info(arrow_device_t *device) {
-  return -1;
-    char *devhid = NULL;
+  char *devhid = NULL;
   if ( !flash_read ) read_flash();
   if ( flash_data.magic != (int)FLASH_MAGIC_NUMBER ) return -1;
   devhid = flash_data.device_hid;
@@ -99,8 +92,7 @@ int restore_device_info(arrow_device_t *device) {
 }
 
 void save_device_info(arrow_device_t *device) {
-  return;
-    int32_t status = A_ERROR;
+  int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
   // overwrite the dset if it already exists
@@ -121,17 +113,13 @@ void save_device_info(arrow_device_t *device) {
              0, DSET_FLAGS, NULL, NULL);
 
   if (status == A_OK) {
-//    status = qcom_dset_write(
-//               handle, AJ_NVRAM_RW_ADDRESS, AJ_NVRAM_RW_SIZE,
-//               SENTINEL_OFFSET, DSET_MEDIA_NVRAM, NULL, NULL);
       qcom_dset_commit(handle, NULL, NULL);
   }
   qcom_dset_close(handle, NULL, NULL);
 }
 
 void save_wifi_setting(const char *ssid, const char *pass, int sec) {
-  return;
-    int32_t status = A_ERROR;
+  int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
   qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
@@ -154,39 +142,15 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
   qcom_dset_close(handle, NULL, NULL);
 }
 
-typedef struct _wifi_credentials {
-    char *ssid;
-    char *pass;
-    uint32_t sec;
-} wifi_credentials_t;
-
-static wifi_credentials_t wifi_crds[] = {
-#if defined(DEFAULT_WIFI_SSID) && defined(DEFAULT_WIFI_PASS) && defined(DEFAULT_WIFI_SEC)
-    { DEFAULT_WIFI_SSID,
-      DEFAULT_WIFI_PASS,
-      DEFAULT_WIFI_SEC },
-#endif
-#if defined(DEFAULT_WIFI_SSID_1) && defined(DEFAULT_WIFI_PASS_1) && defined(DEFAULT_WIFI_SEC_1)
-    { DEFAULT_WIFI_SSID_1,
-      DEFAULT_WIFI_PASS_1,
-      DEFAULT_WIFI_SEC_1 },
-#endif
-#if defined(DEFAULT_WIFI_SSID_2) && defined(DEFAULT_WIFI_PASS_2) && defined(DEFAULT_WIFI_SEC_2)
-    { DEFAULT_WIFI_SSID_2,
-      DEFAULT_WIFI_PASS_2,
-      DEFAULT_WIFI_SEC_2 },
-#endif
-};
-
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
   if ( !flash_read ) read_flash();
 
-  if ( sizeof(wifi_crds) > 0 ) {
+  if ( credentials_qnt() > 0 ) {
       static uint8_t attempts = 0;
-      DBG("attempt %d/%d", (int)attempts, sizeof(wifi_crds) / sizeof(wifi_credentials_t));
-      wifi_credentials_t *wc = wifi_crds + attempts;
+      DBG("attempt %d/%d", (int)attempts, credentials_qnt() );
+      wifi_credentials_t *wc = credentials_get(attempts);
       attempts++;
-      if ( attempts >= sizeof(wifi_crds) / sizeof(wifi_credentials_t) ) attempts = 0;
+      if ( attempts >= credentials_qnt() ) attempts = 0;
       strcpy(ssid, wc->ssid);
       strcpy(pass, wc->pass);
       *sec = wc->sec;
@@ -215,8 +179,7 @@ int restore_wifi_setting(char *ssid, char *pass, int *sec) {
 }
 
 void save_key_setting(const char *api_key, const char *sec_key) {
-  return;
-    int32_t status = A_ERROR;
+  int32_t status = A_ERROR;
   uint32_t handle = 0;
   if ( !flash_read ) read_flash();
   qcom_dset_delete(ARROW_RW_DATA_ID, DSET_FLAGS, NULL, NULL);
@@ -241,6 +204,7 @@ void save_key_setting(const char *api_key, const char *sec_key) {
 
 int restore_key_setting(char *api, char *sec) {
   if ( !flash_read ) read_flash();
+
 #if defined(DEFAULT_API_KEY)  \
   && defined(DEFAULT_SECRET_KEY)
   if (api) strcpy(api, DEFAULT_API_KEY);

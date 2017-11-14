@@ -244,7 +244,7 @@ bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
-flash: version $(PROJECT).bin
+flash: app_version $(PROJECT).bin
 	st-flash write $(LIBDIR)/raw_${VERSION}.bin 0x08000000
 
 DEPS = $(APP_OBJECTS:.o=.d)

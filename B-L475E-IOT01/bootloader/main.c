@@ -49,7 +49,7 @@ int main(void)
 
   BSP_LED_Off(LED_GREEN);
 
-  if ( firmware_size > 0 && firmware_size < 0x40000 ) {
+  if ( firmware_size > 0 && firmware_size < 0x64000 ) {
     int r = FLASH_unlock_erase(START_ADDR, firmware_size);
     DBG("erase %d", r);
     if ( r >= 0 ) {

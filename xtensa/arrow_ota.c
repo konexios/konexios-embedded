@@ -43,13 +43,13 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
     DBG("Enter Arrow firmware upgrade");
     int rtn = -1;
     if( (rtn = qcom_ota_session_start(
-             QCOM_OTA_TARGET_FIRMWARE_UPGRADE |
-             QCOM_OTA_ERASING_RW_DSET, 2)) != QCOM_OTA_OK ) {
-      DBG("OTA Session Start Fail\n");
+             QCOM_OTA_TARGET_FIRMWARE_UPGRADE, 3
+             )) != QCOM_OTA_OK ) {
+      DBG("OTA Session Start Fail %d", rtn);
       return rtn;
     }
     part_size = qcom_ota_partition_get_size();
-    DBG("OTA Partition Get Size: %d",part_size);
+    DBG("OTA Partition Get Size: %d", part_size);
     if( part_size == 0) return A_ERROR;
     {
       int offset = 24;

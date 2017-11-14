@@ -73,7 +73,7 @@ ATH_MGMTBUF 16
 # There are a total of 8 32KB banks that can be switched between
 # Instructions (IRAM) and Data (DRAM).
 # Default is 1 bank of IRAM and 7 banks of DRAM.
-NUM_IRAM_BANKS 0
+NUM_IRAM_BANKS 2
 
 
 # GPIO Configuration for each GPIO pin to be used when
@@ -230,7 +230,7 @@ PARTITION_ENTRY_3 0x180000
 
 # Capacity (in bytes) of the SPI serial flash part.
 # Defaults to 2MB (8Mb).
-# FLASH_CAPACITY 0x200000
+FLASH_CAPACITY 0x400000
 
 
 # Size of a flash block, determined by flash part in use.
@@ -256,7 +256,7 @@ PARTITION_ENTRY_3 0x180000
 #     3 --> partition 3
 #  0xff --> whatever software partition is in use
 # Default is 24KB before the start of the RW DataSet area
-# RODATASET_START 0x0
+# RODATASET_START 0x01004000
 
 
 # Partition-relative offset in flash of the Read/Write DataSet area.
@@ -267,12 +267,12 @@ PARTITION_ENTRY_3 0x180000
 #     3 --> partition 3
 #  0xff --> whatever software partition is in use
 # Default is 16KB before the start of the partition table.
-# RWDATASET_START 0x0
+# RWDATASET_START 0xff078000
 
 
 # Size (in bytes) of the Read/Write DataSet area.
 # Default is 60KB.
-# RWDATASET_MAXSIZE 0xf000
+RWDATASET_MAXSIZE 0x4000
 
 
 # Address in DRAM of Board Data.

@@ -74,7 +74,7 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
     DBG("Start to process FW");
     shift = 4;
   }
-  DBG("up %d", shift);
+//  DBG("up %d", shift);
   int r = FLASH_update((uint32_t)(up + shift),
                    (uint64_t*)payload,
                    (uint32_t)size);
