@@ -11,6 +11,7 @@ GCC_BIN =
 GCC_PREFIX = arm-none-eabi
 PLATFORM = stm32l475iot
 SDK_PATH = $(abspath ../acn-sdk-c/)
+SDK_IMPL = $(PWD)/acnsdkc
 
 FLOAT_ABI = hard
 

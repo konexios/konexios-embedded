@@ -26,6 +26,7 @@ INCDIRS			:= Include/
 LIBS_PREFIX		:= 
 MBED_LIBS       := rtos
 INCDIRS			+= $(GCC4MBED_DIR)/IDK/include/
+GCC4MBED_TYPE   = Release
 
 TL_PATH ?= C:\GNUToolchain\bin
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2015q4\bin"
@@ -41,6 +42,7 @@ GCC_BIN = $(TL_PATH)
 GCC_PREFIX = arm-none-eabi
 PLATFORM = semiconductor
 SDK_PATH = $(GCC4MBED_DIR)/acn-embedded/acn-sdk-c/
+SDK_IMPL = $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/acnsdkc
 LIBDIR = $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/NCS36510/acnsdkc
 
 # You may comment the needless shields
@@ -67,8 +69,14 @@ inc = -I
 INCDIRS += $(subst $(inc),,$(SDK_INCLUDES))
 LIBS_PREFIX += $(SDK_TARGET)
 
+EXCLUDE_INC += -I./acnsdkc/time
+EXCLUDE_INC += -I./acnsdkc/arrow
+EXCLUDE_INC += -I./acnsdkc/bsd
+
+# workaround
 include $(GCC4MBED_DIR)/build/gcc4mbed.mk
+$(MBED_DEVICE): CPP_FLAGS := $(filter-out $(EXCLUDE_INC),${CPP_FLAGS})
+$(MBED_DEVICE): C_FLAGS := $(filter-out $(EXCLUDE_INC),${C_FLAGS})
 
 default: all
-
 clean: sdk_clean

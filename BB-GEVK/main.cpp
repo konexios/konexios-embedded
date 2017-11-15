@@ -19,6 +19,7 @@ Required:
 #include "Mutex.h"
 rtos::Mutex shield_mutex;
 
+#include <time/time.h>
 #include <debug.h>
 #include <ntp/ntp.h>
 #include <arrow/routine.h>

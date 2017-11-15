@@ -10,6 +10,7 @@ WOLFSSL = yes
 CJSON   = yes
 PLATFORM = xtensa
 SDK_PATH = $(abspath ../acn-sdk-c/)
+SDK_IMPL = $(PWD)/acnsdkc
 
 COMMON_FLAGS := $(DBG) \
   -Wall \

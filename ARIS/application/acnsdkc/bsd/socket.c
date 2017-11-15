@@ -336,6 +336,9 @@ int net_sta_init() {
     return -1;
 }
 
+#define MAIN_WLAN_AUTH  1
+#define MAIN_WLAN_CHANNEL 5
+
 int net_ap_init() {
     _net.mode = AP;
     memset(&_net.strM2MAPConfig, 0x00, sizeof(tstrM2MAPConfig));
