@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include <arrow/utf8.h>
+#include <arrow/credentials.h>
 #include "flashmbed.h"
 
 int check_mgc() {
@@ -82,21 +83,20 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
 }
 
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
-#if defined(DEFAULT_WIFI_SSID)  \
-  && defined(DEFAULT_WIFI_PASS) \
-  && defined(DEFAULT_WIFI_SEC)
-  strcpy(ssid, DEFAULT_WIFI_SSID);
-  strcpy(pass, DEFAULT_WIFI_PASS);
-  *sec = DEFAULT_WIFI_SEC;
-  return 0;
-#else
-  if (check_mgc()) {
-    flash_mem_t *mem = (flash_mem_t *)flash_start();
-    strcpy(ssid, mem->ssid);
-    strcpy(pass, mem->pass);
-    *sec = mem->sec;
-    return 0;
-  }
-#endif
-  return -1;
+    wifi_credentials_t *p = credentials_next();
+    if ( p ) {
+        strcpy(ssid, p->ssid);
+        strcpy(pass, p->pass);
+        *sec = p->sec;
+        return 0;
+    } else {
+        if (check_mgc()) {
+            flash_mem_t *mem = (flash_mem_t *)flash_start();
+            strcpy(ssid, mem->ssid);
+            strcpy(pass, mem->pass);
+            *sec = mem->sec;
+            return 0;
+        }
+    }
+    return -1;
 }
