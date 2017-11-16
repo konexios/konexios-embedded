@@ -149,25 +149,27 @@ force_ap:
     }
 #endif
 
-    arrow_software_release_dowload_set_cb(arrow_release_download_payload,
-                                          arrow_release_download_complete);
+#if !defined(NO_RELEASE_UPDATE)
+    arrow_software_release_dowload_set_cb(
+                arrow_release_download_payload,
+                arrow_release_download_complete);
+#endif
 
     led = !led;
-    printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
-    printf("connecting to AP\r\n");
 
     int try_connect = 5;
     do {
         wdt_feed();
-        if( ! spwf.connect(ssid,
-                           pass,
-                           security) ) {
+        printf("connect: {%s, %s, %d}\r\n", ssid, pass, security);
+        printf("connecting to AP\r\n");
+        if( ! spwf.connect(ssid, pass, security) ) {
             printf("error connecting to AP\r\n");
             try_connect--;
         } else {
             WiFi::set_interface(spwf);
             break;
         }
+        restore_wifi_setting(ssid, pass, (int*)&security);
       //if ( ! try_connect ) goto force_ap;
     } while ( 1 ); // till connect
 

@@ -17,7 +17,9 @@
 #include "SPWFSA01.h"
 #include "mbed_debug.h"
 
-#define SPWFSA01_CONNECT_TIMEOUT    15000
+#if !defined(SPWFSA01_CONNECT_TIMEOUT)
+#define SPWFSA01_CONNECT_TIMEOUT    5000
+#endif
 #define SPWFSA01_SEND_TIMEOUT       500
 #define SPWFSA01_RECV_TIMEOUT       1500//some commands like AT&F/W takes some time to get the result back!
 #define SPWFSA01_MISC_TIMEOUT       500
@@ -128,7 +130,6 @@ void SPWFSA01::waitSPWFReady(void)
 bool SPWFSA01::connect(const char *ap, const char *passPhrase, int securityMode)
 {
     uint32_t n1, n2, n3, n4;
-
     _parser.setTimeout(SPWFSA01_CONNECT_TIMEOUT);       
     //AT+S.SCFG=wifi_wpa_psk_text,%s\r
     if(!(_parser.send("AT+S.SCFG=wifi_wpa_psk_text,%s", passPhrase) && _parser.recv("OK"))) 
@@ -164,13 +165,10 @@ bool SPWFSA01::connect(const char *ap, const char *passPhrase, int securityMode)
         }
     //reset module
     reset();
-    
-    while(1)
-        if((_parser.recv("+WIND:24:WiFi Up:%u.%u.%u.%u",&n1, &n2, &n3, &n4)))
-            {
-                break;
-            }            
-        
+
+    if( ! _parser.recv("+WIND:24:WiFi Up:%u.%u.%u.%u",&n1, &n2, &n3, &n4) ) {
+        return false;
+    }
     return true;
 }
 
