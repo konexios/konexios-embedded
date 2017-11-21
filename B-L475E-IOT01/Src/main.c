@@ -306,8 +306,11 @@ void StartDefaultTask(void const * argument)
 {
   SSP_PARAMETER_NOT_USED(argument);
   // setting up the release download callbacks
-  arrow_software_release_dowload_set_cb(arrow_release_download_payload,
-                                        arrow_release_download_complete);
+#if !defined(NO_RELEASE_UPDATE)
+  arrow_software_release_dowload_set_cb(
+              arrow_release_download_payload,
+              arrow_release_download_complete);
+#endif
   WIFI_Ecn_t security_mode; //WIFI_ECN_WPA_WPA2_PSK;
   restore_wifi_setting(ssid, psk, (int*)&security_mode);
   uint8_t macAddress[6];
@@ -316,7 +319,8 @@ void StartDefaultTask(void const * argument)
   DBG("start task");
 
   msleep(1000);
-  DBG("--- Demo B-L475E-IOT01 U ---");
+  DBG("--- Demo B-L475E-IOT01 ---");
+  DBG("FW %s %s", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   DBG("{%s, %s}", ssid, psk);
 
   if ( READ_BIT(FLASH->CR, FLASH_CR_PG) ) {
@@ -359,6 +363,7 @@ void StartDefaultTask(void const * argument)
     DBG("Connecting to AP: %s  Attempt %d/%d ...", ssid, ++wifiConnectCounter,WIFI_CONNECT_MAX_ATTEMPT_COUNT);
     wifiRes = WIFI_Connect(ssid, psk, security_mode);
     if (wifiRes == WIFI_STATUS_OK) break;
+    restore_wifi_setting(ssid, psk, (int*)&security_mode);
   } while (wifiConnectCounter < WIFI_CONNECT_MAX_ATTEMPT_COUNT);
 
   if (wifiRes == WIFI_STATUS_OK) {

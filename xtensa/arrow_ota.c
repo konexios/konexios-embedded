@@ -12,6 +12,7 @@
 #include <arrow/software_release.h>
 #include <arrow/sys.h>
 #include <qcom_network.h>
+#include <qcom_internal.h>
 /*
  * OTA FTP Status codes
  */
@@ -32,9 +33,10 @@ typedef enum {
        
 } QCOM_OTA_FTP_STATUS_CODE_t;
 
-static int chunk = 0;
-int part_size = 0;
 int img_offset = 0;
+
+uint8_t buffer[MAX_OTA_AREA_READ_SIZE];
+uint32_t buf_index = 0;
 
 int arrow_release_download_payload(const char *payload, int size, int flag) {
   wdt_feed();
@@ -48,7 +50,7 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
       DBG("OTA Session Start Fail %d", rtn);
       return rtn;
     }
-    part_size = qcom_ota_partition_get_size();
+    uint32_t part_size = qcom_ota_partition_get_size();
     DBG("OTA Partition Get Size: %d", part_size);
     if( part_size == 0) return A_ERROR;
     {
@@ -63,17 +65,30 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
       payload += offset;
     }
   }
-  if (qcom_ota_partition_erase_sectors(img_offset + size) != QCOM_OTA_OK ) {
-      DBG("OTA Erase failed");
-      return -1;
+
+  if ( buf_index + size > sizeof(buffer) ) {
+      // write
+      uint32_t free_size = sizeof(buffer) - buf_index;
+      memcpy(buffer + buf_index, payload, free_size);
+      if (qcom_ota_partition_erase_sectors(img_offset + sizeof(buffer)) != QCOM_OTA_OK ) {
+          DBG("OTA Erase failed");
+          return -1;
+      }
+      A_UINT32 ret_size = size;
+      if( qcom_ota_partition_write_data(img_offset, (A_UINT8 *)buffer, sizeof(buffer), &ret_size) != QCOM_OTA_OK ) {
+          DBG("OTA Data write failed");
+          return -1;
+      }
+      img_offset += ret_size;
+      if ( size - free_size ) {
+          memcpy(buffer, payload + free_size, size - free_size);
+          buf_index = size - free_size;
+      }
+  } else {
+      // just add to buffer
+      memcpy(buffer + buf_index, payload, size);
+      buf_index += size;
   }
-  A_UINT32 ret_size = size;
-  if( qcom_ota_partition_write_data(img_offset, (A_UINT8 *)payload, size, &ret_size) != QCOM_OTA_OK ) {
-      DBG("OTA Data write failed");
-      return -1;
-  }
-  img_offset += ret_size;
-  chunk++;
   return 0;
 }
 
@@ -81,6 +96,16 @@ int arrow_release_download_complete(int flag) {
   static int good_image = 0;
   wdt_feed();
   if ( flag == FW_SUCCESS ) {
+      if (qcom_ota_partition_erase_sectors(img_offset + buf_index) != QCOM_OTA_OK ) {
+          DBG("OTA Erase failed");
+          return -1;
+      }
+      A_UINT32 ret_size = 0;
+      if( qcom_ota_partition_write_data(img_offset, (A_UINT8 *)buffer, buf_index, &ret_size) != QCOM_OTA_OK ) {
+          DBG("OTA Data write failed");
+          return -1;
+      }
+      img_offset += ret_size;
       // done
       DBG("img size: %d", img_offset);
       if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
@@ -93,7 +118,6 @@ int arrow_release_download_complete(int flag) {
   } else {
       DBG("OTA SDK MD5SUM Checksum is NOT correct");
   }
-  chunk = 0;
   img_offset = 0;
   qcom_ota_session_end(good_image);
   return (good_image?0:-1);

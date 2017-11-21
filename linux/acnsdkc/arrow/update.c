@@ -7,20 +7,23 @@
  */
 
 #include <stdio.h>
+#if !defined(NO_SOFTWARE_UPDATE)
 #include <curl/curl.h>
+#endif
 #include <ssl/md5sum.h>
 #include <debug.h>
 #include <arrow/mem.h>
 #include <arrow/utf8.h>
 #include <arrow/software_release.h>
 
+#define pagefilename "update.file"
+
+#if !defined(NO_SOFTWARE_UPDATE)
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
   size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
   return written;
 }
-
-#define pagefilename "update.file"
 
 int arrow_gateway_software_update(const char *url) {
   CURL *curl;
@@ -75,6 +78,7 @@ int arrow_software_update(const char *url,
   DBG("%s -> %s", from, to);
   return 0;
 }
+#endif
 
 static FILE *test = NULL;
 static int file_size = 0;

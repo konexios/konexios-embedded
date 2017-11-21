@@ -10,6 +10,7 @@
 #include <arrow/utf8.h>
 #include <debug.h>
 #include <unint.h>
+#include <arrow/credentials.h>
 #include "flash.h"
 
 flash_mem_t mem __attribute__((section("UNINIT_FIXED_LOC")));
@@ -88,28 +89,27 @@ void save_wifi_setting(const char *ssid, const char *pass, int sec) {
 }
 
 int restore_wifi_setting(char *ssid, char *pass, int *sec) {
-#if defined(DEFAULT_WIFI_SSID) \
-  && defined(DEFAULT_WIFI_PASS) \
-  && defined(DEFAULT_WIFI_SEC)
-  strcpy(ssid, DEFAULT_WIFI_SSID);
-  strcpy(pass, DEFAULT_WIFI_PASS);
-  *sec = DEFAULT_WIFI_SEC;
-#else
-  if ( mem.magic != FLASH_MAGIC_NUMBER ) {
-    FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
-    return -1;
+  wifi_credentials_t *p = credentials_next();
+  if ( p ) {
+      strcpy(ssid, p->ssid);
+      strcpy(pass, p->pass);
+      *sec = p->sec;
+  } else {
+      if ( mem.magic != FLASH_MAGIC_NUMBER ) {
+          FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
+          return -1;
+      }
+      if ( !utf8check(mem.ssid) || !strlen(mem.ssid) ) {
+          return -1;
+      }
+      strcpy(ssid, mem.ssid);
+      DBG("--- flash load %s", mem.ssid);
+      if ( !utf8check(mem.pass) || !strlen(mem.ssid) ) {
+          return -1;
+      }
+      strcpy(pass, mem.pass);
+      DBG("--- flash load %s", mem.pass);
+      *sec = mem.sec;
   }
-  if ( !utf8check(mem.ssid) || !strlen(mem.ssid) ) {
-    return -1;
-  }
-  strcpy(ssid, mem.ssid);
-  DBG("--- flash load %s", mem.ssid);
-  if ( !utf8check(mem.pass) || !strlen(mem.ssid) ) {
-    return -1;
-  }
-  strcpy(pass, mem.pass);
-  DBG("--- flash load %s", mem.pass);
-  *sec = mem.sec;
-#endif
   return 0;
 }

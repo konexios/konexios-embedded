@@ -29,7 +29,7 @@ extern "C" {
 #include <arrow/gateway_api.h>
 #include <arrow/telemetry_api.h>
 #include <arrow/testsuite.h>
-
+#include <arrow/sys.h>
 #include <arrow/software_release.h>
 
 #if defined(MEMORY_TEST)
@@ -106,10 +106,12 @@ static int fail_cmd_proc(const char *str) {
   return -1;
 }
 
+#if !defined(NO_SOFTWARE_UPDATE)
 extern "C" int arrow_software_update(const char *url,
                                  const char *checksum,
                                  const char *from,
                                  const char *to);
+#endif
 
 // extern the firmware callback
 extern "C" int arrow_release_download_payload(const char *payload, int size, int);
@@ -160,7 +162,9 @@ int main() {
 #endif
 
     arrow_initialize_routine();
+#if !defined(NO_SOFTWARE_UPDATE)
     arrow_software_release_set_cb(&arrow_software_update);
+#endif
 
     std::cout<<"------------------------"<<std::endl;
 
@@ -268,6 +272,7 @@ int main() {
 */
 #endif
     arrow_mqtt_connect_routine();
+
     arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
     // endless
 

@@ -9,6 +9,8 @@
 #include "qcom/select_api.h"
 #include "qcom/qcom_internal.h"
 
+#undef MAX_OTA_AREA_READ_SIZE
+#define MAX_OTA_AREA_READ_SIZE 246
 
 /*****************************************************************************************************************************/
 /*                                                                                                                           */
@@ -843,6 +845,7 @@ A_INT32 qcom_ota_https_upgrade(
         ota_https->res->partition_size = partition_size;
 
         ret = _qcom_ota_https_request(ota_https, _qcom_ota_https_program, OTA_HTTPS_TIMEOUT, size);
+        A_PRINTF("qcom size %d", *size);
         if (ret == QCOM_OTA_OK && *size > 0) {
                 if ((ret = qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK)  {
                         good_image = 1;        
@@ -853,8 +856,9 @@ A_INT32 qcom_ota_https_upgrade(
         }
 
 _error:
-        _qcom_ota_https_close(ota_https);
         qcom_ota_session_end(good_image);
+        _qcom_ota_https_close(ota_https);
+
         A_PRINTF("Leave qcom_ota_https upgrade\n");
 
         return ret;
@@ -956,18 +960,18 @@ static QCOM_OTA_HTTPS *_qcom_ota_https_open(char *server, A_INT32 ip_addr, A_INT
         }
 
         if (port == OTA_HTTPS_PORT || port == OTA_HTTPS_ALT_PORT) {
-                A_INT32 reuse = 1;
-                A_INT32 yes = 1;                
-                struct linger lin;              
+//                A_INT32 reuse = 1;
+//                A_INT32 yes = 1;
+//                struct linger lin;
 
-                lin.l_onoff = FALSE;    
-                lin.l_linger = 5;      
+//                lin.l_onoff = FALSE;
+//                lin.l_linger = 5;
 
-                qcom_socket_set_non_blocking(ota_https->sock_fd, 1);
-                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
-                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_LINGER, (char *)&lin, sizeof(lin));
-                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, TCP_NODELAY, (char *)&yes, sizeof(yes));
-                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&yes, sizeof(yes));
+//                qcom_socket_set_non_blocking(ota_https->sock_fd, 1);
+//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
+//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_LINGER, (char *)&lin, sizeof(lin));
+//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, TCP_NODELAY, (char *)&yes, sizeof(yes));
+//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&yes, sizeof(yes));
 
                 if (!(ota_https->ssl_ctx = qcom_SSL_ctx_new(SSL_CLIENT, SSL_OTA_INBUF_SIZE, SSL_OUTBUF_SIZE, 0))) {
                         A_PRINTF("SSL ctx new error\n");
@@ -1292,6 +1296,7 @@ static A_INT32 _qcom_ota_https_program(char *buf, A_INT32 len, A_INT32 tot, A_UI
         A_UINT32 offset = 0, ret_size = 0, write_size = 0;
         A_INT32 ret = QCOM_OTA_OK;
 		
+        A_PRINTF("erase %d   ", *img_offset + len);
         if ((ret = qcom_ota_partition_erase_sectors(*img_offset + len)) != QCOM_OTA_OK) {
                 A_PRINTF("OTA Partition Erase Fail\n");
                 return ret;
@@ -1306,17 +1311,19 @@ static A_INT32 _qcom_ota_https_program(char *buf, A_INT32 len, A_INT32 tot, A_UI
 
 				len -= write_size;
 
+                A_PRINTF("write %d %d   ", *img_offset, write_size);
                 if ((ret = qcom_ota_partition_write_data(*img_offset, 
                                        (A_UINT8 *)&buf[offset], write_size, &ret_size)) != QCOM_OTA_OK) {
                         A_PRINTF("OTA write error(%d), write_size(%d), ret_size(%d)\n", ret, write_size, ret_size);
                         return ret;
                 } 
 
-                A_PRINTF(".");
+                A_PRINTF(".%d ", ret_size);
 
                 offset += ret_size;
                 *img_offset += ret_size;
         }
+        A_PRINTF("\r\n");
 
         return QCOM_OTA_OK;
 }

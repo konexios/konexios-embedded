@@ -53,11 +53,10 @@ int qca_gateway_software_update(const char *url) {
 
     if ( resp == 1 ) {
       DBG("OTA Completed Successfully");
+      return 0;
     } else {
       DBG("OTA Failed Err:%d  \n", resp);
     }
-    DBG("Reboot...");
-    qcom_sys_reset();
   } else if ( strncmp(url, "ftp", 3) == 0 ) {
     DBG("start ftp");
     char *ip_end = strstr((char*)url + 6, ":");
@@ -86,9 +85,8 @@ int qca_gateway_software_update(const char *url) {
       DBG("OTA Image Download Failed ERR:%d\n", resp_code);
     } else {
       DBG("OTA Image Download Completed successfully,Image Size:%d\n", length);
+      return 0;
     }
-    DBG("Reboot...");
-    qcom_sys_reset();
   } else if ( strncmp(url, "http", 4) == 0 ) {
     DBG("start http");
     char *sch_end = strstr((char*)url, "://");
@@ -117,9 +115,8 @@ int qca_gateway_software_update(const char *url) {
       printf("OTA Image Download Failed ERR:%d\n", resp_code);
     } else {
       printf("OTA Image Download Completed successfully,Image Size:%d\n", length);
+      return 0;
     }
-    DBG("Reboot...");
-    qcom_sys_reset();
   }
   return -1;
 }

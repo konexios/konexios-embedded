@@ -12,6 +12,6 @@
 
 void reboot(void) {
   qcom_sys_reset();
-  msleep(1000*120);
+//  msleep(1000*120);
 }
 

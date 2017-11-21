@@ -32,8 +32,7 @@ CC_FLAGS = $(COMMON_FLAGS) -std=gnu11 -MP
 CPPC_FLAGS = $(COMMON_FLAGS) -std=gnu++98 -fno-rtti -MP
 ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
 CC_SYMBOLS = -DTOOLCHAIN_GCC \
-       -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE -Werror -Wpedantic -Wno-variadic-macros 
-#-O0 -g
+       -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE -Werror -Wpedantic -Wno-variadic-macros -O0 -g
 
 ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
@@ -43,8 +42,9 @@ endif
 
 $(info $(CC))
 
-CSRCS 	 += $(shell find $(PWD)/acnsdkc -name "*.c")
-CPPSRCS  += $(wildcard $(PWD)/*.cpp)
+CSRCS	+= $(shell find $(PWD)/acnsdkc -name "*.c")
+CPPSRCS += $(wildcard $(PWD)/*.cpp)
+
 
 COBJS := $(CSRCS:%.c=%.o)
 CPPOBJS := $(CPPSRCS:%.cpp=%.o)
@@ -57,7 +57,8 @@ LIBRARIES = -lsensors -lacnsdkc
 
 LD_FLAGS = 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc
-LD_SYS_LIBS += -lcurl 
+
+# LD_SYS_LIBS += -lcurl 
 # -Wl,--wrap=malloc,--wrap=free,--wrap=realloc,--wrap=calloc,--wrap=valloc,--wrap=aligned_alloc,--wrap=memalign,--wrap=pvalloc,--wrap=posix_memalign,--wrap=strdup
 
 
@@ -82,6 +83,10 @@ INCLUDES += $(SDK_INCLUDES)
 
 .cpp.o:
 	$(CPP) $(CPPC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
+	
+updater: updater.o
+	@echo "build updater"
+	$(LD) $(LD_FLAGS) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
 
 $(APP_OUT): check_settings app_version $(SDK_TARGET) $(CPPOBJS) $(SYS_OBJECTS)
 	  @echo "build $(APP_OUT)"
@@ -103,4 +108,4 @@ run: $(APP_OUT)
 	@./$(APP_OUT)
 	
 
-all: $(APP_OUT) $(CPPOBJS) size
+all: $(APP_OUT) $(CPPOBJS) size updater
