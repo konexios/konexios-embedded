@@ -9,9 +9,6 @@
 #include "qcom/select_api.h"
 #include "qcom/qcom_internal.h"
 
-#undef MAX_OTA_AREA_READ_SIZE
-#define MAX_OTA_AREA_READ_SIZE 246
-
 /*****************************************************************************************************************************/
 /*                                                                                                                           */
 /*       OTA_FTP                                                                                                             */
@@ -730,7 +727,7 @@ error_1:
 #define OTA_HTTPS_MAX_FILE_LEN          (256)
 #define OTA_HTTPS_MAX_SERVER_LEN        (64)
 #define OTA_HTTPS_REQ_MAX	        (600)           /* 192(field of header) + length of file name + length of server name */
-#define OTA_HTTPS_RCV_MAX	        (2 * 1024)
+#define OTA_HTTPS_RCV_MAX	        (350)
 #define OTA_HTTPS_TIMEOUT               (3000)
 #define OTA_HTTPS_PORT                  (443)
 #define OTA_HTTPS_ALT_PORT              (46030)
@@ -1295,12 +1292,6 @@ static A_INT32 _qcom_ota_https_program(char *buf, A_INT32 len, A_INT32 tot, A_UI
   (void)(tot);
         A_UINT32 offset = 0, ret_size = 0, write_size = 0;
         A_INT32 ret = QCOM_OTA_OK;
-		
-        A_PRINTF("erase %d   ", *img_offset + len);
-        if ((ret = qcom_ota_partition_erase_sectors(*img_offset + len)) != QCOM_OTA_OK) {
-                A_PRINTF("OTA Partition Erase Fail\n");
-                return ret;
-        }
 
         while (len > 0) {
                 if (len > MAX_OTA_AREA_READ_SIZE) {
@@ -1309,7 +1300,13 @@ static A_INT32 _qcom_ota_https_program(char *buf, A_INT32 len, A_INT32 tot, A_UI
                         write_size = len;
                 }
 
-				len -= write_size;
+                len -= write_size;
+
+                A_PRINTF("erase %d   ", *img_offset + write_size);
+                if ((ret = qcom_ota_partition_erase_sectors(*img_offset + write_size)) != QCOM_OTA_OK) {
+                        A_PRINTF("OTA Partition Erase Fail\n");
+                        return ret;
+                }
 
                 A_PRINTF("write %d %d   ", *img_offset, write_size);
                 if ((ret = qcom_ota_partition_write_data(*img_offset, 

@@ -16,12 +16,14 @@ void *XMALLOC(size_t n, void* heap, int type) {
     SSP_PARAMETER_NOT_USED(heap);
     SSP_PARAMETER_NOT_USED(type);
     void *p = malloc(n);
+//    void *p = qcom_mem_alloc(n);
     if ( !p ) DBG("No alloc memory");
     return p;
 }
 void *XREALLOC(void *p, size_t n, void* heap, int type) {
     SSP_PARAMETER_NOT_USED(heap);
     SSP_PARAMETER_NOT_USED(type);
+
     void *m = realloc(p, n);
     if ( !m ) DBG("No alloc memory");
     return m;

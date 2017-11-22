@@ -35,7 +35,7 @@ typedef enum {
 
 int img_offset = 0;
 
-uint8_t buffer[MAX_OTA_AREA_READ_SIZE];
+uint8_t buffer[700];
 uint32_t buf_index = 0;
 
 int arrow_release_download_payload(const char *payload, int size, int flag) {
@@ -45,15 +45,16 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
     DBG("Enter Arrow firmware upgrade");
     int rtn = -1;
     if( (rtn = qcom_ota_session_start(
-             QCOM_OTA_TARGET_FIRMWARE_UPGRADE, 3
+             QCOM_OTA_TARGET_FIRMWARE_UPGRADE,
+             PARTITION_AUTO
              )) != QCOM_OTA_OK ) {
       DBG("OTA Session Start Fail %d", rtn);
       return rtn;
     }
     uint32_t part_size = qcom_ota_partition_get_size();
     DBG("OTA Partition Get Size: %d", part_size);
-    if( part_size == 0) return A_ERROR;
-    {
+    if( part_size == 0) return -1;
+    else {
       int offset = 24;
       //need parse image hdr
       if( qcom_ota_parse_image_hdr((A_UINT8 *)payload,(A_UINT32*)&offset) != QCOM_OTA_OK ) {
@@ -79,6 +80,7 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
           DBG("OTA Data write failed");
           return -1;
       }
+      DBG("e %d w %d", img_offset + sizeof(buffer), ret_size);
       img_offset += ret_size;
       if ( size - free_size ) {
           memcpy(buffer, payload + free_size, size - free_size);
@@ -86,6 +88,7 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
       }
   } else {
       // just add to buffer
+      DBG("add");
       memcpy(buffer + buf_index, payload, size);
       buf_index += size;
   }
@@ -105,6 +108,7 @@ int arrow_release_download_complete(int flag) {
           DBG("OTA Data write failed");
           return -1;
       }
+      DBG("e %d w %d", img_offset + buf_index, ret_size);
       img_offset += ret_size;
       // done
       DBG("img size: %d", img_offset);

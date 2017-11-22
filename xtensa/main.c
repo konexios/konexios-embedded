@@ -44,7 +44,7 @@ TX_THREAD main_thread;
 # define BYTE_POOL_SIZE (2*1024 + 128 )
 # define PSEUDO_HOST_STACK_SIZE (2 * 1024 )   /* small stack for pseudo-Host thread */
 #else
-# define PSEUDO_HOST_STACK_SIZE ( 4 * 1024 )   /* small stack for pseudo-Host thread */
+# define PSEUDO_HOST_STACK_SIZE ( 6 * 1024 )   /* small stack for pseudo-Host thread */
 # define BYTE_POOL_SIZE ( PSEUDO_HOST_STACK_SIZE + 256 )
 #endif
 
@@ -127,10 +127,12 @@ int get_data(void *data) {
   data_counter ++;
 }
 
+/*
 static int test_cmd_proc(const char *str) {
   A_PRINTF("test: [%s]", str);
   return 0;
 }
+*/
 
 int wait_wifi_connection() {
     A_UINT32 ip = 0;
@@ -240,17 +242,15 @@ force_ap:
         rssi_data_t sig;
     wdt_feed();
 
-    add_cmd_handler("test", &test_cmd_proc);
+//    add_cmd_handler("test", &test_cmd_proc);
 
-    ntp_set_time_cycle();
-
-    DBG("head free %d", qcom_mem_heap_get_free_size());
+//    ntp_set_time_cycle();
 
     arrow_initialize_routine();
 
     // send via API
-    get_data(&sig);
-    arrow_send_telemetry_routine(&sig);
+//    get_data(&sig);
+//    arrow_send_telemetry_routine(&sig);
 
     arrow_mqtt_connect_routine();
 
