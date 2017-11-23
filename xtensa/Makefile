@@ -8,7 +8,7 @@ GCC_BIN =
 GCC_PREFIX = xt
 WOLFSSL = yes
 CJSON   = yes
-PLATFORM = xtensa
+PLATFORM = silex
 SDK_PATH = $(abspath ../acn-sdk-c/)
 SDK_IMPL = $(PWD)/acnsdkc
 

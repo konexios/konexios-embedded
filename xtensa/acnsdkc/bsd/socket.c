@@ -118,12 +118,11 @@ struct hostent *gethostbyname(const char *name) {
       DBG("qcom dns client enable fail %d", status);
     }
   }
-  DBG("get host %s", name);
+//  DBG("get host %s", name);
   A_STATUS status = qcom_dnsc_get_host_by_name2((A_CHAR*)name, &ipaddr,
                                                 2, 2);
   if ( status == A_OK ) {
     s_hostent_addr = ipaddr;
-//    DBG("qcom dns client resolving %08x", ipaddr);
     s_phostent_addr[0] = &s_hostent_addr;
     s_phostent_addr[1] = NULL;
     s_hostent.h_name = (char*) name;

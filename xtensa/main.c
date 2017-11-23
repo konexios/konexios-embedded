@@ -127,12 +127,10 @@ int get_data(void *data) {
   data_counter ++;
 }
 
-/*
 static int test_cmd_proc(const char *str) {
   A_PRINTF("test: [%s]", str);
   return 0;
 }
-*/
 
 int wait_wifi_connection() {
     A_UINT32 ip = 0;
@@ -228,9 +226,9 @@ force_ap:
         qcom_sec_set_encrypt_mode(currentDeviceId, (A_UINT32)sec.encr);
         A_UINT32 test;
         qcom_sec_get_auth_mode(currentDeviceId, &test);
-        DBG("auth %d", test);
+//        DBG("auth %d", test);
         qcom_sec_get_encrypt_mode(currentDeviceId, &test);
-        DBG("secr %d", test);
+//        DBG("secr %d", test);
         if ( arrow_connect_ssid(currentDeviceId, ssid) < 0 )
             continue;
     } while( wait_wifi_connection() < 0 );
@@ -242,15 +240,15 @@ force_ap:
         rssi_data_t sig;
     wdt_feed();
 
-//    add_cmd_handler("test", &test_cmd_proc);
+    add_cmd_handler("test", &test_cmd_proc);
 
-//    ntp_set_time_cycle();
+    ntp_set_time_cycle();
 
     arrow_initialize_routine();
 
     // send via API
-//    get_data(&sig);
-//    arrow_send_telemetry_routine(&sig);
+    get_data(&sig);
+    arrow_send_telemetry_routine(&sig);
 
     arrow_mqtt_connect_routine();
 

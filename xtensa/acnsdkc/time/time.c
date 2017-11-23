@@ -84,10 +84,11 @@ int gettimeofday(struct timeval *tv, struct timezone *tz) {
   return 0;
 }
 
-char *
-strptime (const char *buf, const char *format, struct tm *tm){
+char *strptime (const char *buf, const char *format, struct tm *tm){
   SSP_PARAMETER_NOT_USED(format);
   SSP_PARAMETER_NOT_USED(tm);
+  SSP_PARAMETER_NOT_USED(buf);
+  // FIXME implemetation
   A_PRINTF("%s\n", buf);
   return NULL;
 }
@@ -95,22 +96,12 @@ strptime (const char *buf, const char *format, struct tm *tm){
 time_t mktime(struct tm *timeptr) {
   SSP_PARAMETER_NOT_USED(timeptr);
   time_t t;
+  // FIXME implementation
   return t;
 }
 
 int stime(time_t *t) {
-  DBG("set time %d", (int)*t);
-//  tRtcTime newt;
   current_time = *t;
-//  struct tm *tmt = gmtime(t);
-//  newt.hour = tmt->tm_hour;
-//  newt.min = tmt->tm_min;
-//  newt.Sec = tmt->tm_sec;
-//  newt.year = tmt->tm_year;
-//  newt.yday = tmt->tm_yday;
-//  newt.wday = tmt->tm_wday;
-//  DBG("rtc time %d %d %d", newt.year, newt.hour, newt.min);
-//  qcom_set_time(newt); // doesn't work!
   return 0;
 }
 
@@ -120,15 +111,14 @@ void get_time(char *ts) {
   time_t s = time(NULL);
 
   tSntpTM tv;
-//  qcom_sntp_get_time_of_day(0, &tv);
+  tv.tv_usec = tx_time_get() % XT_TICK_PER_SEC;
 
   tmp = gmtime(&s);
   ms = (tv.tv_usec/1000)%1000;
   sprintf(ts, "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", 1900+tmp->tm_year, tmp->tm_mon+1, tmp->tm_mday,
           tmp->tm_hour, tmp->tm_min, tmp->tm_sec, ms);
   ts[24] = 0;
-  DBG("timestamp: %s", ts);
-//  printf("ts: %s\r\n", ts);
+//  DBG("timestamp: %s", ts);
 }
 
 int msleep(int m_sec) {

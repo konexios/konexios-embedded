@@ -10,14 +10,6 @@
 #include <qcom_misc.h>
 #include <arrow/mem.h>
 
-void bzero(void *s, size_t n) {
-  A_MEMSET(s, 0, n);
-}
-
-void bcopy(const void *src, void *dest, size_t n) {
-  A_MEMCPY(dest, src, n);
-}
-
 char *strndup (const char *__string, size_t __n) {
   char *p = malloc(__n + 1);
   strncpy(p, __string, __n);
@@ -26,21 +18,22 @@ char *strndup (const char *__string, size_t __n) {
 }
 
 char *strcat(char *dest, const char *src) {
-  char *rdest = dest;
-  while (*dest++)
-    ;
-  dest--;
-  while ((*dest++ = *src++))
-    ;
-  return rdest;
+    char* tail = dest;
+    while(*tail) {
+        tail++;
+    }
+    strcpy(tail, src);
+    return dest;
 }
 
+#if 0
 char *strncpy(char *dst, const char *src, size_t n) {
   char *temp = dst;
   while (n-- && (*dst++ = *src++))
     ;
   return temp;
 }
+#endif
 
 char *strncat(char *dest, const char *src, size_t n) {
     char *ret = dest;
@@ -69,7 +62,6 @@ static void swap(void *x, void *y, size_t l) {
    }
 }
 
-typedef int (*__compar_fn_t) (const void *, const void *);
 static void sort(char *array, size_t size, __compar_fn_t cmp, int begin, int end) {
   if (end > begin) {
     void *pivot = array + begin;

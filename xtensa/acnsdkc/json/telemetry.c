@@ -17,7 +17,6 @@ char *telemetry_serialize(arrow_device_t *device, void *data) {
     json_append_member(_node, "i|rssi", json_mknumber(qca_data->rssi));
     json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(TO_FAHRENHEIT(qca_data->temperature)));
     char *tmp = json_encode(_node);
-    json_minify(tmp);    
     json_delete(_node);
     return tmp;
 }

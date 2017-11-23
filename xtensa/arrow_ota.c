@@ -35,8 +35,31 @@ typedef enum {
 
 int img_offset = 0;
 
-uint8_t buffer[700];
+uint8_t buffer[1542];
 uint32_t buf_index = 0;
+
+int ota_flash_prog(uint8_t *buf, int size) {
+    if (qcom_ota_partition_erase_sectors(img_offset + size) != QCOM_OTA_OK ) {
+        DBG("OTA Erase failed");
+        return -1;
+    }
+    while( size ) {
+        A_UINT32 ret_size = 0;
+        A_UINT32 len = ( size > MAX_OTA_AREA_READ_SIZE ? MAX_OTA_AREA_READ_SIZE : size );
+        if( qcom_ota_partition_write_data(img_offset,
+                                          (A_UINT8 *)buf,
+                                          len,
+                                          &ret_size) != QCOM_OTA_OK ) {
+            DBG("OTA Data write failed");
+            return -1;
+        }
+        //      DBG("e %d w %d", img_offset + sizeof(buffer), ret_size);
+        img_offset += ret_size;
+        size -= len;
+        buf += len;
+    }
+    return 0;
+}
 
 int arrow_release_download_payload(const char *payload, int size, int flag) {
   wdt_feed();
@@ -71,24 +94,16 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
       // write
       uint32_t free_size = sizeof(buffer) - buf_index;
       memcpy(buffer + buf_index, payload, free_size);
-      if (qcom_ota_partition_erase_sectors(img_offset + sizeof(buffer)) != QCOM_OTA_OK ) {
-          DBG("OTA Erase failed");
+      if ( ota_flash_prog(buffer, sizeof(buffer)) < 0 ) {
+          DBG("OTA Write data fail");
           return -1;
       }
-      A_UINT32 ret_size = size;
-      if( qcom_ota_partition_write_data(img_offset, (A_UINT8 *)buffer, sizeof(buffer), &ret_size) != QCOM_OTA_OK ) {
-          DBG("OTA Data write failed");
-          return -1;
-      }
-      DBG("e %d w %d", img_offset + sizeof(buffer), ret_size);
-      img_offset += ret_size;
-      if ( size - free_size ) {
+      if ( size - free_size > 0 ) {
           memcpy(buffer, payload + free_size, size - free_size);
           buf_index = size - free_size;
       }
   } else {
       // just add to buffer
-      DBG("add");
       memcpy(buffer + buf_index, payload, size);
       buf_index += size;
   }
@@ -99,17 +114,10 @@ int arrow_release_download_complete(int flag) {
   static int good_image = 0;
   wdt_feed();
   if ( flag == FW_SUCCESS ) {
-      if (qcom_ota_partition_erase_sectors(img_offset + buf_index) != QCOM_OTA_OK ) {
-          DBG("OTA Erase failed");
+      if( ota_flash_prog(buffer, buf_index) < 0) {
+          DBG("OTA Final Data write failed");
           return -1;
       }
-      A_UINT32 ret_size = 0;
-      if( qcom_ota_partition_write_data(img_offset, (A_UINT8 *)buffer, buf_index, &ret_size) != QCOM_OTA_OK ) {
-          DBG("OTA Data write failed");
-          return -1;
-      }
-      DBG("e %d w %d", img_offset + buf_index, ret_size);
-      img_offset += ret_size;
       // done
       DBG("img size: %d", img_offset);
       if( ( qcom_ota_partition_verify_checksum()) == QCOM_OTA_OK ) {
