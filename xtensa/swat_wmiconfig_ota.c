@@ -957,18 +957,18 @@ static QCOM_OTA_HTTPS *_qcom_ota_https_open(char *server, A_INT32 ip_addr, A_INT
         }
 
         if (port == OTA_HTTPS_PORT || port == OTA_HTTPS_ALT_PORT) {
-//                A_INT32 reuse = 1;
-//                A_INT32 yes = 1;
-//                struct linger lin;
+                A_INT32 reuse = 1;
+                A_INT32 yes = 1;
+                struct linger lin;
 
-//                lin.l_onoff = FALSE;
-//                lin.l_linger = 5;
+                lin.l_onoff = FALSE;
+                lin.l_linger = 5;
 
-//                qcom_socket_set_non_blocking(ota_https->sock_fd, 1);
-//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
-//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_LINGER, (char *)&lin, sizeof(lin));
-//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, TCP_NODELAY, (char *)&yes, sizeof(yes));
-//                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&yes, sizeof(yes));
+                qcom_socket_set_non_blocking(ota_https->sock_fd, 1);
+                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
+                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_LINGER, (char *)&lin, sizeof(lin));
+                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, TCP_NODELAY, (char *)&yes, sizeof(yes));
+                qcom_setsockopt(ota_https->sock_fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&yes, sizeof(yes));
 
                 if (!(ota_https->ssl_ctx = qcom_SSL_ctx_new(SSL_CLIENT, SSL_OTA_INBUF_SIZE, SSL_OUTBUF_SIZE, 0))) {
                         A_PRINTF("SSL ctx new error\n");

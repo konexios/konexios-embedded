@@ -153,6 +153,48 @@ int wait_wifi_connection() {
 extern void reboot(void);
 extern int at_go(void);
 
+int wifi_connect(uint32_t max_atps) {
+    uint32_t attepts = 0;
+    do {
+        if ( attepts++ < max_atps ) wdt_feed();
+        A_PRINTF("connecting... %d\n", attepts);
+        qcom_disconnect(currentDeviceId);
+        struct sec_t {
+            A_UINT16 encr;
+            A_UINT16 auth;
+        } sec;
+        char ssid[32];
+        char pass[32];
+        if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
+            DBG("No wifi settings!");
+            return -2;
+        }
+        qcom_sec_set_passphrase(currentDeviceId, pass);
+        qcom_sec_set_auth_mode(currentDeviceId, (A_UINT32)sec.auth);
+        qcom_sec_set_encrypt_mode(currentDeviceId, (A_UINT32)sec.encr);
+        A_UINT32 test;
+        qcom_sec_get_auth_mode(currentDeviceId, &test);
+//        DBG("auth %d", test);
+        qcom_sec_get_encrypt_mode(currentDeviceId, &test);
+//        DBG("secr %d", test);
+        if ( arrow_connect_ssid(currentDeviceId, ssid) < 0 )
+            continue;
+    } while ( wait_wifi_connection() < 0 );
+    return 0;
+}
+
+#if !defined(AP_AT) && !defined(AT_COMMAND)
+static void arrow_http_run(void) {
+    start_ap2(currentDeviceId);
+    start_http_server(currentDeviceId);
+
+    while(1) {
+      qcom_thread_msleep(5000);
+      wdt_feed();
+    }
+}
+#endif
+
 void main_entry(ULONG which_thread) {
 
   SSP_PARAMETER_NOT_USED(which_thread);
@@ -171,91 +213,51 @@ void main_entry(ULONG which_thread) {
 #endif
   arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
 #if defined(AT_COMMAND)
-  at_go();
-#else
+  goto force_ap;
+#endif
   if ( arrow_gpio_check() ) {
 force_ap:
 #if !defined(AP_AT)
-    start_ap2(currentDeviceId);
-    start_http_server(currentDeviceId);
+      arrow_http_run();
 #else
       at_go();
 #endif
-
-    while(1) {
-      qcom_thread_msleep(5000);
-      wdt_feed();
-      if ( 0 ) goto force_ap;
-    }
   } else {
-    {
+#if !defined(AT_COMMAND)
       // keys test
       char api_test[66];
       char sec_test[46];
       if ( restore_key_setting(api_test, sec_test) < 0 ) {
-        DBG("No keys settings!");
-#if defined(DEFAULT_WIFI_SSID)
-      return;
-#else
-        goto force_ap;
-#endif
+          DBG("No keys settings!");
+          goto force_ap;
       }
-    }
 
-    uint32_t attepts = 0;
-    do {
-        if ( attepts++ < 20 ) wdt_feed();
-        A_PRINTF("connecting... %d\n", attepts);
-        qcom_disconnect(currentDeviceId);
-        struct sec_t {
-            A_UINT16 encr;
-            A_UINT16 auth;
-        } sec;
-        char ssid[32];
-        char pass[32];
-        if ( restore_wifi_setting(ssid, pass, (int*)&sec) < 0 ) {
-            DBG("No wifi settings!");
-#if defined(DEFAULT_WIFI_SSID)
-            return;
-#else
-            goto force_ap;
+      if ( wifi_connect(20) < 0 ) {
+          // cannot connect
+          // have to switch to AP or AT-command mode
+          goto force_ap;
+      }
+
+      rssi_data_t sig;
+      wdt_feed();
+
+      add_cmd_handler("test", &test_cmd_proc);
+
+      ntp_set_time_cycle();
+
+      arrow_initialize_routine();
+
+      // send via API
+      get_data(&sig);
+      arrow_send_telemetry_routine(&sig);
+
+      arrow_mqtt_connect_routine();
+
+      arrow_mqtt_send_telemetry_routine(get_data, &sig);
+
+      arrow_close();
+      reboot();
 #endif
-        }
-        qcom_sec_set_passphrase(currentDeviceId, pass);
-        qcom_sec_set_auth_mode(currentDeviceId, (A_UINT32)sec.auth);
-        qcom_sec_set_encrypt_mode(currentDeviceId, (A_UINT32)sec.encr);
-        A_UINT32 test;
-        qcom_sec_get_auth_mode(currentDeviceId, &test);
-//        DBG("auth %d", test);
-        qcom_sec_get_encrypt_mode(currentDeviceId, &test);
-//        DBG("secr %d", test);
-        if ( arrow_connect_ssid(currentDeviceId, ssid) < 0 )
-            continue;
-    } while( wait_wifi_connection() < 0 );
-
-#endif
-#if defined(AT_COMMAND)
-    {
-#endif
-        rssi_data_t sig;
-    wdt_feed();
-
-    add_cmd_handler("test", &test_cmd_proc);
-
-    ntp_set_time_cycle();
-
-    arrow_initialize_routine();
-
-    // send via API
-    get_data(&sig);
-    arrow_send_telemetry_routine(&sig);
-
-    arrow_mqtt_connect_routine();
-
-    arrow_mqtt_send_telemetry_routine(get_data, &sig);
-
-    arrow_close();
-    reboot();
   }
 }
 

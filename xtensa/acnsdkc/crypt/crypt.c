@@ -8,6 +8,10 @@
 
 #include "ssl/crypt.h"
 
+#if defined(NO_QCOM_SSL)
+typedef int __dummy;
+#else
+
 #include <qcom_common.h>
 #include <qcom_crypto.h>
 #include <arrow/mem.h>
@@ -122,3 +126,5 @@ void hmac256(char *hmacdig, const char *key, int key_size, const char *buf, int 
   qcom_crypto_transient_obj_free(mac_objHdl);
   qcom_crypto_op_free(compute_opHdl);
 }
+
+#endif
