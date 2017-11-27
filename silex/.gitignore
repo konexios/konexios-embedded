@@ -3,3 +3,4 @@
 *.qbs
 *.qbs.*
 *.bin
+build

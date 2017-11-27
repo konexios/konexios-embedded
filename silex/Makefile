@@ -12,6 +12,13 @@ PLATFORM = silex
 SDK_PATH = $(abspath ../acn-sdk-c/)
 SDK_IMPL = $(PWD)/acnsdkc
 
+XTENSA_LIBDIR := $(LIBDIR)
+IMAGEDIR := $(SRC_IOE)/image
+DEMO_OUT := $(IMAGEDIR)/${APP_NAME}.out
+DEMO_LIB := $(LIBDIR)/lib${APP_NAME}.a
+
+LIBDIR = build
+
 COMMON_FLAGS := $(DBG) \
   -Wall \
   -Wextra \
@@ -24,7 +31,7 @@ COMMON_FLAGS := $(DBG) \
   -mlongcalls \
   -ffunction-sections
   
-# -0s
+OPT := -Os
 
 CC_FLAGS = $(COMMON_FLAGS)
 CC_SYMBOLS := \
@@ -75,23 +82,22 @@ INCLUDES += $(SDK_INCLUDES) \
  -I$(INTERNALDIR)/include/whal \
  -I$(FW)/demo/ezxml
 
-
-IMAGEDIR := $(SRC_IOE)/image
-DEMO_OUT = $(IMAGEDIR)/${APP_NAME}.out
-DEMO_LIB = $(LIBDIR)/lib${APP_NAME}.a
-
 -include $(SDK_PATH)/Makefile.sdk
 
 
 CFLAGS = $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES)
 # -Wl,--wrap,console_setup -Wl,--wrap,_time
 
-CSRCS := app_start.c main.c swat_wmiconfig_ota.c uart2.c at.c
-CSRCS += $(wildcard arrow_*.c)
-CSRCS += $(shell find $(PWD)/acnsdkc -name "*.c")
+CSRCS := $(PWD)/app_start.c \
+	$(PWD)/main.c \
+	$(PWD)/swat_wmiconfig_ota.c \
+	$(PWD)/uart2.c at.c
+CSRCS += $(wildcard $(PWD)/arrow_*.c)
+CSRCS += $(wildcard $(PWD)/acnsdkc/*.c)
+CSRCS += $(wildcard $(PWD)/acnsdkc/**/*.c)
 
-OBJS := $(CSRCS:%.c=%.o)
-DEPS := $(CSRCS:%.c=%.d)
+OBJS := $(patsubst $(PWD)%,${LIBDIR}%,$(CSRCS:%.c=%.o))
+DEPS := $(patsubst $(PWD)%,${LIBDIR}%,$(CSRCS:%.c=%.d))
 LIBS := \
 	-lm \
 	-lgcc \
@@ -127,7 +133,7 @@ LIBS := \
 # -l_ezxml
 
 LDFLAGS = -nostdlib -lgcc -Wl,-EL -Wl,--gc-sections \
-	-L$(IMAGEDIR) -L$(LIBDIR) -L. \
+	-L$(IMAGEDIR) -L$(LIBDIR) -L$(XTENSA_LIBDIR) \
 	-Tarrow.ld \
 	-u app_start \
 	-Wl,-static \
@@ -147,6 +153,10 @@ sinclude $(DEPS)
 endif
 endif
 endif
+
+$(LIBDIR)/%.o : $(PWD)/%.c
+	$(call dir_make,$@) $(QUIET)
+	$(CC) $(OPT) $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 
 $(DEMO_LIB): $(OBJS)
 	@mkdir -p $(LIBDIR)
@@ -169,6 +179,7 @@ clean: sdk_clean
 	$(RM) $(OBJS)
 	$(RM) $(DEMO_LIB)
 	$(RM) $(DEMO_OUT)
+	$(RM) -r $(LIBDIR)
 
 
 mkdbg:
