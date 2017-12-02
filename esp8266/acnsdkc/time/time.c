@@ -9,7 +9,7 @@
 #include "time/time.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include <string.h>
+#include <stdio.h>
 #include <debug.h>
 
 #define __millis()  (xTaskGetTickCount() * portTICK_PERIOD_MS)
@@ -20,10 +20,11 @@ void get_time(char *ts) {
   time_t s = time(NULL);
 
   tmp = gmtime(&s);
-  ms = __millis();
+  double us = (double)sdk_system_get_time();
+  ms = (int)(us / 1000) % 1000;
   sprintf(ts, "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", 1900+tmp->tm_year, tmp->tm_mon+1, tmp->tm_mday,
           tmp->tm_hour, tmp->tm_min, tmp->tm_sec, ms);
-//    DBG("ts: %s\r\n", ts);
+    //DBG("ts: %s\r\n", ts);
 }
 
 int msleep(int m_sec) {
@@ -91,7 +92,7 @@ struct tm* gmtime(const time_t* timer)
 int gettimeofday(struct timeval* tvp, void* tzp __attribute__((unused))) {
     if ( tvp ) {
         tvp->tv_sec = time(NULL);
-        tvp->tv_usec = __millis() * 1000;
+        tvp->tv_usec = sdk_system_get_time() % 1000000;
     }
     return 0;
 }
@@ -113,7 +114,7 @@ typedef union ret_time {
 time_t time(time_t *t) {
     double us = (double)sdk_system_get_time();
     double s = us / 1000000.0;
-//    DBG("time %2.4f  %d", s, time_offset);
+    //DBG("time %2.4f  %d", s, time_offset);
 #if !defined(_USE_LONG_TIME_T)
     ret_time_t is;
     is.t[0] = (uint32_t)s;

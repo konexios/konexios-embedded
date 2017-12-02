@@ -17,7 +17,12 @@
 #include <json/data.h>
 
 #include "ds18b20/ds18b20.h"
+#if defined(__AMICA__)
+#define SENSOR_GPIO 2
+#else
 #define SENSOR_GPIO 13
+#endif
+
 #define MAX_SENSORS 8
 #define RESCAN_INTERVAL 8
 #define LOOP_DELAY_MS 250
