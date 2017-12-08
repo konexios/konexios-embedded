@@ -36,8 +36,6 @@ SDK_PATH = $(current_dir)/../acn-sdk-c
 SDK_IMPL = $(current_dir)/acnsdkc
 include $(SDK_PATH)/Makefile.wolf
 NAME := App_Arrow_Quadro
-$(info $(patsubst $(SDK_PATH)%,../acn-sdk-c/%,$(WOLF_SRC)))
-
 
 $(NAME)_SOURCES    := quadro.c
 $(NAME)_SOURCES    += acnsdkc/bsd/socket.c
@@ -68,11 +66,14 @@ $(NAME)_SOURCES    += ../acn-sdk-c/src/arrow/state.c
 $(NAME)_SOURCES    += ../acn-sdk-c/src/arrow/device_command.c
 $(NAME)_SOURCES    += ../acn-sdk-c/src/json/json.c
 $(NAME)_SOURCES    += ../acn-sdk-c/src/debug.c
+$(NAME)_SOURCES    += ../acn-sdk-c/src/data/linkedlist.c
+$(NAME)_SOURCES    += ../acn-sdk-c/src/data/ringbuffer.c
 #$(NAME)_SOURCES    += ../acn-sdk-c/src/ssl/crypt.c
 #$(NAME)_SOURCES    += ../acn-sdk-c/src/ssl/md5sum.c
 #$(NAME)_SOURCES    += ../acn-sdk-c/src/ssl/ssl.c
 $(NAME)_SOURCES    += $(patsubst $(SDK_PATH)%,../acn-sdk-c/%,$(WOLF_SRC))
 
+$(info $($(NAME)_SOURCES))
 
 WIFI_CONFIG_DCT_H := wifi_config_dct.h
 

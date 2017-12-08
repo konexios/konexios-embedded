@@ -30,7 +30,7 @@ GCC4MBED_TYPE   = Release
 
 TL_PATH ?= C:\GNUToolchain\bin
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2015q4\bin"
-# TL_PATH ?= "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
+# TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\5.4 2016q2\bin"
 
 
@@ -54,7 +54,9 @@ DEFINES += -DUSE_STEP_MOTOR
 DEFINES += -DUSE_LED_BALLAST
 #DEFINES += -DUSE_LCD
 DEFINES += -DDEBUG
-DEFINES += -Os 
+DEFINES += -Os
+DEFINES += -DNO_SOFTWARE_UPDATE 
+DEFINES += -DNO_SOFTWARE_RELEASE
 DEFINES += -D__$(PLATFORM)__
 # -fno-inline-functions
 # -Wimplicit-function-declaration -Werror -Wpedantic 
