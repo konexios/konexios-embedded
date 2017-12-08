@@ -305,7 +305,7 @@ DBG_UART_TXPIN 7
 # to include. Provide the name of that file in the line below. For an
 # example, see target/apps/sdk_flash/filelist.
 #
-export HTMLTOFLASH_LIST="/home/somebody/Arrow/QCA/4010.tx.1.1_sdk/target/acn-embedded/xtensa/config/filelist"
+export HTMLTOFLASH_LIST="/home/somebody/Arrow/QCA/4010.tx.1.1_sdk/target/acn-embedded/silex/config/filelist"
 
 
 # To use a custom application rather than a demo application, specify

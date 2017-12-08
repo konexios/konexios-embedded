@@ -44,7 +44,8 @@ CC_SYMBOLS := \
  -Wno-return-type \
  -DATHOS \
  -DATH_TARGET \
- -DHTTP_ENABLED
+ -DHTTP_ENABLED \
+ -DNO_SOFTWARE_UPDATE
  
 ifeq ($(WOLFSSL), yes) # {
 CC_SYMBOLS += -DNO_QCOM_SSL
@@ -155,7 +156,8 @@ endif
 endif
 
 $(LIBDIR)/%.o : $(PWD)/%.c
-	$(call dir_make,$@) $(QUIET)
+	echo $@
+	$(call make_dir_for_file,$@) $(QUIET)
 	$(CC) $(OPT) $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 
 $(DEMO_LIB): $(OBJS)

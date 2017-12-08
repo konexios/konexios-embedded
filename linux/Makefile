@@ -32,7 +32,7 @@ CC_FLAGS = $(COMMON_FLAGS) -std=gnu11 -MP
 CPPC_FLAGS = $(COMMON_FLAGS) -std=gnu++98 -fno-rtti -MP
 ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
 CC_SYMBOLS = -DTOOLCHAIN_GCC \
-       -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE -Werror -Wpedantic -Wno-variadic-macros #-O0 -g -DVALGRIND_TEST=10
+       -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE -Werror -Wpedantic -Wno-variadic-macros -O0 -g -DVALGRIND_TEST=100
 
 ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
