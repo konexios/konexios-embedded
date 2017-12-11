@@ -22,8 +22,31 @@
 
 #define nnet_send(sock, str) send((sock), (uint8_t*)(str), (uint16_t)strlen(str), 0)
 
-extern int cmp_meth(const char *str);
-extern char *get_meth(int i);
+static const char *METH_str[] = { "GET", "POST", "PUT", "DELETE", "HEAD"};
+
+#define CMP_INIT(type) \
+static int __attribute__((used)) cmp_##type(const char *str) { \
+  int i; \
+  for(i=0; i<type##_count; i++) { \
+    if ( strcmp(str, type##_str[i]) == 0 ) return i; \
+  } \
+  return -1; \
+} \
+static int __attribute__((used)) cmp_n_##type(const char *str, int n) { \
+  int i; \
+  for(i=0; i<type##_count; i++) { \
+    if ( strncmp(str, type##_str[i], n) == 0 ) return i; \
+  } \
+  return -1; \
+} \
+static char * __attribute__((used)) get_##type(int i) { \
+    if ( i>=0 && i<type##_count ) { \
+        return (char*)type##_str[i]; \
+    } \
+    return NULL; \
+}
+
+CMP_INIT(METH)
 
 int receive_request(SOCKET sock, http_request_t *res, char *buf, size_t *bufsize, size_t *len) {
     int ret;
@@ -70,11 +93,11 @@ int receive_request(SOCKET sock, http_request_t *res, char *buf, size_t *bufsize
     }
     *first_space = '\0';
 
-    ret = cmp_meth(buf);
+    ret = cmp_METH(buf);
     if ( ret < 0 ) {
         property_copy(&res->meth, p_null());
     } else {
-        property_copy(&res->meth, p_stack((uint8_t*)get_meth(ret)));
+        property_copy(&res->meth, p_stack((uint8_t*)get_METH(ret)));
     }
     DBG("meth: {%s}", res->meth);
     if ( IS_EMPTY(res->meth) ) return -1;
@@ -267,7 +290,7 @@ void server_run() {
             tx_thread_sleep(CONV_MS_TO_TICK(100));
         }
 
-        switch( cmp_meth(P_VALUE(req.meth)) ) {
+        switch( cmp_METH(P_VALUE(req.meth)) ) {
             case GET: {
                 TRACE("send response\r\n");
                 char *pl =
