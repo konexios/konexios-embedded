@@ -41,8 +41,7 @@ CC_SYMBOLS = -DTOOLCHAIN_GCC \
        -DUSE_HAL_DRIVER \
        -DUSE_STM32L475E_IOT01 \
        -DUSE_IOEXPANDER \
-       -DDEBUG \
-       -DNO_ARCH_MEM
+       -DDEBUG
 # -Werror
 
 ifdef DEV_ENV
