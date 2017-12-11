@@ -15,6 +15,16 @@
 #include <bsd/struct_hostent.h>
 #include "reloc_macro.h"
 
+// #include "driver/source/nmasic.h"
+#if defined(ETH_MODE)
+# include "nxd_bsd.h"
+# include "nx_api.h"
+# include "nxd_dns.h"
+# include "nx_udp.h"
+#endif
+
+
+
 #include "socket/include/socket.h"
 typedef size_t socklen_t;
 

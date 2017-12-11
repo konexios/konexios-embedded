@@ -11,6 +11,7 @@
 #include <http/request.h>
 #include "TRACE_USE.h"
 // #include <tx_mutex.h>
+#include "tx_api.h"
 #include "flasharis.h"
 #include <bsd/socket.h>
 #include <arrow/utf8.h>
