@@ -6,11 +6,14 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include <qcom_common.h>
-#include <qcom_misc.h>
-A_UINT8 __currentDeviceId = 0;
+#include "sys/mac.h"
+#include <unint.h>
+#include "wifi.h"
 
 int get_mac_address(char *mac) {
-  return qcom_mac_get(__currentDeviceId, (A_UINT8*)mac);
+  WIFI_Status_t wifiRes = WIFI_GetMAC_Address( (uint8_t*)mac);
+  if ( WIFI_STATUS_OK == wifiRes)
+    return 0;
+  else
+    return -1;
 }
-

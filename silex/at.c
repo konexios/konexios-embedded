@@ -11,7 +11,7 @@
 #include <time/time.h>
 #include <time/watchdog.h>
 #include <bsd/socket.h>
-#include <arrow/net.h>
+#include <sys/mac.h>
 #include <arrow/utf8.h>
 #include <arrow_wlan.h>
 #include <ssl/ssl.h>

@@ -122,10 +122,7 @@ APP_SRC += $(wildcard $(PWD)/Src/vl*.c)
 APP_SRC += $(PRJ_PATH)/Src/stm32l4xx_it.c
 
 ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/*.c)
-ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/time/*.c)
-ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/bsd/*.c)
-ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/arrow/*.c)
-ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/json/*.c)
+ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/**/*.c)
 
 # bootloader sources
 

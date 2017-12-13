@@ -6,14 +6,9 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/net.h"
-#include <unint.h>
-#include "wifi.h"
+#include <sys/mac.h>
+#include "WiFi_c.h"
 
 int get_mac_address(char *mac) {
-  WIFI_Status_t wifiRes = WIFI_GetMAC_Address( (uint8_t*)mac);
-  if ( WIFI_STATUS_OK == wifiRes)
-    return 0;
-  else
-    return -1;
+	return get_wifi_mac_address(mac);
 }

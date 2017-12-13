@@ -5,10 +5,12 @@
  * http://apache.org/licenses/LICENSE-2.0
  * Contributors: Arrow Electronics, Inc.
  */
-
-#include <arrow/net.h>
-#include "WiFi_c.h"
+#include "sys/mac.h"
+#include <qcom_common.h>
+#include <qcom_misc.h>
+A_UINT8 __currentDeviceId = 0;
 
 int get_mac_address(char *mac) {
-	return get_wifi_mac_address(mac);
+  return qcom_mac_get(__currentDeviceId, (A_UINT8*)mac);
 }
+
