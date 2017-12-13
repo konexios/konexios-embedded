@@ -16,7 +16,7 @@
 #include <threadx/tx_api.h>
 #include <debug.h>
 #include <config.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 
 //workaround
 static time_t current_time = 0;

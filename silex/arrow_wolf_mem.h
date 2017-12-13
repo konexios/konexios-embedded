@@ -7,7 +7,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <qcom_crypto.h>
 
 void *XMALLOC(size_t n, void* heap, int type);

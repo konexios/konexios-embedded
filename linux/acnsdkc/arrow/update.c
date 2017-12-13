@@ -12,7 +12,7 @@
 #endif
 #include <ssl/md5sum.h>
 #include <debug.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <arrow/utf8.h>
 #include <arrow/software_release.h>
 

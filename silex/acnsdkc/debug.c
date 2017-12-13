@@ -2,7 +2,7 @@
 #include <qcom_common.h>
 #include <stdarg.h>
 #include <qcom_utils.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 
 static char dbg_buffer[DBG_LINE_SIZE];
 

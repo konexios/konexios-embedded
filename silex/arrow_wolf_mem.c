@@ -8,7 +8,7 @@
  */
 
 #include <arrow_wolf_mem.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <debug.h>
 #include <time/time.h>
 

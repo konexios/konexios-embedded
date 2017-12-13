@@ -6,7 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/mem.h"
+#include "sys/mem.h"
 #include <unint.h>
 
 

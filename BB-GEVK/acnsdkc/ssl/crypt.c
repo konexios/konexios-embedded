@@ -11,7 +11,7 @@
 #include "wolfssl/wolfcrypt/sha256.h"
 #include "wolfssl/wolfcrypt/hmac.h"
 
-#include <arrow/mem.h>
+#include <sys/mem.h>
 
 void __attribute__((weak)) sha256(char *shasum, char *buf, int size) {
   Sha256 sh;

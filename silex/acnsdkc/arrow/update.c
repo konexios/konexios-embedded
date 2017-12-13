@@ -7,7 +7,7 @@
  */
 
 #include <arrow/software_update.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <qcom_common.h>
 #include <qcom_system.h>
 #include <qcom_network.h>

@@ -8,7 +8,7 @@
 
 #include <qcom_common.h>
 #include <qcom_misc.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 
 char *strndup (const char *__string, size_t __n) {
   char *p = malloc(__n + 1);

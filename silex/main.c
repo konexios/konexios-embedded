@@ -16,7 +16,7 @@
 #include "threadx/tx_api.h"
 #include "threadxdmn_api.h"
 
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <time/time.h>
 #include <ntp/ntp.h>
 #include <arrow/routine.h>

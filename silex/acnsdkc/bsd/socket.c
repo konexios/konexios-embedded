@@ -8,7 +8,7 @@
 
 #include "bsd/socket.h"
 #include <debug.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <qcom_common.h>
 #include <qcom/select_api.h>
 

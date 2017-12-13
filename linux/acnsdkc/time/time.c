@@ -7,7 +7,7 @@
  */
 
 #include <time/time.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <unistd.h>
 
 void get_time(char *ts) {

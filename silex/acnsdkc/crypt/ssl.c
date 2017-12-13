@@ -21,7 +21,7 @@ typedef int __dummy;
 #include <qcom/socket_api.h>
 #include <qcom/select_api.h>
 #include <data/linkedlist.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 
 #define SSL_INBUF_SIZE               20000
 #define SSL_OUTBUF_SIZE              5000

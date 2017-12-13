@@ -14,7 +14,7 @@ typedef int __dummy;
 
 #include <qcom_common.h>
 #include <qcom_crypto.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 #include <debug.h>
 
 void ref_attr_init(qcom_crypto_attrib_t* attr, A_UINT32 id,
