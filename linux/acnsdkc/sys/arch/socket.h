@@ -6,16 +6,14 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#ifndef _STM32L475IOT_BSD_SOCKET_H_
-#define _STM32L475IOT_BSD_SOCKET_H_
+#ifndef _LINUX_BSD_SOCKET_H_
+#define _LINUX_BSD_SOCKET_H_
 
-#include <unint.h>
-# include <bsd/inet.h>
-# include <bsd/sockdef.h>
-# include <bsd/sockdecl.h>
-# include <bsd/struct_hostent.h>
-# define htons _htons
-# define htonl _htonl
-# define ntohl _ntohl
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <strings.h>
+#define soc_close(x) close((x))
 
-#endif // _STM32L475IOT_BSD_SOCKET_H_
+#endif // _LINUX_BSD_SOCKET_H_

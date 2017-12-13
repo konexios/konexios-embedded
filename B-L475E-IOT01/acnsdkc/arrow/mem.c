@@ -7,7 +7,7 @@
  */
 
 #include "sys/mem.h"
-#include <unint.h>
+#include <sys/type.h>
 
 
 extern void *pvPortMalloc( size_t );

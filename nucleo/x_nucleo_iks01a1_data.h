@@ -40,7 +40,7 @@
 #ifndef __X_NUCLEO_IKS01A1_DATA_H
 #define __X_NUCLEO_IKS01A1_DATA_H
 
-#include <unint.h>
+#include <sys/type.h>
 
 struct axis {
   int32_t x;

@@ -7,7 +7,7 @@
  */
 
 #include "sys/mac.h"
-#include <unint.h>
+#include <sys/type.h>
 #include "wifi.h"
 
 int get_mac_address(char *mac) {

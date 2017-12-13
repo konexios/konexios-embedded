@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#include <unint.h>
+#include <sys/type.h>
 
 int get_wifi_mac_address(char *mac);
 

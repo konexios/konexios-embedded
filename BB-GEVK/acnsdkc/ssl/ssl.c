@@ -13,7 +13,7 @@ typedef int __dummy_type;
 #else
 #include "WiFi_c.h"
 #include <debug.h>
-#include <unint.h>
+#include <sys/type.h>
 
 int ssl_connect(int sock) {
 	DBG("SSL connect start");

@@ -9,12 +9,11 @@
 #ifndef _XTENSA_BSD_SOCKET_H_
 #define _XTENSA_BSD_SOCKET_H_
 
-#include <unint.h>
+#include <sys/type.h>
 # include <qcom/base.h>
 # include <qcom_network.h>
 # include <qcom/socket_api.h>
 # include <bsd/struct_hostent.h>
-//#include <bsd/sockdef.h>
 
 typedef int ssize_t;
 #include <bsd/sockdecl.h>

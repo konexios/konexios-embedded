@@ -7,7 +7,7 @@
  */
 
 #include "bsd/socket.h"
-#include <unint.h>
+#include <sys/type.h>
 #include "WiFi_c.h"
 #include <debug.h>
 

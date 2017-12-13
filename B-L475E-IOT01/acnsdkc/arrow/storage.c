@@ -9,7 +9,7 @@
 #include "arrow/storage.h"
 #include <arrow/utf8.h>
 #include <debug.h>
-#include <unint.h>
+#include <sys/type.h>
 #include <arrow/credentials.h>
 #include "flash.h"
 

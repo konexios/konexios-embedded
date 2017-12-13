@@ -11,7 +11,7 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
-#include <unint.h>
+#include <sys/type.h>
 
 char *flash_read();
 int flash_write(char *mem, size_t size);

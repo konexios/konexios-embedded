@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <unint.h>
+#include <sys/type.h>
 
 int wifi_gethostbyname(const char *addr, uint32_t *ip);
 
