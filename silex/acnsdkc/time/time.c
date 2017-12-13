@@ -100,7 +100,7 @@ time_t mktime(struct tm *timeptr) {
   return t;
 }
 
-int stime(time_t *t) {
+int stime(const time_t *t) {
   current_time = *t;
   return 0;
 }

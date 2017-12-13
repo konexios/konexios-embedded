@@ -109,6 +109,7 @@ int stime(const time_t *timer) {
   stime.DayLightSaving = _tm->tm_isdst;
   stime.StoreOperation = RTC_STOREOPERATION_RESET;
   if (HAL_RTC_SetTime(&hrtc, &stime, RTC_FORMAT_BIN) != HAL_OK) {
+    DBG("HAL RTC Set Time failed");
     return -1;
   }
 
@@ -118,7 +119,8 @@ int stime(const time_t *timer) {
   sdate.Year = _tm->tm_year;
 
   if (HAL_RTC_SetDate(&hrtc, &sdate, RTC_FORMAT_BIN) != HAL_OK) {
-    return -1;
+    DBG("HAL RTC Set Date failed");
+    return -2;
   }
   return 0;
 }

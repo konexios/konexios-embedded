@@ -8,6 +8,7 @@
 
 #include <time/time.h>
 #include <arrow/mem.h>
+#include <unistd.h>
 
 void get_time(char *ts) {
   struct tm *tmp;
@@ -23,4 +24,8 @@ void get_time(char *ts) {
           tmp->tm_hour, tmp->tm_min, tmp->tm_sec, ms);
 //  printf("ts: %s\r\n", ts);
 //  strcpy(ts, "2017-02-01T12:56:03.602Z");
+}
+
+inline int msleep(int ms) {
+    return usleep(ms*1000);
 }

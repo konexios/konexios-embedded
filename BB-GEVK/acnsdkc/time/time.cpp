@@ -42,12 +42,11 @@ time_t time(time_t *timer) {
 }
 
 
-int stime(time_t *timer) {
-    // TODO settime
-	DBG("set time %d", *timer);
-	base_sec = *timer;
-	main_timer.reset();
-    return 0;
+int stime(const time_t *timer) {
+  DBG("set time %d", *timer);
+  base_sec = *timer;
+  main_timer.reset();
+  return 0;
 }
 
 int msleep(int m_sec) {

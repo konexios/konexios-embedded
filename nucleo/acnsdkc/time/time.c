@@ -38,3 +38,7 @@ int gettimeofday(struct timeval* tvp, void* tzp __attribute__((unused))) {
     return 0;
 }
 
+int stime(const time_t *t) {
+  set_time(*t);
+  return 0;
+}

@@ -12,7 +12,6 @@
 #include <qcom/base.h>
 #include <qcom_time.h>
 #include <time/timer_functions.h>
-#include <platforms/default/time/time.h>
 
 #if defined(time)
 #  undef time
@@ -40,6 +39,5 @@ int gettimeofday(struct timeval *tv, struct timezone *tz);
 
 time_t mktime(struct tm *timeptr);
 char *strptime (const char *buf, const char *format, struct tm *tm);
-int stime(time_t *t);
 
 #endif

@@ -11,8 +11,8 @@
 
 #include <unint.h>
 # include <bsd/inet.h>
-# include <platforms/default/bsd/sockdef.h>
-# include <platforms/default/bsd/sockdecl.h>
+# include <bsd/sockdef.h>
+# include <bsd/sockdecl.h>
 # include <bsd/struct_hostent.h>
 # define htons _htons
 # define htonl _htonl
