@@ -61,7 +61,6 @@
 #include <arrow/software_release.h>
 
 /* Private variables ---------------------------------------------------------*/
-RNG_HandleTypeDef hrng;
 RTC_HandleTypeDef hrtc;
 
 osThreadId defaultTaskHandle;
@@ -73,20 +72,11 @@ static sensors_data_t data;
 void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_RTC_Init(void);
-static void MX_RNG_Init(void);
 #if !defined(USB_OTG_DEBUG)
 UART_HandleTypeDef console_uart;
 static void Console_UART_Init(void);
 #endif
 void StartDefaultTask(void const * argument);
-
-int rand(void) {
-  if (hrng.State == HAL_RNG_STATE_RESET) {
-    __RNG_CLK_ENABLE();
-    MX_RNG_Init();
-  }
-  return HAL_RNG_GetRandomNumber(&hrng);
-}
 
 int main(void)
 {
@@ -101,7 +91,7 @@ int main(void)
   /* Initialize all configured peripherals */
   BSP_LED_Init(LED_GREEN);
   MX_RTC_Init();
-  MX_RNG_Init();
+  rand();
   BSP_LED_Off(LED_GREEN);
 
 #if defined(USB_OTG_DEBUG)
@@ -226,17 +216,6 @@ static void Console_UART_Init(void)
   console_uart.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
   console_uart.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
   BSP_COM_Init(COM1,&console_uart);
-}
-
-/* RNG init function */
-static void MX_RNG_Init(void)
-{
-  hrng.Instance = RNG;
-  if (HAL_RNG_Init(&hrng) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
 }
 
 /* RTC init function */

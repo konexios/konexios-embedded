@@ -74,6 +74,7 @@ CC_SYMBOLS += -DDEVICE_PWMOUT=1
 CC_SYMBOLS += -DARM_MATH_CM4
 CC_SYMBOLS += -DTARGET_STM32F401xE
 CC_SYMBOLS += -DDEBUG
+CC_SYMBOLS += -DARCH_SSL
 
 LD_FLAGS =-Wl,--gc-sections -Wl,--wrap,main $(CPU)
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys

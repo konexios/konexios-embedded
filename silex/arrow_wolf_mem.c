@@ -47,10 +47,3 @@ void XFREE(void *p, void* heap, int type) {
 #endif
 }
 
-int rand() {
-    // FIXME rand
-    A_UINT32 value;
-    qcom_crypto_rng_get(&value, 2);
-    int t = value % 256;
-    return (int)t;
-}

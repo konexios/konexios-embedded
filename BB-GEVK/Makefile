@@ -57,6 +57,7 @@ DEFINES += -DDEBUG
 DEFINES += -Os
 DEFINES += -DNO_SOFTWARE_UPDATE 
 DEFINES += -DNO_SOFTWARE_RELEASE
+DEFINES += -DARCH_SSL
 DEFINES += -D__$(PLATFORM)__
 # -fno-inline-functions
 # -Wimplicit-function-declaration -Werror -Wpedantic 

@@ -42,7 +42,8 @@ CC_SYMBOLS = -DTOOLCHAIN_GCC \
        -DUSE_STM32L475E_IOT01 \
        -DUSE_IOEXPANDER \
        -DDEBUG \
-       -DARCH_TYPE
+       -DARCH_TYPE \
+       -DARCH_SSL
 # -Werror
 
 ifdef DEV_ENV
