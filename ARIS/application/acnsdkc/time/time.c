@@ -56,7 +56,7 @@ time_t time(time_t *timer) {
     return t;
 }
 
-int stime(time_t *timer) {
+int stime(const time_t *timer) {
     struct tm *t;
     t = localtime(timer);
     g_rtc.p_api->calendarTimeSet(g_rtc.p_ctrl, (rtc_time_t*)t, true);

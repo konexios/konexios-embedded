@@ -9,7 +9,7 @@
 #ifndef _ARIS_WINC_BSD_SOCKET_H_
 #define _ARIS_WINC_BSD_SOCKET_H_
 
-#include <unint.h>
+#include <sys/type.h>
 
 #include <bsd/inet.h>
 #include <bsd/struct_hostent.h>
@@ -53,9 +53,6 @@ int accept(int sock, struct sockaddr *addr, socklen_t *addrlen);
 #define SO_SNDTIMEO     21   /* Enable send timeout */
 #define PF_INET AF_INET
 #define IPPROTO_TCP 0
-#define htons _htons
-#define htonl _htonl
-#define ntohl _ntohl
 
 
 #endif // _ARIS_WINC_BSD_SOCKET_H_

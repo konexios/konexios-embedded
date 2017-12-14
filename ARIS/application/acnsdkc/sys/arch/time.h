@@ -17,8 +17,6 @@
 #else
 # include <sys/time.h>
 #endif
-#include <platforms/default/time/time.h>
-int stime(time_t *timer);
 
 
 
