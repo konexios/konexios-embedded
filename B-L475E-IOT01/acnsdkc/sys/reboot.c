@@ -6,12 +6,12 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include <arrow/sys.h>
-#include <qcom_system.h>
+#include <sys/reboot.h>
 #include <time/time.h>
+#include <stm32l4xx_hal.h>
 
 void reboot(void) {
-  qcom_sys_reset();
+  NVIC_SystemReset();
   msleep(1000*120);
 }
 

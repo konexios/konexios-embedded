@@ -29,7 +29,7 @@ extern "C" {
 #include <arrow/gateway_api.h>
 #include <arrow/telemetry_api.h>
 #include <arrow/testsuite.h>
-#include <arrow/sys.h>
+#include <sys/reboot.h>
 #include <arrow/software_release.h>
 
 #if defined(MEMORY_TEST)

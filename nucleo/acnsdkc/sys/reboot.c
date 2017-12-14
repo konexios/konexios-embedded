@@ -6,12 +6,18 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include <arrow/sys.h>
-#include <time/time.h>
-#include <stm32l4xx_hal.h>
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+#include <sys/reboot.h>
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_conf.h"
 
 void reboot(void) {
-  NVIC_SystemReset();
-  msleep(1000*120);
+  HAL_NVIC_SystemReset();
 }
 
+#if defined(__cplusplus)
+}
+#endif

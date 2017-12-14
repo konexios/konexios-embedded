@@ -16,7 +16,7 @@
 #include <qcom_system.h>
 #include <qcom_common.h>
 #include <qcom_network.h>
-#include <arrow/sys.h>
+#include <sys/reboot.h>
 
 static int currentDeviceId = 0;
 

@@ -10,7 +10,7 @@
 #include <arrow_ota.h>
 #include <time/time.h>
 #include <arrow/software_release.h>
-#include <arrow/sys.h>
+#include <sys/reboot.h>
 #include <qcom_network.h>
 #include <qcom_internal.h>
 /*

@@ -6,7 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/sys.h"
+#include "sys/reboot.h"
 #include <stdio.h>
 #include <unistd.h>
 
