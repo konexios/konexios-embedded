@@ -6,16 +6,13 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/net.h"
-#include <unint.h>
-#include "wiced.h"
+#if !defined(QUADRO_ARCH_BYTECONVERT)
+#define QUADRO_ARCH_BYTECONVERT
 
-int get_mac_address(char *mac) {
-  wiced_mac_t wmac;
-  wiced_result_t r = wiced_wifi_get_mac_address(&wmac);
-  memcpy(mac, wmac.octet, 6);
-  if ( r == WICED_SUCCESS )
-    return 0;
-  else
-    return -1;
-}
+#include <tx_port.h>
+#include <nx_port.h>
+//htons
+
+#endif // QUADRO_ARCH_BYTECONVERT
+
+

@@ -6,22 +6,16 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#ifndef STM32L475IOT_TIME_TIME_H_
-#define STM32L475IOT_TIME_TIME_H_
+#include "sys/mac.h"
+#include <sys/type.h>
+#include "wiced.h"
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-#include <config.h>
-#include <time.h>
-#include <sys/time.h>
-#include <platforms/default/time/time.h>
-
-int stime (const time_t *__when);
-
-#if defined(__cplusplus)
+int get_mac_address(char *mac) {
+  wiced_mac_t wmac;
+  wiced_result_t r = wiced_wifi_get_mac_address(&wmac);
+  memcpy(mac, wmac.octet, 6);
+  if ( r == WICED_SUCCESS )
+    return 0;
+  else
+    return -1;
 }
-#endif
-
-#endif // STM32L475IOT_TIME_TIME_H_

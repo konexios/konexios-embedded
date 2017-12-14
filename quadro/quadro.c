@@ -8,7 +8,7 @@
 #include <ntp/ntp.h>
 #include <arrow/routine.h>
 #include <arrow/utf8.h>
-#include <arrow/net.h>
+#include <sys/mac.h>
 #include <ssl/ssl.h>
 #include <debug.h>
 
