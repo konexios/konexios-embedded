@@ -6,7 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include <arrow/sys.h>
+#include <sys/reboot.h>
 #include <time/time.h>
 #include "wifi_thread.h"
 

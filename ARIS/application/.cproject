@@ -88,6 +88,8 @@
 							<tool commandLinePattern="${SECURE_BUILD_COMMAND} ${COMMAND} ${cross_toolchain_flags} ${FLAGS} -c ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} -x c ${INPUTS}" id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.143715351" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.1345328308" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="_ARIS_"/>
+									<listOptionValue builtIn="false" value="ARCH_TIME"/>
+									<listOptionValue builtIn="false" value="ARCH_SOCK"/>
 									<listOptionValue builtIn="false" value="WOLFSSL_BASE64_ENCODE"/>
 									<listOptionValue builtIn="false" value="TRACE_ON_USB"/>
 									<listOptionValue builtIn="false" value="CONF_WINC_USE_SPI"/>
@@ -190,7 +192,6 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/application/netx/time"/>
 						<entry excluding="netsocket.c|networkstack.h|networkstack.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/application/winc/bsd"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/common"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/default"/>
 						<entry excluding="mqtt/client/src/linux|mqtt/client/src/FreeRTOS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acnsdkc"/>
 						<entry excluding="DRIVERS/WINC1500_19.4.4|DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
@@ -371,7 +372,6 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/application/netx/time"/>
 						<entry excluding="netsocket.c|networkstack.h|networkstack.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/application/winc/bsd"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/common"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/platforms/default"/>
 						<entry excluding="mqtt/client/src/linux|mqtt/client/src/FreeRTOS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acn-sdk-c/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="acnsdkc"/>
 						<entry excluding="DRIVERS/WINC1500_19.4.4|DRIVERS/WINC1500_19.3.0|DRIVERS/WINC1500/sf_winc1500_cfg.h|MQTTPacket/test|APPLICATION/cloud_own.h|MQTTPacket|MQTTClient-C/samples|APPLICATION/LED_OWN.h|APPLICATION/cloud.h|APPLICATION/BLE_FSM|HTTPClient|MQTTClient-C/src/cc3200|DRIVERS/WINC1500/sf_winc1500.c|MQTTClient-C/src/FreeRTOS|APPLICATION/LED.c|wolfSSL|APPLICATION/cloud_use.h|MQTTClient-C/src/samples|NTP|APPLICATION/LED_USE.h|MQTTPacket/samples|MQTTClient-C|arrow|APPLICATION/HTTP|DRIVERS/WINC1500/sf_winc1500_api.h|DRIVERS/WINC1500/sf_winc1500.h|APPLICATION/LED.h|MQTTClient-C/src/linux|DRIVERS/WINC1500/sf_winc1500_private_api.h|APPLICATION/cloud.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
