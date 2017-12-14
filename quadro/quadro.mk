@@ -79,6 +79,7 @@ WIFI_CONFIG_DCT_H := wifi_config_dct.h
 $(NAME)_DEFINES    += __quadro__
 $(NAME)_DEFINES    += DEBUG
 $(NAME)_DEFINES    += USER_BYTE_CONVERTER
+$(NAME)_DEFINES    += ARCH_SSL
 
 $(NAME)_INCLUDES += .
 $(NAME)_INCLUDES += ../acn-sdk-c
