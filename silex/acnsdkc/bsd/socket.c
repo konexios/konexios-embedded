@@ -9,6 +9,7 @@
 #include "bsd/socket.h"
 #include <debug.h>
 #include <sys/mem.h>
+#include <data/linkedlist.h>
 #include <qcom_common.h>
 #include <qcom/select_api.h>
 
@@ -17,71 +18,48 @@ static int address_count = 0;
 typedef struct _sock_info_ {
   int sock;
   struct timeval timeout;
-  struct _sock_info_ *next;
+  linked_list_head_node;
 } sock_info_t;
 
 static sock_info_t *__info = NULL;
 
-static sock_info_t *find_sock_info(int sock) {
-    sock_info_t *last = __info;
-    while( last ) {
-        if ( last->sock == sock ) return last;
-        last = last->next;
-    }
-    return NULL;
+static int sockeq(sock_info_t *el, int sock) {
+    if ( el->sock == sock ) return 0;
+    return -1;
 }
 
 void add_socktimer(int sock, struct timeval tv) {
 //    DBG("set timeout %d %d", tv.tv_sec, tv.tv_usec);
-    sock_info_t *t = find_sock_info(sock);
+    sock_info_t *t = NULL;
+    linked_list_find_node(t, __info, sock_info_t, sockeq, sock);
     if ( !t ) {
         sock_info_t *t = (sock_info_t *)malloc(sizeof(sock_info_t));
-        t->next = NULL;
         t->sock = sock;
         t->timeout = tv;
-        sock_info_t *last = __info;
-        if ( !last ) {
-            __info = t;
-        } else {
-            while ( last->next ) last = last->next;
-            last->next = t;
-        }
+        linked_list_add_node_last(__info, sock_info_t, t);
     } else {
         t->timeout = tv;
     }
 }
 
 void get_sock_timer(int sock, struct timeval* tv) {
-  sock_info_t *last = __info;
-  while ( last ) {
-    if ( last->sock == sock ) {
-      *tv = last->timeout;
-      return;
-    }
-    last = last->next;
+  sock_info_t *t = NULL;
+  linked_list_find_node(t, __info, sock_info_t, sockeq, sock);
+  if ( t ) {
+      *tv = t->timeout;
+  } else {
+      tv->tv_sec = DEFAULT_API_TIMEOUT;
+      tv->tv_usec = 0;
   }
-  tv->tv_sec = DEFAULT_API_TIMEOUT;
-  tv->tv_usec = 0;
 }
 
 void rm_sock_timer(int sock) {
-  sock_info_t *last = __info;
-  sock_info_t *pre = NULL;
-  while ( last ) {
-    if ( last->sock == sock ) {
-      if ( !pre ) {
-        pre = __info;
-        __info = last->next;
-        free(pre);
-      } else {
-        pre->next = last->next;
-        free(last);
-      }
-      return;
-    }
-    pre = last;
-    last = last->next;
+  sock_info_t *t = NULL;
+  linked_list_find_node(t, __info, sock_info_t, sockeq, sock);
+  if ( t ) {
+      linked_list_del_node(__info, sock_info_t, t);
   }
+  free(t);
 }
 
 A_UINT32 _inet_addr(A_CHAR *str) {
