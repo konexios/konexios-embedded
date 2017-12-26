@@ -24,7 +24,7 @@ rtos::Mutex shield_mutex;
 #include <ntp/ntp.h>
 #include <arrow/routine.h>
 #include <arrow/mqtt.h>
-#include <arrow/gateway_api.h>
+#include <arrow/api/gateway/gateway.h>
 #include <json/telemetry.h>
 #include <json/data.h>
 #include <arrow/device_command.h>

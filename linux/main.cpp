@@ -24,9 +24,10 @@ extern "C" {
 #endif
 
 #include <arrow/routine.h>
+#include <arrow/api/device/device.h>
 #include <arrow/api/device/action.h>
 #include <arrow/api/device/type.h>
-#include <arrow/gateway_api.h>
+#include <arrow/api/gateway/gateway.h>
 #include <arrow/telemetry_api.h>
 #include <arrow/testsuite.h>
 #include <sys/reboot.h>
@@ -130,6 +131,97 @@ int main() {
 
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
+
+    // API request examples
+#if 0
+    arrow_gateway_t g;
+    property_copy(&g.hid, p_const("c966e4c0e7c48563b360130f989707965bf77645"));
+    log_t *logs = NULL;
+    int rr = arrow_gateway_logs_list(&logs, &g, 2, find_by(osNames, "mbed"), find_by(f_size, "3"));
+    std::cout<<"return "<<rr<<std::endl;
+    if ( rr == 0 ) {
+        log_t *tmp;
+        for_each_node_hard(tmp, logs, log_t) {
+            std::cout<<"name:\t"<<P_VALUE(tmp->productName)<<std::endl
+                     <<"type:\t"<<P_VALUE(tmp->type)<<std::endl
+                     <<"created:\t"<<P_VALUE(tmp->created.by)<<std::endl
+                     <<"objhid:\t"<<P_VALUE(tmp->objectHid)<<std::endl
+                     <<"param:\t"<<json_encode(tmp->parameters)<<std::endl
+                       ;
+            log_free(tmp);
+        }
+    }
+
+
+    gateway_info_t *list = NULL;
+    int r = arrow_gateway_find_by(&list, 2, find_by(osNames, "mbed"), find_by(f_size, "100"));
+    std::cout<<"return "<<r<<std::endl;
+    if ( r >= 0 ) {
+        gateway_info_t *tmp;
+        for_each_node_hard(tmp, list, gateway_info_t) {
+            std::cout<<"hid:\t\t"<<P_VALUE(tmp->hid)<<std::endl
+                    <<"createdDate:\t"<<tmp->created.date.tm_year<<std::endl
+                    <<"createdBy:\t"<<P_VALUE(tmp->created.by)<<std::endl
+                    <<"lastModifiedDate:\t"<<tmp->lastModified.date.tm_year<<std::endl
+                    <<"lastModifiedBy:\t"<<P_VALUE(tmp->lastModified.by)<<std::endl
+                    <<"uid:\t\t"<<P_VALUE(tmp->uid)<<std::endl
+                    <<"name:\t\t"<<P_VALUE(tmp->name)<<std::endl
+                    <<"type:\t\t"<<P_VALUE(tmp->type)<<std::endl
+                    <<"deviceType:\t"<<P_VALUE(tmp->deviceType)<<std::endl
+                    <<"osName:\t\t"<<P_VALUE(tmp->osName)<<std::endl
+                    <<"softwareName:\t"<<P_VALUE(tmp->softwareName)<<std::endl
+                    <<"softwareVersion:\t"<<P_VALUE(tmp->softwareVersion)<<std::endl;
+            gateway_info_free(tmp);
+            free(tmp);
+        }
+    }
+
+    device_info_t *devices = NULL;
+    r = arrow_gateway_devices_list(&devices, P_VALUE(g.hid));
+    std::cout<<"return "<<r<<std::endl;
+    if ( r >= 0 ) {
+        device_info_t *tmp;
+        for_each_node_hard(tmp, devices, device_info_t) {
+            std::cout<<"hid:\t\t"<<P_VALUE(tmp->hid)<<std::endl
+                    <<"createdDate:\t"<<tmp->created.date.tm_year<<std::endl
+                    <<"createdBy:\t"<<P_VALUE(tmp->created.by)<<std::endl
+                    <<"lastModifiedDate:\t"<<tmp->lastModified.date.tm_year<<std::endl
+                    <<"lastModifiedBy:\t"<<P_VALUE(tmp->lastModified.by)<<std::endl
+                    <<"uid:\t\t"<<P_VALUE(tmp->uid)<<std::endl
+                    <<"name:\t\t"<<P_VALUE(tmp->name)<<std::endl
+                    <<"type:\t\t"<<P_VALUE(tmp->type)<<std::endl
+                    <<"enabled:\t\t"<<tmp->enabled<<std::endl
+                    <<"info:\t"<<json_encode(tmp->info)<<std::endl
+                    ;
+            device_info_free(tmp);
+            free(tmp);
+        }
+    }
+
+    devices = NULL;
+    r = arrow_device_find_by(&devices, 2, find_by(f_size, "10"), find_by(f_type, DEVICE_TYPE));
+    std::cout<<"return "<<r<<std::endl;
+    if ( r >= 0 ) {
+        device_info_t *tmp;
+        for_each_node_hard(tmp, devices, device_info_t) {
+            std::cout<<"hid:\t\t"<<P_VALUE(tmp->hid)<<std::endl
+                    <<"createdDate:\t"<<tmp->created.date.tm_year<<std::endl
+                    <<"createdBy:\t"<<P_VALUE(tmp->created.by)<<std::endl
+                    <<"lastModifiedDate:\t"<<tmp->lastModified.date.tm_year<<std::endl
+                    <<"lastModifiedBy:\t"<<P_VALUE(tmp->lastModified.by)<<std::endl
+                    <<"uid:\t\t"<<P_VALUE(tmp->uid)<<std::endl
+                    <<"name:\t\t"<<P_VALUE(tmp->name)<<std::endl
+                    <<"type:\t\t"<<P_VALUE(tmp->type)<<std::endl
+                    <<"enabled:\t\t"<<tmp->enabled<<std::endl
+                    <<"info:\t"<<json_encode(tmp->info)<<std::endl
+                    ;
+            device_info_free(tmp);
+            free(tmp);
+        }
+    }
+
+    msleep(10000);
+
 #if 0
     telemetry_response_data_list_t tel_data;
     if ( arrow_telemetry_find_by_device_hid("f8400f12182e53e39c4f300bddaff9007b59991b",
@@ -160,6 +252,7 @@ int main() {
 
     std::cout<<"------------------------"<<std::endl;
 #endif
+#endif
 
     arrow_initialize_routine();
 #if !defined(NO_SOFTWARE_UPDATE)
@@ -177,6 +270,7 @@ int main() {
 
     std::cout<<"------------------------"<<std::endl;
 #endif
+
     arrow_update_state("led", "on");
     add_cmd_handler("test", &test_cmd_proc);
     add_cmd_handler("fail", &fail_cmd_proc);

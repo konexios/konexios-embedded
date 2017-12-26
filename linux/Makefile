@@ -58,7 +58,7 @@ LIBRARY_PATHS = -L$(PWD)/$(LIBDIR)
 LIBRARIES = -lsensors -lacnsdkc
 
 LD_FLAGS = 
-LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc
+LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--gc-sections
 
 # LD_SYS_LIBS += -lcurl 
 # -Wl,--wrap=malloc,--wrap=free,--wrap=realloc,--wrap=calloc,--wrap=valloc,--wrap=aligned_alloc,--wrap=memalign,--wrap=pvalloc,--wrap=posix_memalign,--wrap=strdup

@@ -31,7 +31,7 @@
 #include <arrow/storage.h>
 #include <json/data.h>
 #include <time/watchdog.h>
-#include <arrow/gateway_api.h>
+#include <arrow/api/gateway/gateway.h>
 #include <arrow/device_command.h>
 #include <arrow/software_update.h>
 #include <arrow/software_release.h>
