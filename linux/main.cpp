@@ -283,6 +283,8 @@ int main() {
     pm_data_t data;
 #endif
 
+    arrow_gateway_heartbeat(current_gateway());
+
     get_telemetry_data(&data);
 
     arrow_send_telemetry_routine(&data);
