@@ -9,11 +9,7 @@
 #ifndef _LINUX_BSD_SOCKET_H_
 #define _LINUX_BSD_SOCKET_H_
 
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <unistd.h>
-#include <netdb.h>
 #include <strings.h>
-#define soc_close(x) close((x))
 
 #endif // _LINUX_BSD_SOCKET_H_

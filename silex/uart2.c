@@ -40,12 +40,20 @@ int uart2_init() {
     }
 
     A_PRINTF("Init UART\r\n");
+
+    char *uart_test_str0 = "Init UART\r\n";
+    A_UINT32 uart_length = strlen((A_CHAR *)uart_test_str0);
+    qcom_uart_write(uart2_fd,
+                    (A_CHAR *)uart_test_str0,
+                    &uart_length);
+
     qcom_uart_para com_uart_cfg;
     com_uart_cfg.BaudRate=     115200;
     com_uart_cfg.number=       8;
     com_uart_cfg.StopBits =    1;
     com_uart_cfg.parity =      0;
     com_uart_cfg.FlowControl = 0;
+//    qcom_set_uart_config(UART2, &com_uart_cfg);
 }
 
 char get_char(int *status, int timeout_s) {

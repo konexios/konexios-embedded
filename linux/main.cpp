@@ -32,6 +32,7 @@ extern "C" {
 #include <arrow/testsuite.h>
 #include <sys/reboot.h>
 #include <arrow/software_release.h>
+#include <silex/silex.h>
 
 #if defined(MEMORY_TEST)
 #include <malloc.h>
@@ -123,6 +124,14 @@ int main() {
 
 //    Hided it because we supposed linux already synchronized a time 
 //    ntp_set_time_cycle();
+
+    uart_init();
+    while ( silex_wait_wifi_connect(
+                /*"Mera-guest", "guest@Mera", */
+                "wnet2", "nihongosiken",
+                4194308) < 0 ) {
+        msleep(ARROW_RETRY_DELAY);
+    }
 
     // set up the firmware downloaded callbacks
     arrow_software_release_dowload_set_cb(

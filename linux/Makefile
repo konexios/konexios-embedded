@@ -33,7 +33,7 @@ CPPC_FLAGS = $(COMMON_FLAGS) -std=gnu++98 -fno-rtti -MP
 ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
 CC_SYMBOLS = -DTOOLCHAIN_GCC \
         -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE \
-	-DARCH_TYPE -DARCH_SOCK -DARCH_SSL \
+	-DARCH_TYPE -DARCH_SSL \
 	-Werror -Wpedantic -Wno-variadic-macros #-O0 -g -DVALGRIND_TEST=100
 
 ifdef PROBOOK

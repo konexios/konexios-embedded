@@ -127,10 +127,12 @@ int get_data(void *data) {
   data_counter ++;
 }
 
+#if !defined(AT_COMMAND)
 static int test_cmd_proc(const char *str) {
   A_PRINTF("test: [%s]", str);
   return 0;
 }
+#endif
 
 int wait_wifi_connection() {
     A_UINT32 ip = 0;
@@ -153,7 +155,7 @@ int wait_wifi_connection() {
 extern void reboot(void);
 extern int at_go(void);
 
-int wifi_connect(uint32_t max_atps) {
+int main_wifi_connect(uint32_t max_atps) {
     uint32_t attepts = 0;
     do {
         if ( attepts++ < max_atps ) wdt_feed();
@@ -183,7 +185,7 @@ int wifi_connect(uint32_t max_atps) {
     return 0;
 }
 
-#if !defined(AP_AT) && !defined(AT_COMMAND)
+#if !defined(AP_AT) //&& !defined(AT_COMMAND)
 static void arrow_http_run(void) {
     start_ap2(currentDeviceId);
     start_http_server(currentDeviceId);
@@ -232,7 +234,7 @@ force_ap:
           goto force_ap;
       }
 
-      if ( wifi_connect(20) < 0 ) {
+      if ( main_wifi_connect(20) < 0 ) {
           // cannot connect
           // have to switch to AP or AT-command mode
           goto force_ap;

@@ -7,6 +7,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
+#include <config.h>
 #include <uart2.h>
 #include <time/time.h>
 #include <time/watchdog.h>
@@ -20,9 +21,11 @@
 #include <arrow/storage.h>
 
 #if defined(AT_COMMAND)
-# define CRLF "\r\n"
-#elif defined(AP_AT)
-# define CRLF "\r"
+# if defined(AP_AT)
+#  define CRLF "\r\n"
+# else
+#  define CRLF "\r\n"
+# endif
 #else
 # define CRLF "\r\n\r\n"
 #endif
@@ -346,6 +349,7 @@ static void reset_callback( void* arg ) {
 int reset(const char *cmd, char *ans) {
     SSP_PARAMETER_NOT_USED(cmd);
     SSP_PARAMETER_NOT_USED(ans);
+    DBG("call reset");
     reset_callback(NULL);
     return 0;
 }
@@ -491,9 +495,9 @@ int at_go(void) {
             uart_rx_buffer[offset] = c;
             offset ++;
             uart_rx_buffer[offset] = 0x0;
-            if ( offset > (int)CRLF_LEN && strncmp((char*)uart_rx_buffer+offset-CRLF_LEN, CRLF, CRLF_LEN) == 0 ) {
+            if ( offset > (int)CRLF_LEN &&
+                 strncmp((char*)uart_rx_buffer+offset-CRLF_LEN, CRLF, CRLF_LEN) == 0 ) {
 //                DBG("receive %d [%s]", offset, uart_rx_buffer);
-                DBG("");
                 purse_cmd((char *)uart_rx_buffer, offset + 1);
                 offset = 0;
             }

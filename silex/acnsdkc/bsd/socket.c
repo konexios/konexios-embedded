@@ -48,8 +48,8 @@ void get_sock_timer(int sock, struct timeval* tv) {
   if ( t ) {
       *tv = t->timeout;
   } else {
-      tv->tv_sec = DEFAULT_API_TIMEOUT;
-      tv->tv_usec = 0;
+      tv->tv_sec = DEFAULT_API_TIMEOUT / 1000;
+      tv->tv_usec = ( DEFAULT_API_TIMEOUT % 1000 ) * 1000;
   }
 }
 
@@ -58,8 +58,8 @@ void rm_sock_timer(int sock) {
   linked_list_find_node(t, __info, sock_info_t, sockeq, sock);
   if ( t ) {
       linked_list_del_node(__info, sock_info_t, t);
+      free(t);
   }
-  free(t);
 }
 
 A_UINT32 _inet_addr(A_CHAR *str) {
@@ -144,6 +144,7 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
 
   FD_ZERO(&rset);
   get_sock_timer(sockfd, &tv);
+//  DBG("tv {%d, %d}", tv.tv_sec, tv.tv_usec)
 
   FD_SET(sockfd, &rset);
   if ((ret = qcom_select(sockfd + 1, &rset, 0, 0, &tv)) <= 0) {
