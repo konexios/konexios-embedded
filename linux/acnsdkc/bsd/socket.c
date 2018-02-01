@@ -62,7 +62,7 @@ struct hostent *gethostbyname(const char *name) {
   static unsigned long *s_phostent_addr[2];
   uint32_t ipaddr = 0;
 
-  DBG("get host %s", name);
+  DBG("get host [%s]", name);
   int ret = silex_gethostbyname(name, &ipaddr);
 
   if ( ret >= 0 ) {
@@ -125,10 +125,13 @@ void soc_close(int socket) {
 }
 
 ssize_t send(int sockfd, const void *buf, size_t len, int flags) {
+    DBG("--------------------------------");
     sock_info_t *t = NULL;
     linked_list_find_node(t, __info, sock_info_t, sockeq, sockfd);
     if ( !t ) return -1;
-    return silex_tcp_send(t->sock, buf, len, _timeval_ms(&t->timeout));
+    int i = silex_tcp_send(t->sock, buf, len, _timeval_ms(&t->timeout));
+    DBG("send --- %d", i);
+    return i;
 }
 
 ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
@@ -150,12 +153,12 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
     return silex_tcp_receive_all(sockfd, buf, len, _timeval_ms(&t->timeout));
 }
 
-ssize_t recvfrom(int sock, void *buf, size_t size, int flags,
+ssize_t recvfrom(int sock, void *buf, size_t len, int flags,
                  struct sockaddr *src_addr, socklen_t *addrlen) {
     sock_info_t *t = NULL;
-    linked_list_find_node(t, __info, sock_info_t, sockeq, sockfd);
+    linked_list_find_node(t, __info, sock_info_t, sockeq, sock);
     if ( !t ) return -1;
-    return silex_receivefrom(sock, NULL, NULL, buf, len, _timeval_ms(&t->timeout));
+    return silex_receivefrom(sock, NULL, 0, (char *)buf, len, _timeval_ms(&t->timeout));
 }
 
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {

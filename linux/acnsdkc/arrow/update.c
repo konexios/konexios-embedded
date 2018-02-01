@@ -105,7 +105,8 @@ int arrow_release_download_complete(int ota_result) {
     } else if (ota_result == FW_MD5SUM) {
         DBG("fw checksum failed");
         fclose(test);
-        remove(pagefilename);
+//        remove(pagefilename);
+        return -1;
     }
     file_size = 0;
     return 0;

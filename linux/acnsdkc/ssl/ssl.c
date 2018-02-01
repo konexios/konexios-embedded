@@ -22,11 +22,12 @@ int ssl_recv(int sock, char *data, int len) {
 }
 
 int ssl_send(int sock, char* data, int length) {
-//	DBG("ssl w[%d]", length);
-    return silex_ssl_send(sock, data, length, DEFAULT_API_TIMEOUT);
+    int i = silex_ssl_send(sock, data, length, DEFAULT_API_TIMEOUT);
+    return i;
 }
 
 int ssl_close(int sock) {
+    DBG("SSL connect finish");
     return silex_ssl_close(sock);
 }
 

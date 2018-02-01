@@ -110,7 +110,17 @@ static int get_len(char *str, uint32_t *len) {
         ans += len * 2; \
         strcpy(ans, "\r\n");
 
-int create_socket(const char *arg, char *ans) {
+#define ADD_DATALEN2(ans, qnt, len) \
+        qnt = sprintf(ans + qnt, "%s%d\r\n", DATALEN, (int)len); \
+        ans[qnt] = 0x0;
+
+#define ADD_DATA2(ans, qnt, data, len) \
+        ADD_DATALEN2(ans, qnt, len); \
+        memcpy(ans + qnt, (char*)data, (int)len); \
+        strcpy(ans + qnt + len, "\r\n"); \
+        qnt += len + 2;
+
+int create_socket(const char *arg, char *ans, int *num) {
     int sock = -1;
     char *type = strstr(arg, ",");
     if ( !type ) {
@@ -128,11 +138,13 @@ int create_socket(const char *arg, char *ans) {
     if ( sock < 0 ) return sock;
     int ret = sprintf(ans, "ID:%d", sock);
     ans[ret] = 0x0;
+    if (num) *num = ret;
     return 0;
 }
 
-int close_socket(const char *cmd, char *ans) {
+int close_socket(const char *cmd, char *ans, int *num) {
     SSP_PARAMETER_NOT_USED(ans);
+    if ( num ) *num = 0;
     INIT_SOCK_AND_CHECK(sock, cmd);
     if ( sock >= 0 ) {
         DBG("close = %d", sock);
@@ -141,7 +153,7 @@ int close_socket(const char *cmd, char *ans) {
     return 0;
 }
 
-int sendto_socket(const char *cmd, char *ans) {
+int sendto_socket(const char *cmd, char *ans, int *num) {
     INIT_SOCK_AND_CHECK(sock, cmd);
     struct sockaddr_in serveraddr;
     char *last_str = NULL;
@@ -153,10 +165,11 @@ int sendto_socket(const char *cmd, char *ans) {
     int ret = sendto(sock, tmp_buffer, datalen, 0, (struct sockaddr*)&serveraddr, serverlen);
     if ( ret < 0 ) return -1;
     ADD_DATALEN(ans, ret);
+    if ( num ) *num = ret;
     return 0;
 }
 
-int recvfrom_socket(const char *cmd, char *ans) {
+int recvfrom_socket(const char *cmd, char *ans, int *num) {
     INIT_SOCK_AND_CHECK(sock, cmd);
     INIT_PTR_AFTER_COMMA_AND_CHECK(len_str, cmd);
     INIT_LEN_AND_CHECK(datalen, len_str);
@@ -166,11 +179,12 @@ int recvfrom_socket(const char *cmd, char *ans) {
     if ( ret < 0 ) return -1;
     datalen = ret;
     ADD_DATA(ans, tmp_buffer, datalen);
+    if ( num ) *num = datalen;
     return 0;
 }
 
 
-int get_host_by_name(const char *cmd, char *ans) {
+int get_host_by_name(const char *cmd, char *ans, int *num) {
     char *name_end = strstr(cmd, CRLF);
     char buffer[100];
     strncpy(buffer, cmd, name_end - cmd);
@@ -179,22 +193,25 @@ int get_host_by_name(const char *cmd, char *ans) {
     if (serv) {
         int ret = sprintf(ans, "%08x", *(int*)serv->h_addr);
         ans[ret] = 0x0;
+        if ( num ) *num = ret;
         return 0;
     }
     return -1;
 }
 
-int get_mac_addr(const char *cmd, char *ans) {
+int get_mac_addr(const char *cmd, char *ans, int *num) {
     SSP_PARAMETER_NOT_USED(cmd);
     unsigned char mac[8];
     if ( get_mac_address((char*)mac) < 0 ) { DBG("no mac"); return -1; }
     int ret = sprintf(ans, "MAC:%02x.%02x.%02x.%02x.%02x.%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     ans[ret] = 0;
+    if ( num ) *num = ret;
     return 0;
 }
 
-int socket_connect(const char *cmd, char *ans) {
+int socket_connect(const char *cmd, char *ans, int *num) {
     SSP_PARAMETER_NOT_USED(ans);
+    if ( num ) *num = 0;
     INIT_SOCK_AND_CHECK(sock, cmd);
     struct sockaddr_in serveraddr;
     if ( ! get_ip_addr(cmd, &serveraddr) ) return -1;
@@ -202,7 +219,7 @@ int socket_connect(const char *cmd, char *ans) {
     return connect(sock, (struct sockaddr*)&serveraddr, serverlen);
 }
 
-int socket_send(const char *cmd, char *ans) {
+int socket_send(const char *cmd, char *ans, int *num) {
     INIT_SOCK_AND_CHECK(sock, cmd);
     INIT_PTR_AFTER_COMMA_AND_CHECK(len_str, cmd);
     INIT_LEN_AND_CHECK(datalen, len_str);
@@ -211,10 +228,11 @@ int socket_send(const char *cmd, char *ans) {
     int ret = send(sock, tmp_buffer, datalen, 0);
     if ( ret < 0 ) return ret;
     ADD_DATALEN(ans, ret);
+    if ( num ) *num = ret;
     return 0;
 }
 
-int socket_recv(const char *cmd, char *ans) {
+int socket_recv(const char *cmd, char *ans, int *num) {
     INIT_SOCK_AND_CHECK(sock, cmd);
     INIT_PTR_AFTER_COMMA_AND_CHECK(len_str, cmd);
     INIT_LEN_AND_CHECK(datalen, len_str);
@@ -223,11 +241,13 @@ int socket_recv(const char *cmd, char *ans) {
     if ( ret < 0 ) return -1;
     datalen = ret;
     ADD_DATA(ans, tmp_buffer, datalen);
+    if ( num ) *num = datalen;
     return 0;
 }
 
-int socket_timeout(const char *cmd, char *ans) {
+int socket_timeout(const char *cmd, char *ans, int *num) {
     SSP_PARAMETER_NOT_USED(ans);
+    if ( num ) *num = 0;
     INIT_SOCK_AND_CHECK(sock, cmd);
     INIT_PTR_AFTER_COMMA_AND_CHECK(time_str, cmd);
     INIT_LEN_AND_CHECK(timeout, time_str);
@@ -237,7 +257,7 @@ int socket_timeout(const char *cmd, char *ans) {
     return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
 }
 
-int wifi_connect(const char *cmd, char *ans) {
+int wifi_connect(const char *cmd, char *ans, int *num) {
     char ssid[32];
     char passphrase[32];
     A_INT32 security;
@@ -293,6 +313,7 @@ int wifi_connect(const char *cmd, char *ans) {
 
     if ( ip ) {
         strcpy(ans, "CONNECT");
+        if ( num ) *num = strlen(ans);
         DBG(WIFION);
     } else {
         qcom_disconnect(currentDeviceId);
@@ -302,13 +323,14 @@ int wifi_connect(const char *cmd, char *ans) {
     return 0;
 }
 
-int ssl_connect_sock(const char *cmd, char *ans) {
+int ssl_connect_sock(const char *cmd, char *ans, int *num) {
     SSP_PARAMETER_NOT_USED(ans);
+    if ( num ) *num = 0;
     INIT_SOCK_AND_CHECK(sock, cmd);
     return ssl_connect(sock);
 }
 
-int ssl_send_sock(const char *cmd, char *ans) {
+int ssl_send_sock(const char *cmd, char *ans, int *num) {
     INIT_SOCK_AND_CHECK(sock, cmd);
     INIT_PTR_AFTER_COMMA_AND_CHECK(len_str, cmd);
     INIT_LEN_AND_CHECK(datalen, len_str);
@@ -316,22 +338,30 @@ int ssl_send_sock(const char *cmd, char *ans) {
     int ret = ssl_send(sock, (char*)tmp_buffer, datalen);
     if ( ret < 0 ) return ret;
     ADD_DATALEN(ans, ret);
+    if ( num ) *num = ret;
     return 0;
 }
 
-int ssl_recv_sock(const char *cmd, char *ans) {
+int ssl_recv_sock(const char *cmd, char *ans, int *num) {
     INIT_SOCK_AND_CHECK(sock, cmd);
     INIT_PTR_AFTER_COMMA_AND_CHECK(len_str, cmd);
     INIT_LEN_AND_CHECK(datalen, len_str);
     int ret = ssl_recv(sock, (char*)tmp_buffer, datalen);
-    if ( ret < 0 ) return -1;
+    if ( ret < 0 ) {
+        DBG("------ ssl error!");
+        return -1;
+    }
     datalen = ret;
-    ADD_DATA(ans, tmp_buffer, datalen);
+    ret = 0;
+    ADD_DATA2(ans, ret, tmp_buffer, datalen);
+    if ( num ) *num = ret;
+    DBG("ssl recv sock %d [%d]", datalen, ret);
     return 0;
 }
 
-int ssl_close_sock(const char *cmd, char *ans) {
+int ssl_close_sock(const char *cmd, char *ans, int *num) {
     SSP_PARAMETER_NOT_USED(ans);
+    if ( num ) *num = 0;
     INIT_SOCK_AND_CHECK(sock, cmd);
     if ( sock >= 0 ) {
         DBG("ssl close = %d", sock);
@@ -346,15 +376,16 @@ static void reset_callback( void* arg ) {
     qcom_sys_reset();
 }
 
-int reset(const char *cmd, char *ans) {
+int reset(const char *cmd, char *ans, int *num) {
     SSP_PARAMETER_NOT_USED(cmd);
     SSP_PARAMETER_NOT_USED(ans);
+    SSP_PARAMETER_NOT_USED(num);
     DBG("call reset");
     reset_callback(NULL);
     return 0;
 }
 
-int set_wifi(const char *cmd, char *ans) {
+int set_wifi(const char *cmd, char *ans, int *num) {
     char ssid[32];
     char passphrase[32];
     A_INT32 security;
@@ -369,10 +400,11 @@ int set_wifi(const char *cmd, char *ans) {
     sscanf(sec_start, "%d", (int*)&security);
     save_wifi_setting(ssid, passphrase, security);
     strcpy(ans, "SAVE");
+    if ( num ) *num = 4;
     return 0;
 }
 
-int set_keys(const char *cmd, char *ans) {
+int set_keys(const char *cmd, char *ans, int *num) {
     char api_key[66];
     char sec_key[44];
     char *api_key_end = strstr(cmd, ",");
@@ -384,10 +416,11 @@ int set_keys(const char *cmd, char *ans) {
     sec_key[(sec_key_end - sec_key_start)] = 0x0;
     save_key_setting(api_key, sec_key);
     strcpy(ans, "SAVE");
+    if ( num ) *num = 4;
     return 0;
 }
 
-typedef int(*at_cmd_eq)(const char *, char *);
+typedef int(*at_cmd_eq)(const char *, char *, int *);
 
 typedef struct _at_cmd_ {
     const char *name;
@@ -439,21 +472,27 @@ int exec_cmd(const char *cmd, int size) {
     char *eq = strstr(cmd, "=");
     if ( !eq ) return -1;
     int ret = -1;
+    int tx_len = 0;
     uart_tx_buffer[0] = 0x0;
     at_cmd_t *at = find_cmd(cmd, (int)(eq-cmd));
     if ( at ) {
-        if (at->func) ret = at->func( eq + 1, uart_tx_buffer + strlen(uart_tx_buffer));
+        if (at->func) ret = at->func(
+                    eq + 1,
+                    uart_tx_buffer,// + strlen(uart_tx_buffer),
+                    &tx_len);
     }
     if (ret < 0)
         strcat(uart_tx_buffer, NLINE "ERROR" NLINE);
     else
-        strcat(uart_tx_buffer, NLINE "OK" NLINE);
+        strcpy(uart_tx_buffer + tx_len, NLINE "OK" NLINE);
 //    DBG("-->[%s]", uart_tx_buffer);
-    int tot_size = strlen(uart_tx_buffer);
+    int tot_size = tx_len + strlen(uart_tx_buffer + tx_len);
+//    uart2_write(uart_tx_buffer, tot_size );
     int tr_size = 0;
-//    DBG("send to uart %d", tot_size);
+#define SEND_MAX 50
+    DBG("send to uart %d", tot_size);
     while (tot_size > 0) {
-        int chunk = (tot_size > 1 ? 1 : tot_size);
+        int chunk = (tot_size > SEND_MAX ? SEND_MAX : tot_size);
         uart2_write(uart_tx_buffer + tr_size, chunk );
         tr_size += chunk;
         tot_size -= chunk;

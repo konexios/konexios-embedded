@@ -16,21 +16,33 @@
 static char static_buffer[QUADRO_SIZE];
 const char *basic_pattern[] = { "OK", "ERROR" };
 
+static int silex_data_mode = 0;
+
 int silex_read_block(
         char *buf,
-        int chunk, const char **pattern,
+        int chunk,
+        const char **pattern,
         int pttn_qnt,
         int timeout_ms) {
     int offset = 0;
     int c = 0;
-    while ( ( c = silex_read_line(buf + offset, chunk - offset, timeout_ms) ) >= 0 ) {
-        if ( c > 0 ) {
-            offset += c;
-            buf[offset] = 0x0;
-            for( int i = 0; i< pttn_qnt; i++ ) {
-                if ( strstr(buf, pattern[i] ) ) return offset;
+    if ( silex_data_mode ) {
+        int size = chunk < silex_data_mode ? chunk : silex_data_mode;
+        offset = uart_recv_timeout(
+                    buf,
+                    size,
+                    timeout_ms);
+        silex_data_mode -= offset;
+    } else {
+        while ( ( c = silex_read_line(buf + offset, chunk - offset, timeout_ms) ) >= 0 ) {
+            if ( c > 0 ) {
+                offset += c;
+                buf[offset] = 0x0;
+                for( int i = 0; i< pttn_qnt; i++ ) {
+                    if ( strstr(buf, pattern[i] ) ) return offset;
+                }
+                if ( offset >= chunk ) return offset;
             }
-            if ( offset >= chunk ) return offset;
         }
     }
     return offset?offset:-1;
@@ -82,6 +94,7 @@ int silex_getmacaddress(char *mac) {
 }
 
 int silex_read_line(char *buf, int chunk, int timeout_ms) {
+    if ( silex_data_mode ) return -1;
     int i = 0;
     buf[0] = 0x0;
     while ( silex_read(buf+i, 1, timeout_ms) == 1 ) {
@@ -145,28 +158,54 @@ int silex_tcp_connect(int sock, const char *ip, uint16_t port, int timeout_ms) {
     return -1;
 }
 
-static int silex_get_msg_len() {
-    char *datalen = strstr(static_buffer, "DATALEN:");
+static int silex_get_msg_len(const char *buf) {
+    char *datalen = strstr(buf, "DATALEN:");
     if ( !datalen ) return -1;
     int dl = -1;
     datalen += 8;
-    sscanf(datalen, "%d", &dl);
+    if ( sscanf(datalen, "%d", &dl) != 1 ) return -1;
     return dl;
 }
 
 int silex_get_msg_data(char *buf, int tot_size) {
-    int dl = silex_get_msg_len();
+    int dl = silex_get_msg_len(static_buffer);
     char *data = strstr(static_buffer, "\r\n");
     if ( !data ) return -1;
-    data+=2;
+    data += 2;
     if ( tot_size < (data - static_buffer) + 2*dl + 2/*\r\n*/ + 6 /*ok*/ ) {
         DBG("WARN: msg is corrupted! [%d|%d]", tot_size, (data - static_buffer) + 2*dl + 2/*\r\n*/ + 6 /*ok*/);
         return -1;
     }
     hex_decode(buf, data, dl);
     buf[dl] = 0x0;
+    printf("dl %d\r\n", dl);
     return dl;
 }
+
+static int silex_get_msg_len2(const char *buf) {
+    char *datalen = strstr(buf, "DATALEN:");
+    if ( !datalen ) return -1;
+    int dl = -1;
+    datalen += 8;
+    if ( sscanf(datalen, "%d", &dl) != 1 ) return -1;
+    return dl;
+}
+
+int silex_get_msg_data2(char *buf, int tot_size) {
+    int dl = silex_get_msg_len2(static_buffer);
+    char *data = strstr(static_buffer, "\r\n");
+    if ( !data ) return -1;
+    data += 2;
+    if ( tot_size < (data - static_buffer) + dl + 2/*\r\n*/ + 6 /*ok*/ ) {
+        DBG("WARN2: msg is corrupted! [%d|%d]", tot_size, (data - static_buffer) + dl + 2/*\r\n*/ + 6 /*ok*/);
+        return -1;
+    }
+    memcpy(buf, data, dl);
+    buf[dl] = 0x0;
+    printf("dl %d\r\n", dl);
+    return dl;
+}
+
 
 int silex_tcp_send(int sock, const char *buf, int len, int timeout_ms) {
     int ret = snprintf(static_buffer, QUADRO_SIZE,
@@ -178,13 +217,14 @@ int silex_tcp_send(int sock, const char *buf, int len, int timeout_ms) {
     silex_write(static_buffer, ret + len +2);
     if ( silex_read_block(static_buffer, QUADRO_SIZE,
                               basic_pattern, 2, timeout_ms) > 0 ) {
-        ret = silex_get_msg_len();
+        ret = silex_get_msg_len(static_buffer);
         if ( strstr(static_buffer, "OK") ) return ret;
     }
     return -1;
 }
 
 int silex_tcp_receive(int sock, char *buf, int len, int timeout_ms) {
+    printf("recv %d\r\n", len);
     int ret = snprintf(static_buffer,
                        QUADRO_SIZE,
                        SOCKET_RECV "=%d,%d\r\n",
@@ -255,7 +295,7 @@ int silex_ssl_connect(int sock, int timeout_ms) {
     return -1;
 }
 
-int silex_ssl_read(int sock, char *data, int len, int timeout_ms) {
+int silex_ssl_read(int sock, char *buf, int len, int timeout_ms) {
     int ret = snprintf(static_buffer,
                        QUADRO_SIZE,
                        SSL_RECV "=%d,%d",
@@ -263,11 +303,33 @@ int silex_ssl_read(int sock, char *data, int len, int timeout_ms) {
                        len);
     silex_write(static_buffer, ret);
     int tot_size = 0;
-    if ( ( tot_size = silex_read_block(static_buffer,
-                                       QUADRO_SIZE,
-                                       basic_pattern,
-                                       2, timeout_ms) ) > 0 ) {
-        return silex_get_msg_data(data, tot_size);
+    int datalen = 0;
+    if ( ( tot_size = silex_read_line(static_buffer, 20, timeout_ms) ) > 0 ) {
+        datalen = silex_get_msg_len(static_buffer);
+        if ( datalen < 0 ) return -1;
+        int need_to_reed = datalen;
+        int red = 0;
+        while ( need_to_reed > 0) {
+            int r = uart_recv_timeout(
+                        static_buffer + red,
+                        need_to_reed,
+                        timeout_ms);
+            if ( r <= 0 ) {
+                DBG("uart %d %d", need_to_reed, datalen);
+                return -2;
+            }
+            need_to_reed -= r;
+            red += r;
+        }
+        memcpy(buf, static_buffer, datalen);
+        buf[datalen] = 0x0;
+    }
+    if ( silex_read_block(static_buffer,
+                          RECV_LIMIT,
+                          basic_pattern,
+                          2, timeout_ms) > 0 ) {
+        if ( strstr(static_buffer, "OK") ) return datalen;
+        return -1;
     }
     return -1;
 }
@@ -283,6 +345,7 @@ int silex_ssl_read_all(int sock, char *data, int len, int timeout_ms) {
             offset += ret;
             tot_size -= ret;
         }
+        printf("offset = %d\r\n", offset);
         return offset;
     }
     return silex_ssl_read(sock, data, len, timeout_ms);
@@ -302,7 +365,7 @@ int silex_ssl_send(int sock, char* data, int length, int timeout_ms) {
                           QUADRO_SIZE,
                           basic_pattern,
                           2, timeout_ms) > 0 ) {
-        ret = silex_get_msg_len();
+        ret = silex_get_msg_len(static_buffer);
         if ( strstr(static_buffer, "OK") ) return ret;
     }
     return -1;
@@ -330,7 +393,7 @@ int silex_udp_socket() {
     if ( silex_read_block(static_buffer,
                           QUADRO_SIZE,
                           basic_pattern,
-                          2, timeout_ms) > 0 ) {
+                          2, 5000) > 0 ) {
         char *id = strstr(static_buffer, "ID");
         int ret = sscanf(id, "ID:%d", &sock);
         if ( ret != 1 ) {

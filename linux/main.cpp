@@ -127,8 +127,8 @@ int main() {
 
     uart_init();
     while ( silex_wait_wifi_connect(
-                /*"Mera-guest", "guest@Mera", */
-                "wnet2", "nihongosiken",
+                "Mera-guest", "guest@Mera",
+//                "wnet2", "nihongosiken",
                 4194308) < 0 ) {
         msleep(ARROW_RETRY_DELAY);
     }

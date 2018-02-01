@@ -128,7 +128,9 @@ void soc_close(int socket) {
 }
 
 ssize_t send(int sockfd, const void *buf, size_t len, int flags) {
-  return qcom_send(sockfd, (char*)buf, len, flags);
+  int ttt = qcom_send(sockfd, (char*)buf, len, flags);
+  DBG("++++++ send %d [%d]", ttt, len);
+  return ttt;
 }
 
 ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
@@ -148,10 +150,13 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags) {
 
   FD_SET(sockfd, &rset);
   if ((ret = qcom_select(sockfd + 1, &rset, 0, 0, &tv)) <= 0) {
+      DBG("++++++ select fail");
     if (ret == 0) return (-1);
     else return (ret);
   }
-  return qcom_recv(sockfd, buf, len, flags);
+  int ttt = qcom_recv(sockfd, buf, len, flags);
+  DBG("++++++ recv %d", ttt);
+  return ttt;
 }
 
 ssize_t recvfrom(int sock, void *buf, size_t size, int flags,

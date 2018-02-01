@@ -24,7 +24,7 @@
 #define SSL_CLOSE		"S.SSLCLS"
 #define SILEX_RESET     "RESET"
 
-#define RECV_LIMIT 200
+#define RECV_LIMIT 512
 
 
 int uart_init();

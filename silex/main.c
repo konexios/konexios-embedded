@@ -37,7 +37,6 @@
 #include <arrow/software_release.h>
 #define PRINTF_ENBALE 1
 
-//TX_THREAD sdk_thread;
 TX_THREAD main_thread;
 #ifdef REV74_TEST_ENV4
 # error REV74_TEST_ENV4
@@ -202,6 +201,8 @@ void main_entry(ULONG which_thread) {
   SSP_PARAMETER_NOT_USED(which_thread);
 
   user_pre_init();
+//  qcom_enable_print(PRINTF_ENBALE);
+//  at_console_setup()
   A_PRINTF("--- Demo Xtensa ---\n");
   A_PRINTF("sotfware veriosn %s %s\n", GATEWAY_SOFTWARE_NAME, GATEWAY_SOFTWARE_VERSION);
   arrow_gpio_init();
