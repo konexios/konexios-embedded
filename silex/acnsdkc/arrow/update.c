@@ -13,7 +13,7 @@
 #include <qcom_network.h>
 #include <swat_wmiconfig_ota.h>
 #include <debug.h>
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 #include <time/time.h>
 #include <bsd/socket.h>
 

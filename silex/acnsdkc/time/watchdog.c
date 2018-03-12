@@ -1,4 +1,4 @@
-#include "time/watchdog.h"
+#include "sys/watchdog.h"
 
 #include <qcom_common.h>
 #include <qcom_system.h>

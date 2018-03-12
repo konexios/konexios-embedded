@@ -9,7 +9,7 @@
 
 #include <uart2.h>
 #include <time/time.h>
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 #include <bsd/socket.h>
 #include <sys/mac.h>
 #include <arrow/utf8.h>

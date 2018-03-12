@@ -14,7 +14,7 @@
 #include <debug.h>
 #include <sys/mem.h>
 #include <arrow/utf8.h>
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 
 A_INT32 arrow_ota_upgrade(A_UINT8 device_id, A_UINT32 ip_addr, A_UINT16 port, char *user_name, char *password, char *filename, A_UINT32 flags, A_UINT32 partition_index, A_UINT32 *size);
 

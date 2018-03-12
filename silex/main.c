@@ -30,7 +30,7 @@
 
 #include <arrow/storage.h>
 #include <json/data.h>
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 #include <arrow/api/gateway/gateway.h>
 #include <arrow/device_command.h>
 #include <arrow/software_update.h>
@@ -125,6 +125,7 @@ int get_data(void *data) {
   sig->temperature = (float)temp / 256.0;
   A_PRINTF("data [%d] {%d, %d}\n", data_counter, sig->rssi, (int)sig->temperature);
   data_counter ++;
+  return 0;
 }
 
 static int test_cmd_proc(const char *str) {
