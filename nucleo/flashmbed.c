@@ -18,6 +18,7 @@ extern "C" {
 #include "stm32f4xx_hal_flash.h"
 
 #include <arrow/storage.h>
+#include <sys/types.h>
 
 //static uint8_t __eeprom[0x4000] __attribute__((section(".eeprom"), used));
 #define EEPROM_START 0x0807c000

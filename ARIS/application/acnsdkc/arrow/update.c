@@ -11,7 +11,7 @@
 #include <debug.h>
 #include <sys/mem.h>
 #include <arrow/utf8.h>
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 #include <r_flash_api.h>
 #include <r_flash_hp.h>
 #include <hal_data.h>

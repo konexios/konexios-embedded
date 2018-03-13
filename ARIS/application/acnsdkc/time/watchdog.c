@@ -6,7 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "time/watchdog.h"
+#include "sys/watchdog.h"
 #include "wifi_thread.h"
 
 static int count_wdt = 0;

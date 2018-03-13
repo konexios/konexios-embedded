@@ -23,7 +23,7 @@
 #include "ledcmd.h"
 #include "miniserver.h"
 #include "wifi_server_thread.h"
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 #include <ntp/ntp.h>
 #include <arrow/routine.h>
 #include <arrow/mqtt.h>

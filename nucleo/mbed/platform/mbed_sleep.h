@@ -43,7 +43,7 @@ extern "C" {
  * Flash re-programming and the USB serial port will remain active, but the mbed program will no longer be
  * able to access the LocalFileSystem
  */
-__INLINE static void sleep(void)
+__INLINE static void _sleep(void)
 {
 #if !(defined(FEATURE_UVISOR) && defined(TARGET_UVISOR_SUPPORTED))
 #ifndef MBED_DEBUG

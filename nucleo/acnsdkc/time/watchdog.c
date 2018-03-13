@@ -1,4 +1,4 @@
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"

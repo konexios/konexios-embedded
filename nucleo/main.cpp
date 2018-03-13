@@ -7,20 +7,19 @@
  */
 
 #include "mbed.h"
-#include "config.h"
-#include "SpwfInterface.h"
-#include "WiFi.h"
-#include "flashmbed.h"
 extern "C" {
+#include <config.h>
 #include <arrow/routine.h>
 #include <arrow/mqtt.h>
 #include <ntp/ntp.h>
 #include <arrow/storage.h>
-#include <time/watchdog.h>
+#include <sys/watchdog.h>
 #include <arrow/software_release.h>
 #include <time/time.h>
 }
-#include <stdio.h>
+#include "SpwfInterface.h"
+#include "WiFi.h"
+#include "flashmbed.h"
 
 #ifndef SENSOR_TILE
 # include "x_nucleo_iks01a1.h"
