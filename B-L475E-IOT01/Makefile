@@ -228,15 +228,6 @@ size: $(PROJECT).elf bootloader.elf
 	$(SIZE) bootloader.elf
 	$(SIZE) $(PROJECT).elf
 	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
-	$(eval size = $(shell ls -la bootloader.bin | awk '{print $$5}'))
-	@echo bootloader.bin size: ${size}
-	$(eval pad = $(shell echo $$(( 0x80000 - $(size) )) ))
-	@echo Padding: ${pad}
-	@cp bootloader.bin $(LIBDIR)/raw.bin
-	@dd if=/dev/zero ibs=1 count=${pad} 2>/dev/null | tr "\000" "\377" >> $(LIBDIR)/raw.bin
-	@cat $(PROJECT).bin >> $(LIBDIR)/raw.bin
-	@mv $(LIBDIR)/raw.bin $(LIBDIR)/raw_${VERSION}.bin
-	@echo write to raw_${VERSION}.bin
 	
 bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 	$(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
@@ -245,7 +236,8 @@ bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
 flash: app_version $(PROJECT).bin
-	st-flash write $(LIBDIR)/raw_${VERSION}.bin 0x08000000
+	st-flash write arrow.bin 0x08080000
+	st-flash write bootloader.bin 0x08000000
 
 DEPS = $(APP_OBJECTS:.o=.d)
 
