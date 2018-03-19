@@ -53,18 +53,29 @@
 
 #include <debug.h>
 #include <time/time.h>
-#include <sys/watchdog.h>
+#include <time/watchdog.h>
 #include <ntp/ntp.h>
 #include <arrow/routine.h>
 #include <arrow/mqtt.h>
 #include <arrow/storage.h>
+#include <arrow/events.h>
+#include <arrow/device_command.h>
 #include <arrow/software_release.h>
 
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
 
 osThreadId defaultTaskHandle;
+osThreadId telemetryTaskHandle;
+osThreadId commandTaskHandle;
 osMutexId updateMutexHandle;
+osMutexId consoleMutexHandle;
+
+#define TELEMETRY_BIT   0x01
+#define COMMAND_BIT     0x02
+#define EVENT_PROC_BIT  0x04
+#define ALL_SYNC_BITS ( TELEMETRY_BIT | COMMAND_BIT | EVENT_PROC_BIT )
+EventGroupHandle_t xEventBits;
 
 static sensors_data_t data;
 
@@ -77,6 +88,8 @@ UART_HandleTypeDef console_uart;
 static void Console_UART_Init(void);
 #endif
 void StartDefaultTask(void const * argument);
+void MQTTTelemetryTask(void const * argument);
+void MQTTCommandTask(void const * argument);
 
 int main(void)
 {
@@ -99,6 +112,8 @@ int main(void)
 #else
   Console_UART_Init();
 #endif
+  osMutexDef(consoleMutex);
+  consoleMutexHandle = osMutexCreate(osMutex(consoleMutex));
 
   DBG("main start");
 
@@ -107,10 +122,23 @@ int main(void)
   osMutexDef(updateMutex);
   updateMutexHandle = osMutexCreate(osMutex(updateMutex));
 
+  xEventBits = xEventGroupCreate();
+  if ( !xEventBits ) DBG("Fail Evetn Sync!");
+
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
+  DBG("start task default mutex default");
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 2400);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  DBG("next");
+
+  DBG("start task telemetry");
+  osThreadDef(telemetryTask, MQTTTelemetryTask, osPriorityNormal, 0, 2000);
+  telemetryTaskHandle = osThreadCreate(osThread(telemetryTask), NULL);
+
+  DBG("start task command");
+  osThreadDef(commandTask, MQTTCommandTask, osPriorityNormal, 0, 1600);
+  telemetryTaskHandle = osThreadCreate(osThread(commandTask), NULL);
 
   /* Start scheduler */
   osKernelStart();
@@ -284,6 +312,9 @@ extern int wifi_module_update(const char *str);
 void StartDefaultTask(void const * argument)
 {
   SSP_PARAMETER_NOT_USED(argument);
+  osStatus osr = osMutexWait(updateMutexHandle, 1000);
+  if ( osr != osOK ) return;
+  EventBits_t retbits;
   // setting up the release download callbacks
 #if !defined(NO_RELEASE_UPDATE)
   arrow_software_release_dowload_set_cb(
@@ -351,7 +382,8 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
-  add_cmd_handler("wifiup", wifi_module_update);
+  arrow_mqtt_events_init();
+  arrow_command_handler_add("wifiup", wifi_module_update);
 
   // sycn time by the NTP
   ntp_set_time_cycle();
@@ -365,27 +397,79 @@ void StartDefaultTask(void const * argument)
 
   // init a gateway and device by the cloud
   arrow_initialize_routine();
+  osMutexRelease(updateMutexHandle);
+  DBG("============ mutex release");
 
-  // prepare a telemetry data
-  PrepareMqttPayload(&data);
+  while ( retbits ^ ALL_SYNC_BITS ) {
+      retbits = xEventGroupSync( xEventBits, EVENT_PROC_BIT, ALL_SYNC_BITS, 1000);
+      DBG("flags %08x", retbits);
+   }
 
-  // send the telemetry
-//  int telemetry_count = 0;
-//  while(1) {
-    arrow_send_telemetry_routine(&data);
-//    DBG("t: %d", telemetry_count++);
-//  }
-//    arrow_send_telemetry_routine(&data);
-//    arrow_send_telemetry_routine(&data);
+  DBG("=== wait event sync");
 
-  // establish the MQTT connection
-  arrow_mqtt_connect_routine();
+  while ( 1 ) {
+      DBG("===> wait command");
+      if ( arrow_mqtt_event_proc() < 0 ) msleep(1000);
+  }
 
   // use the MQTT connection to send a telemetry information
   // PrepareMqttPayload used to get telemetry data
-  arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
+//  arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
 
+  arrow_mqtt_events_done();
   arrow_close();
+}
+
+void MQTTTelemetryTask(void const * argument) {
+  SSP_PARAMETER_NOT_USED(argument);
+  DBG("----- telemetry 1");
+
+  osStatus osr = osErrorOS;
+  while ( osr != osOK ) {
+      osr = osMutexWait(updateMutexHandle, 1000);
+      DBG("----- try telemetry -----");
+  }
+  DBG("----- telemetry start");
+//   arrow_mqtt_connect_telemetry_routine();
+  msleep(6000);
+   osMutexRelease(updateMutexHandle);
+   EventBits_t retbits = xEventGroupSetBits(xEventBits, TELEMETRY_BIT);
+   DBG("----- telemetry send data %08x", retbits);
+   while(1) {
+   int ret = 0;//arrow_mqtt_telemetry_routine(PrepareMqttPayload, &data);
+   switch ( ret ) {
+   default:
+       DBG("Telemetry thread stop %d", ret);
+       msleep(5000);
+       wdt_feed();
+   }
+   }
+   arrow_mqtt_disconnect_telemetry_routine();
+}
+
+void MQTTCommandTask(void const * argument) {
+    SSP_PARAMETER_NOT_USED(argument);
+    msleep(10000);
+    osStatus osr = osErrorOS;
+    while ( osr != osOK ) {
+        osr = osMutexWait(updateMutexHandle, 1000);
+        DBG("----- try command ----- ");
+    }
+    DBG("----- command");
+    msleep(10000);
+//    arrow_mqtt_connect_event_routine();
+    DBG("----- command connecting done");
+    osMutexRelease(updateMutexHandle);
+    DBG("----- command release mutex");
+    EventBits_t retbits =xEventGroupSetBits( xEventBits, COMMAND_BIT );
+    DBG("----- command sync events %08x", retbits);
+    arrow_routine_error_t ret = ROUTINE_SUCCESS;
+    while( ret == ROUTINE_SUCCESS ) {
+        DBG("----- command wait event");
+        msleep(5000);
+//        ret = arrow_mqtt_event_receive_routine();
+    }
+    arrow_mqtt_disconnect_event_routine();
 }
 
 /**

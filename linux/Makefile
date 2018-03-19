@@ -34,7 +34,7 @@ ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
 CC_SYMBOLS = -DTOOLCHAIN_GCC \
         -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE \
 	-DARCH_TYPE -DARCH_SOCK -DARCH_SSL \
-	-Werror -Wpedantic -Wno-variadic-macros #-O0 -g -DVALGRIND_TEST=100
+	-Werror -Wpedantic -Wno-variadic-macros -O0 -g -DVALGRIND_TEST=10
 
 ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
@@ -55,7 +55,7 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 CPPDEPS += $(CSRCS:%.c=%.d)
 
 LIBRARY_PATHS = -L$(PWD)/$(LIBDIR)
-LIBRARIES = -lsensors -lacnsdkc
+LIBRARIES = -lsensors -lacnsdkc -lpthread
 
 LD_FLAGS = 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--gc-sections

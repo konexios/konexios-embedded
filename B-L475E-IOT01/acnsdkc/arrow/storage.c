@@ -95,7 +95,7 @@ int restore_wifi_setting(char *ssid, char *pass, int *sec) {
       strcpy(pass, p->pass);
       *sec = p->sec;
   } else {
-      if ( mem.magic != FLASH_MAGIC_NUMBER ) {
+      if ( mem.magic != (int) FLASH_MAGIC_NUMBER ) {
           FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
           return -1;
       }

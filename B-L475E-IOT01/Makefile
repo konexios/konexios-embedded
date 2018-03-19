@@ -113,6 +113,7 @@ FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/list.c
 FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/queue.c
 FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/tasks.c
 FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/timers.c
+FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
 
 WIFI_SRC += $(wildcard $(PWD)/WiFi/Src/*.c)
 WIFI_SRC += $(wildcard $(PWD)/Drivers/BSP/Components/es_wifi/*.c)
@@ -180,7 +181,7 @@ LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
 LINKER_SCRIPT_APP  = $(PRJ_PATH)/Src/STM32L475VG_FLASH.ld
 LINKER_SCRIPT_BOOT = $(PRJ_PATH)/bootloader/STM32L475VG_BOOT.ld
 LIBRARIES += -lacnsdkc 
-# LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
+LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
 # -Wl,--wrap,strdup
 # -Wl,--wrap,main -Wl,--wrap,_malloc_r -Wl,--wrap,_free_r -Wl,--wrap,_realloc_r
 
@@ -245,7 +246,8 @@ bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
 flash: app_version $(PROJECT).bin
-	st-flash write $(LIBDIR)/raw_${VERSION}.bin 0x08000000
+	st-flash write arrow.bin 0x08080000
+	st-flash write bootloader.bin 0x08000000
 
 DEPS = $(APP_OBJECTS:.o=.d)
 

@@ -13,7 +13,7 @@
 #include <ssl/md5sum.h>
 #include <sys/mem.h>
 #include <arrow/utf8.h>
-#include <sys/watchdog.h>
+#include <time/watchdog.h>
 #include <arrow/software_release.h>
 #include <debug.h>
 
