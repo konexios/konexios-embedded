@@ -9,12 +9,4 @@
 #ifndef _SENSEABILITY_BSD_SOCKET_H_
 #define _SENSEABILITY_BSD_SOCKET_H_
 
-#include <unint.h>
-# include <bsd/inet.h>
-# include <platforms/common/bsd/sockdef.h>
-# define htons _htons
-# define htonl _htonl
-# define ntohl _ntohl
-#include <bsd/struct_hostent.h>
-
 #endif // _SENSEABILITY_BSD_SOCKET_H_

@@ -2,7 +2,7 @@
 --	Conversion of SenseAbility.v to vh2:
 --
 --	Cypress Semiconductor - WARP Version 6.3 IR 41
---	Thu Mar 23 10:19:01 2017
+--	Tue Mar 20 14:49:12 2018
 --
 
 USE cypress.cypress.all;

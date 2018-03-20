@@ -1,5 +1,7 @@
-C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\SenseAbility.cyprj|ac049608-ecbd-44f3-b130-1ae2257cf089
-C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|4cd853fc-5edd-451c-8ab1-a5e90c894e83
-C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|5d16cd42-a06f-4c9e-b1d1-1ca72837c3cb
-C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|7df3ac81-70bd-413c-8a18-7a13ee1c05e6
-C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|dc8dcc8f-fa65-43ab-a431-3492231906d0
+C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\SenseAbility.cyprj|2317b183-94cc-4db2-b2b5-6ebaa45a939d
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|2a989ca8-5db0-4b01-a2d8-c6e587801d66
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|7692331e-681a-457b-a6d9-d53ac6264a59
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|fa023248-4cfb-4797-a584-fca6e2f365cd
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|31463084-9803-42f0-9e12-51bcc06a9250
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\dev\psoc4\PSoC4AnalogDevice\psoc4arch.cydsn\psoc4arch.cyprj|5b958b8c-a4d3-45b4-93b4-7f3bf29934ca
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyReferenceLibrary\CyReferenceLibrary.cylib\CyReferenceLibrary.cyprj|1ef35810-a913-441a-a536-a348af85bc1a

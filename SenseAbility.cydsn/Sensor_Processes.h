@@ -9,7 +9,7 @@
 #if !defined(SENSOR_PROCESSES_H)
 #define SENSOR_PROCESSES_H
     
-#include <json/telemetry.h>
+#include <sys/arch/data.h>
     
 #define DIVISOR     16382
 #define OFFSET      40    

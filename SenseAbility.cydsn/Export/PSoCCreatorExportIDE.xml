@@ -6,7 +6,7 @@
     <Toolchain Name="ARM GCC Generic" Selected="True">
       <Tool Name="prebuild" Command="" Options="" />
       <Tool Name="assembler" Command="arm-none-eabi-as.exe" Options="-mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -alh=${OutputDir}/${CompileFile}.lst -g -W" />
-      <Tool Name="compiler" Command="arm-none-eabi-gcc.exe" Options="-mcpu=cortex-m0 -mthumb -Wno-main -I..\acn-sdk-c -I..\acn-sdk-c\include -I..\acn-sdk-c\src\wolfSSL -I..\acn-sdk-c\src\wolfSSL\wolfssl -I. -IGenerated_Source\PSoC4 -Wa,-alh=${OutputDir}/${CompileFile}.lst -g -D DEBUG -D __senseability__ -D &quot;DEFAULT_API_KEY=\&quot;5a3264fb990a18e0e180efbbfadd5d95db3baed93defcb1d5a35966c6b98fef5\&quot;&quot; -D &quot;DEFAULT_SECRET_KEY=\&quot;E9Y8y8A88R/x5JV2nfB7H/1A3eET85PSeURpk4QKp4c=\&quot;&quot; -Wall -ffunction-sections -Os -ffat-lto-objects" />
+      <Tool Name="compiler" Command="arm-none-eabi-gcc.exe" Options="-mcpu=cortex-m0 -mthumb -Wno-main -I..\acn-sdk-c -I..\acn-sdk-c\include -I..\acn-sdk-c\src\wolfSSL -I..\acn-sdk-c\src\wolfSSL\wolfssl -I.\acnsdkc -I. -IGenerated_Source\PSoC4 -Wa,-alh=${OutputDir}/${CompileFile}.lst -g -D DEBUG -D __senseability__ -D ARCH_SSL -Wall -ffunction-sections -Os -ffat-lto-objects -Wl,--gc-sections" />
       <Tool Name="linker" Command="arm-none-eabi-gcc.exe" Options="-mcpu=cortex-m0 -mthumb -g -ffunction-sections -Os -L Generated_Source\PSoC4 -Wl,-Map,${OutputDir}/${ProjectShortName}.map -T Generated_Source\PSoC4\cm0gcc.ld -specs=nano.specs -Wl,--gc-sections" />
       <Tool Name="postbuild" Command="" Options="" />
     </Toolchain>
@@ -41,8 +41,6 @@
           <File BuildType="BUILD" Toolchain="">.\cyapicallbacks.h</File>
           <File BuildType="BUILD" Toolchain="">.\Sensor_Processes.h</File>
           <File BuildType="BUILD" Toolchain="">.\main.h</File>
-          <File BuildType="BUILD" Toolchain="">.\__client.c</File>
-          <File BuildType="BUILD" Toolchain="">.\__request.c</File>
         </Files>
       </Folder>
       <Folder BuildType="STRICT" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\Generated_Source\PSoC4">
@@ -149,13 +147,40 @@
       </Folder>
       <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\arrow">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\connection.c</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\device.c</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\gateway.c</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\mqtt.c</File>
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\request.c</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\sign.c</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\utf8.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\events.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\device_command.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\gateway_payload_sign.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\routine.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\software_release.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\software_update.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\state.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\telemetry_api.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\shift">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">.\shift\__api_device_device.c</File>
+          <File BuildType="BUILD" Toolchain="">.\shift\__api_device_info.c</File>
+          <File BuildType="BUILD" Toolchain="">.\shift\__api_gateway_gateway.c</File>
+          <File BuildType="BUILD" Toolchain="">.\shift\__http_routine.c</File>
+          <File BuildType="BUILD" Toolchain="">.\shift\__client.c</File>
+          <File BuildType="BUILD" Toolchain="">.\shift\__request.c</File>
+          <File BuildType="BUILD" Toolchain="">.\shift\__ssl_ssl.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\arrow\api">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\api\log.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\arrow\api\json">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\arrow\api\json\parse.c</File>
         </Files>
       </Folder>
       <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\wolfSSL\wolfssl">
@@ -335,6 +360,11 @@
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\time\time.c</File>
         </Files>
       </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\http">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\http\response.c</File>
+        </Files>
+      </Folder>
       <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\mqtt\packet\src">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\mqtt\packet\src\MQTTConnectClient.c</File>
@@ -356,11 +386,33 @@
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\mqtt\client\src\timer.c</File>
         </Files>
       </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\data">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\data\dllist.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\data\find_by.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\data\linkedlist.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\data\property.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\data\propmap.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\data\ringbuffer.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\ssl">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\ssl\crypt.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\ssl\md5sum.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\src\sys">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\sys\rand_weak.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\sys\reboot_weak.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\src\sys\watchdog_weak.c</File>
+        </Files>
+      </Folder>
       <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\config.h</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\debug.h</File>
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\unint.h</File>
         </Files>
       </Folder>
       <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\json">
@@ -388,16 +440,50 @@
       </Folder>
       <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\arrow">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\connection.h</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\device.h</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\gateway.h</File>
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\mem.h</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\mqtt.h</File>
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\net.h</File>
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\request.h</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\sign.h</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\storage.h</File>
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\utf8.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\account.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\credentials.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\events.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\gateway_payload_sign.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\node.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\node_type.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\routine.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\software_release.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\software_update.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\state.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\telemetry_api.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\testsuite.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\events.h</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\arrow\api\device">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\device\action.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\device\device.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\device\event.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\device\info.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\device\type.h</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\arrow\api\gateway">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\gateway\gateway.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\gateway\info.h</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\arrow\api">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\log.h</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\arrow\api\json">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\arrow\api\json\parse.h</File>
         </Files>
       </Folder>
       <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\mqtt\client">
@@ -417,41 +503,80 @@
           <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\mqtt\packet\StackTrace.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\platforms\senseability\json">
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\sys">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\senseability\json\telemetry.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\sys\mac.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\sys\mem.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\sys\rand.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\sys\reboot.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\sys\type.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\sys\watchdog.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\platforms\senseability\bsd">
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\http">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\senseability\bsd\socket.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\http\client.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\http\request.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\http\response.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\http\routine.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\platforms\senseability\time">
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\ssl">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\senseability\time\_time.c</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\ssl\crypt.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\ssl\md5sum.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\ssl\ssl.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\platforms\senseability">
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\acnsdkc">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\senseability\trace.c</File>
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\senseability\trace.h</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\trace.h</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\trace.c</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\trace.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\platforms\senseability\arrow">
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\acnsdkc\sys\arch">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\senseability\arrow\net.c</File>
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\senseability\arrow\storage.c</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\sys\arch\type.h</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\sys\arch\data.h</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\sys\arch\socket.h</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\sys\arch\ssl.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\platforms\common\bsd">
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\acnsdkc\sys">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\common\bsd\sockdef.h</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\sys\mac.c</File>
         </Files>
       </Folder>
-      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\platforms\common\wolf\crypt">
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\acnsdkc\arrow">
         <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
-          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\platforms\common\wolf\crypt\crypt.c</File>
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\arrow\storage.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\acnsdkc\bsd">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\bsd\socket.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\acnsdkc\json">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\json\telemetry.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\acnsdkc\time">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">.\acnsdkc\time\_time.c</File>
+        </Files>
+      </Folder>
+      <Folder BuildType="BUILD" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\acn-sdk-c\include\data">
+        <Files Root="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn">
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\data\chunk.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\data\dllist.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\data\find_by.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\data\linkedlist.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\data\property.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\data\propmap.h</File>
+          <File BuildType="BUILD" Toolchain="">..\acn-sdk-c\include\data\ringbuffer.h</File>
         </Files>
       </Folder>
       <Folder BuildType="STRICT" Path="C:\Users\ddemidov\Documents\PSoC Creator\acn-embedded\SenseAbility.cydsn\Export\ARM_GCC_Generic">

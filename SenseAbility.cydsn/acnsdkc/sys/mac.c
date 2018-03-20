@@ -6,7 +6,7 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/net.h"
+#include <sys/mac.h>
 
 int get_mac_address(char *mac) {
     mac[0] = 0x0a;
