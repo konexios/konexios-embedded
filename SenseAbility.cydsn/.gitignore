@@ -1,3 +1,11 @@
 *.cyprj.*
 *.cywrk.*
 CortexM0/*/Debug
+codegentemp
+Export
+SenseAbility.cyfit
+SenseAbility.cycdx
+SenseAbility.rpt
+SenseAbility.svd
+SenseAbility_timing.html
+
