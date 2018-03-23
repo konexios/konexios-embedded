@@ -188,7 +188,8 @@ CC_FLAGS += -DUSE_LPS22HB_TEMP
 
 .PHONY: all lst size
 
-all: check_settings app_version $(PROJECT).bin bootloader.bin size app_settings
+#check_settings app_version -- app_settings
+all: $(PROJECT).bin bootloader.bin size 
 
 .asm.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
@@ -227,7 +228,7 @@ lst: $(PROJECT).lst
 size: $(PROJECT).elf bootloader.elf
 	$(SIZE) bootloader.elf
 	$(SIZE) $(PROJECT).elf
-	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
+#	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
 	
 bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 	$(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
@@ -235,8 +236,9 @@ bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
-flash: app_version $(PROJECT).bin
-	st-flash write arrow.bin 0x08080000
+# app_version
+flash: $(PROJECT).bin
+	st-flash write $(PROJECT).bin 0x08080000
 	st-flash write bootloader.bin 0x08000000
 
 DEPS = $(APP_OBJECTS:.o=.d)

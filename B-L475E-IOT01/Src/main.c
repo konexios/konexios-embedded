@@ -287,8 +287,9 @@ void StartDefaultTask(void const * argument)
   // setting up the release download callbacks
 #if !defined(NO_RELEASE_UPDATE)
   arrow_software_release_dowload_set_cb(
-              arrow_release_download_payload,
-              arrow_release_download_complete);
+      NULL,
+      arrow_release_download_payload,
+      arrow_release_download_complete);
 #endif
   WIFI_Ecn_t security_mode; //WIFI_ECN_WPA_WPA2_PSK;
   restore_wifi_setting(ssid, psk, (int*)&security_mode);
@@ -351,7 +352,8 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
-  add_cmd_handler("wifiup", wifi_module_update);
+  arrow_mqtt_events_init();
+  arrow_command_handler_add("wifiup", wifi_module_update);
 
   // sycn time by the NTP
   ntp_set_time_cycle();
@@ -386,6 +388,7 @@ void StartDefaultTask(void const * argument)
   arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
 
   arrow_close();
+  arrow_mqtt_events_done();
 }
 
 /**
