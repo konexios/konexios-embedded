@@ -197,9 +197,6 @@ all: $(PROJECT).bin bootloader.bin size
 .s.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
-.S.o:
-	+@$(MAKEDIR) $(dir $@) $(QUIET)
-	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 
 .c.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
