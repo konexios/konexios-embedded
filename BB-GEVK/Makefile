@@ -28,9 +28,9 @@ MBED_LIBS       := rtos
 INCDIRS		+= $(GCC4MBED_DIR)/IDK/include/
 GCC4MBED_TYPE   = Release
 
-TL_PATH ?= C:\GNUToolchain\bin
+#TL_PATH ?= C:\GNUToolchain\bin
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2015q4\bin"
-# TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
+ TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\5.4 2016q2\bin"
 
 
@@ -66,6 +66,8 @@ DEFINES += -D__$(PLATFORM)__
 
 CC_FLAGS += $(C_FLAGS)
 CC_SYMBOLS += $(DEFINES) -std=gnu11 -Os
+
+SHELL_BASH := no
 
 include $(SDK_PATH)/Makefile.sdk
 inc = -I
