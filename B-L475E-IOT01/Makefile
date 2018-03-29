@@ -10,6 +10,7 @@ CJSON		= yes
 GCC_BIN =
 GCC_PREFIX = arm-none-eabi
 PLATFORM = stm32l475iot
+SHELL_BASH ?= 
 SDK_PATH = $(abspath ../acn-sdk-c/)
 SDK_IMPL = $(PWD)/acnsdkc
 
