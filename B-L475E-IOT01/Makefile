@@ -154,6 +154,15 @@ APP_OBJECTS += $(APP_SRC:%.c=%.o)
 BOOT_OBJECTS := $(COMMON_OBJ)
 BOOT_OBJECTS += $(BOOT_SRC:%.c=%.o)
 
+SDK_INCLUDES += -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/include \
+                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
+                -I$(PWD)/Inc \
+                -I$(PWD)/Drivers/STM32L4xx_HAL_Driver/Inc \
+                -I$(PWD)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+                -I$(PWD)/Drivers/CMSIS/Include \
+                -I$(PWD)/Drivers/BSP/B-L475E-IOT01
+
 
 -include $(SDK_PATH)/Makefile.sdk
 
@@ -181,9 +190,7 @@ LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
 LINKER_SCRIPT_APP  = $(PRJ_PATH)/Src/STM32L475VG_FLASH.ld
 LINKER_SCRIPT_BOOT = $(PRJ_PATH)/bootloader/STM32L475VG_BOOT.ld
 LIBRARIES += -lacnsdkc 
-LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
-# -Wl,--wrap,strdup
-# -Wl,--wrap,main -Wl,--wrap,_malloc_r -Wl,--wrap,_free_r -Wl,--wrap,_realloc_r
+#LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
 
 CC_FLAGS += -DUSE_LPS22HB_TEMP
 
@@ -215,6 +222,7 @@ $(PROJECT).elf: $(SDK_TARGET) $(APP_OBJECTS) $(LINKER_SCRIPT_APP)
 
 
 $(PROJECT).bin: $(PROJECT).elf
+	$(OBJCOPY) --remove-section .freertos_heap $<
 	$(OBJCOPY) -O binary $< $@
 
 $(PROJECT).hex: $(PROJECT).elf
@@ -245,7 +253,7 @@ bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
-flash: app_version $(PROJECT).bin
+flash: app_version
 	st-flash write arrow.bin 0x08080000
 	st-flash write bootloader.bin 0x08000000
 

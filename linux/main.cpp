@@ -40,7 +40,7 @@ extern int get_telemetry_data(void *data);
 
 static int test_cmd_proc(const char *str) {
   printf("test: [%s]", str);
-  msleep(15000);
+  msleep(1000);
   return 0;
 }
 
@@ -135,6 +135,15 @@ int main() {
     int mqtt_routine_act = 1;
     while ( mqtt_routine_act ) {
         arrow_mqtt_connect_routine();
+        if ( arrow_mqtt_has_events() ) {
+            printf("--------- postponed msg start -----------\r\n");
+            arrow_mqtt_disconnect_routine();
+            while ( arrow_mqtt_has_events() ) {
+                arrow_mqtt_event_proc();
+            }
+            printf("--------- postponed msg end -----------\r\n");
+            arrow_mqtt_connect_routine();
+        }
         int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
         switch ( ret ) {
         case ROUTINE_RECEIVE_EVENT:

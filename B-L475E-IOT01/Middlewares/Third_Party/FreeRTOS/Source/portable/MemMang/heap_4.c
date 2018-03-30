@@ -84,7 +84,6 @@ task.h is included from an application file. */
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include <debug.h>
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
@@ -155,7 +154,6 @@ static size_t xBlockAllocatedBit = 0;
 
 void *pvPortMalloc( size_t xWantedSize )
 {
-    DBG("m %d", xWantedSize);
 BlockLink_t *pxBlock, *pxPreviousBlock, *pxNewBlockLink;
 void *pvReturn = NULL;
 
@@ -300,7 +298,6 @@ void *pvReturn = NULL;
 	#endif
 
 	configASSERT( ( ( ( size_t ) pvReturn ) & ( size_t ) portBYTE_ALIGNMENT_MASK ) == 0 );
-    DBG("r %p", pvReturn);
 	return pvReturn;
 }
 /*-----------------------------------------------------------*/

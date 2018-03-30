@@ -18,7 +18,7 @@ static int address_count = 0;
 typedef struct _sock_info_ {
   int sock;
   struct timeval timeout;
-  linked_list_head_node;
+  arrow_linked_list_head_node;
 } sock_info_t;
 
 static sock_info_t *__info = NULL;
@@ -36,7 +36,7 @@ void add_socktimer(int sock, struct timeval tv) {
         sock_info_t *t = (sock_info_t *)malloc(sizeof(sock_info_t));
         t->sock = sock;
         t->timeout = tv;
-        linked_list_add_node_last(__info, sock_info_t, t);
+        arrow_linked_list_add_node_last(__info, sock_info_t, t);
     } else {
         t->timeout = tv;
     }
@@ -57,7 +57,7 @@ void rm_sock_timer(int sock) {
   sock_info_t *t = NULL;
   linked_list_find_node(t, __info, sock_info_t, sockeq, sock);
   if ( t ) {
-      linked_list_del_node(__info, sock_info_t, t);
+      arrow_linked_list_del_node(__info, sock_info_t, t);
   }
   free(t);
 }
