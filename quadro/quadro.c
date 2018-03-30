@@ -8,6 +8,8 @@
 #include <ntp/ntp.h>
 #include <arrow/routine.h>
 #include <arrow/utf8.h>
+#include <arrow/software_release.h>
+#include <arrow/events.h>
 #include <sys/mac.h>
 #include <ssl/ssl.h>
 #include <debug.h>
@@ -422,8 +424,24 @@ static void reset_callback( void* arg )
 
 #define RESET_PIN WICED_GPIO_14
 
+typedef struct _data_ {
+    int x;
+} data_t;
+
+int get_telemetry_data(void *d) {
+    data_t *data = (data_t *)d;
+    data->x = 10;
+    return 0;
+}
+
+int reset_cmd(void *arg) {
+    reset_callback(arg);
+    return 0;
+}
+
 void application_start( )
 {
+    DBG("--- Quadro OTA TEST 2 ---");
     wiced_result_t r_button;
     r_button = wiced_gpio_init( WICED_GPIO_49, INPUT_HIGH_IMPEDANCE);
     DBG("gpio51 %d", r_button);
@@ -452,7 +470,7 @@ void application_start( )
 
     wiced_uart_transmit_bytes(WICED_UART_2, POWERON, sizeof( POWERON ) - 1 );
     DBG(POWERON);
-
+#if defined(QUADRO_HOSTLESS)
     int offset = 0;
     while ( 1 ) {
         expected_data_size = 1;
@@ -472,12 +490,74 @@ void application_start( )
             DBG("receive fail %d %d", r_uart, expected_data_size);
         }
     }
+#else
 
-//    ntp_set_time_cycle();
+    struct {
+            wiced_bool_t             device_configured;
+            wiced_config_ap_entry_t  ap_entry;
+        } temp_config;
 
-//    arrow_initialize_routine();
+        wiced_ssid_t ssid;
+        wiced_security_t security = WICED_SECURITY_WPA2_AES_PSK;
+        strcpy(ssid.value, DEFAULT_WIFI_SSID);
+        ssid.length = strlen(ssid.value);
+
+        DBG("SSID: %s", ssid.value);
+        DBG("PASS: %s", DEFAULT_WIFI_PASS);
+
+        memset(&temp_config, 0, sizeof(temp_config));
+        memcpy(&temp_config.ap_entry.details.SSID,     &ssid, sizeof(wiced_ssid_t));
+        memcpy(&temp_config.ap_entry.details.security, &security, sizeof(wiced_security_t));
+        memcpy(temp_config.ap_entry.security_key,       DEFAULT_WIFI_PASS, strlen(DEFAULT_WIFI_PASS));
+        temp_config.ap_entry.security_key_length = strlen(DEFAULT_WIFI_PASS);
+        temp_config.device_configured = WICED_TRUE;
+        wiced_dct_write( &temp_config, DCT_WIFI_CONFIG_SECTION, 0, sizeof(temp_config) );
+        wiced_result_t r = wiced_network_up(WICED_STA_INTERFACE, WICED_USE_EXTERNAL_DHCP_SERVER, NULL);
+        if ( r == WICED_SUCCESS ) {
+            DBG(WIFION);
+        }
+
+
+    extern int arrow_release_download_init();
+    extern int arrow_release_download_payload(const char *payload, int size, int flags);
+    extern int arrow_release_download_complete(int ota_result);
+
+    arrow_software_release_dowload_set_cb(
+            arrow_release_download_init,
+            arrow_release_download_payload,
+            arrow_release_download_complete
+            );
+
+    arrow_command_handler_add("reset", reset_cmd);
+
+    ntp_set_time_cycle();
+
+    arrow_mqtt_events_init();
+
+    arrow_initialize_routine();
+
+    data_t test;
+
+    while(1) {
+        arrow_mqtt_connect_routine();
+        if ( arrow_mqtt_has_events() ) {
+            arrow_mqtt_event_proc();
+        }
+        int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &test);
+        switch (ret) {
+        case ROUTINE_RECEIVE_EVENT:
+            DBG("command detected!");
+            arrow_mqtt_disconnect_routine();
+            arrow_mqtt_event_proc();
+            break;
+        };
+    }
+
+
+    arrow_mqtt_events_done();
+#endif
 
     DBG("Done!");
 
-//    wiced_deinit();
+    wiced_deinit();
 }

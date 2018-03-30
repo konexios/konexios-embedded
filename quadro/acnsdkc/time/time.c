@@ -75,6 +75,16 @@ void get_time(char *ts) {
 //  __p->tv_usec = (suseconds_t) 1000000 - (stime.SubSeconds * 1000000 / ( stime.SecondFraction - 1 ) );
 }
 
+
+int _gettimeofday( struct timeval *tv, void *tzvp )
+{
+    time_t t;
+    wiced_time_get_time((wiced_time_t *)&t);
+    tv->tv_sec = t / 1000000000;  // convert to seconds
+    tv->tv_usec = ( t % 1000000000 ) / 1000;  // get remaining microseconds
+    return 0;  // return non-zero for error
+}
+
 time_t time(time_t *timer) {
     time_t t;
     wiced_time_get_time((wiced_time_t *)&t);
