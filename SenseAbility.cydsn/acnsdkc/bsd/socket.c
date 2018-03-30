@@ -7,7 +7,7 @@
  */
 
 #include "bsd/socket.h"
-#include <unint.h>
+#include <sys/type.h>
 
 struct hostent* gethostbyname(const char *name) {
   static struct hostent s_hostent;

@@ -6,10 +6,11 @@ GCC_BIN =
 PROJECT = arrow
 LIBDIR	= .build
 WOLFSSL = yes
-CJSON		= yes
+CJSON	= yes
 GCC_BIN =
 GCC_PREFIX = arm-none-eabi
 PLATFORM = stm32l475iot
+SHELL_BASH ?= 
 SDK_PATH = $(abspath ../acn-sdk-c/)
 SDK_IMPL = $(PWD)/acnsdkc
 
@@ -154,15 +155,6 @@ APP_OBJECTS += $(APP_SRC:%.c=%.o)
 BOOT_OBJECTS := $(COMMON_OBJ)
 BOOT_OBJECTS += $(BOOT_SRC:%.c=%.o)
 
-SDK_INCLUDES += -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/include \
-                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
-                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
-                -I$(PWD)/Inc \
-                -I$(PWD)/Drivers/STM32L4xx_HAL_Driver/Inc \
-                -I$(PWD)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
-                -I$(PWD)/Drivers/CMSIS/Include \
-                -I$(PWD)/Drivers/BSP/B-L475E-IOT01
-
 
 -include $(SDK_PATH)/Makefile.sdk
 
@@ -190,21 +182,21 @@ LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
 LINKER_SCRIPT_APP  = $(PRJ_PATH)/Src/STM32L475VG_FLASH.ld
 LINKER_SCRIPT_BOOT = $(PRJ_PATH)/bootloader/STM32L475VG_BOOT.ld
 LIBRARIES += -lacnsdkc 
-#LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
+# LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
+# -Wl,--wrap,strdup
+# -Wl,--wrap,main -Wl,--wrap,_malloc_r -Wl,--wrap,_free_r -Wl,--wrap,_realloc_r
 
 CC_FLAGS += -DUSE_LPS22HB_TEMP
 
 .PHONY: all lst size
 
-all: check_settings app_version $(PROJECT).bin bootloader.bin size app_settings
+#check_settings app_version -- app_settings
+all: $(PROJECT).bin bootloader.bin size 
 
 .asm.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 .s.o:
-	+@$(MAKEDIR) $(dir $@) $(QUIET)
-	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
-.S.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 
@@ -222,7 +214,6 @@ $(PROJECT).elf: $(SDK_TARGET) $(APP_OBJECTS) $(LINKER_SCRIPT_APP)
 
 
 $(PROJECT).bin: $(PROJECT).elf
-	$(OBJCOPY) --remove-section .freertos_heap $<
 	$(OBJCOPY) -O binary $< $@
 
 $(PROJECT).hex: $(PROJECT).elf
@@ -236,16 +227,7 @@ lst: $(PROJECT).lst
 size: $(PROJECT).elf bootloader.elf
 	$(SIZE) bootloader.elf
 	$(SIZE) $(PROJECT).elf
-	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
-	$(eval size = $(shell ls -la bootloader.bin | awk '{print $$5}'))
-	@echo bootloader.bin size: ${size}
-	$(eval pad = $(shell echo $$(( 0x80000 - $(size) )) ))
-	@echo Padding: ${pad}
-	@cp bootloader.bin $(LIBDIR)/raw.bin
-	@dd if=/dev/zero ibs=1 count=${pad} 2>/dev/null | tr "\000" "\377" >> $(LIBDIR)/raw.bin
-	@cat $(PROJECT).bin >> $(LIBDIR)/raw.bin
-	@mv $(LIBDIR)/raw.bin $(LIBDIR)/raw_${VERSION}.bin
-	@echo write to raw_${VERSION}.bin
+#	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
 	
 bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 	$(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
@@ -253,8 +235,9 @@ bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
-flash: app_version
-	st-flash write arrow.bin 0x08080000
+# app_version
+flash: $(PROJECT).bin
+	st-flash write $(PROJECT).bin 0x08080000
 	st-flash write bootloader.bin 0x08000000
 
 DEPS = $(APP_OBJECTS:.o=.d)

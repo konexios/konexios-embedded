@@ -318,6 +318,6 @@ int main() {
 	 	arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
 	 	arrow_close();
-                arrow_mqtt_events_done();
+	 	arrow_mqtt_events_done();
 	 	return 0;
 }

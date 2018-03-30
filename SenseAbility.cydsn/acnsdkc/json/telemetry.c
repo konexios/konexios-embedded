@@ -6,15 +6,16 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "json/telemetry.h"
+#include "sys/arch/data.h"
 #include <config.h>
 #include <json/json.h>
+#include <arrow/device.h>
 
 
-char *telemetry_serialize(arrow_device_t *device, sensor_data_t *data) {
+char *telemetry_serialize(arrow_device_t *device, void *data) {
     JsonNode *_node = json_mkobject();
     Sensor_Data_t *sens_data = (Sensor_Data_t *)data;
-    json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(device->hid));
+    json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(P_VALUE(device->hid)));
     if ( (sens_data->Status & HUMIDICON_PRESENT_MASK) == 1) {
         json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(sens_data->Temperature));
         json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(sens_data->Humidity));
