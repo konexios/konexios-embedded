@@ -155,6 +155,15 @@ APP_OBJECTS += $(APP_SRC:%.c=%.o)
 BOOT_OBJECTS := $(COMMON_OBJ)
 BOOT_OBJECTS += $(BOOT_SRC:%.c=%.o)
 
+SDK_INCLUDES += -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/include \
+                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
+                -I$(PWD)/Inc \
+                -I$(PWD)/Drivers/STM32L4xx_HAL_Driver/Inc \
+                -I$(PWD)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+                -I$(PWD)/Drivers/CMSIS/Include \
+                -I$(PWD)/Drivers/BSP/B-L475E-IOT01
+
 
 -include $(SDK_PATH)/Makefile.sdk
 
@@ -175,7 +184,6 @@ INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
                  -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
-
 		
 
 LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
