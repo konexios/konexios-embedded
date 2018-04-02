@@ -97,6 +97,17 @@ int main() {
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
+#if !defined(NO_SOFTWARE_UPDATE)
+    arrow_software_release_set_cb(&arrow_software_update);
+#endif
+
+#if !defined(NO_SOFTWARE_RELEASE)
+    arrow_software_release_dowload_set_cb(
+                NULL,
+                arrow_release_download_payload,
+                arrow_release_download_complete);
+#endif
+
     arrow_initialize_routine();
 
     arrow_mqtt_events_init();
