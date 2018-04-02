@@ -6,7 +6,6 @@
 #include "flash.h"
 
 #include <debug.h>
-#include <arrow/sys.h>
 
 /* Private variables ---------------------------------------------------------*/
 #define START_ADDR  0x08080000

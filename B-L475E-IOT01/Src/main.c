@@ -58,13 +58,15 @@
 #include <arrow/routine.h>
 #include <arrow/mqtt.h>
 #include <arrow/storage.h>
+#include <arrow/events.h>
+#include <arrow/device_command.h>
 #include <arrow/software_release.h>
 
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
 
 osThreadId defaultTaskHandle;
-osMutexId updateMutexHandle;
+osMutexId consoleMutexHandle;
 
 static sensors_data_t data;
 
@@ -99,13 +101,8 @@ int main(void)
 #else
   Console_UART_Init();
 #endif
-
-  DBG("main start");
-
-  /* Create the mutex(es) */
-  /* definition and creation of myMutex */
-  osMutexDef(updateMutex);
-  updateMutexHandle = osMutexCreate(osMutex(updateMutex));
+  osMutexDef(consoleMutex);
+  consoleMutexHandle = osMutexCreate(osMutex(consoleMutex));
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
@@ -287,6 +284,7 @@ void StartDefaultTask(void const * argument)
   // setting up the release download callbacks
 #if !defined(NO_RELEASE_UPDATE)
   arrow_software_release_dowload_set_cb(
+              NULL,
               arrow_release_download_payload,
               arrow_release_download_complete);
 #endif
@@ -294,8 +292,6 @@ void StartDefaultTask(void const * argument)
   restore_wifi_setting(ssid, psk, (int*)&security_mode);
   uint8_t macAddress[6];
   int wifiConnectCounter = 0;
-
-  DBG("start task");
 
   msleep(1000);
   DBG("--- Demo B-L475E-IOT01 ---");
@@ -351,7 +347,8 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
-  add_cmd_handler("wifiup", wifi_module_update);
+  arrow_mqtt_events_init();
+  arrow_command_handler_add("wifiup", wifi_module_update);
 
   // sycn time by the NTP
   ntp_set_time_cycle();
@@ -364,28 +361,32 @@ void StartDefaultTask(void const * argument)
   DBG("Time is set to (UTC): %s", ctime(&ctTime));
 
   // init a gateway and device by the cloud
-  arrow_initialize_routine();
+  while( arrow_initialize_routine() != ROUTINE_SUCCESS ) {
+      msleep(TELEMETRY_DELAY);
+  }
 
-  // prepare a telemetry data
-  PrepareMqttPayload(&data);
-
-  // send the telemetry
-//  int telemetry_count = 0;
-//  while(1) {
-    arrow_send_telemetry_routine(&data);
-//    DBG("t: %d", telemetry_count++);
-//  }
-//    arrow_send_telemetry_routine(&data);
-//    arrow_send_telemetry_routine(&data);
-
-  // establish the MQTT connection
-  arrow_mqtt_connect_routine();
-
-  // use the MQTT connection to send a telemetry information
-  // PrepareMqttPayload used to get telemetry data
-  arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
-
+  int mqtt_routine_act = 1;
+  while ( mqtt_routine_act ) {
+      arrow_mqtt_connect_routine();
+      if ( arrow_mqtt_has_events() ) {
+          arrow_mqtt_disconnect_routine();
+          while ( arrow_mqtt_has_events() ) {
+              arrow_mqtt_event_proc();
+          }
+          arrow_mqtt_connect_routine();
+      }
+      int ret = arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
+      switch ( ret ) {
+      case ROUTINE_RECEIVE_EVENT:
+          arrow_mqtt_disconnect_routine();
+          arrow_mqtt_event_proc();
+          break;
+      default:
+          break;
+      }
+  }
   arrow_close();
+  arrow_mqtt_events_done();
 }
 
 /**

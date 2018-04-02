@@ -32,65 +32,6 @@ extern "C" {
 #include <arrow/testsuite.h>
 #include <sys/reboot.h>
 #include <arrow/software_release.h>
-
-#if defined(MEMORY_TEST)
-#include <malloc.h>
-int m_counter = 0;
-int f_counter = 0;
-int alloc_size = 0;
-int free_size = 0;
-
-void *__real_malloc(size_t);
-void *__wrap_malloc(size_t p) {
-  m_counter ++;
-  void *pt = __real_malloc(p);
-  int len = malloc_usable_size(pt);
-  alloc_size += len;
-//  printf("alloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
-  return pt;
-}
-
-void *__real_realloc(void *, size_t);
-void *__wrap_realloc(void *p, size_t s) {
-//  m_counter++;
-  int l = malloc_usable_size(p);
-  alloc_size -= l;
-  void *pt = __real_realloc(p, s);
-  int len = malloc_usable_size(pt);
-  alloc_size += len;
-//  printf("realloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
-  return pt;
-}
-
-void *__real_calloc(size_t, size_t);
-void *__wrap_calloc(size_t p, size_t s) {
-  m_counter++;
-  void *pt = __real_calloc(p, s);
-  int len = malloc_usable_size(pt);
-  alloc_size += len;
-//  printf("calloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
-  return pt;
-}
-
-char *__real_strdup(const char *s);
-char *__wrap_strdup(const char *s) {
-  m_counter++;
-  char *pt = __real_strdup(s);
-  int len = malloc_usable_size(pt);
-  alloc_size += len;
-  printf("strdup [%d] %d/%d\r\n", m_counter, len, alloc_size);
-  return pt;
-}
-
-void __real_free(void *);
-void __wrap_free(void *p) {
-  f_counter++;
-  uint32_t len = malloc_usable_size(p);
-  free_size += len;
-//  printf("free [%d] %d/%d\r\n", f_counter, len, free_size);
-  __real_free(p);
-}
-#endif
 }
 
 #include <iostream>
@@ -99,6 +40,7 @@ extern int get_telemetry_data(void *data);
 
 static int test_cmd_proc(const char *str) {
   printf("test: [%s]", str);
+  msleep(1000);
   return 0;
 }
 
@@ -107,280 +49,132 @@ static int fail_cmd_proc(const char *str) {
   return -1;
 }
 
-#if !defined(NO_SOFTWARE_UPDATE)
-extern "C" int arrow_software_update(const char *url,
-                                 const char *checksum,
-                                 const char *from,
-                                 const char *to);
-#endif
+#if defined(ARROW_THREAD)
+static void *thread_telemetry(void *arg) {
+ int *telemetry_act = (int *)arg;
+ printf("Telemetry thread start\r\n");
+ *telemetry_act = 1;
+ pm_data_t data;
+ arrow_mqtt_connect_telemetry_routine();
+ int ret = arrow_mqtt_telemetry_routine(get_telemetry_data, &data);
+ switch ( ret ) {
+ default:
+     printf("Telemetry thread stop %d\r\n", ret);
+     *telemetry_act = 0;
+ }
+ arrow_mqtt_disconnect_telemetry_routine();
+ pthread_exit(NULL);
+ return NULL;
+}
 
-// extern the firmware callback
-extern "C" int arrow_release_download_payload(const char *payload, int size, int);
-extern "C" int arrow_release_download_complete(int);
+static void *thread_command(void *arg) {
+ printf("Command thread start\r\n");
+ int *telemetry_act = (int *)arg;
+ arrow_mqtt_connect_event_routine();
+ arrow_routine_error_t ret = ROUTINE_SUCCESS;
+ while( *telemetry_act && ret == ROUTINE_SUCCESS ) {
+      ret = arrow_mqtt_event_receive_routine();
+ }
+ arrow_mqtt_disconnect_event_routine();
+ pthread_exit(NULL);
+ return NULL;
+}
+
+static void *thread_cmd_proc(void *arg) {
+ printf("Command process start\r\n");
+ int *telemetry_act = (int *)arg;
+ while ( *telemetry_act ) {
+     if ( arrow_mqtt_event_proc() < 0 ) msleep(1000);
+ }
+ pthread_exit(NULL);
+ return NULL;
+}
+#endif
 
 int main() {
     std::cout<<std::endl<<"--- Demo Linux ---"<<std::endl;
 
-//    Hided it because we supposed linux already synchronized a time 
-//    ntp_set_time_cycle();
-
-    // set up the firmware downloaded callbacks
-    arrow_software_release_dowload_set_cb(
-          arrow_release_download_payload,
-          arrow_release_download_complete);
-
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
-    // API request examples
-#if 0
-    arrow_gateway_t g;
-    property_copy(&g.hid, p_const("c966e4c0e7c48563b360130f989707965bf77645"));
-    log_t *logs = NULL;
-    int rr = arrow_gateway_logs_list(&logs, &g, 2, find_by(osNames, "mbed"), find_by(f_size, "3"));
-    std::cout<<"return "<<rr<<std::endl;
-    if ( rr == 0 ) {
-        log_t *tmp;
-        for_each_node_hard(tmp, logs, log_t) {
-            std::cout<<"name:\t"<<P_VALUE(tmp->productName)<<std::endl
-                     <<"type:\t"<<P_VALUE(tmp->type)<<std::endl
-                     <<"created:\t"<<P_VALUE(tmp->created.by)<<std::endl
-                     <<"objhid:\t"<<P_VALUE(tmp->objectHid)<<std::endl
-                     <<"param:\t"<<json_encode(tmp->parameters)<<std::endl
-                       ;
-            log_free(tmp);
-        }
-    }
-
-
-    gateway_info_t *list = NULL;
-    int r = arrow_gateway_find_by(&list, 2, find_by(osNames, "mbed"), find_by(f_size, "100"));
-    std::cout<<"return "<<r<<std::endl;
-    if ( r >= 0 ) {
-        gateway_info_t *tmp;
-        for_each_node_hard(tmp, list, gateway_info_t) {
-            std::cout<<"hid:\t\t"<<P_VALUE(tmp->hid)<<std::endl
-                    <<"createdDate:\t"<<tmp->created.date.tm_year<<std::endl
-                    <<"createdBy:\t"<<P_VALUE(tmp->created.by)<<std::endl
-                    <<"lastModifiedDate:\t"<<tmp->lastModified.date.tm_year<<std::endl
-                    <<"lastModifiedBy:\t"<<P_VALUE(tmp->lastModified.by)<<std::endl
-                    <<"uid:\t\t"<<P_VALUE(tmp->uid)<<std::endl
-                    <<"name:\t\t"<<P_VALUE(tmp->name)<<std::endl
-                    <<"type:\t\t"<<P_VALUE(tmp->type)<<std::endl
-                    <<"deviceType:\t"<<P_VALUE(tmp->deviceType)<<std::endl
-                    <<"osName:\t\t"<<P_VALUE(tmp->osName)<<std::endl
-                    <<"softwareName:\t"<<P_VALUE(tmp->softwareName)<<std::endl
-                    <<"softwareVersion:\t"<<P_VALUE(tmp->softwareVersion)<<std::endl;
-            gateway_info_free(tmp);
-            free(tmp);
-        }
-    }
-
-    device_info_t *devices = NULL;
-    r = arrow_gateway_devices_list(&devices, P_VALUE(g.hid));
-    std::cout<<"return "<<r<<std::endl;
-    if ( r >= 0 ) {
-        device_info_t *tmp;
-        for_each_node_hard(tmp, devices, device_info_t) {
-            std::cout<<"hid:\t\t"<<P_VALUE(tmp->hid)<<std::endl
-                    <<"createdDate:\t"<<tmp->created.date.tm_year<<std::endl
-                    <<"createdBy:\t"<<P_VALUE(tmp->created.by)<<std::endl
-                    <<"lastModifiedDate:\t"<<tmp->lastModified.date.tm_year<<std::endl
-                    <<"lastModifiedBy:\t"<<P_VALUE(tmp->lastModified.by)<<std::endl
-                    <<"uid:\t\t"<<P_VALUE(tmp->uid)<<std::endl
-                    <<"name:\t\t"<<P_VALUE(tmp->name)<<std::endl
-                    <<"type:\t\t"<<P_VALUE(tmp->type)<<std::endl
-                    <<"enabled:\t\t"<<tmp->enabled<<std::endl
-                    <<"info:\t"<<json_encode(tmp->info)<<std::endl
-                    ;
-            device_info_free(tmp);
-            free(tmp);
-        }
-    }
-
-    devices = NULL;
-    r = arrow_device_find_by(&devices, 2, find_by(f_size, "10"), find_by(f_type, DEVICE_TYPE));
-    std::cout<<"return "<<r<<std::endl;
-    if ( r >= 0 ) {
-        device_info_t *tmp;
-        for_each_node_hard(tmp, devices, device_info_t) {
-            std::cout<<"hid:\t\t"<<P_VALUE(tmp->hid)<<std::endl
-                    <<"createdDate:\t"<<tmp->created.date.tm_year<<std::endl
-                    <<"createdBy:\t"<<P_VALUE(tmp->created.by)<<std::endl
-                    <<"lastModifiedDate:\t"<<tmp->lastModified.date.tm_year<<std::endl
-                    <<"lastModifiedBy:\t"<<P_VALUE(tmp->lastModified.by)<<std::endl
-                    <<"uid:\t\t"<<P_VALUE(tmp->uid)<<std::endl
-                    <<"name:\t\t"<<P_VALUE(tmp->name)<<std::endl
-                    <<"type:\t\t"<<P_VALUE(tmp->type)<<std::endl
-                    <<"enabled:\t\t"<<tmp->enabled<<std::endl
-                    <<"info:\t"<<json_encode(tmp->info)<<std::endl
-                    ;
-            device_info_free(tmp);
-            free(tmp);
-        }
-    }
-
-    msleep(10000);
-
-#if 0
-    telemetry_response_data_list_t tel_data;
-    if ( arrow_telemetry_find_by_device_hid("f8400f12182e53e39c4f300bddaff9007b59991b",
-                                       &tel_data,
-                                       3,
-                                       find_by(fromTimestamp, "2017-05-20T07:02:34.944Z"),
-                                       find_by(toTimestamp, "2017-05-25T07:02:34.944Z"),
-                                       find_by(f_size, "3")) == 0 ) {
-      printf("size: %d\r\n", tel_data.size);
-      telemetry_data_info_t *tdata = tel_data.data;
-      for (int i=0; i<tel_data.size; i++) {
-        printf("d hid: %s - %s - %s\r\n", tdata->deviceHid, tdata->name, tdata->type);
-        tdata = tdata->next;
-      }
-    }
-
-    arrow_gateway_find("1d1c97b53d2d28965e1f4eae2f2e430994671b51");
-    arrow_device_type_list();
-    device_type_t dev;
-    device_type_init(&dev, 1, "testname", "test description");
-    device_type_add_telemetry(&dev, 0, "temperature", "float", "temp desc");
-//    arrow_device_type_create(&dev);
-    device_type_free(&dev);
-
-//    arrow_device_find_by(1, find_by(f_size, "1"));
-//    arrow_device_find_by_hid("f8400f12182e53e39c4f300bddaff9007b59991b");
-//    arrow_list_action_type();
-
-    std::cout<<"------------------------"<<std::endl;
-#endif
-#endif
-
-    arrow_initialize_routine();
 #if !defined(NO_SOFTWARE_UPDATE)
     arrow_software_release_set_cb(&arrow_software_update);
 #endif
 
-    std::cout<<"------------------------"<<std::endl;
-
-#if 0
-//    arrow_list_device_action(current_device());
-//    arrow_update_device(current_gateway(), current_device());
-    arrow_list_device_events(current_device(), 1, find_by(f_size, "1"));
-    arrow_list_device_logs(current_device(), 1, find_by(f_size, "1"));
-    arrow_error_device(current_device(), "unknown error");
-
-    std::cout<<"------------------------"<<std::endl;
+#if !defined(NO_SOFTWARE_RELEASE)
+    arrow_software_release_dowload_set_cb(
+                NULL,
+                arrow_release_download_payload,
+                arrow_release_download_complete);
 #endif
 
+    arrow_initialize_routine();
+
+    arrow_mqtt_events_init();
     arrow_update_state("led", "on");
-    add_cmd_handler("test", &test_cmd_proc);
-    add_cmd_handler("fail", &fail_cmd_proc);
+    arrow_command_handler_add("test", &test_cmd_proc);
+    arrow_command_handler_add("fail", &fail_cmd_proc);
 
     std::cout<<"send telemetry via API"<<std::endl;
-    
-#if defined(__probook_4540s__)
-    probook_data_t data;
+
+#if defined(ARROW_THREAD)
+    int telemetry_act = 0;
+    pthread_attr_t thread_attr;
+    pthread_attr_init(&thread_attr);
+    pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+
+    pthread_t telemetrythread;
+    int result = pthread_create(&telemetrythread, &thread_attr, thread_telemetry, (void*)&telemetry_act);
+    if(result != 0) {
+        printf("Creating thread false. Error: %d\nPress enter to exit\n", result);
+    }
+    pthread_t commandthread;
+    result = pthread_create(&commandthread, NULL, thread_command, (void*)&telemetry_act);
+    if(result != 0) {
+        printf("Creating thread false. Error: %d\nPress enter to exit\n", result);
+    }
+    pthread_t commandprocthread;
+    result = pthread_create(&commandprocthread, NULL, thread_cmd_proc, (void*)&telemetry_act);
+    if(result != 0) {
+        printf("Creating thread false. Error: %d\nPress enter to exit\n", result);
+    }
+    pthread_join(telemetrythread, NULL);
+    pthread_join(commandthread, NULL);
+    pthread_join(commandprocthread, NULL);
 #else
     pm_data_t data;
-#endif
-
-    arrow_gateway_heartbeat(current_gateway());
-
-    get_telemetry_data(&data);
-
-    arrow_send_telemetry_routine(&data);
-#if 0
-    pm_data_t datas[3] = { data, data, data };
-
-    arrow_telemetry_batch_create(current_device(), datas, 3);
-
-    CREATE_TEST_SUITE(gate_test, "384f9d6832ce2272f18f3ee8597e0f108f6a8109");
-    arrow_test_gateway(current_gateway(), &gate_test);
-
-    arrow_test_begin(&gate_test);
-    // start test procedure
-    arrow_test_step_begin(&gate_test, 1);
-    //test temperature
-    if ( 1 ) {
-      arrow_test_step_success(&gate_test, 1);
-    } else {
-      arrow_test_step_fail(&gate_test, 1, "no temp sensor");
-    }
-    // end test
-    arrow_test_end(&gate_test);
-
-    CREATE_TEST_SUITE(p, "a53f0aa3e8bf7806ff5b8770ad4d9d3477d534c9");
-    arrow_test_device(current_device(), &p);
-    printf("test device result hid {%s}\r\n", P_VALUE(p.result_hid));
-
-    arrow_test_begin(&p);
-    // start test procedure
-    arrow_test_step_begin(&p, 1);
-    // test temperature
-    get_telemetry_data(&data);
-    if ( sizeof(data) > 1 ) {
-      arrow_test_step_success(&p, 1);
-    } else {
-      arrow_test_step_fail(&p, 1, "no temp sensor");
-    }
-
-#if !defined(SKIP_LED)
-    // where is no LED, skiping...
-    arrow_test_step_skip(&p, 2);
-#else
-    arrow_test_step_begin(&p, 2);
-    arrow_test_step_fail(&p, 2, "no LED");
-#endif
-
-    arrow_test_step_begin(&p, 3);
-    // check ARM
-#if defined(__arm__)
-    arrow_test_step_success(&p, 3);
-#else
-    arrow_test_step_fail(&p, 3, "not ARM");
-#endif
-    // end test
-    arrow_test_end(&p);
-/*
-    static char buffer[200000];
-    FILE *fp;
-    int size = 0;
-    fp = fopen("/home/danila/Arrow/acn-embedded/B-L475E-IOT01/arrow.bin", "rb");
-    if (fp) {
-      int n = 0;
-      md5_chunk_init();
-        while ( (n = fread(buffer + size, 1, 1, fp)) ){
-          md5_chunk(buffer + size, 1);
-          size++;
+    int mqtt_routine_act = 1;
+    while ( mqtt_routine_act ) {
+        arrow_mqtt_connect_routine();
+        if ( arrow_mqtt_has_events() ) {
+            printf("--------- postponed msg start -----------\r\n");
+            arrow_mqtt_disconnect_routine();
+            while ( arrow_mqtt_has_events() ) {
+                arrow_mqtt_event_proc();
+            }
+            printf("--------- postponed msg end -----------\r\n");
+            arrow_mqtt_connect_routine();
         }
-        char md5hash[100];
-        char md5hash_str[100];
-        md5_chunk_hash(md5hash);
-        hex_encode(md5hash_str, md5hash, 16);
-        printf("md5 sum %s", md5hash_str);
-        printf("read %d\r\n", size);
-    }
-    char md5hash[100];
-    char md5hash_str[100];
-
-    md5sum(md5hash, buffer, size);
-    hex_encode(md5hash_str, md5hash, 16);
-    printf("md5 sum %s", md5hash_str);
-*/
+        int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+        switch ( ret ) {
+        case ROUTINE_RECEIVE_EVENT:
+            arrow_mqtt_disconnect_routine();
+            arrow_mqtt_event_proc();
+            break;
+#if defined(VALGRIND_TEST)
+        case ROUTINE_TEST_DONE:
+                mqtt_routine_act = 0;
+            break;
 #endif
-    arrow_mqtt_connect_routine();
-
-    arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
-    // endless
-
+        default:
+            break;
+        }
+    }
+#endif
     arrow_close();
-    free_cmd_handler();
+    arrow_mqtt_events_done();
     arrow_state_mqtt_stop();
 
-#if defined(MEMORY_TEST)
-    printf("----------------------\r\n");
-    printf("counter: %d %d\r\n", m_counter, f_counter);
-    printf("size:    %d %d\r\n", alloc_size, free_size);
-    printf("----------------------\r\n");
-#endif
-    std::cout<<std::endl<<"disconnecting...."<<std::endl;
+    std::cout<<std::endl<<"End"<<std::endl;
+    return 0;
 }

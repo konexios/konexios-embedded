@@ -8,7 +8,11 @@
 
 #include "sys/mem.h"
 #include <sys/type.h>
+#include <FreeRTOSConfig.h>
 
+
+uint8_t ucHeap[configTOTAL_HEAP_SIZE] __attribute__((section (".freertos_heap")));
+// = (uint8_t *)0x10000000;
 
 extern void *pvPortMalloc( size_t );
 extern void vPortFree(void *);

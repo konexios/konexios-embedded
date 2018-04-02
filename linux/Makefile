@@ -55,7 +55,7 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 CPPDEPS += $(CSRCS:%.c=%.d)
 
 LIBRARY_PATHS = -L$(PWD)/$(LIBDIR)
-LIBRARIES = -lsensors -lacnsdkc
+LIBRARIES = -lsensors -lacnsdkc -lpthread
 
 LD_FLAGS = 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--gc-sections

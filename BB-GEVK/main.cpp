@@ -27,6 +27,7 @@ rtos::Mutex shield_mutex;
 #include <arrow/api/gateway/gateway.h>
 #include <json/telemetry.h>
 #include <json/data.h>
+#include <arrow/events.h>
 #include <arrow/device_command.h>
 #include <arrow/storage.h>
 
@@ -279,16 +280,18 @@ int main() {
 		  LCD("Light intensity");
 #endif
 
+                  arrow_mqtt_events_init();
+
 #if defined(USE_STEP_MOTOR)
-		  add_cmd_handler("motor", motor_rotate);
+		  arrow_command_handler_add("motor", motor_rotate);
 #endif
 #if defined(USE_LED_BALLAST)
 		  led.init();
-		  add_cmd_handler("led", led_on);
+		  arrow_command_handler_add("led", led_on);
 #endif
 #if defined(USE_DLBS_MOTOR)
 		  rotor.init();
-		  add_cmd_handler("rotor", rotor_cmd);
+		  arrow_command_handler_add("rotor", rotor_cmd);
 #endif
 
 	 	time_t now = time(NULL);
@@ -315,5 +318,6 @@ int main() {
 	 	arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
 	 	arrow_close();
+	 	arrow_mqtt_events_done();
 	 	return 0;
 }

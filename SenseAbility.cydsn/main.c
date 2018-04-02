@@ -8,7 +8,6 @@
 
 #include <project.h>
 #include <main.h>
-#include <json/telemetry.h>
 #include <Sensor_Processes.h>
 #include <stdio.h>
 #include <ntp/ntp.h>
@@ -111,7 +110,7 @@ int main() {
     user_init();
       
     arrow_device_init(&device);
-    arrow_device_set_hid(&device, "7896873687623");
+    property_copy(&device.hid, p_const("7896873687623"));
     
     Sensor_Data_init(&sensor_data);
     
@@ -136,13 +135,13 @@ int main() {
     DBG("date : %s", ctime(&now));
     
     WDT_Feed();
-    while ( arrow_connect_gateway(&gateway) < 0) {
+    while ( arrow_register_gateway(&gateway) < 0) {
         DBG("arrow gateway connection fail");
         CyDelay(1000);
     }
     
     WDT_Feed();
-    while ( arrow_config( &gateway, &config ) < 0 ) {
+    while ( arrow_gateway_config( &gateway, &config ) < 0 ) {
         DBG("arrow gateway config fail");
         CyDelay(1000);
     }

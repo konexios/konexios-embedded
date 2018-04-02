@@ -6,10 +6,11 @@ GCC_BIN =
 PROJECT = arrow
 LIBDIR	= .build
 WOLFSSL = yes
-CJSON		= yes
+CJSON	= yes
 GCC_BIN =
 GCC_PREFIX = arm-none-eabi
 PLATFORM = stm32l475iot
+SHELL_BASH ?= 
 SDK_PATH = $(abspath ../acn-sdk-c/)
 SDK_IMPL = $(PWD)/acnsdkc
 
@@ -113,6 +114,7 @@ FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/list.c
 FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/queue.c
 FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/tasks.c
 FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/timers.c
+FREERTOS_SRC += $(PWD)/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
 
 WIFI_SRC += $(wildcard $(PWD)/WiFi/Src/*.c)
 WIFI_SRC += $(wildcard $(PWD)/Drivers/BSP/Components/es_wifi/*.c)
@@ -153,6 +155,15 @@ APP_OBJECTS += $(APP_SRC:%.c=%.o)
 BOOT_OBJECTS := $(COMMON_OBJ)
 BOOT_OBJECTS += $(BOOT_SRC:%.c=%.o)
 
+SDK_INCLUDES += -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/include \
+                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+                -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
+                -I$(PWD)/Inc \
+                -I$(PWD)/Drivers/STM32L4xx_HAL_Driver/Inc \
+                -I$(PWD)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+                -I$(PWD)/Drivers/CMSIS/Include \
+                -I$(PWD)/Drivers/BSP/B-L475E-IOT01
+
 
 -include $(SDK_PATH)/Makefile.sdk
 
@@ -173,7 +184,6 @@ INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
                  -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
-
 		
 
 LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
@@ -188,15 +198,13 @@ CC_FLAGS += -DUSE_LPS22HB_TEMP
 
 .PHONY: all lst size
 
-all: check_settings app_version $(PROJECT).bin bootloader.bin size app_settings
+#check_settings app_version -- app_settings
+all: $(PROJECT).bin bootloader.bin size 
 
 .asm.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 .s.o:
-	+@$(MAKEDIR) $(dir $@) $(QUIET)
-	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
-.S.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
 	$(CC) $(CPU) -c $(ASM_FLAGS) -o $@ $<
 
@@ -227,7 +235,7 @@ lst: $(PROJECT).lst
 size: $(PROJECT).elf bootloader.elf
 	$(SIZE) bootloader.elf
 	$(SIZE) $(PROJECT).elf
-	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
+#	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
 	
 bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 	$(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
@@ -235,8 +243,9 @@ bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 bootloader.bin: bootloader.elf
 	$(OBJCOPY) -O binary $< $@
 
-flash: app_version $(PROJECT).bin
-	st-flash write arrow.bin 0x08080000
+# app_version
+flash: $(PROJECT).bin
+	st-flash write $(PROJECT).bin 0x08080000
 	st-flash write bootloader.bin 0x08000000
 
 DEPS = $(APP_OBJECTS:.o=.d)

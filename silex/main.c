@@ -32,6 +32,7 @@
 #include <json/data.h>
 #include <sys/watchdog.h>
 #include <arrow/api/gateway/gateway.h>
+#include <arrow/events.h>
 #include <arrow/device_command.h>
 #include <arrow/software_update.h>
 #include <arrow/software_release.h>
@@ -212,7 +213,7 @@ void main_entry(ULONG which_thread) {
 #if !defined(NO_SOFTWARE_UPDATE)
   arrow_gateway_software_update_set_cb(qca_gateway_software_update);
 #endif
-  arrow_software_release_dowload_set_cb(arrow_release_download_payload, arrow_release_download_complete);
+  arrow_software_release_dowload_set_cb(NULL, arrow_release_download_payload, arrow_release_download_complete);
 #if defined(AT_COMMAND)
   goto force_ap;
 #endif
@@ -242,7 +243,8 @@ force_ap:
       rssi_data_t sig;
       wdt_feed();
 
-      add_cmd_handler("test", &test_cmd_proc);
+      arrow_mqtt_events_init();
+      arrow_command_handler_add("test", &test_cmd_proc);
 
       ntp_set_time_cycle();
 
@@ -252,11 +254,22 @@ force_ap:
       get_data(&sig);
       arrow_send_telemetry_routine(&sig);
 
-      arrow_mqtt_connect_routine();
+      while(1) {
+          arrow_mqtt_connect_routine();
+          int ret = arrow_mqtt_send_telemetry_routine(get_data, &sig);
+          switch ( ret ) {
+          case ROUTINE_RECEIVE_EVENT:
+              arrow_mqtt_disconnect_routine();
+              arrow_mqtt_event_proc();
+              break;
+          default:
+              break;
+          }
 
-      arrow_mqtt_send_telemetry_routine(get_data, &sig);
+      }
 
       arrow_close();
+      arrow_mqtt_events_done();
       reboot();
 #endif
   }
