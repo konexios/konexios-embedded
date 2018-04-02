@@ -439,9 +439,15 @@ int reset_cmd(void *arg) {
     return 0;
 }
 
+int test_cmd(void *arg) {
+    DBG("--- test command ---");
+    msleep(5000);
+    return 0;
+}
+
 void application_start( )
 {
-    DBG("--- Quadro OTA TEST 2 ---");
+    DBG("--- Quadro Demo ---");
     wiced_result_t r_button;
     r_button = wiced_gpio_init( WICED_GPIO_49, INPUT_HIGH_IMPEDANCE);
     DBG("gpio51 %d", r_button);
@@ -529,6 +535,7 @@ void application_start( )
             );
 
     arrow_command_handler_add("reset", reset_cmd);
+    arrow_command_handler_add("test", test_cmd);
 
     ntp_set_time_cycle();
 
@@ -546,7 +553,6 @@ void application_start( )
         int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &test);
         switch (ret) {
         case ROUTINE_RECEIVE_EVENT:
-            DBG("command detected!");
             arrow_mqtt_disconnect_routine();
             arrow_mqtt_event_proc();
             break;

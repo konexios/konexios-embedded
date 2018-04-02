@@ -17,13 +17,14 @@ static wiced_app_t app;
 
 int arrow_release_download_init() {
     int current_size = 0;
-    DBG("current size %d", current_size);
     if ( wiced_framework_app_open( DCT_APP0_INDEX, &app ) != WICED_SUCCESS ) {
         return -1;
     }
     if ( wiced_framework_app_get_size( &app, &current_size ) != WICED_SUCCESS ) {
         return -1;
     }
+    wdt_feed();
+    DBG("current size %d", current_size);
     /* if ( wiced_framework_app_set_size( &app, file_size) != WICED_SUCCESS ) {
         return -1;
     }
@@ -40,14 +41,16 @@ int arrow_release_download_init() {
 // this function will be executed when http client get a chunk of payload
 int arrow_release_download_payload(const char *payload, int size, int flags) {
   if ( flags == FW_FIRST ) {
-
+      DBG("start downloading...");
   }
+  wdt_feed();
   wiced_framework_app_write_chunk( &app, payload, size );
   return 0;
 }
 
 // this function will be executed when firmware file download complete
 int arrow_release_download_complete(int ota_result) {
+    wdt_feed();
     if ( ota_result == FW_SUCCESS ) {
         DBG("file size = %d", 0);
         wiced_framework_app_close( &app );
