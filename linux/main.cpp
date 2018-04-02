@@ -36,6 +36,18 @@ extern "C" {
 
 #include <iostream>
 
+#if !defined(NO_SOFTWARE_RELEASE)
+extern "C" int arrow_release_download_payload(const char *payload, int size, int);
+extern "C" int arrow_release_download_complete(int);
+#endif
+
+#if !defined(NO_SOFTWARE_UPDATE)
+extern "C" int arrow_software_update(const char *url,
+                                 const char *checksum,
+                                 const char *from,
+                                 const char *to);
+#endif
+
 extern int get_telemetry_data(void *data);
 
 static int test_cmd_proc(const char *str) {
