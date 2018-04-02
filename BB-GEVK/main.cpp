@@ -280,6 +280,8 @@ int main() {
 		  LCD("Light intensity");
 #endif
 
+                  arrow_mqtt_events_init();
+
 #if defined(USE_STEP_MOTOR)
 		  arrow_command_handler_add("motor", motor_rotate);
 #endif
@@ -299,8 +301,6 @@ int main() {
 
 	 	/*time_t*/ now = time(NULL);
 	 	DBG("date : %s", ctime(&now));
-
-	 	arrow_mqtt_events_init();
 
 	  	LCD("gateway and device connecting...");
 	 	arrow_initialize_routine();

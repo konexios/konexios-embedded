@@ -15,6 +15,7 @@ extern "C" {
 #include <arrow/storage.h>
 #include <sys/watchdog.h>
 #include <arrow/software_release.h>
+#include <arrow/events.h>
 #include <time/time.h>
 }
 #include "SpwfInterface.h"
@@ -150,6 +151,7 @@ force_ap:
 
 #if !defined(NO_RELEASE_UPDATE)
     arrow_software_release_dowload_set_cb(
+		NULL,
                 arrow_release_download_payload,
                 arrow_release_download_complete);
 #endif
@@ -188,15 +190,28 @@ force_ap:
     time_t ctTime = time(NULL);
     printf("Time is set to (UTC): %s\r\n", ctime(&ctTime));
 
+    arrow_mqtt_events_init();
+
     arrow_initialize_routine();
 
     X_NUCLEO_IKS01A1_data data;
     get_telemetry_data(&data);
     arrow_send_telemetry_routine(&data);
 
-    arrow_mqtt_connect_routine();
-
-    arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+    while(1) {
+        arrow_mqtt_connect_routine();
+        int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+        switch(ret) {
+        case ROUTINE_RECEIVE_EVENT:
+            arrow_mqtt_disconnect_routine();
+            arrow_mqtt_event_proc();
+            break;
+        default:
+            break;
+        }
+    }
+    arrow_close();
+    arrow_mqtt_events_done();
 
     printf("\r\ndisconnecting....\r\n");
     spwf.disconnect();

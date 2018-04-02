@@ -5,9 +5,10 @@
 #include <string.h>
 #include <semphr.h>
 #include <usbd_cdc_if.h>
+#include "cmsis_os.h"
 
 static char dbg_buf[DBG_LINE_SIZE];
-static SemaphoreHandle_t xMutex = NULL;
+extern osMutexId consoleMutexHandle;
 
 extern UART_HandleTypeDef console_uart;
 
@@ -25,10 +26,12 @@ extern UART_HandleTypeDef console_uart;
 }*/
 
 void dbg_line(const char *fmt, ...) {
-  if ( !xMutex ) {
-    xMutex = xSemaphoreCreateMutex();
-  }
-  if ( !xMutex ) return;
+//  if ( !xMutex ) {
+//    xMutex = xSemaphoreCreateMutex();
+//  }
+//  if ( !xMutex ) return;
+    if ( !consoleMutexHandle ) return;
+    osMutexWait(consoleMutexHandle, -1);
 //  if( xSemaphoreTake( xMutex, (TickType_t)10 ) == pdTRUE ) {
     va_list args;
     va_start(args, fmt);
@@ -40,12 +43,13 @@ void dbg_line(const char *fmt, ...) {
     CDC_Transmit_FS((uint8_t*)dbg_buf, dbg_len);
 #else
     while (HAL_OK != HAL_UART_Transmit(&console_uart,
-                                       dbg_buf,
+                                       (uint8_t *)dbg_buf,
                                        dbg_len,
                                        30000))
       ;
 #endif
     va_end(args);
+    osMutexRelease(consoleMutexHandle);
 //    xSemaphoreGive( xMutex );
 //  }
 }

@@ -195,7 +195,14 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-  
+  .freertos_heap :
+  {
+   . = ALIGN(8);
+   _freertos_heap_start = .;
+   . = . + 0x0;
+   . = ALIGN(8);
+  } >RAM2
+
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
