@@ -91,9 +91,9 @@ void read_sensor(Sensor_Data_t *sensor_data) {
 int main() {
     
     Sensor_Data_t sensor_data;
-    arrow_gateway_t gateway;
-    arrow_gateway_config_t config;
-    arrow_device_t device;
+//    arrow_gateway_t gateway;
+//    arrow_gateway_config_t config;
+//    arrow_device_t device;
     
     CySysTickStart();
     
@@ -108,9 +108,6 @@ int main() {
     CyGlobalIntEnable; /* Enable global interrupts. */
     
     user_init();
-      
-    arrow_device_init(&device);
-    property_copy(&device.hid, p_const("7896873687623"));
     
     Sensor_Data_init(&sensor_data);
     
