@@ -133,65 +133,32 @@ int main() {
     
     time_t now = time(NULL);
     DBG("date : %s", ctime(&now));
-    
-    WDT_Feed();
-    while ( arrow_register_gateway(&gateway) < 0) {
-        DBG("arrow gateway connection fail");
-        CyDelay(1000);
-    }
-    
-    WDT_Feed();
-    while ( arrow_gateway_config( &gateway, &config ) < 0 ) {
-        DBG("arrow gateway config fail");
-        CyDelay(1000);
-    }
 
     WDT_Feed();
-    DBG("init device...");
-    while ( arrow_connect_device(&gateway, &device) < 0 ) {
-        DBG("arrow device connection fail");
-        CyDelay(1000);
-    }
-    
-    DBG("send telemetry");
-    
-    read_sensor(&sensor_data);
-    WDT_Feed();
-    while ( arrow_send_telemetry(&device, &sensor_data) < 0 ) { 
-        DBG("send telemetry fail");
-        CyDelay(1000);
-    }
-
-    DBG("mqtt connecting...");
-    WDT_Feed();
-    while ( mqtt_connect(&gateway, &device, &config) < 0 ) {
-        CyDelay(1000);
+    DBG("init gateway/device...");
+    while( arrow_initialize_routine() < 0 ) {
+        DBG("FAIL...");
+        CyDelay(3000);
     }
 
     DBG("telemetry data sending...");
     
-    volatile int i=0;
-    for(;;) {
-        WDT_Feed();
-        read_sensor(&sensor_data);
-        SW_Tx_UART_1_PutHexInt(i++);
-        SW_Tx_UART_1_PutString(": ");
-        SW_Tx_UART_1_PutCRLF();
-        
-        if ( mqtt_publish(&device, &sensor_data) < 0 ) {
-            DBG("mqtt publish failure...");
-            mqtt_disconnect();
-            while (mqtt_connect(&gateway, &device, &config) < 0) { CyDelay(1000); }
+    while ( 1 ) {
+        arrow_mqtt_connect_routine();
+        int ret = arrow_mqtt_send_telemetry_routine(read_sensor, &sensor_data);
+        switch ( ret ) {
+#if 0
+        case ROUTINE_RECEIVE_EVENT:
+            arrow_mqtt_disconnect_routine();
+            arrow_mqtt_event_proc();
+            break;
+#endif
+        default:
+            arrow_mqtt_disconnect_routine();
+            break;
         }
-        DBG("mqtt publish done");
-        WDT_Feed();
-        
-        GREEN_LED_Write(LED_OFF);
-        CyDelay(TELEMETRY_DELAY);
-        GREEN_LED_Write(LED_ON);
-         //CySysPmSleep();  
-        
     }
+
 }
 
 /* [] END OF FILE */
