@@ -50,6 +50,7 @@ extern "C" int arrow_software_update(const char *url,
 
 extern int get_telemetry_data(void *data);
 
+#if !defined(NO_EVENTS)
 static int test_cmd_proc(const char *str) {
   printf("test: [%s]", str);
   msleep(1000);
@@ -60,6 +61,7 @@ static int fail_cmd_proc(const char *str) {
   printf("fail: [%s]", str);
   return -1;
 }
+#endif
 
 #if defined(ARROW_THREAD)
 static void *thread_telemetry(void *arg) {
@@ -122,11 +124,12 @@ int main() {
 
     arrow_initialize_routine();
 
+#if !defined(NO_EVENTS)
     arrow_mqtt_events_init();
     arrow_update_state("led", "on");
     arrow_command_handler_add("test", &test_cmd_proc);
     arrow_command_handler_add("fail", &fail_cmd_proc);
-
+#endif
     std::cout<<"send telemetry via API"<<std::endl;
 
 #if defined(ARROW_THREAD)
@@ -158,6 +161,7 @@ int main() {
     int mqtt_routine_act = 1;
     while ( mqtt_routine_act ) {
         arrow_mqtt_connect_routine();
+#if !defined(NO_EVENTS)
         if ( arrow_mqtt_has_events() ) {
             printf("--------- postponed msg start -----------\r\n");
             arrow_mqtt_disconnect_routine();
@@ -167,24 +171,30 @@ int main() {
             printf("--------- postponed msg end -----------\r\n");
             arrow_mqtt_connect_routine();
         }
+#endif
         int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
         switch ( ret ) {
+#if !defined(NO_EVENTS)
         case ROUTINE_RECEIVE_EVENT:
             arrow_mqtt_disconnect_routine();
             arrow_mqtt_event_proc();
             break;
+#endif
 #if defined(VALGRIND_TEST)
         case ROUTINE_TEST_DONE:
                 mqtt_routine_act = 0;
             break;
 #endif
         default:
+            arrow_mqtt_disconnect_routine();
             break;
         }
     }
 #endif
     arrow_close();
+#if !defined(NO_EVENTS)
     arrow_mqtt_events_done();
+#endif
     arrow_state_mqtt_stop();
 
     std::cout<<std::endl<<"End"<<std::endl;

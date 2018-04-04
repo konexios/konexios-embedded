@@ -222,6 +222,7 @@ $(PROJECT).elf: $(SDK_TARGET) $(APP_OBJECTS) $(LINKER_SCRIPT_APP)
 
 
 $(PROJECT).bin: $(PROJECT).elf
+	$(OBJCOPY) --remove-section .freertos_heap $<
 	$(OBJCOPY) -O binary $< $@
 
 $(PROJECT).hex: $(PROJECT).elf
