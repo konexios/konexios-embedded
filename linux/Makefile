@@ -34,7 +34,7 @@ ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
 CC_SYMBOLS = -DTOOLCHAIN_GCC \
         -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE \
 	-DARCH_TYPE -DARCH_SOCK -DARCH_SSL \
-	-Werror -Wpedantic -Wno-variadic-macros -O0 -g -DVALGRIND_TEST=100
+	-Werror -Wpedantic -Wno-variadic-macros #-O0 -g -DVALGRIND_TEST=100
 
 ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
