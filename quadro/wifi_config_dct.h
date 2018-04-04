@@ -45,11 +45,13 @@ extern "C"
  *                    Constants
  ******************************************************/
 
+#include "../acn-sdk-c/private.h"
+
 /* This is the soft AP used for device configuration */
-#define CONFIG_AP_SSID       "Mera-guest"
+#define CONFIG_AP_SSID       DEFAULT_WIFI_SSID
 #define CONFIG_AP_CHANNEL    1
 #define CONFIG_AP_SECURITY   WICED_SECURITY_WPA2_AES_PSK
-#define CONFIG_AP_PASSPHRASE "guest@Mera"
+#define CONFIG_AP_PASSPHRASE DEFAULT_WIFI_PASS
 
 /* This is the soft AP available for normal operation (if used)*/
 #define SOFT_AP_SSID         "WICED Device"
