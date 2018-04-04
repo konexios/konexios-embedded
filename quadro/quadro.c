@@ -556,6 +556,8 @@ void application_start( )
             arrow_mqtt_disconnect_routine();
             arrow_mqtt_event_proc();
             break;
+        default:
+            arrow_mqtt_disconnect_routine();
         };
     }
 
