@@ -5,7 +5,7 @@
 
 #if defined(ARROW_THREAD)
 int arrow_mutex_init(arrow_mutex **mutex) {
-    pthread_mutex_t *mux = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_t *mux = alloc_type(pthread_mutex_t);
     pthread_mutex_init(mux, NULL);
     *mutex = mux;
     return 0;

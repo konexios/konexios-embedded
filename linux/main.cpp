@@ -108,8 +108,14 @@ static void *thread_cmd_proc(void *arg) {
 int main() {
     std::cout<<std::endl<<"--- Demo Linux ---"<<std::endl;
 
+    //ntp_set_time_cycle();
+    
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
+
+    
+    // start Arrow Connect
+    arrow_init();
 
 #if !defined(NO_SOFTWARE_UPDATE)
     arrow_software_release_set_cb(&arrow_software_update);
@@ -122,10 +128,11 @@ int main() {
                 arrow_release_download_complete);
 #endif
 
-    arrow_initialize_routine();
+    while ( arrow_initialize_routine() < 0 ) {
+        msleep(TELEMETRY_DELAY);
+    }
 
 #if !defined(NO_EVENTS)
-    arrow_mqtt_events_init();
     arrow_update_state("led", "on");
     arrow_command_handler_add("test", &test_cmd_proc);
     arrow_command_handler_add("fail", &fail_cmd_proc);
@@ -157,6 +164,7 @@ int main() {
     pthread_join(commandthread, NULL);
     pthread_join(commandprocthread, NULL);
 #else
+
     pm_data_t data;
     int mqtt_routine_act = 1;
     while ( mqtt_routine_act ) {
@@ -192,9 +200,7 @@ int main() {
     }
 #endif
     arrow_close();
-#if !defined(NO_EVENTS)
-    arrow_mqtt_events_done();
-#endif
+//    arrow_mqtt_events_done();
     arrow_state_mqtt_stop();
 
     std::cout<<std::endl<<"End"<<std::endl;
