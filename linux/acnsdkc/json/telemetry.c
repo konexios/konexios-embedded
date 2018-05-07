@@ -27,11 +27,14 @@ char *telemetry_serialize(arrow_device_t *device, void *data) {
 #include "json/pm.h"
 
 char *telemetry_serialize(arrow_device_t *device, void *data) {
+    static int boot = 1;
     JsonNode *_node = json_mkobject();
     pm_data_t *pm_data = (pm_data_t *)data;
     json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(P_VALUE(device->hid)));
     json_append_member(_node, "i|PM25", json_mknumber(pm_data->pm_2_5));
     json_append_member(_node, "i|PM10", json_mknumber(pm_data->pm_10));
+    json_append_member(_node, "i|boot", json_mknumber(boot));
+    boot = 0;
     char *tmp = json_encode(_node);
     json_delete(_node);
     return tmp;
