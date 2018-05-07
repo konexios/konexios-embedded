@@ -1,6 +1,8 @@
 #include <config.h>
 #include <json/telemetry.h>
 #include <iostream>
+#include <time/time.h>
+#include <string>
 #if defined(__probook_4540s__)
 #include <sensors/sensors.h>
 #else
@@ -65,10 +67,13 @@ int get_telemetry_data(void *d) {
     std::cout<<"mqtt publish: T("<<data->temperature_core0
             <<", "<<data->temperature_core1<<")..."<<std::endl;
 #else
+  time_t t = time(NULL);
+  std::string timestamp(ctime(&t));
+  timestamp.resize(timestamp.size()-2);
   pm_data_t *data = (pm_data_t *)d;
   data->pm_2_5 = rand()%5 + 25;
   data->pm_10 = rand()%5 + 30;
-  std::cout<<"mqtt publish: T("<<data->pm_2_5
+  std::cout<< timestamp << " : "<< "mqtt publish: T("<<data->pm_2_5
           <<", "<<data->pm_10<<")..."<<std::endl;
 #endif
   return 0;
