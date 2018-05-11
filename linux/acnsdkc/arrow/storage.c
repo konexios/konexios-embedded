@@ -17,8 +17,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
     printf("already registred\r\n");
     int ret = fscanf(fp, "%s", hid);
     if ( ret == 1 ) {
-      property_copy(&gateway->hid, p_stack(hid));
-      printf("already registred %s\r\n", P_VALUE(gateway->hid));
+      P_COPY(gateway->hid, p_stack(hid));
       fclose(fp);
       return 0;
     }
@@ -48,14 +47,14 @@ int restore_device_info(arrow_device_t *device) {
       fclose(fp);
       return -1;
     }
-    property_copy(&device->hid, p_stack(dev_hid));
+    P_COPY(device->hid, p_stack(dev_hid));
 #if defined(__IBM__)
     ret = fscanf(fp, "%s", dev_eid);
     if ( ret != 1 ) {
       fclose(fp);
       return 0;
     }
-    property_copy(&device->eid, p_stack(dev_eid));
+    P_COPY(device->eid, p_stack(dev_eid));
 #endif
     fclose(fp);
     return 0;
