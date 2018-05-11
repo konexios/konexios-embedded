@@ -200,9 +200,59 @@ int main() {
     }
 #endif
     arrow_close();
-//    arrow_mqtt_events_done();
-    arrow_state_mqtt_stop();
+    arrow_deinit();
 
     std::cout<<std::endl<<"End"<<std::endl;
     return 0;
+}
+
+extern "C" {
+#include <malloc.h>
+int m_counter = 0;
+//int f_counter = 0;
+int alloc_size = 0;
+//int free_size = 0;
+
+void *__real_malloc(size_t);
+void *__wrap_malloc(size_t p) {
+  m_counter ++;
+  void *pt = __real_malloc(p);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+//  printf("alloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
+void *__real_realloc(void *, size_t);
+void *__wrap_realloc(void *p, size_t s) {
+//  m_counter++;
+  int l = malloc_usable_size(p);
+  alloc_size -= l;
+  void *pt = __real_realloc(p, s);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+//  printf("realloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
+void *__real_calloc(size_t, size_t);
+void *__wrap_calloc(size_t p, size_t s) {
+  m_counter++;
+  void *pt = __real_calloc(p, s);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+//  printf("calloc [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
+char *__real_strdup(const char *s);
+char *__wrap_strdup(const char *s) {
+  m_counter++;
+  char *pt = __real_strdup(s);
+  int len = malloc_usable_size(pt);
+  alloc_size += len;
+//  printf("strdup [%d] %d/%d\r\n", m_counter, len, alloc_size);
+  return pt;
+}
+
 }

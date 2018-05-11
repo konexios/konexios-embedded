@@ -33,9 +33,17 @@ rtos::Mutex shield_mutex;
 
 #define TITLE   "--- Demo BB-GEVK ---"
 
+// Sensors
+#include "NOA1305_ALS.h"
+#include "NCS36000_PIR.h"
+NOA1305 als;
+NCS36000 pir;
+
 #if defined (USE_POE_SHIELD)
+#define CONNECT W5100_CONNECT
 #include "W5100Interface.h"
-W5100Interface eth;
+#undef CONNECT
+extern W5100Interface eth;
 #elif defined (USE_WIFI_SHIELD)
 #include "WizFi250Interface.h"
 WizFi250Interface eth;
@@ -57,11 +65,6 @@ NHD_C0216CZ lcd;
 #define LCD_CLEAR
 #define LCD_TO_POS(s, x, y)
 #endif
-// Sensors
-#include "NOA1305_ALS.h"
-#include "NCS36000_PIR.h"
-NOA1305 als;
-NCS36000 pir;
 
 #if 0
 #define INT_SET		1
@@ -198,11 +201,11 @@ int main() {
 	 	//assign appropriate network configuration to W5100 module.
 	 	ret = eth.connect();
 	 	if (!ret) {
-	 		DBG("IP: %s, MASK: %s, GW: %s",eth.getIPAddress(),eth.getNetworkMask(),eth.getGateway());
+	 		DBG("IP: %s, MASK: %s, GW: %s", eth.getIPAddress(), eth.getNetworkMask(), eth.getGateway());
 	 		LCD_CLEAR;
 	 		LCD_TO_POS("IP : ", 1, 1);
 	 		LCD_TO_POS(eth.getIPAddress(), 2, 1);
-	 	}else{
+	 	} else {
 	 		DBG("Error eth.connect() - ret = %d", ret);
 	 		LCD("ERROR !!!\nExiting Demo");
 	 		return -1;
@@ -280,7 +283,7 @@ int main() {
 		  LCD("Light intensity");
 #endif
 
-                  arrow_mqtt_events_init();
+          arrow_init();
 
 #if defined(USE_STEP_MOTOR)
 		  arrow_command_handler_add("motor", motor_rotate);
@@ -309,15 +312,32 @@ int main() {
 	 	gevk_data_t data;
 	 	while( get_telemetry_data(&data) < 0 ) ;
 
-	 	arrow_send_telemetry_routine(&data);
+	 	//arrow_send_telemetry_routine(&data);
 
 	 	LCD("mqtt connecting...");
-	 	arrow_mqtt_connect_routine();
+        arrow_mqtt_connect_routine();
+    while ( mqtt_is_telemetry_connect() ) {
+        if ( arrow_mqtt_has_events() ) {
+            while ( arrow_mqtt_has_events() ) {
+                arrow_mqtt_event_proc();
+            }
+        }
+        int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+        switch ( ret ) {
+        case ROUTINE_GET_TELEMETRY_FAILED:
+            break;
+        case ROUTINE_RECEIVE_EVENT:
+            arrow_mqtt_event_proc();
+            break;
+        default:
+            mqtt_terminate();
+            break;
+        }
+    }
 
 	 	LCD("send telemetry");
-	 	arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+	 	//arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
 
 	 	arrow_close();
-	 	arrow_mqtt_events_done();
 	 	return 0;
 }

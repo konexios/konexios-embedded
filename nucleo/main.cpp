@@ -181,6 +181,7 @@ force_ap:
 
     printf("Get UTC time...\r\n");
 
+    arrow_init();
 
     led = !led;
     // set time
@@ -189,8 +190,6 @@ force_ap:
     srand(time(NULL));
     time_t ctTime = time(NULL);
     printf("Time is set to (UTC): %s\r\n", ctime(&ctTime));
-
-    arrow_mqtt_events_init();
 
     arrow_initialize_routine();
 

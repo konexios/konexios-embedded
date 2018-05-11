@@ -11,23 +11,16 @@
 #include <UDPSocket.h>
 #if defined (USE_POE_SHIELD)
 #include "W5100Interface.h"
+W5100Interface eth;
 #elif defined (USE_WIFI_SHIELD)
 #include "WizFi250Interface.h"
 #elif defined (USE_QUADRO_SHIELD)
 #include "Quadro.h"
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <ctype.h>
-#include <time/time.h>
-#include <debug.h>
 
-#define MAX_SOCKETS 8
 
 #if defined (USE_POE_SHIELD)
-extern W5100Interface eth;
 #define _udp_socket W5100_UDPSocket
 #define _tcp_socket W5100_TCPSocketConnection
 #define _socket W5100_Socket
@@ -44,6 +37,19 @@ extern Quadro eth;
 #define _socket QUADRO_Socket
 #define _endpoint QUADRO_Endpoint
 #endif
+
+char *eth_getMACAddress() {
+    return eth.getMACAddress();
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <ctype.h>
+#include <time/time.h>
+#include <debug.h>
+    
+#define MAX_SOCKETS 8
 
 typedef struct {
 _socket *s;
@@ -90,7 +96,7 @@ int get_wifi_mac_address(char *mac) {
 	char mac_str[20];
 	int ret = 0;
 #if defined(USE_POE_SHIELD)
-	strncpy(mac_str, eth.getMACAddress(), sizeof(mac_str));
+	strncpy(mac_str, eth_getMACAddress(), sizeof(mac_str));
 #elif defined(USE_WIFI_SHIELD)
 	ret =  WizFi250::getInstance()->getMacAddress(mac_str);
 #elif defined(USE_QUADRO_SHIELD)

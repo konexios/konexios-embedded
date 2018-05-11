@@ -30,7 +30,7 @@ GCC4MBED_TYPE   = Release
 
 #TL_PATH ?= C:\GNUToolchain\bin
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2015q4\bin"
- TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
+# TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\2017-q1\bin"
 # TL_PATH = "C:\Program Files (x86)\GNU Tools ARM Embedded\5.4 2016q2\bin"
 
 
@@ -46,9 +46,9 @@ SDK_IMPL = $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/acnsdkc
 LIBDIR = $(GCC4MBED_DIR)/acn-embedded/BB-GEVK/NCS36510/acnsdkc
 
 # You may comment the needless shields
-DEFINES += -DUSE_QUADRO_SHIELD
+#DEFINES += -DUSE_QUADRO_SHIELD
 #DEFINES += -DUSE_WIFI_SHIELD
-#DEFINES += -DUSE_POE_SHIELD
+DEFINES += -DUSE_POE_SHIELD
 #DEFINES += -DUSE_DLBS_MOTOR
 DEFINES += -DUSE_STEP_MOTOR
 DEFINES += -DUSE_LED_BALLAST
