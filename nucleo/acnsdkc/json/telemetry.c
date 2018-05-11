@@ -54,27 +54,24 @@ char *telemetry_serialize(arrow_device_t *device, void *d) {
 #else
 #include "x_nucleo_iks01a1_data.h"
 char *telemetry_serialize(arrow_device_t *device, void *d) {
-    static int boot = 1;
   X_NUCLEO_IKS01A1_data *data = (X_NUCLEO_IKS01A1_data *)d;
   JsonNode *_node = json_mkobject();
-  json_append_member(_node, p_const(TELEMETRY_DEVICE_HID), json_mkstring(P_VALUE(device->hid)));
-  json_append_member(_node, p_const(TELEMETRY_TEMPERATURE), json_mknumber(TO_FAHRENHEIT(data->ht_temperature)));
-  json_append_member(_node, p_const("i|boot"), json_mknumber(boot));
-  json_append_member(_node, p_const("f|lpsTemperature"), json_mknumber(data->pt_temperature));
-  json_append_member(_node, p_const(TELEMETRY_HUMIDITY), json_mknumber(data->humidity));
-  json_append_member(_node, p_const(TELEMETRY_BAROMETER), json_mknumber(data->pressure));
-  json_append_member(_node, p_const(TELEMETRY_ACCELEROMETER_X), json_mknumber(data->accelerometer.x));
-  json_append_member(_node, p_const(TELEMETRY_ACCELEROMETER_Y), json_mknumber(data->accelerometer.y));
-  json_append_member(_node, p_const(TELEMETRY_ACCELEROMETER_Z), json_mknumber(data->accelerometer.z));
-  json_append_member(_node, p_const(TELEMETRY_GYROMETER_X), json_mknumber(data->gyrometer.x));
-  json_append_member(_node, p_const(TELEMETRY_GYROMETER_Y), json_mknumber(data->gyrometer.y));
-  json_append_member(_node, p_const(TELEMETRY_GYROMETER_Z), json_mknumber(data->gyrometer.z));
-  json_append_member(_node, p_const(TELEMETRY_MAGNETOMETER_X), json_mknumber(data->magnetometer.x));
-  json_append_member(_node, p_const(TELEMETRY_MAGNETOMETER_Y), json_mknumber(data->magnetometer.y));
-  json_append_member(_node, p_const(TELEMETRY_MAGNETOMETER_Z), json_mknumber(data->magnetometer.z));
+  json_append_member(_node, TELEMETRY_DEVICE_HID, json_mkstring(P_VALUE(device->hid)));
+  json_append_member(_node, TELEMETRY_TEMPERATURE, json_mknumber(TO_FAHRENHEIT(data->ht_temperature)));
+  json_append_member(_node, "f|lpsTemperature", json_mknumber(data->pt_temperature));
+  json_append_member(_node, TELEMETRY_HUMIDITY, json_mknumber(data->humidity));
+  json_append_member(_node, TELEMETRY_BAROMETER, json_mknumber(data->pressure));
+  json_append_member(_node, TELEMETRY_ACCELEROMETER_X, json_mknumber(data->accelerometer.x));
+  json_append_member(_node, TELEMETRY_ACCELEROMETER_Y, json_mknumber(data->accelerometer.y));
+  json_append_member(_node, TELEMETRY_ACCELEROMETER_Z, json_mknumber(data->accelerometer.z));
+  json_append_member(_node, TELEMETRY_GYROMETER_X, json_mknumber(data->gyrometer.x));
+  json_append_member(_node, TELEMETRY_GYROMETER_Y, json_mknumber(data->gyrometer.y));
+  json_append_member(_node, TELEMETRY_GYROMETER_Z, json_mknumber(data->gyrometer.z));
+  json_append_member(_node, TELEMETRY_MAGNETOMETER_X, json_mknumber(data->magnetometer.x));
+  json_append_member(_node, TELEMETRY_MAGNETOMETER_Y, json_mknumber(data->magnetometer.y));
+  json_append_member(_node, TELEMETRY_MAGNETOMETER_Z, json_mknumber(data->magnetometer.z));
   char *tmp = json_encode(_node);
   json_delete(_node);
-  boot = 0;
   return tmp;
 }
 #endif
