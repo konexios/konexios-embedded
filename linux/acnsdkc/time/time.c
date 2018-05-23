@@ -29,3 +29,20 @@ void get_time(char *ts) {
 inline int msleep(int ms) {
     return usleep(ms*1000);
 }
+
+void timestamp(timestamp_t *ts) {
+    struct tm *tmp;
+    int ms;
+    time_t s = time(NULL);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    tmp = gmtime(&s);
+    ms = (tv.tv_usec/1000)%1000;
+    ts->year = 1900 + tmp->tm_year;
+    ts->mon = 1 + tmp->tm_mon;
+    ts->day = tmp->tm_mday;
+    ts->hour = tmp->tm_hour;
+    ts->min = tmp->tm_min;
+    ts->sec = tmp->tm_sec;
+    ts->msec = ms;
+}
