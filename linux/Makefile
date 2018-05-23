@@ -5,7 +5,7 @@ APP_OUT = ${APP_NAME}.bin
 
 PROJECT = arrow 
 LIBDIR = .build
-WOLFSSL = yes
+WOLFSSL = no
 CJSON = yes
 GCC_BIN =
 GCC_PREFIX =
@@ -40,13 +40,22 @@ ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
 endif
 
+SDK_INCLUDES += -I$(SDK_PATH)/src/wolfSSL
+SDK_INCLUDES += -I$(SDK_PATH)/src/wolfSSL/wolfssl
+
+SDK_SRC   += $(SDK_PATH)/src/wolfSSL/wolfcrypt/src/sha256.c
+SDK_SRC   += $(SDK_PATH)/src/wolfSSL/wolfcrypt/src/sha.c
+SDK_SRC   += $(SDK_PATH)/src/wolfSSL/wolfcrypt/src/hmac.c
+SDK_SRC   += $(SDK_PATH)/src/wolfSSL/wolfcrypt/src/md5.c
+SDK_SRC   += $(SDK_PATH)/src/ssl/crypt.c
+SDK_SRC   += $(SDK_PATH)/src/ssl/md5sum.c
+
 -include $(SDK_PATH)/Makefile.sdk
 
 $(info $(CC))
 
 CSRCS	+= $(shell find $(PWD)/acnsdkc -name "*.c")
 CPPSRCS += $(wildcard $(PWD)/*.cpp)
-
 
 COBJS := $(CSRCS:%.c=%.o)
 CPPOBJS := $(CPPSRCS:%.cpp=%.o)
@@ -55,13 +64,10 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 CPPDEPS += $(CSRCS:%.c=%.d)
 
 LIBRARY_PATHS = -L$(PWD)/$(LIBDIR)
-LIBRARIES = -lsensors -lacnsdkc -lpthread
+LIBRARIES = -lacnsdkc
 
 LD_FLAGS = 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--gc-sections
-
-# LD_SYS_LIBS += -lcurl 
-# -Wl,--wrap=malloc,--wrap=free,--wrap=realloc,--wrap=calloc,--wrap=valloc,--wrap=aligned_alloc,--wrap=memalign,--wrap=pvalloc,--wrap=posix_memalign,--wrap=strdup
 
 
 ifeq ($(DEBUG), 1)
