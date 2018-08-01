@@ -8,8 +8,8 @@ ArrowConnect SDK expects a private.h header file with fallback definitions for A
 
 ## Hardware ##
 
-SAMW25 Xplained PRO Development board - https://www.arrow.com/en/reference-designs/atsamw25-xpro-sam-w25-xplained-pro-evaluation-kit-based-on-the-industry-leading-low-power-24ghz-ieee-80211-bgn-wi-fi-atwinc1500-soc/bbdb6688c9017c58f9465dbef8667705
-CRYPTOAUTH-XPRO-B - https://www.arrow.com/en/products/atcryptoauth-xpro-b/microchip-technology
+SAMW25 Xplained PRO Development board - https://www.arrow.com/en/reference-designs/atsamw25-xpro-sam-w25-xplained-pro-evaluation-kit-based-on-the-industry-leading-low-power-24ghz-ieee-80211-bgn-wi-fi-atwinc1500-soc/bbdb6688c9017c58f9465dbef8667705  
+CRYPTOAUTH-XPRO-B - https://www.arrow.com/en/products/atcryptoauth-xpro-b/microchip-technology  
 
 The jumper settings for the CRYPTOAUTH board must enable the ECC608A chip.  The ECC608A must also be listening for communication on address 0xCC on the I2C bus. Programming software for the address byte on the ECC608A chip will be uploaded to this repository as it is finalized.
 
@@ -34,11 +34,11 @@ Example of commands used to program the SAMW25 are:
 
 The system includes a UART based terminal application that allow a user to set variables, display variables, and command the system to execute different functions.  By default this menu is shown on startup
 
-The UART settings are 115200 baud 8-N-1.  Putty is the preferred terminal application to connect to the example system. [https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html]
+The UART settings are 115200 baud 8-N-1.  Putty is the preferred terminal application to connect to the example system. https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
 
-Instructions on connecting to the device can be found here: [http://bit.ly/2mP6S5k]
+Instructions on connecting to the device can be found here: http://bit.ly/2mP6S5k
 
-Instructions on the operation of the system can be found here: [http://bit.ly/2Lx3iM1]
+Instructions on the operation of the system can be found here: http://bit.ly/2Lx3iM1
 
 ## Setup WiFi ##
 
@@ -67,5 +67,5 @@ To disconnect from ArrowConnect, type 'stop' and press enter
 
 To send a message to ArrowConnect, press the USER button, or type 'send' and press enter
 
-A dashboard showing all messages and the number of connections from devices, can be found here [http://bit.ly/2LTx6BL]
+A dashboard showing all messages and the number of connections from devices, can be found here http://bit.ly/2LTx6BL
 

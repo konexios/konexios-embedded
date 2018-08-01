@@ -13,5 +13,7 @@ mbed	-		The stm32-nucleo project
 
 SenseAbility.cydsn -	The Cypress CY8CKIT-042-BLE SeanseAbility2.0 project
 
+SAMW25-ECC608A-ACT2018 - Microchip SAMW25 + Microchip ECC608A security chip demo for ACT 2018
+
 xtensa	-		The SX_ULPGN (QCA4010) project
 
