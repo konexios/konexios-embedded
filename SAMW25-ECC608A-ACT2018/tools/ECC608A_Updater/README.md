@@ -6,6 +6,8 @@ This project is a programming tool that will update the I2C address of a ECC608A
 
 SAMD20 XPRO Development board - https://www.arrow.com/en/reference-designs/atsamd20-xpro-sam-d20-xplained-pro-evaluation-kit-to-evaluate-the-atsamd20j18a-microcontroller/781059284999af2c89a9c74122d37f6b
 
+CRYPTOAUTH-XPRO-B - https://www.arrow.com/en/products/atcryptoauth-xpro-b/microchip-technology
+
 ## Usage ##
 
 * Open the CypherCryptoUpdater.atsln using Atmel Studio 7.0

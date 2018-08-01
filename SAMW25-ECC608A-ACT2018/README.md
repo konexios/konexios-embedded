@@ -9,6 +9,7 @@ ArrowConnect SDK expects a private.h header file with fallback definitions for A
 ## Hardware ##
 
 SAMW25 Xplained PRO Development board - https://www.arrow.com/en/reference-designs/atsamw25-xpro-sam-w25-xplained-pro-evaluation-kit-based-on-the-industry-leading-low-power-24ghz-ieee-80211-bgn-wi-fi-atwinc1500-soc/bbdb6688c9017c58f9465dbef8667705  
+
 CRYPTOAUTH-XPRO-B - https://www.arrow.com/en/products/atcryptoauth-xpro-b/microchip-technology  
 
 The jumper settings for the CRYPTOAUTH board must enable the ECC608A chip.  The ECC608A must also be listening for communication on address 0xCC on the I2C bus. Programming software for the address byte on the ECC608A chip will be uploaded to this repository as it is finalized.
