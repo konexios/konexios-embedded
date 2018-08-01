@@ -34,7 +34,7 @@ Example of commands used to program the SAMW25 are:
 
 The system includes a UART based terminal application that allow a user to set variables, display variables, and command the system to execute different functions.  By default this menu is shown on startup
 
-The UART settings are 115200 buad 8-N-1.  Putty is the preferred terminal application to connect to the example system. [https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html]
+The UART settings are 115200 baud 8-N-1.  Putty is the preferred terminal application to connect to the example system. [https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html]
 
 Instructions on connecting to the device can be found here: [http://bit.ly/2mP6S5k]
 
@@ -42,7 +42,7 @@ Instructions on the operation of the system can be found here: [http://bit.ly/2L
 
 ## Setup WiFi ##
 
-The WiFi subsystem on the dev board is configured to automatially connect to the following access point:
+The WiFi subsystem on the dev board is configured to automatically connect to the following access point:
 
 * SSID: Arrow Connect
 * Key: ArrowDemo0
