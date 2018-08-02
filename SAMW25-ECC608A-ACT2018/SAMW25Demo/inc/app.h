@@ -12,8 +12,12 @@
 #define __APP_H__
 
 #define NTP_POOL_SERVER		"pool.ntp.org"
-#define NTP_ARROW_SERVER	"ussdendc012p.arrownao.corp.arrow.com"
-#define NTP_ARROW_SERVERIP	"10.240.112.52"
+
+// If running internally on the Arrow network, update the 
+// following definition to a correct Arrow server URL.
+#ifndef  NTP_ARROW_SERVER
+#define NTP_ARROW_SERVER	"define.internal.url.in.projectsymbols"
+#endif
 
 void app_main_task(void * p);
 
