@@ -2,7 +2,7 @@
 #include "espressif/esp_common.h"
 #include "esp/uart.h"
 #include <stdarg.h>
-#include <arrow/mem.h>
+#include <sys/mem.h>
 
 static char dbg_buffer[DBG_LINE_SIZE];
 

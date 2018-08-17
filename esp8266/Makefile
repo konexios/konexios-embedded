@@ -37,6 +37,9 @@ CC_SYMBOLS := \
  -DGITSHORTREV="7cd1afc" \
  -DDEBUG \
  -D_USE_LONG_TIME_T \
+ -DARCH_SOCK \
+ -DARCH_SSL \
+ -DARCH_TYPE \
  -DNO_SOFTWARE_UPDATE \
  -DNO_RELEASE_UPDATE \
  -D__AMICA__
@@ -184,15 +187,15 @@ endif
 
 # -- libmain
 $(LIBDIR)/%.o : $(ESP_OPEN_RTOS_PATH)/%.c
-	$(call dir_make,$@) $(QUIET)
+	$(call make_dir_for_file,$@) $(QUIET)
 	$(CC) $(OPT) $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 	
 $(LIBDIR)/%.o : $(ESP_OPEN_RTOS_PATH)/%.S
-	$(call dir_make,$@) $(QUIET)
+	$(call make_dir_for_file,$@) $(QUIET)
 	$(CC) $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 	
 $(LIBDIR)/%.o : $(ESP_OPEN_RTOS_PATH)/%.cpp
-	$(call dir_make,$@) $(QUIET)
+	$(call make_dir_for_file,$@) $(QUIET)
 	$(CC) $(XX_FLAGS) $(CC_SYMBOLS) $(INCLUDES) -c $< -o $@
 
 $(LIBDIR)/open_esplibs_libmain.a: $(LIBMAIN_OBJS)
@@ -302,7 +305,7 @@ $(SDKLIB):
 
 # Remove comment lines from <libname>.remove files
 $(SDKLIB)/%.remove: $(ESP_OPEN_RTOS_PATH)/lib/%.remove | $(SDKLIB)
-	$(call dir_make,$@) $(QUIET)
+	$(call make_dir_for_file,$@) $(QUIET)
 	grep -v "^#" $< | cat > $@
 	
 # Stage 1: remove unwanted object files listed in <libname>.remove alongside each library
@@ -313,6 +316,6 @@ $(SDKLIB)/%_stage1.a: $(ESP_OPEN_RTOS_PATH)/lib/%.a $(SDKLIB)/%.remove | $(SDKLI
 
 # Stage 2: Redefine all SDK symbols as sdk_, weaken all symbols.
 $(SDKLIB)/%.a: $(SDKLIB)/%_stage1.a $(ESP_OPEN_RTOS_PATH)/lib/allsymbols.rename
-	$(call dir_make,$@) $(QUIET)
+	$(call make_dir_for_file,$@) $(QUIET)
 	echo "SDK processing stage 2: Renaming symbols in SDK library $< -> $@"
 	$(OBJCOPY) --redefine-syms $(word 2,$^) --weaken $< $@

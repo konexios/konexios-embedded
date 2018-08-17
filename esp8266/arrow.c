@@ -10,9 +10,10 @@
 
 #include "ssid_config.h"
 
+#include <time/time.h>
 #include <ntp/ntp.h>
 #include <arrow/routine.h>
-#include <arrow/sys.h>
+#include <sys/reboot.h>
 #include <debug.h>
 #include <json/data.h>
 
@@ -30,6 +31,7 @@
 void _exit(int status) {
     SSP_PARAMETER_NOT_USED(status);
     reboot();
+    while(1);
 }
 
 ds18b20_addr_t addrs[MAX_SENSORS];
@@ -42,12 +44,15 @@ int get_data(void *data) {
   sig->temperature = temps[0];
   DBG("data [%d] {%2.4f}", data_counter, sig->temperature);
   data_counter ++;
+  return 0;
 }
 
 void arrow_task(void *pvParameters) {
     SSP_PARAMETER_NOT_USED(pvParameters);
     gpio_set_pullup(SENSOR_GPIO, true, true);
     int sensor_count = ds18b20_scan_devices(SENSOR_GPIO, addrs, MAX_SENSORS);
+
+    arrow_init();
     DBG("scan %d sensors", sensor_count);
     printf("HTTP get task starting...\r\n");
 
@@ -59,26 +64,35 @@ void arrow_task(void *pvParameters) {
     DBG("IP: " IPSTR, IP2STR(&info.ip));
     DBG("start NTP cient");
 
-    ntp_set_time_cycle();
+    if ( ntp_set_time_cycle() < 0 ) reboot();
 
     msleep(1000);
     time_t now = time(NULL);
     DBG("ctime %s", ctime(&now));
 
-    arrow_initialize_routine();
+    int ret = arrow_initialize_routine();
+    if ( ret != ROUTINE_SUCCESS ) {
+        msleep(5000);
+        reboot();
+    }
 
     temp_data_t tp;
-
     get_data(&tp);
-    arrow_send_telemetry_routine(&tp);
+//    arrow_send_telemetry_routine(&tp);
 
-    arrow_mqtt_connect_routine();
+    int retry = 0;
+    while ( arrow_mqtt_connect_routine() < 0 ) {
+        RETRY_UP(retry, { reboot(); });
+        msleep(2000);
+    }
 
     DBG("---------");
 
     arrow_mqtt_send_telemetry_routine(get_data, &tp);
 
     arrow_close();
+
+    reboot();
 }
 
 void user_init(void)

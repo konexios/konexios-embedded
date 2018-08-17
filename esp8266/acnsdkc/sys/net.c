@@ -9,6 +9,6 @@
 #include "espressif/esp_common.h"
 
 int get_mac_address(char *mac) {
-  return sdk_wifi_get_macaddr(STATION_IF, mac)?0:-1;
+  return sdk_wifi_get_macaddr(STATION_IF, (uint8_t *)mac)?0:-1;
 }
 

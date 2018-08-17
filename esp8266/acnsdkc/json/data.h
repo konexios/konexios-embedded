@@ -1,7 +1,7 @@
 #if !defined(_XCC_DATA_H_)
 #define _XCC_DATA_H_
 
-#include <unint.h>
+#include <sys/type.h>
 #include "ds18b20/ds18b20.h"
 
 typedef struct {

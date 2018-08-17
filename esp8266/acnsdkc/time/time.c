@@ -11,6 +11,7 @@
 #include "task.h"
 #include <stdio.h>
 #include <debug.h>
+#include <espressif/esp_system.h>
 
 #define __millis()  (xTaskGetTickCount() * portTICK_PERIOD_MS)
 
@@ -35,7 +36,7 @@ int msleep(int m_sec) {
 
 static char buf[120];
 char *ctime(const time_t* timer) {
-    int r = snprintf(buf, 120, "workaround %d", *timer);
+    int r = snprintf(buf, 120, "workaround %d", (int)*timer);
     buf[r] = 0;
     return buf;
 }
@@ -100,7 +101,7 @@ int gettimeofday(struct timeval* tvp, void* tzp __attribute__((unused))) {
 static uint32_t time_offset = 0;
 
 #include <debug.h>
-int stime(time_t *timer) {
+int stime(const time_t *timer) {
     DBG("set time %d", *timer);
   if (timer) time_offset = *timer - time(NULL);
   return 0;
@@ -129,4 +130,19 @@ time_t time(time_t *t) {
 #endif
 }
 
-
+void timestamp(timestamp_t *ts) {
+    struct tm *tmp;
+    int ms;
+    time_t s = time(NULL);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    tmp = gmtime(&s);
+    ms = (tv.tv_usec/1000)%1000;
+    ts->year = 1900 + tmp->tm_year;
+    ts->mon = 1 + tmp->tm_mon;
+    ts->day = tmp->tm_mday;
+    ts->hour = tmp->tm_hour;
+    ts->min = tmp->tm_min;
+    ts->sec = tmp->tm_sec;
+    ts->msec = ms;
+}

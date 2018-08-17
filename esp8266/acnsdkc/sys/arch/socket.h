@@ -9,7 +9,7 @@
 #ifndef _ESP8266_BSD_SOCKET_H_
 #define _ESP8266_BSD_SOCKET_H_
 
-#include <unint.h>
+#include <sys/type.h>
 #include <bsd/inet.h>
 #include <lwip/api.h>
 #include <lwip/sockets.h>
