@@ -15,3 +15,6 @@ SenseAbility.cydsn -	The Cypress CY8CKIT-042-BLE SeanseAbility2.0 project
 
 xtensa	-		The SX_ULPGN (QCA4010) project
 
+esp8266 - 		The ESP firmware based on the esp-open-sdk and esp-open-rtos projects.
+			You can clone esp repos in some root dir. After you also can clone acn-embedded repo into this root dir.
+			
