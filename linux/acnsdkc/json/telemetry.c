@@ -26,7 +26,7 @@ char *telemetry_serialize(arrow_device_t *device, void *data) {
 #else
 #include "json/pm.h"
 
-property_t telemetry_serialize(arrow_device_t *device, void *data) {
+JsonNode *telemetry_serialize_json(arrow_device_t *device, void *data) {
     static int boot = 1;
     JsonNode *_node = json_mkobject();
     pm_data_t *pm_data = (pm_data_t *)data;
@@ -35,9 +35,7 @@ property_t telemetry_serialize(arrow_device_t *device, void *data) {
     json_append_member(_node, p_const("i|PM10"), json_mknumber(pm_data->pm_10));
     json_append_member(_node, p_const("i|boot"), json_mknumber(boot));
     boot = 0;
-    property_t tmp = json_encode_property(_node);
-    json_delete(_node);
-    return tmp;
+    return _node;
 }
 
 
