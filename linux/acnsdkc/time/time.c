@@ -30,7 +30,7 @@ inline int msleep(int ms) {
     return usleep(ms*1000);
 }
 
-void timestamp(timestamp_t *ts) {
+void timestamp(acn_timestamp_t *ts) {
     struct tm *tmp;
     int ms;
     time_t s = time(NULL);

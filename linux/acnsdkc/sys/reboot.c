@@ -14,4 +14,6 @@
 void reboot(void) {
     char *argv[64] = { "./updater", "update.file" };
     execvp(*argv, argv);
+    while(1)
+        ;
 }

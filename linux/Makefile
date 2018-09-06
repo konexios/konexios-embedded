@@ -36,7 +36,7 @@ CC_SYMBOLS = -DTOOLCHAIN_GCC \
 	-DARCH_TYPE -DARCH_SOCK -DARCH_SSL \
 	-Werror -Wpedantic -Wno-variadic-macros 
 
-# CC_SYMBOLS += -O0 -g -DVALGRIND_TEST=20
+CC_SYMBOLS += -O0 -g -DVALGRIND_TEST=5
 
 ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
