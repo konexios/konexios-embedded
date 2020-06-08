@@ -286,7 +286,8 @@ void StartDefaultTask(void const * argument)
   arrow_software_release_dowload_set_cb(
               NULL,
               arrow_release_download_payload,
-              arrow_release_download_complete);
+              arrow_release_download_complete,
+              NULL);
 #endif
   WIFI_Ecn_t security_mode; //WIFI_ECN_WPA_WPA2_PSK;
   restore_wifi_setting(ssid, psk, (int*)&security_mode);
@@ -347,7 +348,8 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
-  arrow_mqtt_events_init();
+  //arrow_mqtt_events_init();
+  arrow_init();
   arrow_command_handler_add("wifiup", wifi_module_update);
 
   // sycn time by the NTP
@@ -361,7 +363,7 @@ void StartDefaultTask(void const * argument)
   DBG("Time is set to (UTC): %s", ctime(&ctTime));
 
   // init a gateway and device by the cloud
-  while( arrow_initialize_routine() != ROUTINE_SUCCESS ) {
+  while( arrow_initialize_routine(0) != ROUTINE_SUCCESS ) {
       msleep(TELEMETRY_DELAY);
   }
 

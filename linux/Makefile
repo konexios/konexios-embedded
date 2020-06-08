@@ -34,7 +34,8 @@ ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
 CC_SYMBOLS = -DTOOLCHAIN_GCC \
         -DDEBUG -Wextra -DNO_SOFTWARE_UPDATE \
 	-DARCH_TYPE -DARCH_SOCK -DARCH_SSL \
-	-Werror -Wpedantic -Wno-variadic-macros 
+  -Wpedantic -Wno-variadic-macros 
+#	-Werror -Wpedantic -Wno-variadic-macros 
 
 CC_SYMBOLS += -O0 -g -DVALGRIND_TEST=5
 

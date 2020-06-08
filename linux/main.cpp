@@ -181,11 +181,11 @@ int main() {
     gettimeofday(&init_time, NULL);
     int ttt = 0;
 do {
-    while ( arrow_initialize_routine() < 0 ) {
+    while ( arrow_initialize_routine(0) < 0 ) {
         msleep(TELEMETRY_DELAY);
     }
 
-    arrow_device_states_sync();
+    //arrow_device_states_sync();
 
     pm_data_t d;
     get_telemetry_data(&d);
