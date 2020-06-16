@@ -7,7 +7,7 @@
  */
 
 #include "json/telemetry.h"
-#include <config.h>
+#include <konexios_config.h>
 #include <json/json.h>
 #include <json/data.h>
 #include <debug.h>

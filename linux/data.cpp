@@ -1,4 +1,4 @@
-#include <config.h>
+#include <konexios_config.h>
 #include <json/telemetry.h>
 #include <iostream>
 #if defined(__probook_4540s__)

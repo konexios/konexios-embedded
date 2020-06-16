@@ -7,7 +7,7 @@
  */
 
 extern "C" {
-#include <config.h>
+#include <konexios_config.h>
 #include <ntp/ntp.h>
 #include <time/time.h>
 #include <arrow/events.h>

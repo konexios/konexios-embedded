@@ -1,3 +1,8 @@
-[submodule "acn-sdk-c"]
-	path = acn-sdk-c
-	url = ../acn-sdk-c.git
+[submodule "konexios-sdk-c"]
+	path = konexios-sdk-c
+	url = https://github.com/konexios/konexios-sdk-c.git
+	branch = develop
+[submodule "linux/acn-sdk-c"]
+	path = linux/acn-sdk-c
+	url = https://github.com/konexios/konexios-sdk-c.git
+	branch = develop
