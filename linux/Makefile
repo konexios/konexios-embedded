@@ -1,4 +1,6 @@
 default: all
+:q!
+
 
 APP_NAME = arrow
 APP_OUT = ${APP_NAME}.bin
@@ -14,7 +16,7 @@ PLATFORM = linux
 SDK_PATH = $(abspath ../acn-sdk-c/)
 SDK_IMPL = $(PWD)/acnsdkc
 
-COMMON_FLAGS = -Os \
+COMMON_FLAGS = -g3 -O0 \
                -Wall \
                -Wextra \
                -Wno-unused-parameter \
@@ -37,7 +39,8 @@ CC_SYMBOLS = -DTOOLCHAIN_GCC \
   -Wpedantic -Wno-variadic-macros 
 #	-Werror -Wpedantic -Wno-variadic-macros 
 
-CC_SYMBOLS += -O0 -g -DVALGRIND_TEST=5
+#CC_SYMBOLS += -O0 -g -DVALGRIND_TEST=5
+CC_SYMBOLS += -O0 -g3 -DVALGRIND_TEST=5
 
 ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
@@ -68,9 +71,11 @@ LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--gc-sections
 
 
 ifeq ($(DEBUG), 1)
-  CC_FLAGS += -DDEBUG -O0
+#  CC_FLAGS += -DDEBUG -O0
+   CC_FLAGS += -DDEBUG -O0
 else
-  CC_FLAGS += -DNDEBUG -Os
+#  CC_FLAGS += -DNDEBUG -Os
+   CC_FLAGS += -DDEBUG -O0
 endif
 
 ifneq ($(MAKECMDGOALS),clean)

@@ -62,6 +62,7 @@ void show_json_obj(JsonNode *o) {
     switch(tmp->tag) {
     case JSON_NULL:
         printf("v:null\r\n");
+        break;
     case JSON_STRING:
         printf("v:[%s]\r\n", P_VALUE( tmp->string_) );
         break;
@@ -153,7 +154,6 @@ int main() {
     time_t ctTime = time(NULL);
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
-    
     // start Arrow Connect
     if ( arrow_init() < 0 ) return -1;
 
@@ -162,10 +162,11 @@ int main() {
 #endif
 
 #if !defined(NO_SOFTWARE_RELEASE)
-    /*arrow_software_release_dowload_set_cb(
+    arrow_software_release_dowload_set_cb(
                 NULL,
                 arrow_release_download_payload,
-                arrow_release_download_complete);*/
+                arrow_release_download_complete,
+                NULL);
 #endif
 
 #if !defined(NO_EVENTS)
@@ -184,10 +185,12 @@ do {
     while ( arrow_initialize_routine(0) < 0 ) {
         msleep(TELEMETRY_DELAY);
     }
-
-    //arrow_device_states_sync();
-
+    arrow_startup_sequence(0);
+    #if defined(__probook_4540s__)
+    probook_data_t d;
+    #else
     pm_data_t d;
+    #endif
     get_telemetry_data(&d);
     arrow_send_telemetry_routine(&d);
     std::cout<<"send telemetry via API"<<std::endl;
@@ -217,8 +220,6 @@ do {
     pthread_join(commandthread, NULL);
     pthread_join(commandprocthread, NULL);
 #else
-
-    pm_data_t data;
     int mqtt_routine_act = 1;
     arrow_mqtt_connect_routine();
     while ( mqtt_routine_act ) {
@@ -247,7 +248,7 @@ do {
 //            arrow_mqtt_connect_routine();
         }
 #endif
-        int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &data);
+        int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &d);
         switch ( ret ) {
 #if !defined(NO_EVENTS)
         case ROUTINE_RECEIVE_EVENT:

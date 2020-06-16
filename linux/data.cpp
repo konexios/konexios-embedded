@@ -3,6 +3,7 @@
 #include <iostream>
 #if defined(__probook_4540s__)
 #include <sensors/sensors.h>
+#include <json/probook.h>
 #else
 #include <stdlib.h>
 #include <json/pm.h>

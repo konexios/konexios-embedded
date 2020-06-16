@@ -64,7 +64,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
-
 osThreadId defaultTaskHandle;
 osMutexId consoleMutexHandle;
 
@@ -348,7 +347,7 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
-  //arrow_mqtt_events_init();
+  arrow_mqtt_events_init();
   arrow_init();
   arrow_command_handler_add("wifiup", wifi_module_update);
 
@@ -362,10 +361,11 @@ void StartDefaultTask(void const * argument)
   ctTime = time(NULL);
   DBG("Time is set to (UTC): %s", ctime(&ctTime));
 
+
   // init a gateway and device by the cloud
   while( arrow_initialize_routine(0) != ROUTINE_SUCCESS ) {
       msleep(TELEMETRY_DELAY);
-  }
+ }
 
   int mqtt_routine_act = 1;
   while ( mqtt_routine_act ) {
