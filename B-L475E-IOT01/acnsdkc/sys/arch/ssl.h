@@ -43,21 +43,18 @@
 #define NO_SESSION_CACHE // For Small RAM
 #define WOLFSSL_LOW_MEMORY
 #define WOLFSSL_SMALL_STACK
-#define USE_FAST_MATH
+//#define USE_FAST_MATH
 #define NEED_AES_TABLES
 #define TFM_TIMING_RESISTANT
 #define LARGE_STATIC_BUFFERS
-#define ALT_ECC_SIZE
+//#define ALT_ECC_SIZE
 #define RSA_LOW_MEM
 #define NO_WOLFSSL_MEMORY
 #define WOLFSSL_NO_VERIFYSERVER
 #define NO_FILESYSTEM
-//#define NO_CERT
 #define HAVE_TM_TYPE
 #ifndef WOLFSSL_NO_VERIFYSERVER
     #define TIME_OVERRIDES
     #define XTIME time
     #define XGMTIME localtime
 #endif
-
-

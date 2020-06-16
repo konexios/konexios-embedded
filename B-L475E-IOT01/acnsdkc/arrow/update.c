@@ -52,10 +52,10 @@ int wifi_module_update(const char *str) {
 	JsonNode *_main = json_decode(str);
 	if ( !_main )
 		goto wifi_exit;
-	JsonNode *_link = json_find_member(_main, "link");
-	if ( !_link || !_link->string_ )
+	JsonNode *_link = json_find_member(_main, p_const("link"));
+	if ( !_link || !P_VALUE(_link->string_) )
 		goto wifi_exit;
-	if ( WIFI_ModuleFirmwareUpdate(_link->string_) == WIFI_STATUS_OK )
+	if ( WIFI_ModuleFirmwareUpdate(P_VALUE(_link->string_)) == WIFI_STATUS_OK )
 		ret = 0;
 wifi_exit:
 	json_delete(_main);
