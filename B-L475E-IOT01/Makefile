@@ -124,8 +124,8 @@ APP_SRC += $(PRJ_PATH)/Src/sensors_data.c
 APP_SRC += $(wildcard $(PWD)/Src/vl*.c)
 APP_SRC += $(PRJ_PATH)/Src/stm32l4xx_it.c
 
-ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/*.c)
-ACN_SDK_SRC += $(wildcard $(PWD)/acnsdkc/**/*.c)
+ACN_SDK_SRC += $(wildcard $(PWD)/konexiossdkc/*.c)
+ACN_SDK_SRC += $(wildcard $(PWD)/konexiossdkc/**/*.c)
 
 # bootloader sources
 

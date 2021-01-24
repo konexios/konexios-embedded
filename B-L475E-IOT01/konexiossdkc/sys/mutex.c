@@ -4,7 +4,7 @@
 #include <sys/mem.h>
 #include <semphr.h>
 
-#if defined(ARROW_THREAD)
+#if defined(KONEXIOS_THREAD)
 int konexios_mutex_init(konexios_mutex **mutex) {
     SemaphoreHandle_t mux = xSemaphoreCreateMutex();
     *mutex = mux;
