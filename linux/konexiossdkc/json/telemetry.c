@@ -12,7 +12,7 @@
 #if defined(__probook_4540s__)
 #include "json/probook.h"
 
-property_t telemetry_serialize(arrow_device_t *device, void *data) {
+property_t telemetry_serialize(konexios_device_t *device, void *data) {
     static int boot = 1;
     JsonNode *_node = json_mkobject();
     probook_data_t *pro_data = (probook_data_t *)data;
@@ -25,7 +25,7 @@ property_t telemetry_serialize(arrow_device_t *device, void *data) {
     return tmp;
 }
 
-JsonNode *telemetry_serialize_json(arrow_device_t *device, void *data) {
+JsonNode *telemetry_serialize_json(konexios_device_t *device, void *data) {
     static int boot = 1;
     JsonNode *_node = json_mkobject();
     probook_data_t *pro_data = (probook_data_t *)data;
@@ -39,7 +39,7 @@ JsonNode *telemetry_serialize_json(arrow_device_t *device, void *data) {
 #else
 #include "json/pm.h"
 
-JsonNode *telemetry_serialize_json(arrow_device_t *device, void *data) {
+JsonNode *telemetry_serialize_json(konexios_device_t *device, void *data) {
     static int boot = 1;
     JsonNode *_node = json_mkobject();
     pm_data_t *pm_data = (pm_data_t *)data;
@@ -51,7 +51,7 @@ JsonNode *telemetry_serialize_json(arrow_device_t *device, void *data) {
     return _node;
 }
 
-property_t telemetry_serialize(arrow_device_t *device, void *data) {
+property_t telemetry_serialize(konexios_device_t *device, void *data) {
     static int boot = 1;
     JsonNode *_node = json_mkobject();
     pm_data_t *pm_data = (pm_data_t *)data;

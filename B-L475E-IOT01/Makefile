@@ -1,18 +1,18 @@
 default: all
-VPATH = .. 
+VPATH = ..
 
 PRJ_PATH = $(PWD)
 GCC_BIN =
-PROJECT = arrow
+PROJECT = konexios
 LIBDIR	= .build
 WOLFSSL = yes
 CJSON	= yes
 GCC_BIN =
 GCC_PREFIX = arm-none-eabi
 PLATFORM = stm32l475iot
-SHELL_BASH ?= 
-SDK_PATH = $(abspath ../konexios-sdk-c/)
-SDK_IMPL = $(PWD)/acnsdkc
+SHELL_BASH ?=
+SDK_PATH = $(abspath ../../konexios-sdk-c/)
+SDK_IMPL = $(PWD)/konexiossdkc
 
 FLOAT_ABI = hard
 
@@ -56,7 +56,7 @@ LD_SYS_LIBS = -lm -lc -lgcc -lnosys
 
 # common sources
 
-ASRCS = Src/startup_stm32l475xx.s
+ASRCS = $(PRJ_PATH)/Src/startup_stm32l475xx.s
 
 C_SRC += $(PRJ_PATH)/Src/system_stm32l4xx.c
 C_SRC += $(PRJ_PATH)/Src/stm32l4xx_hal_msp.c
@@ -184,12 +184,12 @@ INCLUDE_PATHS += -I$(PRJ_PATH)/Inc \
                  -I$(PWD)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
                  -I$(PWD)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
-		
+
 
 LIBRARY_PATHS = -L$(PRJ_PATH)/$(LIBDIR)
 LINKER_SCRIPT_APP  = $(PRJ_PATH)/Src/STM32L475VG_FLASH.ld
 LINKER_SCRIPT_BOOT = $(PRJ_PATH)/bootloader/STM32L475VG_BOOT.ld
-LIBRARIES += -lacnsdkc 
+LIBRARIES += -lkonexiossdkc
 # LD_FLAGS += -Wl,--wrap,malloc,--wrap,realloc,--wrap,calloc,--wrap,free,--wrap,strdup,--wrap,strndup
 # -Wl,--wrap,strdup
 # -Wl,--wrap,main -Wl,--wrap,_malloc_r -Wl,--wrap,_free_r -Wl,--wrap,_realloc_r
@@ -199,7 +199,7 @@ CC_FLAGS += -DUSE_LPS22HB_TEMP
 .PHONY: all lst size
 
 #check_settings app_version -- app_settings
-all: $(PROJECT).bin bootloader.bin size 
+all: $(PROJECT).bin bootloader.bin size
 
 .asm.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
@@ -210,7 +210,7 @@ all: $(PROJECT).bin bootloader.bin size
 
 .c.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
-	$(CC)  $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDE_PATHS) -o $@ $<
+	$(CC) $(CC_FLAGS) $(CC_SYMBOLS) $(INCLUDE_PATHS) -o $@ $<
 
 .cpp.o:
 	+@$(MAKEDIR) $(dir $@) $(QUIET)
@@ -237,7 +237,7 @@ size: $(PROJECT).elf bootloader.elf
 	$(SIZE) bootloader.elf
 	$(SIZE) $(PROJECT).elf
 #	cp $(PROJECT).bin $(LIBDIR)/ota_${VERSION}.bin
-	
+
 bootloader.elf: $(SDK_TARGET) $(BOOT_OBJECTS) $(LINKER_SCRIPT_BOOT)
 	$(LD) $(LD_FLAGS) -T$(filter %.ld, $^) $(LIBRARY_PATHS) -o $@ $(filter %.o, $^) -Wl,--start-group $(LIBRARIES) $(LD_SYS_LIBS) -Wl,--end-group
 
@@ -256,6 +256,5 @@ clean: sdk_clean
 	$(RM) $(PROJECT)* $(QUIET)
 	$(RM) $(DEPS) $(QUIET)
 	$(RMDIR) $(LIBDIR) $(QUIET)
-	
--include $(DEPS)
 
+-include $(DEPS)

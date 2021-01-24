@@ -12,17 +12,17 @@
 
 #include <ssl/md5sum.h>
 #include <sys/mem.h>
-#include <arrow/utf8.h>
+#include <konexios/utf8.h>
 #include <sys/watchdog.h>
-#include <arrow/software_release.h>
+#include <konexios/software_release.h>
 #include <debug.h>
 
-//int arrow_software_update(const char *url,
+//int konexios_software_update(const char *url,
 //                          const char *checksum,
 //                          const char *from,
 //                          const char *to) {
 
-//  if ( arrow_gateway_software_update(url) < 0 ) return -1;
+//  if ( konexios_gateway_software_update(url) < 0 ) return -1;
 //  FILE *fp = fopen(pagefilename, "rb");
 //  if ( !fp ) return -1;
 //  int n = 0;
@@ -67,7 +67,7 @@ uint8_t up[0x40000] __attribute__((section("UNINIT_FIXED_LOC_UP")));
 int shift = 0;
 
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(const char *payload, int size, int flag) {
+int konexios_release_download_payload(const char *payload, int size, int flag) {
   BSP_LED_Toggle(LED_GREEN);
   wdt_feed();
   if ( flag == FW_FIRST ) {
@@ -83,7 +83,7 @@ int arrow_release_download_payload(const char *payload, int size, int flag) {
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete(int flag) {
+int konexios_release_download_complete(int flag) {
   wdt_feed();
   int ret = 0;
   if ( flag == FW_SUCCESS ) {

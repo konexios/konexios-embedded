@@ -1,11 +1,9 @@
 default: all
-:q!
 
-
-APP_NAME = arrow
+APP_NAME = konexios
 APP_OUT = ${APP_NAME}.bin
 
-PROJECT = arrow 
+PROJECT = konexios 
 LIBDIR = .build
 WOLFSSL = yes
 CJSON = yes
@@ -13,7 +11,7 @@ GCC_BIN =
 GCC_PREFIX =
 PLATFORM = linux
 
-SDK_PATH = $(abspath ../konexios-sdk-c/)
+SDK_PATH = $(abspath ../../konexios-sdk-c/)
 SDK_IMPL = $(PWD)/acnsdkc
 
 COMMON_FLAGS = -g3 -O0 \

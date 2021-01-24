@@ -13,8 +13,8 @@
 #include <ssl/md5sum.h>
 #include <debug.h>
 #include <sys/mem.h>
-#include <arrow/utf8.h>
-#include <arrow/software_release.h>
+#include <konexios/utf8.h>
+#include <konexios/software_release.h>
 
 #define pagefilename "update.file"
 
@@ -25,7 +25,7 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
   return written;
 }
 
-int arrow_gateway_software_update(const char *url) {
+int konexios_gateway_software_update(const char *url) {
   CURL *curl;
   FILE *pagefile;
 
@@ -55,12 +55,12 @@ int arrow_gateway_software_update(const char *url) {
   return 0;
 }
 
-int arrow_software_update(const char *url,
+int konexios_software_update(const char *url,
                           const char *checksum,
                           const char *from,
                           const char *to) {
 
-  if ( arrow_gateway_software_update(url) < 0 ) return -1;
+  if ( konexios_gateway_software_update(url) < 0 ) return -1;
   FILE *fp = fopen(pagefilename, "rb");
   if ( !fp ) return -1;
   int n = 0;
@@ -83,7 +83,7 @@ int arrow_software_update(const char *url,
 static FILE *test = NULL;
 static int file_size = 0;
 // this function will be executed when http client get a chunk of payload
-int arrow_release_download_payload(const char *payload, int size, int flags) {
+int konexios_release_download_payload(const char *payload, int size, int flags) {
   if ( flags == FW_FIRST ) {
     test = fopen(pagefilename,"wb");
     if (!test) {
@@ -98,7 +98,7 @@ int arrow_release_download_payload(const char *payload, int size, int flags) {
 }
 
 // this function will be executed when firmware file download complete
-int arrow_release_download_complete(int ota_result) {
+int konexios_release_download_complete(int ota_result) {
     if ( ota_result == FW_SUCCESS ) {
         DBG("file size = %d", file_size);
         fclose(test);

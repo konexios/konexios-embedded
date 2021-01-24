@@ -6,16 +6,16 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/storage.h"
-#include <arrow/utf8.h>
+#include "konexios/storage.h"
+#include <konexios/utf8.h>
 #include <debug.h>
 #include <sys/type.h>
-#include <arrow/credentials.h>
+#include <konexios/credentials.h>
 #include "flash.h"
 
 flash_mem_t mem __attribute__((section("UNINIT_FIXED_LOC")));
 
-int restore_gateway_info(arrow_gateway_t *gateway) {
+int restore_gateway_info(konexios_gateway_t *gateway) {
   if ( mem.magic != (int) FLASH_MAGIC_NUMBER ) {
     FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
     return -1;
@@ -28,7 +28,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
   return -1;
 }
 
-void save_gateway_info(const arrow_gateway_t *gateway) {
+void save_gateway_info(const konexios_gateway_t *gateway) {
   if ( gateway && P_SIZE(gateway->hid) < 64 ) {
     uint32_t magic = FLASH_MAGIC_NUMBER;
     if (FLASH_update((uint32_t)&mem.magic, &magic, sizeof(magic)) < 0) {
@@ -40,7 +40,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
   }
 }
 
-int restore_device_info(arrow_device_t *device) {
+int restore_device_info(konexios_device_t *device) {
   if ( mem.magic != (int) FLASH_MAGIC_NUMBER ) {
     FLASH_unlock_erase((uint32_t)&mem, sizeof(mem));
     return -1;
@@ -59,7 +59,7 @@ int restore_device_info(arrow_device_t *device) {
   return 0;
 }
 
-void save_device_info(arrow_device_t *device) {
+void save_device_info(konexios_device_t *device) {
   if ( device ) {
     if ( P_SIZE(device->hid) < 64 ) {
       if (FLASH_update((uint32_t)mem.device_hid, P_VALUE(device->hid), P_SIZE(device->hid)+1) < 0) {

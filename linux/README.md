@@ -31,8 +31,8 @@ or when execute make
 make API_KEY="xxxx" SEC_KEY="yyyyyy" DEV_ENV=1
 
 where DEV_ENV - define the development environment not a production environment:
-API address: pgsdev01.arrowconnect.io
-MQTT address: pgsdev01.arrowconnect.io
+API address: pgsdev01.konexiosconnect.io
+MQTT address: pgsdev01.konexiosconnect.io
 
 
 ## Build ##
@@ -45,5 +45,5 @@ or
 make API_KEY="xxxx" SEC_KEY="yyyyyy"
 
 ## Execute ##
-./linux_arrow.elf
+./linux_konexios.elf
 

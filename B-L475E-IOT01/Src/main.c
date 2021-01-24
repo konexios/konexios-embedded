@@ -55,12 +55,12 @@
 #include <time/time.h>
 #include <sys/watchdog.h>
 #include <ntp/ntp.h>
-#include <arrow/routine.h>
-#include <arrow/mqtt.h>
-#include <arrow/storage.h>
-#include <arrow/events.h>
-#include <arrow/device_command.h>
-#include <arrow/software_release.h>
+#include <konexios/routine.h>
+#include <konexios/mqtt.h>
+#include <konexios/storage.h>
+#include <konexios/events.h>
+#include <konexios/device_command.h>
+#include <konexios/software_release.h>
 
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
@@ -272,8 +272,8 @@ static char ssid[64];
 static char psk[64];
 static char moduleinfo[WIFI_PRODUCT_INFO_SIZE];
 
-extern int arrow_release_download_payload(const char *payload, int size, int flag);
-extern int arrow_release_download_complete(int flag);
+extern int konexios_release_download_payload(const char *payload, int size, int flag);
+extern int konexios_release_download_complete(int flag);
 extern int wifi_module_update(const char *str);
 
 /* StartDefaultTask function */
@@ -282,10 +282,10 @@ void StartDefaultTask(void const * argument)
   SSP_PARAMETER_NOT_USED(argument);
   // setting up the release download callbacks
 #if !defined(NO_RELEASE_UPDATE)
-  arrow_software_release_dowload_set_cb(
+  konexios_software_release_dowload_set_cb(
               NULL,
-              arrow_release_download_payload,
-              arrow_release_download_complete,
+              konexios_release_download_payload,
+              konexios_release_download_complete,
               NULL);
 #endif
   WIFI_Ecn_t security_mode; //WIFI_ECN_WPA_WPA2_PSK;
@@ -347,9 +347,9 @@ void StartDefaultTask(void const * argument)
     DBG("Failed to connect to AP %s",ssid);
   }
 
-  arrow_mqtt_events_init();
-  arrow_init();
-  arrow_command_handler_add("wifiup", wifi_module_update);
+  konexios_mqtt_events_init();
+  konexios_init();
+  konexios_command_handler_add("wifiup", wifi_module_update);
 
   // sycn time by the NTP
   ntp_set_time_cycle();
@@ -363,32 +363,32 @@ void StartDefaultTask(void const * argument)
 
 
   // init a gateway and device by the cloud
-  while( arrow_initialize_routine(0) != ROUTINE_SUCCESS ) {
+  while( konexios_initialize_routine(0) != ROUTINE_SUCCESS ) {
       msleep(TELEMETRY_DELAY);
  }
 
   int mqtt_routine_act = 1;
   while ( mqtt_routine_act ) {
-      arrow_mqtt_connect_routine();
-      if ( arrow_mqtt_has_events() ) {
-          arrow_mqtt_disconnect_routine();
-          while ( arrow_mqtt_has_events() ) {
-              arrow_mqtt_event_proc();
+      konexios_mqtt_connect_routine();
+      if ( konexios_mqtt_has_events() ) {
+          konexios_mqtt_disconnect_routine();
+          while ( konexios_mqtt_has_events() ) {
+              konexios_mqtt_event_proc();
           }
-          arrow_mqtt_connect_routine();
+          konexios_mqtt_connect_routine();
       }
-      int ret = arrow_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
+      int ret = konexios_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
       switch ( ret ) {
       case ROUTINE_RECEIVE_EVENT:
-          arrow_mqtt_disconnect_routine();
-          arrow_mqtt_event_proc();
+          konexios_mqtt_disconnect_routine();
+          konexios_mqtt_event_proc();
           break;
       default:
           break;
       }
   }
-  arrow_close();
-  arrow_mqtt_events_done();
+  konexios_close();
+  konexios_mqtt_events_done();
 }
 
 /**

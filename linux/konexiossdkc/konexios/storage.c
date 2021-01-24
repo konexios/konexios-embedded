@@ -6,10 +6,10 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include "arrow/storage.h"
+#include "konexios/storage.h"
 #include <stdio.h>
 
-int restore_gateway_info(arrow_gateway_t *gateway) {
+int restore_gateway_info(konexios_gateway_t *gateway) {
   static char hid[100];
   FILE *fp;
   fp = fopen("gateway.cfg", "r");
@@ -26,7 +26,7 @@ int restore_gateway_info(arrow_gateway_t *gateway) {
   return -1;
 }
 
-void save_gateway_info(const arrow_gateway_t *gateway) {
+void save_gateway_info(const konexios_gateway_t *gateway) {
   printf("new registration\r\n");
   FILE *fp;
   fp = fopen("gateway.cfg", "w");
@@ -34,7 +34,7 @@ void save_gateway_info(const arrow_gateway_t *gateway) {
   fclose(fp);
 }
 
-int restore_device_info(arrow_device_t *device) {
+int restore_device_info(konexios_device_t *device) {
   static char dev_hid[100];
 #if defined(__IBM__)
   static char dev_eid[100];
@@ -63,7 +63,7 @@ int restore_device_info(arrow_device_t *device) {
   return -1;
 }
 
-void save_device_info(arrow_device_t *device) {
+void save_device_info(konexios_device_t *device) {
   FILE *fp;
   fp = fopen("device.cfg", "w");
   fprintf(fp, "%s\n", P_VALUE(device->hid));

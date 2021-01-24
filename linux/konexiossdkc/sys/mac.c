@@ -14,6 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#if defined(HAVE_SIOCGIFHWADDR)
 int get_mac_address(char *mac) {
     struct ifreq buffer;
     int sock = socket(PF_INET, SOCK_DGRAM, 0);
@@ -27,3 +28,24 @@ int get_mac_address(char *mac) {
     }
     return 0;
 }
+#else
+int get_mac_address(char* mac_addr)
+{
+    ifaddrs* iflist;
+    if (getifaddrs(&iflist) == 0) {
+        for (ifaddrs* cur = iflist; cur; cur = cur->ifa_next) {
+            if ((cur->ifa_addr->sa_family == AF_LINK) &&
+                    (strcmp(cur->ifa_name, if_name) == 0) &&
+                    cur->ifa_addr) {
+                sockaddr_dl* sdl = (sockaddr_dl*)cur->ifa_addr;
+                memcpy(mac_addr, LLADDR(sdl), sdl->sdl_alen);
+                found = true;
+                break;
+            }
+        }
+
+        freeifaddrs(iflist);
+    }
+    return 1;
+}
+#endif

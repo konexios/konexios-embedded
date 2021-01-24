@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #if !defined(EXE_FILE)
-#define EXE_FILE "arrow.bin"
+#define EXE_FILE "konexios.bin"
 #endif
 
 int main(int argc, char* argv[]) {

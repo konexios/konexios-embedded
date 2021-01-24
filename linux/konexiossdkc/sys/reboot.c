@@ -6,12 +6,14 @@
  * Contributors: Arrow Electronics, Inc.
  */
 
-#include <sys/reboot.h>
-#include <time/time.h>
-#include <stm32l4xx_hal.h>
+#include "sys/reboot.h"
+#include <stdio.h>
+#include <unistd.h>
 
+/*
 void reboot(void) {
-  NVIC_SystemReset();
-  msleep(1000*120);
-}
-
+    char *argv[64] = { "./updater", "update.file" };
+    execvp(*argv, argv);
+    while(1)
+        ;
+} */

@@ -10,29 +10,29 @@ extern "C" {
 #include <konexios_config.h>
 #include <ntp/ntp.h>
 #include <time/time.h>
-#include <arrow/events.h>
-#include <arrow/state.h>
-#include <arrow/device_command.h>
+#include <konexios/events.h>
+#include <konexios/state.h>
+#include <konexios/device_command.h>
 #include <stdio.h>
 #include <ssl/md5sum.h>
 #include <ssl/crypt.h>
-#include <arrow/utf8.h>
-#include <arrow/state.h>
+#include <konexios/utf8.h>
+#include <konexios/state.h>
 #if defined(__probook_4540s__)
 #include <json/probook.h>
 #else
 #include <json/pm.h>
 #endif
 
-#include <arrow/routine.h>
-#include <arrow/api/device/device.h>
-#include <arrow/api/device/action.h>
-#include <arrow/api/device/type.h>
-#include <arrow/api/gateway/gateway.h>
-#include <arrow/telemetry_api.h>
-#include <arrow/testsuite.h>
+#include <konexios/routine.h>
+#include <konexios/api/device/device.h>
+#include <konexios/api/device/action.h>
+#include <konexios/api/device/type.h>
+#include <konexios/api/gateway/gateway.h>
+#include <konexios/telemetry_api.h>
+#include <konexios/testsuite.h>
 #include <sys/reboot.h>
-#include <arrow/software_release.h>
+#include <konexios/software_release.h>
 #include <json/decode.h>
 
 struct timeval init_time;
@@ -41,12 +41,12 @@ struct timeval init_time;
 #include <iostream>
 
 #if !defined(NO_SOFTWARE_RELEASE)
-extern "C" int arrow_release_download_payload(const char *payload, int size, int);
-extern "C" int arrow_release_download_complete(int);
+extern "C" int konexios_release_download_payload(const char *payload, int size, int);
+extern "C" int konexios_release_download_complete(int);
 #endif
 
 #if !defined(NO_SOFTWARE_UPDATE)
-extern "C" int arrow_software_update(const char *url,
+extern "C" int konexios_software_update(const char *url,
                                  const char *checksum,
                                  const char *from,
                                  const char *to);
@@ -110,14 +110,14 @@ static void *thread_telemetry(void *arg) {
  printf("Telemetry thread start\r\n");
  *telemetry_act = 1;
  pm_data_t data;
- arrow_mqtt_connect_telemetry_routine();
- int ret = arrow_mqtt_telemetry_routine(get_telemetry_data, &data);
+ konexios_mqtt_connect_telemetry_routine();
+ int ret = konexios_mqtt_telemetry_routine(get_telemetry_data, &data);
  switch ( ret ) {
  default:
      printf("Telemetry thread stop %d\r\n", ret);
      *telemetry_act = 0;
  }
- arrow_mqtt_disconnect_telemetry_routine();
+ konexios_mqtt_disconnect_telemetry_routine();
  pthread_exit(NULL);
  return NULL;
 }
@@ -125,12 +125,12 @@ static void *thread_telemetry(void *arg) {
 static void *thread_command(void *arg) {
  printf("Command thread start\r\n");
  int *telemetry_act = (int *)arg;
- arrow_mqtt_connect_event_routine();
- arrow_routine_error_t ret = ROUTINE_SUCCESS;
+ konexios_mqtt_connect_event_routine();
+ konexios_routine_error_t ret = ROUTINE_SUCCESS;
  while( *telemetry_act && ret == ROUTINE_SUCCESS ) {
-      ret = arrow_mqtt_event_receive_routine();
+      ret = konexios_mqtt_event_receive_routine();
  }
- arrow_mqtt_disconnect_event_routine();
+ konexios_mqtt_disconnect_event_routine();
  pthread_exit(NULL);
  return NULL;
 }
@@ -139,7 +139,7 @@ static void *thread_cmd_proc(void *arg) {
  printf("Command process start\r\n");
  int *telemetry_act = (int *)arg;
  while ( *telemetry_act ) {
-     if ( arrow_mqtt_event_proc() < 0 ) msleep(1000);
+     if ( konexios_mqtt_event_proc() < 0 ) msleep(1000);
  }
  pthread_exit(NULL);
  return NULL;
@@ -155,44 +155,44 @@ int main() {
     std::cout<<"Time is set to (UTC): "<<ctime(&ctTime)<<std::endl;
 
     // start Arrow Connect
-    if ( arrow_init() < 0 ) return -1;
+    if ( konexios_init() < 0 ) return -1;
 
 #if !defined(NO_SOFTWARE_UPDATE)
-    //arrow_software_release_set_cb(&arrow_software_update);
+    //konexios_software_release_set_cb(&konexios_software_update);
 #endif
 
 #if !defined(NO_SOFTWARE_RELEASE)
-    arrow_software_release_dowload_set_cb(
+    konexios_software_release_dowload_set_cb(
                 NULL,
-                arrow_release_download_payload,
-                arrow_release_download_complete,
+                konexios_release_download_payload,
+                konexios_release_download_complete,
                 NULL);
 #endif
 
 #if !defined(NO_EVENTS)
 
-    arrow_device_state_init(2,
+    konexios_device_state_init(2,
                             state_pr(p_const("led"), JSON_BOOL),
                             state_pr(p_const("delay"), JSON_NUMBER));
 
-    arrow_command_handler_add("test", &test_cmd_proc);
-    arrow_command_handler_add("fail", &fail_cmd_proc);
+    konexios_command_handler_add("test", &test_cmd_proc);
+    konexios_command_handler_add("fail", &fail_cmd_proc);
 #endif
 
     gettimeofday(&init_time, NULL);
     int ttt = 0;
 do {
-    while ( arrow_initialize_routine(0) < 0 ) {
+    while ( konexios_initialize_routine(0) < 0 ) {
         msleep(TELEMETRY_DELAY);
     }
-    arrow_startup_sequence(0);
+    konexios_startup_sequence(0);
     #if defined(__probook_4540s__)
     probook_data_t d;
     #else
     pm_data_t d;
     #endif
     get_telemetry_data(&d);
-    arrow_send_telemetry_routine(&d);
+    konexios_send_telemetry_routine(&d);
     std::cout<<"send telemetry via API"<<std::endl;
 
 #if defined(ARROW_THREAD)
@@ -221,13 +221,13 @@ do {
     pthread_join(commandprocthread, NULL);
 #else
     int mqtt_routine_act = 1;
-    arrow_mqtt_connect_routine();
+    konexios_mqtt_connect_routine();
     while ( mqtt_routine_act ) {
 #if !defined(NO_EVENTS)
-        if ( arrow_mqtt_has_events() ) {
+        if ( konexios_mqtt_has_events() ) {
             printf("--------- postponed msg start -----------\r\n");
-//            arrow_mqtt_disconnect_routine();
-            while ( arrow_mqtt_has_events() ) {
+//            konexios_mqtt_disconnect_routine();
+            while ( konexios_mqtt_has_events() ) {
                 struct timeval diff;
                 struct timeval now;
                 gettimeofday(&now, NULL);
@@ -236,7 +236,7 @@ do {
                        diff.tv_sec,
                        diff.tv_usec);
 
-                arrow_mqtt_event_proc();
+                konexios_mqtt_event_proc();
                 struct timeval done;
                 gettimeofday(&done, NULL);
                 timersub(&done, &now, &diff);
@@ -245,15 +245,15 @@ do {
                        diff.tv_usec);
             }
             printf("--------- postponed msg end -----------\r\n");
-//            arrow_mqtt_connect_routine();
+//            konexios_mqtt_connect_routine();
         }
 #endif
-        int ret = arrow_mqtt_send_telemetry_routine(get_telemetry_data, &d);
+        int ret = konexios_mqtt_send_telemetry_routine(get_telemetry_data, &d);
         switch ( ret ) {
 #if !defined(NO_EVENTS)
         case ROUTINE_RECEIVE_EVENT:
-//            arrow_mqtt_disconnect_routine();
-            while ( arrow_mqtt_has_events() ) {
+//            konexios_mqtt_disconnect_routine();
+            while ( konexios_mqtt_has_events() ) {
                 struct timeval now;
                 struct timeval diff;
                 gettimeofday(&now, NULL);
@@ -263,7 +263,7 @@ do {
                        diff.tv_sec,
                        diff.tv_usec);
 
-                arrow_mqtt_event_proc();
+                konexios_mqtt_event_proc();
                 struct timeval done;
                 gettimeofday(&done, NULL);
                 timersub(&done, &now, &diff);
@@ -279,15 +279,15 @@ do {
             break;
 #endif
         default:
-            arrow_mqtt_disconnect_routine();
-            arrow_mqtt_connect_routine();
+            konexios_mqtt_disconnect_routine();
+            konexios_mqtt_connect_routine();
             break;
         }
     }
 #endif
-    arrow_close();
+    konexios_close();
 } while(ttt++ < 3);
-    arrow_deinit();
+    konexios_deinit();
 
     std::cout<<std::endl<<"End"<<std::endl;
     return 0;

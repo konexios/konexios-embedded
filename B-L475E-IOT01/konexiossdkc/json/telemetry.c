@@ -15,7 +15,7 @@
 
 static char tmpdata[250];
 
-property_t telemetry_serialize(arrow_device_t *device, void *data) {
+property_t telemetry_serialize(konexios_device_t *device, void *data) {
   sensors_data_t *data_s = (sensors_data_t *)data;
   JsonNode *_node = json_mkobject();
   int ret;
@@ -49,7 +49,7 @@ property_t telemetry_serialize(arrow_device_t *device, void *data) {
   return tmp;
 }
 
-JsonNode *telemetry_serialize_json(arrow_device_t *device, void *data) {
+JsonNode *telemetry_serialize_json(konexios_device_t *device, void *data) {
   sensors_data_t *data_s = (sensors_data_t *)data;
   JsonNode *_node = json_mkobject();
   int ret;
