@@ -5,3 +5,5 @@ build-*
 *.sh
 *.exp
 *.qbs
+.DS_Store
+.vscode

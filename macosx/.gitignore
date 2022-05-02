@@ -1,0 +1,8 @@
+.build/
+*.cfg
+*.qbs*
+*.elf
+*.bin
+*.o
+*.d
+updater
