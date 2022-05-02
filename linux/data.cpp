@@ -1,6 +1,7 @@
 #include <konexios_config.h>
 #include <json/telemetry.h>
 #include <iostream>
+#include <time/time.h>
 #if defined(__probook_4540s__)
 #include <sensors/sensors.h>
 #include <json/probook.h>
@@ -71,6 +72,7 @@ int get_telemetry_data(void *d) {
   data->pm_10 = rand()%5 + 30;
   std::cout<<"mqtt publish: T("<<data->pm_2_5
           <<", "<<data->pm_10<<")..."<<std::endl;
+  msleep(1000);
 #endif
   return 0;
 }
