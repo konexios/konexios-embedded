@@ -369,25 +369,40 @@ void StartDefaultTask(void const * argument)
 
   int mqtt_routine_act = 1;
   while ( mqtt_routine_act ) {
+      DBG("konexios_mqtt_connect_routine ...");
       konexios_mqtt_connect_routine();
+      DBG("konexios_mqtt_connect_routine done");
       if ( konexios_mqtt_has_events() ) {
+          DBG("konexios_mqtt_disconnect_routine ...");
           konexios_mqtt_disconnect_routine();
+          DBG("konexios_mqtt_disconnect_routine done");
           while ( konexios_mqtt_has_events() ) {
+              DBG("konexios_mqtt_event_proc ...");
               konexios_mqtt_event_proc();
+              DBG("konexios_mqtt_event_proc done");
           }
+          DBG("konexios_mqtt_connect_routine ...");
           konexios_mqtt_connect_routine();
       }
+      DBG("konexios_mqtt_send_telemetry_routine ...");
       int ret = konexios_mqtt_send_telemetry_routine(PrepareMqttPayload, &data);
+      DBG("konexios_mqtt_send_telemetry_routine - ret: %d", ret);
+
       switch ( ret ) {
-      case ROUTINE_RECEIVE_EVENT:
+      case ROUTINE_RECEIVE_EVENT: {
+          DBG("ROUTINE_RECEIVE_EVENT: konexios_mqtt_disconnect_routine ...");
           konexios_mqtt_disconnect_routine();
+          DBG("ROUTINE_RECEIVE_EVENT: konexios_mqtt_event_proc ...");
           konexios_mqtt_event_proc();
           break;
+      }
       default:
           break;
       }
   }
+  DBG("konexios_close ...");
   konexios_close();
+  DBG("konexios_mqtt_events_done ...");
   konexios_mqtt_events_done();
 }
 

@@ -12,7 +12,7 @@ GCC_PREFIX =
 PLATFORM = linux
 
 SDK_PATH = $(abspath ../../konexios-sdk-c/)
-SDK_IMPL = $(PWD)/acnsdkc
+SDK_IMPL = $(PWD)/konexiossdkc
 
 COMMON_FLAGS = -g3 -O0 \
                -Wall \
@@ -38,7 +38,8 @@ CC_SYMBOLS = -DTOOLCHAIN_GCC \
 #	-Werror -Wpedantic -Wno-variadic-macros 
 
 #CC_SYMBOLS += -O0 -g -DVALGRIND_TEST=5
-CC_SYMBOLS += -O0 -g3 -DVALGRIND_TEST=5
+#CC_SYMBOLS += -O0 -g3 -DVALGRIND_TEST=5
+CC_SYMBOLS += -O0 -g3
 
 ifdef PROBOOK
 CC_SYMBOLS += -D__probook_4540s__
@@ -48,7 +49,7 @@ endif
 
 $(info $(CC))
 
-CSRCS	+= $(shell find $(PWD)/acnsdkc -name "*.c")
+CSRCS	+= $(shell find $(PWD)/konexiossdkc -name "*.c")
 CPPSRCS += $(wildcard $(PWD)/*.cpp)
 
 
@@ -59,7 +60,7 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 CPPDEPS += $(CSRCS:%.c=%.d)
 
 LIBRARY_PATHS = -L$(PWD)/$(LIBDIR)
-LIBRARIES = -lsensors -lacnsdkc -lpthread
+LIBRARIES = -lsensors -lkonexiossdkc -lpthread
 
 # LD_FLAGS = -Wl,--wrap=malloc,--wrap=realloc,--wrap=calloc,--wrap=strdup,--wrap=strndup 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--gc-sections
