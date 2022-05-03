@@ -28,49 +28,43 @@ extern "C"
 
 #include <iostream>
 
-#if !defined(NO_SOFTWARE_RELEASE)
 extern "C" int konexios_release_download_payload(const char *payload, int size, int);
 extern "C" int konexios_release_download_complete(int);
-#endif
 
-#if !defined(NO_SOFTWARE_UPDATE)
 extern "C" int konexios_software_update(const char *url,
                                         const char *checksum,
                                         const char *from,
                                         const char *to);
-#endif
 
 extern int get_telemetry_data(void *data);
-
-#if !defined(NO_EVENTS)
 
 void show_json_obj(JsonNode *o)
 {
     JsonNode *tmp = o;
-    printf("tag:[%d], key:[%s], ", tmp->tag, P_VALUE(tmp->key));
+    printf("tag:[%d], key:[%s]\n", tmp->tag, P_VALUE(tmp->key));
     switch (tmp->tag)
     {
     case JSON_NULL:
-        printf("v:null\r\n");
+        printf("v:null\n");
         break;
     case JSON_STRING:
-        printf("v:[%s]\r\n", P_VALUE(tmp->string_));
+        printf("v:[%s]\n", P_VALUE(tmp->string_));
         break;
     case JSON_NUMBER:
-        printf("v:[%d]\r\n", (int)tmp->number_);
+        printf("v:[%d]\n", (int)tmp->number_);
         break;
     case JSON_BOOL:
-        printf("v:[%s]\r\n", tmp->bool_ ? "true" : "false");
+        printf("v:[%s]\n", tmp->bool_ ? "true" : "false");
         break;
     case JSON_OBJECT:
-        printf("v:obj\r\n");
+        printf("v:obj\n");
         json_foreach(tmp, o)
         {
             show_json_obj(tmp);
         }
         break;
     case JSON_ARRAY:
-        printf("v:arr\r\n");
+        printf("v:arr\n");
         json_foreach(tmp, o)
         {
             show_json_obj(tmp);
@@ -81,130 +75,99 @@ void show_json_obj(JsonNode *o)
 
 static int test_cmd_proc(property_t payload)
 {
-    printf("test: [%s]\t\n", P_VALUE(payload));
-    // printf("static json buffer before %d\r\n", json_static_memory_max_sector());
+    printf("test_cmd_proc: [%s]\n", P_VALUE(payload));
     JsonNode *j = json_decode_property(payload);
     if (!j)
         return -1;
     show_json_obj(j);
-    // printf("static json buffer after %d\r\n", json_static_memory_max_sector());
     json_delete(j);
     return 0;
 }
 
 static int fail_cmd_proc(property_t payload)
 {
-    printf("fail: [%s]", P_VALUE(payload));
+    printf("fail_cmd_proc: [%s]\n", P_VALUE(payload));
     return -1;
 }
-#endif
 
 int main()
 {
-    //    ntp_set_time_cycle();
-
     time_t ctTime = time(NULL);
-    std::cout << "Time is set to (UTC): " << ctime(&ctTime) << std::endl;
+    std::cout << "time is set to (UTC): " << ctime(&ctTime) << std::endl;
 
+    printf("konexios_init ...\n");
     if (konexios_init() < 0)
         return -1;
 
-#if !defined(NO_SOFTWARE_UPDATE)
+    printf("konexios_software_release_dowload_set_cb ...\n");
     konexios_software_release_dowload_set_cb(
         NULL,
         konexios_release_download_payload,
         konexios_release_download_complete,
         NULL);
-#endif
 
-#if !defined(NO_EVENTS)
-
+    printf("konexios_device_state_init ...\n");
     konexios_device_state_init(2,
                                state_pr(p_const("led"), JSON_BOOL),
                                state_pr(p_const("delay"), JSON_NUMBER));
 
+    printf("konexios_command_handler_add (test) ...\n");
     konexios_command_handler_add("test", &test_cmd_proc);
+
+    printf("konexios_command_handler_add (fail) ...\n");
     konexios_command_handler_add("fail", &fail_cmd_proc);
-#endif
 
     gettimeofday(&init_time, NULL);
     int ttt = 0;
     do
     {
+        printf("konexios_initialize_routine ...\n");
         while (konexios_initialize_routine(0) < 0)
         {
             msleep(TELEMETRY_DELAY);
         }
+
+        printf("konexios_startup_sequence ...\n");
         konexios_startup_sequence(0);
 
-        int mqtt_routine_act = 1;
+        printf("konexios_mqtt_connect_routine ...\n");
         konexios_mqtt_connect_routine();
-        while (mqtt_routine_act)
-        {
-#if !defined(NO_EVENTS)
-            if (konexios_mqtt_has_events())
-            {
-                //            konexios_mqtt_disconnect_routine();
-                while (konexios_mqtt_has_events())
-                {
-                    struct timeval diff;
-                    struct timeval now;
-                    gettimeofday(&now, NULL);
-                    timersub(&now, &init_time, &diff);
-                    printf("start_ %ld.%d\r\n",
-                           diff.tv_sec,
-                           diff.tv_usec);
 
-                    konexios_mqtt_event_proc();
-                    struct timeval done;
-                    gettimeofday(&done, NULL);
-                    timersub(&done, &now, &diff);
-                    printf("time %ld.%d\r\n",
-                           diff.tv_sec,
-                           diff.tv_usec);
-                }
-                //            konexios_mqtt_connect_routine();
+        while (1)
+        {
+            while (konexios_mqtt_has_events())
+            {
+                printf("konexios_mqtt_event_proc ...\n");
+                konexios_mqtt_event_proc();
             }
-#endif
+
             pm_data_t d;
+
+            printf("konexios_mqtt_send_telemetry_routine ...\n");
             int ret = konexios_mqtt_send_telemetry_routine(get_telemetry_data, &d);
+
             switch (ret)
             {
-#if !defined(NO_EVENTS)
             case ROUTINE_RECEIVE_EVENT:
-                //            konexios_mqtt_disconnect_routine();
                 while (konexios_mqtt_has_events())
                 {
-                    struct timeval now;
-                    struct timeval diff;
-                    gettimeofday(&now, NULL);
-
-                    timersub(&now, &init_time, &diff);
-                    printf("start_ %ld.%d\r\n",
-                           diff.tv_sec,
-                           diff.tv_usec);
-
+                    printf("konexios_mqtt_event_proc ...\n");
                     konexios_mqtt_event_proc();
-                    struct timeval done;
-                    gettimeofday(&done, NULL);
-                    timersub(&done, &now, &diff);
-                    printf("time %ld.%d\r\n",
-                           diff.tv_sec,
-                           diff.tv_usec);
                 }
                 break;
-#endif
             default:
-                konexios_mqtt_disconnect_routine();
-                konexios_mqtt_connect_routine();
+                // konexios_mqtt_disconnect_routine();
+                // konexios_mqtt_connect_routine();
                 break;
             }
         }
         konexios_close();
     } while (ttt++ < 3);
+
+    printf("konexios_deinit ...\n");
     konexios_deinit();
 
     std::cout << std::endl
-              << "End" << std::endl;
+              << "terminated!" << std::endl;
     return 0;
 }

@@ -29,7 +29,8 @@ COMMON_FLAGS = -g3 -O0 \
                -fno-delete-null-pointer-checks \
                -fomit-frame-pointer \
 			   -Wgnu-binary-literal \
-			   -Wunused-function
+			   -Wunused-function \
+			   -Wnested-anon-types
 CC_FLAGS = $(COMMON_FLAGS) -std=gnu11 -MP
 CPPC_FLAGS = $(COMMON_FLAGS) -std=gnu++98 -fno-rtti -MP
 ASM_FLAGS = -x assembler-with-cpp $(COMMON_FLAGS)
