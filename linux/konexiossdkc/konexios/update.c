@@ -7,9 +7,7 @@
  */
 
 #include <stdio.h>
-#if !defined(NO_SOFTWARE_UPDATE)
 #include <curl/curl.h>
-#endif
 #include <ssl/md5sum.h>
 #include <debug.h>
 #include <sys/mem.h>
@@ -18,14 +16,14 @@
 
 #define pagefilename "update.file"
 
-#if !defined(NO_SOFTWARE_UPDATE)
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
   size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
   return written;
 }
 
-int konexios_gateway_software_update(const char *url) {
+int konexios_gateway_software_update(const char *url)
+{
   CURL *curl;
   FILE *pagefile;
 
@@ -42,7 +40,8 @@ int konexios_gateway_software_update(const char *url) {
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
   /* open the file */
   pagefile = fopen(pagefilename, "wb");
-  if(pagefile) {
+  if (pagefile)
+  {
     /* write the page body to this file handle */
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, pagefile);
     /* get it! */
@@ -56,17 +55,21 @@ int konexios_gateway_software_update(const char *url) {
 }
 
 int konexios_software_update(const char *url,
-                          const char *checksum,
-                          const char *from,
-                          const char *to) {
+                             const char *checksum,
+                             const char *from,
+                             const char *to)
+{
 
-  if ( konexios_gateway_software_update(url) < 0 ) return -1;
+  if (konexios_gateway_software_update(url) < 0)
+    return -1;
   FILE *fp = fopen(pagefilename, "rb");
-  if ( !fp ) return -1;
+  if (!fp)
+    return -1;
   int n = 0;
   char buffer[1];
   md5_chunk_init();
-  while ( (n = fread(buffer, 1, 1, fp)) ){
+  while ((n = fread(buffer, 1, 1, fp)))
+  {
     md5_chunk(buffer, 1);
   }
   char md5hash[40];
@@ -74,19 +77,22 @@ int konexios_software_update(const char *url,
   md5_chunk_hash(md5hash);
   hex_encode(md5hash_str, md5hash, 16);
   DBG("md5 sum %s", md5hash_str);
-  if ( strcmp(md5hash_str, checksum) != 0 ) return -1;
+  if (strcmp(md5hash_str, checksum) != 0)
+    return -1;
   DBG("%s -> %s", from, to);
   return 0;
 }
-#endif
 
 static FILE *test = NULL;
 static int file_size = 0;
 // this function will be executed when http client get a chunk of payload
-int konexios_release_download_payload(const char *payload, int size, int flags) {
-  if ( flags == FW_FIRST ) {
-    test = fopen(pagefilename,"wb");
-    if (!test) {
+int konexios_release_download_payload(const char *payload, int size, int flags)
+{
+  if (flags == FW_FIRST)
+  {
+    test = fopen(pagefilename, "wb");
+    if (!test)
+    {
       DBG("Unable to open file!");
       return -1;
     }
@@ -98,15 +104,19 @@ int konexios_release_download_payload(const char *payload, int size, int flags) 
 }
 
 // this function will be executed when firmware file download complete
-int konexios_release_download_complete(int ota_result) {
-    if ( ota_result == FW_SUCCESS ) {
-        DBG("file size = %d", file_size);
-        fclose(test);
-    } else if (ota_result == FW_MD5SUM) {
-        DBG("fw checksum failed");
-        fclose(test);
-        remove(pagefilename);
-    }
-    file_size = 0;
-    return 0;
+int konexios_release_download_complete(int ota_result)
+{
+  if (ota_result == FW_SUCCESS)
+  {
+    DBG("file size = %d", file_size);
+    fclose(test);
+  }
+  else if (ota_result == FW_MD5SUM)
+  {
+    DBG("fw checksum failed");
+    fclose(test);
+    remove(pagefilename);
+  }
+  file_size = 0;
+  return 0;
 }

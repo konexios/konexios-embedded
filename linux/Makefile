@@ -60,7 +60,7 @@ CPPDEPS := $(CPPSRCS:%.cpp=%.d)
 CPPDEPS += $(CSRCS:%.c=%.d)
 
 LIBRARY_PATHS = -L$(PWD)/$(LIBDIR)
-LIBRARIES = -lsensors -lkonexiossdkc -lpthread
+LIBRARIES = -lsensors -lkonexiossdkc -lpthread -lcurl
 
 # LD_FLAGS = -Wl,--wrap=malloc,--wrap=realloc,--wrap=calloc,--wrap=strdup,--wrap=strndup 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -Wl,--gc-sections

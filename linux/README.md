@@ -9,6 +9,9 @@ or
 apt-get install libsensors4-dev
 for Debian like distribution
 
+You may also need this package
+sudo apt-get install -y libcurl4-nss-dev
+
 Actually I wrote it for my laptop. I have a two temperature sensors on CPUs.
 There is no guarantee that this application will work correctly with your machine.
 
